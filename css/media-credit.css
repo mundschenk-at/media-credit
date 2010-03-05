@@ -1,0 +1,13 @@
+.media-credit {
+	font-size: 0.9em;
+	line-height: 1.2em; /*11px*/
+	text-align: right;
+	margin: 3px 5px;
+	display: block;
+}
+.media-credit a {
+	color: #909090;
+}
+.media-credit-container {
+	text-align: center;
+}
