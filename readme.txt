@@ -4,7 +4,7 @@ Donate link: http://www.scottbressler.com/wp/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 2.8
 Tested up to: 2.9.2
-Stable tag: 0.5.1
+Stable tag: 0.5.5
 
 This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
 
@@ -72,8 +72,15 @@ Forthcoming!
 
 == Changelog ==
 
+= 0.5.5 =
+* Switched autocomplete to an older, more stable version - should be working great now for all blogs!
+* With above, fixed loss of control of AJAX functionality in WordPress admin area
+* Default options are now correctly registered when the plugin is activated
+* Any pre-existing options will not be overwritten when activating the plugin
+* Separator and organization names on the settings page are properly escaped
+
 = 0.5.1 =
-* Fixed autocomplete when selecting credit so that it only shows currently selectable users (particularly important for WPMU users).
+* Fixed autocomplete when selecting credit so that it only shows currently selectable users (particularly important for WordPress MU users).
 * Made it so that upon clicking in the Credit field the text already there will be highlighted - start typing right away!
 * Hid media credit inline with attachments if the "Display credits after post" option is enabled.
 
@@ -82,5 +89,8 @@ Forthcoming!
 
 == Upgrade Notice ==
 
+= 0.5.5 =
+Fixed autocomplete and losing control of AJAX functionality in WordPress admin, and settings are sanitized better
+
 = 0.5.1 =
-Autocomplete list of users is filtered better, particularly for WPMU users.
+Autocomplete list of users is filtered better, particularly for WordPress MU users.

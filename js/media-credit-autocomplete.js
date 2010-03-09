@@ -16,12 +16,19 @@ function mediaCreditAutocomplete(id, currAuthorId, currAuthor) {
 				addID(id, currAuthorId);
 			}
 		})
+		/* --- For jQuery UI autocomplete
 		.autocomplete({
 			source: PLUGIN_DIR + "search.php",
 			minLength: 2,
 			select: function(event, ui) {
 				addID(id, ui.item.id);
 			}
+		})*/
+		.autocomplete(PLUGIN_DIR + "search.php", {
+			minChars: 2
+		})
+		.result(function(event, data, formatted) {
+			addID(id, data[1]);
 		});
 }
 

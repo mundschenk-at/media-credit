@@ -3,7 +3,7 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/wp/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 0.5.1
+Version: 0.5.5
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/wp/
 License: GPL2
@@ -11,19 +11,19 @@ License: GPL2
 
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_OPTION', 'media-credit');
-define( 'DEFAULT_SEPARATOR', ' | ' );
-define( 'DEFAULT_ORGANIZATION', get_bloginfo() );
+define( 'MEDIA_CREDIT_DEFAULT_SEPARATOR', ' | ' );
+define( 'MEDIA_CREDIT_DEFAULT_ORGANIZATION', get_bloginfo() );
 define( 'WP_IMAGE_CLASS_NAME_PREFIX', 'wp-image-' );
 define( 'WP_ATTACHMENT_CLASS_NAME_PREFIX', 'attachment_' );
 
 function set_default_media_credit_options() {
 	$options = array();
-	$options['separator'] = DEFAULT_SEPARATOR;
-	$options['organization'] = DEFAULT_ORGANIZATION;
+	$options['separator'] = MEDIA_CREDIT_DEFAULT_SEPARATOR;
+	$options['organization'] = MEDIA_CREDIT_DEFAULT_ORGANIZATION;
 	$options['credit_at_end'] = false;
-	update_option( MEDIA_CREDIT_OPTION, $options );
+	add_option( MEDIA_CREDIT_OPTION, $options );
 }
-add_filter('register_activation_hook', set_default_media_credit_options);
+register_activation_hook(__FILE__, 'set_default_media_credit_options' );
 
 /**
  * Delete options in database
@@ -243,7 +243,7 @@ if ( $options['credit_at_end'] )
 function media_credit_stylesheet() {
 	$options = get_option( MEDIA_CREDIT_OPTION );
 	if ( $options['credit_at_end'] ) // Do not display inline media credit if media credit is displayed at end of posts.
-		wp_enqueue_style( 'media-credit', MEDIA_CREDIT_URL . 'css/media-credit-end.css', array(), 1.0, 'all');
+		wp_enqueue_style( 'media-credit-end', MEDIA_CREDIT_URL . 'css/media-credit-end.css', array(), 1.0, 'all');
 	else
 		wp_enqueue_style( 'media-credit', MEDIA_CREDIT_URL . 'css/media-credit.css', array(), 1.0, 'all');
 }
@@ -257,32 +257,68 @@ if ( is_admin() )
 
 function add_media_credit_menu() {
 	// Display settings for plugin on the built-in Media options page
-	add_settings_section('media-credit', 'Media Credit', 'media_credit_settings_section', 'media');
-	add_settings_field('preview', '<em>Preview</em>', 'media_credit_preview', 'media', 'media-credit');
-	add_settings_field('separator', 'Separator', 'media_credit_separator', 'media', 'media-credit');
-	add_settings_field('organization', 'Organization', 'media_credit_organization', 'media', 'media-credit');
-	add_settings_field('credit_at_end', 'Display credit after posts', 'media_credit_end_of_post', 'media', 'media-credit');
+	add_settings_section(MEDIA_CREDIT_OPTION, 'Media Credit', 'media_credit_settings_section', 'media');
+	add_settings_field('preview', '<em>Preview</em>', 'media_credit_preview', 'media', MEDIA_CREDIT_OPTION);
+	add_settings_field('separator', 'Separator', 'media_credit_separator', 'media', MEDIA_CREDIT_OPTION);
+	add_settings_field('organization', 'Organization', 'media_credit_organization', 'media', MEDIA_CREDIT_OPTION);
+	add_settings_field('credit_at_end', 'Display credit after posts', 'media_credit_end_of_post', 'media', MEDIA_CREDIT_OPTION);
 
 	// Call register settings function
 	add_action( 'admin_init', 'media_credit_init' );
 }
 
 function media_credit_init() { // whitelist options
-	register_setting( 'media', 'media-credit', 'media_credit_options_validate' );
+	register_setting( 'media', MEDIA_CREDIT_OPTION, 'media_credit_options_validate' );
 	//TODO: only load this on the media settings page, not all of the admin
 	wp_enqueue_script( 'media-credit', MEDIA_CREDIT_URL . 'js/media-credit-preview.js', array('jquery'), 1.0, true);
 
-	//TODO: only load all this nonsense on the Media edit page, not all of the admin!!
-	wp_deregister_script('jquery-ui-core');
-	wp_enqueue_script('jquery-ui-core-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.core.js', array('jquery'), '1.8rc2');
-	wp_enqueue_script('jquery-ui-widget-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.widget.js', array('jquery', 'jquery-ui-core-1.8'), '1.8rc2');
-	wp_enqueue_script('jquery-ui-position-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.position.js', array('jquery', 'jquery-ui-core-1.8'), '1.8rc2');
-	wp_enqueue_script('jquery-ui-autocomplete-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.autocomplete.js', array('jquery', 'jquery-ui-core-1.8', 'jquery-ui-widget-1.8', 'jquery-ui-position-1.8'), '1.8rc2');
-	wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-ui-core-1.8', 'jquery-ui-widget-1.8', 'jquery-ui-position-1.8', 'jquery-ui-autocomplete-1.8'), '1.0', true);
-	wp_enqueue_style('jquery-ui-autocomplete', MEDIA_CREDIT_URL . 'css/jquery-ui-1.8rc2.custom.css');
+//	wp_enqueue_style('jquery-ui-autocomplete', MEDIA_CREDIT_URL . 'css/jquery-ui-1.8rc2.custom.css');
+	wp_enqueue_style('jquery-autocomplete', MEDIA_CREDIT_URL . 'css/jquery.autocomplete.css');
+	
+	wp_enqueue_script('jquery-autocomplete', MEDIA_CREDIT_URL . 'js/jquery.autocomplete.pack.js', array('jquery'), '1.1');
+	wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-autocomplete'), '1.0', true);
 }
 
+function media_credit_action_links($links, $file) {
+	$plugin_file = basename(__FILE__);
+	if (basename($file) == $plugin_file) {
+		$settings_link = '<a href="options-media.php#media-credit">'.__('Settings', 'media-credit').'</a>';
+		array_unshift($links, $settings_link);
+	}
+	return $links;
+}
+add_filter('plugin_action_links', 'media_credit_action_links', 10, 2);
+
+// TODO: eventually figure out if autocomplete from jQuery UI can be used instead using some of the code below...
+function media_credit_scripts() {
+	//TODO: only load all this nonsense on the Media edit page, not all of the admin!!
+//	wp_deregister_script('jquery-ui-core'); // TODO: decide what to do here, uncommenting this breaks a lot of the AJAX functionality in admin
+//	wp_deregister_script('jquery');
+//	wp_register_script('jquery-1.4.2', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery-1.4.2.min.js', array('jquery-ui-core'), '1.4.2');
+//	wp_enqueue_script('jquery-ui-core-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.core.js', array('jquery'), '1.8rc2');
+//	wp_enqueue_script('jquery-ui-widget-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.widget.js', array('jquery', 'jquery-ui-core-1.8'), '1.8rc2');
+//	wp_enqueue_script('jquery-ui-position-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.position.js', array('jquery', 'jquery-ui-core-1.8'), '1.8rc2');
+//	wp_enqueue_script('jquery-ui-autocomplete-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.autocomplete.js', array('jquery', 'jquery-ui-core-1.8', 'jquery-ui-widget-1.8', 'jquery-ui-position-1.8'), '1.8rc2');
+//	wp_enqueue_script('jquery-ui-autocomplete-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.autocomplete.js', array('jquery', 'jquery-ui-core-1.8', 'jquery-ui-widget-1.8', 'jquery-ui-position-1.8'), '1.8rc2');
+
+//	wp_deregister_script('jquery-ui-core');
+//	wp_deregister_script('jquery-ui-widget');
+//	wp_deregister_script('jquery-ui-position');
+
+//	wp_enqueue_script('jquery-ui-core', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.core.min.js', array('jquery-1.4.2'), '1.8rc3');
+//	wp_enqueue_script('jquery-ui-widget', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.widget.min.js', array('jquery-1.4.2', 'jquery-ui-core'), '1.8rc3');
+//	wp_enqueue_script('jquery-ui-position', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.position.min.js', array('jquery-1.4.2', 'jquery-ui-core'), '1.8rc3');
+//	wp_enqueue_script('jquery-ui-mouse', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.mouse.min.js', array('jquery-1.4.2', 'jquery-ui-core, jquery-ui-widget'), '1.8rc3');
+//	wp_enqueue_script('jquery-ui-autocomplete-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.autocomplete.min.js', array('jquery-1.4.2', 'jquery-ui-core-1.8', 'jquery-ui-widget-1.8', 'jquery-ui-position-1.8'), '1.8rc3');
+
+	// Or more simply, used the packaged version downloaded from jqueryui.com
+	//wp_enqueue_script('jquery-ui-autocomplete-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery-ui-1.8rc3.custom.min.js', array('jquery-1.4.2', 'jquery-ui-core'), '1.8rc3');
+	//wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-autocomplete'), '1.0', true);
+}
+add_action('wp_print_scripts', 'media_credit_scripts');
+
 function media_credit_settings_section() {
+	echo "<a name='media-credit'></a>";
 	echo "<p>Choose how to display media credit on your blog:</p>";
 }
 
@@ -322,7 +358,7 @@ function media_credit_end_of_post() {
 
 function media_credit_options_validate($input) {
 	foreach ($input as $key => $value) {
-		$input[$key] = wp_filter_nohtml_kses($value);
+		$input[$key] = htmlspecialchars( $value, ENT_QUOTES );
 	}
 	return $input;
 }
