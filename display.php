@@ -16,6 +16,7 @@ function display_author_media($author_id, $sidebar = true, $limit = 10, $link_wi
 			$image = wp_get_attachment_image($post->ID, 'thumbnail');
 		else
 			$image = wp_get_attachment_link($post->ID, 'thumbnail', true);
+		$image = preg_replace('/title=".*"/', '', $image); // remove title attribute from image
 		$link = $post->post_parent > 0 ? "<a href='" . get_permalink($post->post_parent) . "'>$image</a>" : $image;
 		echo "<$container class='author-media' id='attachment-$post->ID'>$link</$container>";
 	}
