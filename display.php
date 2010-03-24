@@ -22,7 +22,7 @@ function display_author_media($author_id, $sidebar = true, $limit = 10, $link_wi
 	echo "</div>";
 }
 
-function author_media_and_posts($id, $include_posts = true, $limit = 0) {
+function author_media_and_posts($id, $include_posts = true, $limit = 0, $exclude_unattached = true) {
 	global $wpdb;
 	
 	if ($include_posts)
@@ -31,14 +31,25 @@ function author_media_and_posts($id, $include_posts = true, $limit = 0) {
 					AND post_status = 'publish')";
 	$posts_query .= ")";
 
+	if ($exclude_unattached)
+		$attached = " AND post_parent != '0'";
+	$attached .= ") ";
+
+	$options = get_option( MEDIA_CREDIT_OPTION );
+	$start_date = $options['install_date'];
+	if ($start_date)
+		$date_query = " AND post_date >= '$start_date'";
+
 	if ($limit > 0)
 		$limit_query = " LIMIT $limit";
 	
 	$results = $wpdb->get_results( $wpdb->prepare( "
 			SELECT *
 			FROM $wpdb->posts
-			WHERE post_author = %d
-				AND (post_type = 'attachment'" . $posts_query . "		
+			WHERE post_author = %d" . $date_query . "
+				AND ( (post_type = 'attachment' " .
+					$attached .
+					$posts_query . "		
 				AND ID NOT IN (
 					SELECT post_id
 					FROM $wpdb->postmeta

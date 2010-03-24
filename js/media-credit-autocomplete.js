@@ -5,15 +5,20 @@ function mediaCreditAutocomplete(id, currAuthorId, currAuthor) {
 	jQuery(inputField)
 		.click(function() {
 			this.select();
+		/*
 			if (this.value == currAuthor) {
 				this.value = "";
 				removeID(id);
 			}
+		*/
 		})
 		.blur(function() {
 			if (this.value == "") {
+			/*	
 				this.value = currAuthor;
 				addID(id, currAuthorId);
+			*/
+				removeID(id);
 			}
 		})
 		/* --- For jQuery UI autocomplete
@@ -25,7 +30,7 @@ function mediaCreditAutocomplete(id, currAuthorId, currAuthor) {
 			}
 		})*/
 		.autocomplete(PLUGIN_DIR + "search.php", {
-			minChars: 2
+		//	delay: 200
 		})
 		.result(function(event, data, formatted) {
 			addID(id, data[1]);

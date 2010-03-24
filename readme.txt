@@ -58,7 +58,7 @@ If the automatic process above fails, follow these simple steps to do a manual i
 
 = Can I display all or recent media credited to a given author? =
 
-Indeed, just call `display_author_media($author_id)`, which has optional parameters if you want to customize the CSS or text. The default options will display thumbnails of the 10 most recent media items credited to the given user floated to the right with a width of 150px and a header of `<h3>Recent Media</h3>`. These options can be changed with a more verbose call to the function: `display_author_media($author_id, $float = false, $header = "<h1>A Big Header</h1", $limit = 5)`. This will make only the 5 most recent media items display with the given header taking up the maximum width it's afforded.
+Indeed, just call `display_author_media($author_id)`, which has optional parameters if you want to customize the CSS or text. The default options will display thumbnails of the 10 most recent media items credited to the given user floated to the right with a width of 150px and a header of `<h3>Recent Media</h3>`. These options can be changed with a more verbose call to the function: `display_author_media($author_id, $float = false, $header = "<h1>A Big Header</h1", $limit = 5, $exclude_unattached = true)`. This will make only the 5 most recent media items that are attached to a post display with the given header taking up the maximum width it's afforded. If you don't care about whether the media is attached to a post, change $exclude_unattached to false. This will only display media uploaded and credited to a user after this plugin was installed.
 
 = More generally, can I insert media credit information into my themes with a template tag, for instance on category pages? =
 
@@ -78,9 +78,9 @@ Forthcoming!
 
 = 0.5.6 =
 * Added author media rendering methods (see FAQ)
-* If media credit is edited in the Media Library, the media credit in the post to which media is attached to will now update as well
+* If media credit is edited in the Media Library, the media credit in the post to which media is attached to will now update as well!
+* Blank credit can now be assigned to media
 * Switched rendering of media-credit shortcode credit info to div instead of span for more readable RSS feed
-* Fixed a potentially fatal bug due to a typo
 
 = 0.5.5 =
 * Switched autocomplete to an older, more stable version - should be working great now for all blogs!

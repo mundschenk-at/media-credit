@@ -9,6 +9,7 @@ Author URI: http://www.scottbressler.com/wp/
 License: GPL2
 */
 
+define( 'MEDIA_CREDIT_VERSION', '0.5.6' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_OPTION', 'media-credit');
 define( 'MEDIA_CREDIT_DEFAULT_SEPARATOR', ' | ' );
@@ -20,10 +21,20 @@ require_once( 'display.php' );
 
 function set_default_media_credit_options() {
 	$options = array();
+	$options['version'] = MEDIA_CREDIT_VERSION;
+	$options['install_date'] = date( 'Y-m-d' );
 	$options['separator'] = MEDIA_CREDIT_DEFAULT_SEPARATOR;
 	$options['organization'] = MEDIA_CREDIT_DEFAULT_ORGANIZATION;
 	$options['credit_at_end'] = false;
-	add_option( MEDIA_CREDIT_OPTION, $options );
+	$installed_options = get_option( MEDIA_CREDIT_OPTION );
+	print_r($installed_options);
+	if ( !$installed_options ) // Install plugin
+		add_option( MEDIA_CREDIT_OPTION, $options );
+	else if ( !$installed_options['version'] ) { // Upgrade plugin to 0.5.6 (0.5.5 didn't have a version number)
+		$installed_options['version'] = $options['version'];
+		$installed_options['install_date'] = $options['install_date'];
+		update_option( MEDIA_CREDIT_OPTION, $installed_options );
+	}
 }
 register_activation_hook(__FILE__, 'set_default_media_credit_options' );
 
@@ -121,7 +132,7 @@ function get_freeform_media_credit($post) {
 	return get_post_meta( $post->ID, 'media-credit', true );
 }
 
-// Add a dropdown with the blog users to $fields
+// Add an autocomplete field with the blog users to $fields
 function add_media_credit($fields, $post) {
 	$credit = get_media_credit($post);
 	// add requirement for jquery ui core, jquery ui widgets, jquery ui position
@@ -153,8 +164,10 @@ function save_media_credit($post, $attachment) {
 			$parent['post_content'] = preg_replace('/(media-credit.*id=)\d+/', '${1}' . $new_author, $parent['post_content']);
 			wp_update_post($parent);
 		}
-	} else // free-form text was entered, insert postmeta with credit
-		update_post_meta($post['ID'], 'media-credit', $_POST['free-form']); // insert 'media-credit' metadata field for image with free-form text
+	} else { // free-form text was entered, insert postmeta with credit. if free-form text is blank, insert a single space in postmeta.
+		$freeform = $_POST['free-form'] == '' ? ' ' : $_POST['free-form'];
+		update_post_meta($post['ID'], MEDIA_CREDIT_OPTION, $freeform); // insert 'media-credit' metadata field for image with free-form text
+	}
 	return $post;
 }
 add_filter('attachment_fields_to_save', 'save_media_credit', 10, 2);
