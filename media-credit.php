@@ -16,6 +16,8 @@ define( 'MEDIA_CREDIT_DEFAULT_ORGANIZATION', get_bloginfo() );
 define( 'WP_IMAGE_CLASS_NAME_PREFIX', 'wp-image-' );
 define( 'WP_ATTACHMENT_CLASS_NAME_PREFIX', 'attachment_' );
 
+require_once( 'display.php' );
+
 function set_default_media_credit_options() {
 	$options = array();
 	$options['separator'] = MEDIA_CREDIT_DEFAULT_SEPARATOR;
@@ -143,8 +145,14 @@ add_filter('attachment_fields_to_edit', 'add_media_credit', 10, 2);
 function save_media_credit($post, $attachment) {
 	$key = "media-credit-{$post['ID']}";
 	if ( isset( $_POST[$key] ) && $_POST[$key] != '' ) { // a valid WP user was selected
-		$post['post_author'] = $_POST[$key]; // update post_author with the chosen user
+		$new_author = $_POST[$key];
+		$post['post_author'] = $new_author; // update post_author with the chosen user
 		delete_post_meta($post['ID'], 'media-credit'); // delete any residual metadata from a free-form field (as inserted below)
+		if ( isset( $post['post_parent'] ) ) { // if media is attached somewhere, edit the media-credit info in the attached (parent) post
+			$parent = get_post( $post['post_parent'], ARRAY_A );
+			$parent['post_content'] = preg_replace('/(media-credit.*id=)\d+/', '${1}' . $new_author, $parent['post_content']);
+			wp_update_post($parent);
+		}
 	} else // free-form text was entered, insert postmeta with credit
 		update_post_meta($post['ID'], 'media-credit', $_POST['free-form']); // insert 'media-credit' metadata field for image with free-form text
 	return $post;
@@ -186,7 +194,7 @@ add_filter('image_send_to_editor', 'send_media_credit_to_editor_by_shortcode', 1
  */
 function media_credit_shortcode($atts, $content = null) {
 	// Allow plugins/themes to override the default media credit template.
-	$output = apply_filters('media_credit_shortcode', '', $attr, $content);
+	$output = apply_filters('media_credit_shortcode', '', $atts, $content);
 	if ( $output != '' )
 		return $output;
 

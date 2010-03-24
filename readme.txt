@@ -56,7 +56,11 @@ If the automatic process above fails, follow these simple steps to do a manual i
 
 == Frequently Asked Questions ==
 
-= Can I insert media credit information into my themes with a template tag, for instance on category pages? =
+= Can I display all or recent media credited to a given author? =
+
+Indeed, just call `display_author_media($author_id)`, which has optional parameters if you want to customize the CSS or text. The default options will display thumbnails of the 10 most recent media items credited to the given user floated to the right with a width of 150px and a header of `<h3>Recent Media</h3>`. These options can be changed with a more verbose call to the function: `display_author_media($author_id, $float = false, $header = "<h1>A Big Header</h1", $limit = 5)`. This will make only the 5 most recent media items display with the given header taking up the maximum width it's afforded.
+
+= More generally, can I insert media credit information into my themes with a template tag, for instance on category pages? =
 
 I'm so glad you asked; you certainly can! Just call `<?php get_media_credit_html($post); ?>` with an attachment_id (int) or post object for an attachment to get a string. To echo the results, call `<?php the_media_credit_html($post); ?>`.
 
@@ -71,6 +75,12 @@ Feel free to get in touch with me about anything you'd like me to add to this li
 Forthcoming!
 
 == Changelog ==
+
+= 0.5.6 =
+* Added author media rendering methods (see FAQ)
+* If media credit is edited in the Media Library, the media credit in the post to which media is attached to will now update as well
+* Switched rendering of media-credit shortcode credit info to div instead of span for more readable RSS feed
+* Fixed a potentially fatal bug due to a typo
 
 = 0.5.5 =
 * Switched autocomplete to an older, more stable version - should be working great now for all blogs!

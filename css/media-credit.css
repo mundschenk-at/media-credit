@@ -7,9 +7,20 @@
 	color: #909090;
 }
 .media-credit a {
-	color: #909090;
 	font-weight: normal;
 }
 .media-credit-container {
 	text-align: center;
 }
+#recent-media-sidebar {
+	float: right;
+	text-align: center;
+	width: 150px;
+}
+#recent-media-sidebar div.author-media {
+	margin-bottom: 10px;
+}
+#recent-media-inline span.author-media {
+	margin-right: 5px;
+}
+
