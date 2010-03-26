@@ -167,6 +167,11 @@ function save_media_credit($post, $attachment) {
 	} else { // free-form text was entered, insert postmeta with credit. if free-form text is blank, insert a single space in postmeta.
 		$freeform = $_POST['free-form'] == '' ? ' ' : $_POST['free-form'];
 		update_post_meta($post['ID'], MEDIA_CREDIT_OPTION, $freeform); // insert 'media-credit' metadata field for image with free-form text
+		if ( isset( $post['post_parent'] ) ) { // if media is attached somewhere, edit the media-credit info in the attached (parent) post
+			$parent = get_post( $post['post_parent'], ARRAY_A );
+			$parent['post_content'] = preg_replace('/(media-credit.*name=")\d+/', '${1}' . $freeform, $parent['post_content']);
+			wp_update_post($parent);
+		}
 	}
 	return $post;
 }
