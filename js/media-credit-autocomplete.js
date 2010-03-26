@@ -5,12 +5,10 @@ function mediaCreditAutocomplete(id, currAuthorId, currAuthor) {
 	jQuery(inputField)
 		.click(function() {
 			this.select();
-		/*
 			if (this.value == currAuthor) {
-				this.value = "";
+		//		this.value = "";
 				removeID(id);
 			}
-		*/
 		})
 		.blur(function() {
 			if (this.value == "") {
