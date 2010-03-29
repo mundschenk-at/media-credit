@@ -21,17 +21,17 @@ define( 'WP_ATTACHMENT_CLASS_NAME_PREFIX', 'attachment_' );
 require_once( 'display.php' );
 
 function set_default_media_credit_options() {
-	$options = array();
-	$options['version'] = MEDIA_CREDIT_VERSION;
-	$options['install_date'] = date( 'Y-m-d' );
-	$options['separator'] = MEDIA_CREDIT_DEFAULT_SEPARATOR;
-	$options['organization'] = MEDIA_CREDIT_DEFAULT_ORGANIZATION;
-	$options['credit_at_end'] = false;
+	$options = array(
+		'version' => MEDIA_CREDIT_VERSION,
+		'install_date' => date( 'Y-m-d' ),
+		'separator' => MEDIA_CREDIT_DEFAULT_SEPARATOR,
+		'organization' => MEDIA_CREDIT_DEFAULT_ORGANIZATION,
+		'credit_at_end' => false
+	);
 	$installed_options = get_option( MEDIA_CREDIT_OPTION );
-	print_r($installed_options);
 	if ( !$installed_options ) // Install plugin
 		add_option( MEDIA_CREDIT_OPTION, $options );
-	else if ( !$installed_options['version'] ) { // Upgrade plugin to 0.5.6 (0.5.5 didn't have a version number)
+	else if ( !array_key_exists( 'version', $installed_options ) ) { // Upgrade plugin to 0.5.6 (0.5.5 didn't have a version number)
 		$installed_options['version'] = $options['version'];
 		$installed_options['install_date'] = $options['install_date'];
 		update_option( MEDIA_CREDIT_OPTION, $installed_options );

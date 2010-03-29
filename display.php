@@ -25,6 +25,7 @@ function display_author_media($author_id, $sidebar = true, $limit = 10, $link_wi
 
 function author_media_and_posts($id, $include_posts = true, $limit = 0, $exclude_unattached = true) {
 	global $wpdb;
+	$posts_query = $attached = $date_query = $limit_query = "";
 	
 	if ($include_posts)
 		$posts_query = "OR (post_type = 'post'
