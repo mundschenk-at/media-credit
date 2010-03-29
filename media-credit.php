@@ -3,7 +3,7 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/wp/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 0.5.5
+Version: 0.5.6
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/wp/
 License: GPL2
@@ -11,7 +11,8 @@ License: GPL2
 
 define( 'MEDIA_CREDIT_VERSION', '0.5.6' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
-define( 'MEDIA_CREDIT_OPTION', 'media-credit');
+define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
+define( 'MEDIA_CREDIT_OPTION', 'media-credit' );
 define( 'MEDIA_CREDIT_DEFAULT_SEPARATOR', ' | ' );
 define( 'MEDIA_CREDIT_DEFAULT_ORGANIZATION', get_bloginfo() );
 define( 'WP_IMAGE_CLASS_NAME_PREFIX', 'wp-image-' );
@@ -165,11 +166,14 @@ function save_media_credit($post, $attachment) {
 			wp_update_post($parent);
 		}
 	} else { // free-form text was entered, insert postmeta with credit. if free-form text is blank, insert a single space in postmeta.
-		$freeform = $_POST['free-form'] == '' ? ' ' : $_POST['free-form'];
+		$freeform = $_POST['free-form'] == '' ? MEDIA_CREDIT_EMPTY_META_STRING : $_POST['free-form'];
 		update_post_meta($post['ID'], MEDIA_CREDIT_OPTION, $freeform); // insert 'media-credit' metadata field for image with free-form text
 		if ( isset( $post['post_parent'] ) ) { // if media is attached somewhere, edit the media-credit info in the attached (parent) post
 			$parent = get_post( $post['post_parent'], ARRAY_A );
-			$parent['post_content'] = preg_replace('/(media-credit.*name=")\d+/', '${1}' . $freeform, $parent['post_content']);
+//			echo $parent['post_content'] . "<br /><br /><br />";
+			// @todo make this work so that name field of attached post is updated when media credit is updated
+//			$parent['post_content'] = preg_replace('/(media-credit.*name=").*"/', '${1}' . $freeform . '"', $parent['post_content']);
+//			echo $parent['post_content'];die();
 			wp_update_post($parent);
 		}
 	}
@@ -183,6 +187,8 @@ add_filter('attachment_fields_to_save', 'save_media_credit', 10, 2);
 function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $caption, $title, $align) {
 	$post = get_post($attachment_id);
 	$credit_meta = get_freeform_media_credit($post);
+	if ( $credit_meta == MEDIA_CREDIT_EMPTY_META_STRING )
+		return $html;
 	if ( $credit_meta != '' )
 		$credit = 'name="' . $credit_meta . '"';
 	else
