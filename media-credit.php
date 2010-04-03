@@ -222,6 +222,10 @@ function media_credit_shortcode($atts, $content = null) {
 	if ( $output != '' )
 		return $output;
 
+	$options = get_option( MEDIA_CREDIT_OPTION );
+	if ( array_key_exists( 'credit_at_end', $options ) && $options['credit_at_end'] )
+		return do_shortcode( $content );
+
 	extract(shortcode_atts(array(
 		'id' => -1,
 		'name' => '',
@@ -274,7 +278,7 @@ if ( array_key_exists( 'credit_at_end', $options ) && $options['credit_at_end'] 
 
 function media_credit_stylesheet() {
 	$options = get_option( MEDIA_CREDIT_OPTION );
-	if ( $options['credit_at_end'] ) // Do not display inline media credit if media credit is displayed at end of posts.
+	if ( array_key_exists( 'credit_end_end', $options ) && $options['credit_at_end'] ) // Do not display inline media credit if media credit is displayed at end of posts.
 		wp_enqueue_style( 'media-credit-end', MEDIA_CREDIT_URL . 'css/media-credit-end.css', array(), 1.0, 'all');
 	else
 		wp_enqueue_style( 'media-credit', MEDIA_CREDIT_URL . 'css/media-credit.css', array(), 1.0, 'all');
@@ -377,7 +381,7 @@ function media_credit_preview() {
 
 function media_credit_end_of_post() {
 	$options = get_option( MEDIA_CREDIT_OPTION );
-	$credit_at_end = $options['credit_at_end'];
+	$credit_at_end = array_key_exists( 'credit_at_end', $options ) ? $options['credit_at_end'] : false;
 	$explanation = "Display media credit for all the images attached to a post after the post content. Style with CSS class 'media-credit-end'";
 	echo "<input type='checkbox' id='media-credit[credit_at_end]' name='media-credit[credit_at_end]' value='1' " . checked(1, $credit_at_end, false) . " />";
 	echo "<label for='media-credit[credit_at_end]' style='margin-left:5px'>$explanation</label>";
