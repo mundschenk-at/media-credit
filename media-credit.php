@@ -189,7 +189,7 @@ function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $captio
 	$credit_meta = get_freeform_media_credit($post);
 	if ( $credit_meta == MEDIA_CREDIT_EMPTY_META_STRING )
 		return $html;
-	if ( $credit_meta != '' )
+	else if ( $credit_meta != '' )
 		$credit = 'name="' . $credit_meta . '"';
 	else
 		$credit = 'id=' . $post->post_author;
@@ -269,7 +269,7 @@ function add_media_credits_to_end( $content ) {
 	return $content . '<div class="media-credit-end">' . $image_credit . '</div>';
 }
 $options = get_option( MEDIA_CREDIT_OPTION );
-if ( $options['credit_at_end'] )
+if ( array_key_exists( 'credit_at_end', $options ) && $options['credit_at_end'] )
 	add_filter( 'the_content', 'add_media_credits_to_end', 10, 1 );
 
 function media_credit_stylesheet() {
