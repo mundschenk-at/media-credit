@@ -305,14 +305,16 @@ function add_media_credit_menu() {
 
 function media_credit_init() { // whitelist options
 	register_setting( 'media', MEDIA_CREDIT_OPTION, 'media_credit_options_validate' );
-	//TODO: only load this on the media settings page, not all of the admin
-	wp_enqueue_script( 'media-credit', MEDIA_CREDIT_URL . 'js/media-credit-preview.js', array('jquery'), 1.0, true);
+	if ( is_media_settings_page( ) )
+		wp_enqueue_script( 'media-credit', MEDIA_CREDIT_URL . 'js/media-credit-preview.js', array('jquery'), 1.0, true);
+
+	if ( is_media_edit_page( ) ) {
+		wp_enqueue_script('jquery-autocomplete', MEDIA_CREDIT_URL . 'js/jquery.autocomplete.pack.js', array('jquery'), '1.1');
+		wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-autocomplete'), '1.0', true);
+	}
 
 //	wp_enqueue_style('jquery-ui-autocomplete', MEDIA_CREDIT_URL . 'css/jquery-ui-1.8rc2.custom.css');
-	wp_enqueue_style('jquery-autocomplete', MEDIA_CREDIT_URL . 'css/jquery.autocomplete.css');
-	
-	wp_enqueue_script('jquery-autocomplete', MEDIA_CREDIT_URL . 'js/jquery.autocomplete.pack.js', array('jquery'), '1.1');
-	wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-autocomplete'), '1.0', true);
+//	wp_enqueue_style('jquery-autocomplete', MEDIA_CREDIT_URL . 'css/jquery.autocomplete.css');
 }
 
 function media_credit_action_links($links, $file) {
@@ -373,10 +375,9 @@ function media_credit_organization() {
 }
 
 function media_credit_preview() {
-	global $current_user;
-	get_currentuserinfo();
+	$curr_user = wp_get_current_user();
 	$options = get_option( MEDIA_CREDIT_OPTION );
-	echo "<span id='preview'><a href='" . get_author_posts_url($current_user->ID) . "'>$current_user->display_name</a>${options['separator']}${options['organization']}</span>";
+	echo "<span id='preview'><a href='" . get_author_posts_url($curr_user->ID) . "'>$curr_user->display_name</a>${options['separator']}${options['organization']}</span>";
 }
 
 function media_credit_end_of_post() {
@@ -386,9 +387,8 @@ function media_credit_end_of_post() {
 	echo "<input type='checkbox' id='media-credit[credit_at_end]' name='media-credit[credit_at_end]' value='1' " . checked(1, $credit_at_end, false) . " />";
 	echo "<label for='media-credit[credit_at_end]' style='margin-left:5px'>$explanation</label>";
 	
-	global $current_user;
-	get_currentuserinfo();
-	echo "<br /><em>Preview</em>: Images courtesy of <span id='preview'><a href='" . get_author_posts_url($current_user->ID) . "'>$current_user->display_name</a>${options['separator']}${options['organization']}</span>, Jane Doe and John Smith";
+	$curr_user = wp_get_current_user();
+	echo "<br /><em>Preview</em>: Images courtesy of <span id='preview'><a href='" . get_author_posts_url($curr_user->ID) . "'>$curr_user->display_name</a>${options['separator']}${options['organization']}</span>, Jane Doe and John Smith";
 	echo "<br /><strong>Warning</strong>: This will cause credit for all images in all posts to display at the bottom of every post on this blog";
 }
 
@@ -397,6 +397,20 @@ function media_credit_options_validate($input) {
 		$input[$key] = htmlspecialchars( $value, ENT_QUOTES );
 	}
 	return $input;
+}
+
+
+function is_media_edit_page( ) {
+	global $pagenow;
+	
+	$media_edit_pages = array('post-new.php', 'post.php', 'page.php', 'page-new.php', 'media.php', 'media-new.php');
+	return in_array($pagenow, $media_edit_pages);
+}
+
+function is_media_settings_page( ) {
+	global $pagenow;
+	
+	return $pagenow == 'options-media.php';
 }
 
 ?>
