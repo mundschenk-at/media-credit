@@ -9,7 +9,7 @@ Author URI: http://www.scottbressler.com/wp/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '0.5.6' );
+define( 'MEDIA_CREDIT_VERSION', '1.0' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_OPTION', 'media-credit' );
@@ -31,7 +31,7 @@ function set_default_media_credit_options() {
 	$installed_options = get_option( MEDIA_CREDIT_OPTION );
 	if ( !$installed_options ) // Install plugin
 		add_option( MEDIA_CREDIT_OPTION, $options );
-	else if ( !array_key_exists( 'version', $installed_options ) ) { // Upgrade plugin to 0.5.6 (0.5.5 didn't have a version number)
+	else if ( !array_key_exists( 'version', $installed_options ) ) { // Upgrade plugin to 1.0 (0.5.5 didn't have a version number)
 		$installed_options['version'] = $options['version'];
 		$installed_options['install_date'] = $options['install_date'];
 		update_option( MEDIA_CREDIT_OPTION, $installed_options );
