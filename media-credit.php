@@ -403,7 +403,7 @@ function media_credit_options_validate($input) {
 function is_media_edit_page( ) {
 	global $pagenow;
 	
-	$media_edit_pages = array('post-new.php', 'post.php', 'page.php', 'page-new.php', 'media.php', 'media-new.php');
+	$media_edit_pages = array('post-new.php', 'post.php', 'page.php', 'page-new.php', 'media-upload.php', 'media.php', 'media-new.php');
 	return in_array($pagenow, $media_edit_pages);
 }
 
