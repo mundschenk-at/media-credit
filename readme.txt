@@ -50,7 +50,7 @@ Feel free to get in touch with me about anything you'd like me to add to this li
 
 1. Media can easily be credited to the creator of the media with the new Credit field visible when uploading or editing media
 2. Media credit is nicely displayed underneath photos appearing on your blog
-3. Recent media items attributed to an author can be displayed nicely on the author's page using a very simple template tag (see [Other Notes](http://wordpress.org/extend/media-credit/other_notes/) for more information)
+3. Recent media items attributed to an author can be displayed nicely on the author's page using a very simple template tag (see [Other Notes](http://wordpress.org/extend/plugins/media-credit/other_notes/) for more information)
 
 
 == Changelog ==
