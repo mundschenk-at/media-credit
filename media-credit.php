@@ -30,10 +30,10 @@ function set_default_media_credit_options() {
 		'credit_at_end' => false
 	);
 	$installed_options = get_option( MEDIA_CREDIT_OPTION );
-	if ( !$installed_options ) // Install plugin
+	if ( empty( $installed_options ) ) { // Install plugin
 		add_option( MEDIA_CREDIT_OPTION, $options );
 		$installed_options = $options;
-	else if ( !array_key_exists( 'version', $installed_options ) ) { // Upgrade plugin to 1.0 (0.5.5 didn't have a version number)
+	} else if ( !array_key_exists( 'version', $installed_options ) ) { // Upgrade plugin to 1.0 (0.5.5 didn't have a version number)
 		$installed_options['version'] = $options['version'];
 		$installed_options['install_date'] = $options['install_date'];
 		update_option( MEDIA_CREDIT_OPTION, $installed_options );
