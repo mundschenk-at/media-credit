@@ -14,7 +14,7 @@ This plugin adds a "Credit" field to the media uploading and editing tool and in
 
 When adding media through the Media Uploader tool or editing media already in the Media Library, this plugin adds a new field to the media form that allows users to assign credit for given media to a user of your blog (assisted with autocomplete) or to any freeform text (e.g. courtesy photos, etc.).
 
-When this media is then inserted into a post, a new quicktag surrounds the media, [media-credit], inside of any caption, with the media credit information. Media credit inside this quicktag is then displayed on your blog under your media with the class .media-credit, which has some default styling but you can customize to your heart's content.
+When this media is then inserted into a post, a new shortcode surrounds the media, [media-credit], inside of any caption, with the media credit information. Media credit inside this shortcode is then displayed on your blog under your media with the class .media-credit, which has some default styling but you can customize to your heart's content.
 
 Feel free to get in touch with me about anything you'd like me to add to this list. E-mail me [here](mailto:sbressler@gmail.com "E-mail Scott!").
 
@@ -32,9 +32,23 @@ If the automatic process above fails, follow these simple steps to do a manual i
 
 == Frequently Asked Questions ==
 
+= I disabled the plugin and now unparsed [media-credit] shortcodes are appearing all over my site - help! =
+
+Add this to your theme's functions.php file to get rid of those pesky media-credit shortcodes:
+
+`function ignore_media_credit_shortcode( $atts, $content = null ) {
+	return $content;
+}
+if ( !array_key_exists( 'media-credit', $shortcode_tags ) ) // Check if there is already a media-credit shortcode registered, ignore only if not
+	add_shortcode('media-credit', 'ignore_media_credit_shortcode' );`
+
+Also, Scott would appreciate it if you let him [know why](mailto:sbressler@gmail.com "Let Scott know why you disabled the plugin!") you disabled the plugin.
+
 = Can I display all or recent media credited to a given author? =
 
-Indeed, just call `display_author_media($author_id)`, which has optional parameters if you want to customize the CSS or text. The default options will display thumbnails of the 10 most recent media items credited to the given user floated to the right with a width of 150px and a header of `<h3>Recent Media</h3>`. These options can be changed with a more verbose call to the function: `display_author_media($author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = "<h3>Recent Media</h3>", $exclude_unattached = true)`. This will make only the 10 most recent media items that are attached to a post display with the given header taking up the maximum width it's afforded. Each image will link to the post in which it appears, or the attachment page if it has no parent post (unless $link_without_parent is set to false). If you don't care about whether the media is attached to a post, change $exclude_unattached to false. This function as a whole will only display media uploaded and credited to a user after this plugin was installed.
+Indeed, just call the template tag `display_author_media($author_id)` in your theme's author.php (or elsewhere, if you want). The template tag has optional parameters if you want to customize the CSS or text. The default options will display thumbnails of the 10 most recent media items credited to the given user floated to the right with a width of 150px and a header of `<h3>Recent Media</h3>`.
+
+These options can be changed with a more verbose call to the function: `display_author_media($author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = "<h3>Recent Media</h3>", $exclude_unattached = true)`. This will make only the 10 most recent media items that are attached to a post display with the given header taking up the maximum width it's afforded. Each image will link to the post in which it appears, or the attachment page if it has no parent post (unless $link_without_parent is set to false). If you don't care about whether the media is attached to a post, change $exclude_unattached to false. This function as a whole will only display media uploaded and credited to a user after this plugin was installed.
 
 = More generally, can I insert media credit information into my themes with a template tag, for instance on category pages? =
 
@@ -120,4 +134,3 @@ This is best explained with an example. With a separator of " | " and an organiz
 Images courtesy of [John Smith]() | The Daily Times, Michael Scott and Jane Doe.
 
 In this example, John Smith is a user of your blog, while the latter two credits are not.
-
