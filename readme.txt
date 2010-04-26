@@ -4,7 +4,7 @@ Donate link: http://www.scottbressler.com/wp/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 2.8
 Tested up to: 3.0
-Stable tag: 1.0
+Stable tag: 1.0.1
 
 This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
 
@@ -55,6 +55,9 @@ Feel free to get in touch with me about anything you'd like me to add to this li
 
 == Changelog ==
 
+= 1.0.1 =
+* Changed post meta field from media-credit to _media_credit so that it doesn't appear in custom fields section on Post edit page normally. Upgrade script will handle changing the key for all existing metadata.
+
 = 1.0 =
 * Added author media rendering methods (see [FAQ](http://wordpress.org/extend/plugins/media-credit/faq/))
 * If media credit is edited in the Media Library, the media credit in the post to which media is attached to will now update as well!
@@ -78,6 +81,9 @@ Feel free to get in touch with me about anything you'd like me to add to this li
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Changed postmeta key from media-credit to _media_credit. Upgrade script will handle changing the key for all existing metadata.
 
 = 1.0 =
 Finalized version 1.0 with added simple author media template tags, and ensuring that changes to media credit now reflected in parent post

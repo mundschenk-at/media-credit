@@ -3,15 +3,16 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/wp/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 1.0
+Version: 1.0.1
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/wp/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '1.0' );
+define( 'MEDIA_CREDIT_VERSION', '1.0.1' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
+define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
 define( 'MEDIA_CREDIT_OPTION', 'media-credit' );
 define( 'MEDIA_CREDIT_DEFAULT_SEPARATOR', ' | ' );
 define( 'MEDIA_CREDIT_DEFAULT_ORGANIZATION', get_bloginfo() );
@@ -31,9 +32,20 @@ function set_default_media_credit_options() {
 	$installed_options = get_option( MEDIA_CREDIT_OPTION );
 	if ( !$installed_options ) // Install plugin
 		add_option( MEDIA_CREDIT_OPTION, $options );
+		$installed_options = $options;
 	else if ( !array_key_exists( 'version', $installed_options ) ) { // Upgrade plugin to 1.0 (0.5.5 didn't have a version number)
 		$installed_options['version'] = $options['version'];
 		$installed_options['install_date'] = $options['install_date'];
+		update_option( MEDIA_CREDIT_OPTION, $installed_options );
+	}
+
+	$curr_version = version_number_float( $installed_options['version'] );
+	if ( $curr_version < version_number_float( '1.0.1' ) ) { // Upgrade plugin to 1.0.1
+		// Update all media-credit postmeta keys to _media_credit
+		global $wpdb;
+		$wpdb->update( $wpdb->postmeta, array( 'meta_key' => MEDIA_CREDIT_POSTMETA_KEY ), array( 'meta_key' => 'media-credit' ) );
+
+		$installed_options['version'] = '1.0.1';
 		update_option( MEDIA_CREDIT_OPTION, $installed_options );
 	}
 }
@@ -130,7 +142,7 @@ function get_wpuser_media_credit($post) {
  */
 function get_freeform_media_credit($post) {
 	$post = get_post($post);
-	return get_post_meta( $post->ID, 'media-credit', true );
+	return get_post_meta( $post->ID, MEDIA_CREDIT_POSTMETA_KEY, true );
 }
 
 // Add an autocomplete field with the blog users to $fields
@@ -159,7 +171,7 @@ function save_media_credit($post, $attachment) {
 	if ( isset( $_POST[$key] ) && $_POST[$key] != '' ) { // a valid WP user was selected
 		$new_author = $_POST[$key];
 		$post['post_author'] = $new_author; // update post_author with the chosen user
-		delete_post_meta($post['ID'], 'media-credit'); // delete any residual metadata from a free-form field (as inserted below)
+		delete_post_meta($post['ID'], MEDIA_CREDIT_POSTMETA_KEY); // delete any residual metadata from a free-form field (as inserted below)
 		if ( isset( $post['post_parent'] ) ) { // if media is attached somewhere, edit the media-credit info in the attached (parent) post
 			$parent = get_post( $post['post_parent'], ARRAY_A );
 			$parent['post_content'] = preg_replace('/(media-credit.*id=)\d+/', '${1}' . $new_author, $parent['post_content']);
@@ -167,7 +179,7 @@ function save_media_credit($post, $attachment) {
 		}
 	} else { // free-form text was entered, insert postmeta with credit. if free-form text is blank, insert a single space in postmeta.
 		$freeform = $_POST['free-form'] == '' ? MEDIA_CREDIT_EMPTY_META_STRING : $_POST['free-form'];
-		update_post_meta($post['ID'], MEDIA_CREDIT_OPTION, $freeform); // insert 'media-credit' metadata field for image with free-form text
+		update_post_meta($post['ID'], MEDIA_CREDIT_POSTMETA_KEY, $freeform); // insert '_media_credit' metadata field for image with free-form text
 		if ( isset( $post['post_parent'] ) ) { // if media is attached somewhere, edit the media-credit info in the attached (parent) post
 			$parent = get_post( $post['post_parent'], ARRAY_A );
 //			echo $parent['post_content'] . "<br /><br /><br />";
@@ -411,6 +423,16 @@ function is_media_settings_page( ) {
 	global $pagenow;
 	
 	return $pagenow == 'options-media.php';
+}
+
+/**
+ * Returns a float value representing the provided string version. e.g. 1.0.1 will be returned as 1.01. This is useful for version number comparisons.
+ */
+function version_number_float( $version ) {
+	$version_numbers = explode('.', $version);
+	for ($i = 0, $multiplier = 1; $i < count( $version_numbers ); ++$i, $multiplier /= 10)
+		$version_float += $version_numbers[$i] * $multiplier;
+	return $version_float;
 }
 
 ?>
