@@ -1,7 +1,7 @@
 <?php
 
-function display_author_media($author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = "<h3>Recent Media</h3>") {
-	$media = author_media($author_id, $limit);
+function display_author_media($author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = "<h3>Recent Media</h3>", $exclude_unattached = true) {
+	$media = author_media($author_id, $limit, $exclude_unattached);
 	if (!$media)
 		return;
 
@@ -17,7 +17,7 @@ function display_author_media($author_id, $sidebar = true, $limit = 10, $link_wi
 		else
 			$image = wp_get_attachment_link($post->ID, 'thumbnail', true);
 		$image = preg_replace('/title=".*"/', '', $image); // remove title attribute from image
-		$link = $post->post_parent > 0 ? "<a href='" . get_permalink($post->post_parent) . "'>$image</a>" : $image;
+		$link = $post->post_parent > 0 ? "<a href='" . get_permalink($post->post_parent) . "' title='" . get_the_title($post->post_parent) . "'>$image</a>" : $image;
 		echo "<$container class='author-media' id='attachment-$post->ID'>$link</$container>";
 	}
 	echo "</div>";
@@ -64,8 +64,8 @@ function author_media_and_posts($id, $include_posts = true, $limit = 0, $exclude
 	return $results;
 }
 
-function author_media($id, $limit = 0) {
-	return author_media_and_posts($id, false, $limit);
+function author_media($id, $limit = 0, $exclude_unattached = true) {
+	return author_media_and_posts($id, false, $limit, $exclude_unattached);
 }
 			
 ?>
