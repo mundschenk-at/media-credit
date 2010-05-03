@@ -1,15 +1,15 @@
 <?php
 /*
 Plugin Name: Media Credit
-Plugin URI: http://www.scottbressler.com/wp/
+Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 1.0.1
+Version: 1.0.2
 Author: Scott Bressler
-Author URI: http://www.scottbressler.com/wp/
+Author URI: http://www.scottbressler.com/blog/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '1.0.1' );
+define( 'MEDIA_CREDIT_VERSION', '1.0.2' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -65,19 +65,21 @@ if ( function_exists('register_uninstall_hook') )
  *
  * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
  */
-function get_media_credit($post) {
+function get_media_credit($post = null) {
 	$post = get_post($post);
 	$credit_meta = get_freeform_media_credit($post);
 	$credit_wp_author = get_wpuser_media_credit($post);
 	return ( $credit_meta != '' ) ? $credit_meta : $credit_wp_author;
 }
+// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
+add_filter( 'the_author', 'get_media_credit' );
 
 /**
  * Template tag to print the media credit as plain text for some media attachment.
  *
  * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
  */
-function the_media_credit($post) {
+function the_media_credit($post = null) {
 	echo get_media_credit($post);
 }
 
@@ -86,7 +88,7 @@ function the_media_credit($post) {
  *
  * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
  */
-function get_media_credit_html($post) {
+function get_media_credit_html($post = null) {
 	$post = get_post($post);
 	$credit_meta = get_freeform_media_credit($post);
 	if ( $credit_meta != '' )
@@ -102,7 +104,7 @@ function get_media_credit_html($post) {
  *
  * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
  */
-function the_media_credit_html($post) {
+function the_media_credit_html($post = null) {
 	echo get_media_credit_html($post);
 }
 
@@ -131,7 +133,7 @@ function the_media_credit_html_by_user_ID($id) {
  *
  * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
  */
-function get_wpuser_media_credit($post) {
+function get_wpuser_media_credit($post = null) {
 	$post = get_post($post);
 	return get_the_author_meta( 'display_name', $post->post_author );
 }
@@ -140,7 +142,7 @@ function get_wpuser_media_credit($post) {
  *
  * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
  */
-function get_freeform_media_credit($post) {
+function get_freeform_media_credit($post = null) {
 	$post = get_post($post);
 	return get_post_meta( $post->ID, MEDIA_CREDIT_POSTMETA_KEY, true );
 }
