@@ -55,7 +55,7 @@ function author_media_and_posts($id, $include_posts = true, $limit = 0, $exclude
 				AND ID NOT IN (
 					SELECT post_id
 					FROM $wpdb->postmeta
-					WHERE meta_key = '" . MEDIA_CREDIT_OPTION . "'
+					WHERE meta_key = '" . MEDIA_CREDIT_POSTMETA_KEY . "'
 				)
 			GROUP BY ID
 			ORDER BY post_date DESC" . $limit_query,
