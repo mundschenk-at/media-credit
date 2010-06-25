@@ -3,13 +3,13 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 1.0.2
+Version: 1.1
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '1.0.2' );
+define( 'MEDIA_CREDIT_VERSION', '1.1' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -72,7 +72,8 @@ function get_media_credit($post = null) {
 	return ( $credit_meta != '' ) ? $credit_meta : $credit_wp_author;
 }
 // Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
-add_filter( 'the_author', 'get_media_credit' );
+if ( is_admin() )
+	add_filter( 'the_author', 'get_media_credit' );
 
 /**
  * Template tag to print the media credit as plain text for some media attachment.
@@ -174,26 +175,27 @@ function save_media_credit($post, $attachment) {
 		$new_author = $_POST[$key];
 		$post['post_author'] = $new_author; // update post_author with the chosen user
 		delete_post_meta($post['ID'], MEDIA_CREDIT_POSTMETA_KEY); // delete any residual metadata from a free-form field (as inserted below)
-		if ( isset( $post['post_parent'] ) ) { // if media is attached somewhere, edit the media-credit info in the attached (parent) post
-			$parent = get_post( $post['post_parent'], ARRAY_A );
-			$parent['post_content'] = preg_replace('/(media-credit.*id=)\d+/', '${1}' . $new_author, $parent['post_content']);
-			wp_update_post($parent);
-		}
+		update_media_credit_in_post($post, true);
 	} else { // free-form text was entered, insert postmeta with credit. if free-form text is blank, insert a single space in postmeta.
 		$freeform = $_POST['free-form'] == '' ? MEDIA_CREDIT_EMPTY_META_STRING : $_POST['free-form'];
 		update_post_meta($post['ID'], MEDIA_CREDIT_POSTMETA_KEY, $freeform); // insert '_media_credit' metadata field for image with free-form text
-		if ( isset( $post['post_parent'] ) ) { // if media is attached somewhere, edit the media-credit info in the attached (parent) post
-			$parent = get_post( $post['post_parent'], ARRAY_A );
-//			echo $parent['post_content'] . "<br /><br /><br />";
-			// @todo make this work so that name field of attached post is updated when media credit is updated
-//			$parent['post_content'] = preg_replace('/(media-credit.*name=").*"/', '${1}' . $freeform . '"', $parent['post_content']);
-//			echo $parent['post_content'];die();
-			wp_update_post($parent);
-		}
+		update_media_credit_in_post($post, false, $freeform);
 	}
 	return $post;
 }
 add_filter('attachment_fields_to_save', 'save_media_credit', 10, 2);
+
+function update_media_credit_in_post($post, $wp_user, $freeform = '') {
+	if ( isset( $post['post_parent'] ) ) { // if media is attached somewhere, edit the media-credit info in the attached (parent) post
+		$parent = get_post( $post['post_parent'], ARRAY_A );
+		$pattern = '/(media-credit.*)(id=.* |name=".*" )(align.*src="' . wp_get_attachment_image_src($post) . ')/';
+		$author = ($wp_user ? 'id=' : 'name="');
+		$author .= empty($freeform) ? $post['post_author'] : ($freeform . '"');
+		$replacement = '${1}' . $author . ' ${3}';
+		$parent['post_content'] = preg_replace($pattern, $replacement, $parent['post_content']);
+		wp_update_post($parent);
+	}
+}
 
 /**
  * Add media credit information to media using shortcode notation before sending to editor.
@@ -205,8 +207,15 @@ function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $captio
 		return $html;
 	else if ( $credit_meta != '' )
 		$credit = 'name="' . $credit_meta . '"';
-	else
+	else {
 		$credit = 'id=' . $post->post_author;
+		// Add the new author to the $mediaCredit object in the DOM that TinyMCE will use
+		echo "
+		<script type='text/javascript'>
+		window.parent.\$mediaCredit.id[" . $post->post_author . "] = '" . get_the_author_meta( 'display_name', $post->post_author ) . "';
+		</script>
+		";
+	}
 	
 	if ( ! preg_match( '/width="([0-9]+)/', $html, $matches ) )
 		return $html;
@@ -329,7 +338,62 @@ function media_credit_init() { // whitelist options
 
 //	wp_enqueue_style('jquery-ui-autocomplete', MEDIA_CREDIT_URL . 'css/jquery-ui-1.8rc2.custom.css');
 //	wp_enqueue_style('jquery-autocomplete', MEDIA_CREDIT_URL . 'css/jquery.autocomplete.css');
+
+	// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages
+	if ( !current_user_can('edit_posts') && !current_user_can('edit_pages') ) return;
+
+	if ( 'true' == get_user_option('rich_editing') ) {
+		add_filter( 'mce_external_plugins', 'media_credit_mce_external_plugins' );
+		add_filter( 'mce_css', 'media_credit_mce_css' );
+	}
 }
+
+// TinyMCE integration hooks
+function media_credit_mce_external_plugins( $plugins ) {
+	$options = get_option( MEDIA_CREDIT_OPTION );
+	$authors = get_media_credit_authors_for_post();
+	echo "
+	<script type='text/javascript'>
+	var \$mediaCredit = {
+		'separator': '{$options['separator']}',
+		'organization': '{$options['organization']}',
+		'id': 
+		{
+		";
+		foreach ($authors as $author)
+			echo "'{$author->ID}': '{$author->display_name}',";
+		echo "
+		}
+	};
+	</script>
+	";
+	$plugins['mediacredit'] = MEDIA_CREDIT_URL . 'js/media-credit-tinymce.js';
+	return $plugins;
+}
+/*
+ * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ */
+function get_media_credit_authors_for_post($post = null) {
+	global $post;
+	
+	// Find the user IDs of all media used in post_content credited to WP users
+	preg_match_all( '/\[media-credit id=(\d+)/', $post->post_content, $matches );
+	$users = array_unique( $matches[1] );
+	
+	if ( empty($users) )
+		return array();
+	
+	$users_data = array();
+	foreach ($users as $user)
+		$users_data[] = get_userdata($user);
+
+	return $users_data;
+}
+
+function media_credit_mce_css($css) {
+	return $css . "," . MEDIA_CREDIT_URL . 'css/media-credit-tinymce.css';
+}
+
 
 function media_credit_action_links($links, $file) {
 	$plugin_file = basename(__FILE__);

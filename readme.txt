@@ -4,7 +4,7 @@ Donate link: http://www.scottbressler.com/blog/plugins/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 2.8
 Tested up to: 3.0
-Stable tag: 1.0.2
+Stable tag: 1.1
 
 This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
 
@@ -72,6 +72,10 @@ Feel free to get in touch with me about anything you'd like me to add to this li
 
 == Changelog ==
 
+= 1.1 =
+* Now compatible with TinyMCE! Media credit will appear inline (i.e. below the photo) when using the Visual editor rather than as an ugly shortcode.
+* Updating media credit in the Media Library will now correctly and safely update it in an attached post, regardless of whether it's a WP user or not
+
 = 1.0.2 =
 * Added filter on the_author so that media credit is properly displayed in Media Library (not yet for unattached media, though - will be added in WP 3.1 hopefully)
 * Made $post parameter actually optional in template tags (used global $post if not given)
@@ -102,6 +106,9 @@ Feel free to get in touch with me about anything you'd like me to add to this li
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.1 =
+Media credit looks good with TinyMCE and updating media credit in the Media Library will now correctly and safely update it in an attached post, regardless of whether it's a WP user or not.
 
 = 1.0.2 =
 Filtering the author in Media Library and $post parameter in media credit template tags truly optional.
