@@ -21,10 +21,12 @@
 	border-top: 4px double #999;
 	border-bottom: 4px double #999;
 }
-#recent-media-sidebar div.author-media {
+#recent-media-sidebar .author-media {
 	margin-bottom: 10px;
 }
-#recent-media-inline span.author-media {
+#recent-media-inline .author-media {
+	float: left;
 	margin-right: 5px;
+	margin-bottom: 5px;
 }
 

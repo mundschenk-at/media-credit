@@ -6,7 +6,7 @@ function display_author_media($author_id, $sidebar = true, $limit = 10, $link_wi
 		return;
 
 	$id = "id = " . ($sidebar ? "recent-media-sidebar" : "recent-media-inline");
-	$container = $sidebar ? "div" : "span";
+	$container = "div";
 
 	echo "<div $id>$header";
 	foreach ($media as $post) {
