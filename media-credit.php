@@ -3,13 +3,13 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 1.1
+Version: 1.1.1
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '1.1' );
+define( 'MEDIA_CREDIT_VERSION', '1.1.1' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -152,7 +152,7 @@ function get_freeform_media_credit($post = null) {
 function add_media_credit($fields, $post) {
 	$credit = get_media_credit($post);
 	// add requirement for jquery ui core, jquery ui widgets, jquery ui position
-	$html = "<input id='attachments[$post->ID][media-credit]' class='media-credit-input' size='30' value='$credit' name='free-form' />";
+	$html = "<input id='attachments[$post->ID][media-credit]' class='media-credit-input' size='30' value='$credit' name='free-form-{$post->ID}' />";
 	$author = ( get_freeform_media_credit($post) == '' ) ? $post->post_author : '';
 	$author_display = get_media_credit($post);
 	$html .= "<input name='media-credit-$post->ID' id='media-credit-$post->ID' type='hidden' value='$author' />";
@@ -168,6 +168,9 @@ add_filter('attachment_fields_to_edit', 'add_media_credit', 10, 2);
 
 /**
  * Change the post_author to the entered media credit from add_media_credit() above.
+ *
+ * @param object $post Object of attachment containing all fields from get_post().
+ * @param object $attachment Object of attachment containing few fields, unused in this method.
  */
 function save_media_credit($post, $attachment) {
 	$key = "media-credit-{$post['ID']}";
@@ -177,7 +180,8 @@ function save_media_credit($post, $attachment) {
 		delete_post_meta($post['ID'], MEDIA_CREDIT_POSTMETA_KEY); // delete any residual metadata from a free-form field (as inserted below)
 		update_media_credit_in_post($post, true);
 	} else { // free-form text was entered, insert postmeta with credit. if free-form text is blank, insert a single space in postmeta.
-		$freeform = $_POST['free-form'] == '' ? MEDIA_CREDIT_EMPTY_META_STRING : $_POST['free-form'];
+		$posted_field = $_POST['free-form-' . $post['ID']];
+		$freeform = empty( $posted_field ) ? MEDIA_CREDIT_EMPTY_META_STRING : $posted_field;
 		update_post_meta($post['ID'], MEDIA_CREDIT_POSTMETA_KEY, $freeform); // insert '_media_credit' metadata field for image with free-form text
 		update_media_credit_in_post($post, false, $freeform);
 	}
@@ -185,16 +189,44 @@ function save_media_credit($post, $attachment) {
 }
 add_filter('attachment_fields_to_save', 'save_media_credit', 10, 2);
 
+/**
+ * If the given media is attached to a post, edit the media-credit info in the attached (parent) post.
+ *
+ * @param object $post Object of attachment containing all fields from get_post().
+ * @param bool $wp_user True if attachment should be credited to a user of this blog, false otherwise.
+ * @param string $freeform Credit for attachment with freeform string. Empty if attachment should be credited to a user of this blog, as indicated by $wp_user above.
+ */
 function update_media_credit_in_post($post, $wp_user, $freeform = '') {
-	if ( isset( $post['post_parent'] ) ) { // if media is attached somewhere, edit the media-credit info in the attached (parent) post
+	if ( isset( $post['post_parent'] ) ) {
 		$parent = get_post( $post['post_parent'], ARRAY_A );
-		$pattern = '/(media-credit.*)(id=.* |name=".*" )(align.*src="' . wp_get_attachment_image_src($post) . ')/';
+		$image = wp_get_attachment_image_src($post['ID']);
+		$image = get_image_filename_from_full_url($image[0]);
+		// Verify that the media credit we're changing is for this image by matching on "wp-image-THE_ID" which is a class the img tag is in
+		$pattern = '/(media-credit.*)(id=.* |name=".*" )(align.*src=".*' . $image . '.*wp-image-' . $post['ID'] . ')/';
 		$author = ($wp_user ? 'id=' : 'name="');
 		$author .= empty($freeform) ? $post['post_author'] : ($freeform . '"');
 		$replacement = '${1}' . $author . ' ${3}';
 		$parent['post_content'] = preg_replace($pattern, $replacement, $parent['post_content']);
 		wp_update_post($parent);
 	}
+}
+
+/**
+ * Returns the filename of an image in the wp_content directory (normally, could be any dir really) given the full URL to the image, ignoring WP sizes.
+ * E.g.:
+ * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-150x150.jpg, returns ParksTrip2010_100706_1487 (ignores size at end of string)
+ * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-thumb.jpg, return ParksTrip2010_100706_1487-thumb
+ * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-1.jpg, return ParksTrip2010_100706_1487-1
+ * 
+ * @param string $image Full URL to an image.
+ * @return string The filename of the image excluding any size or extension, as given in the example above.
+ */
+function get_image_filename_from_full_url( $image ) {
+	$image_len = strlen( $image );
+	$image_last_slash_pos = strrpos( $image, '/' );
+	$image_filename = substr( $image, $image_last_slash_pos + 1, strrpos( $image, '.') - $image_last_slash_pos - 1 );
+	$image_filename = preg_replace( '/(.*)-\d+x\d+/', '$1', $image_filename );
+	return $image_filename;
 }
 
 /**
@@ -336,11 +368,9 @@ function media_credit_init() { // whitelist options
 		wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-autocomplete'), '1.0', true);
 	}
 
-//	wp_enqueue_style('jquery-ui-autocomplete', MEDIA_CREDIT_URL . 'css/jquery-ui-1.8rc2.custom.css');
-//	wp_enqueue_style('jquery-autocomplete', MEDIA_CREDIT_URL . 'css/jquery.autocomplete.css');
-
 	// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages
-	if ( !current_user_can('edit_posts') && !current_user_can('edit_pages') ) return;
+	if ( !current_user_can('edit_posts') && !current_user_can('edit_pages') )
+		return;
 
 	if ( 'true' == get_user_option('rich_editing') ) {
 		add_filter( 'mce_external_plugins', 'media_credit_mce_external_plugins' );
@@ -404,34 +434,6 @@ function media_credit_action_links($links, $file) {
 	return $links;
 }
 add_filter('plugin_action_links', 'media_credit_action_links', 10, 2);
-
-// TODO: eventually figure out if autocomplete from jQuery UI can be used instead using some of the code below...
-function media_credit_scripts() {
-	//TODO: only load all this nonsense on the Media edit page, not all of the admin!!
-//	wp_deregister_script('jquery-ui-core'); // TODO: decide what to do here, uncommenting this breaks a lot of the AJAX functionality in admin
-//	wp_deregister_script('jquery');
-//	wp_register_script('jquery-1.4.2', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery-1.4.2.min.js', array('jquery-ui-core'), '1.4.2');
-//	wp_enqueue_script('jquery-ui-core-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.core.js', array('jquery'), '1.8rc2');
-//	wp_enqueue_script('jquery-ui-widget-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.widget.js', array('jquery', 'jquery-ui-core-1.8'), '1.8rc2');
-//	wp_enqueue_script('jquery-ui-position-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.position.js', array('jquery', 'jquery-ui-core-1.8'), '1.8rc2');
-//	wp_enqueue_script('jquery-ui-autocomplete-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.autocomplete.js', array('jquery', 'jquery-ui-core-1.8', 'jquery-ui-widget-1.8', 'jquery-ui-position-1.8'), '1.8rc2');
-//	wp_enqueue_script('jquery-ui-autocomplete-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.autocomplete.js', array('jquery', 'jquery-ui-core-1.8', 'jquery-ui-widget-1.8', 'jquery-ui-position-1.8'), '1.8rc2');
-
-//	wp_deregister_script('jquery-ui-core');
-//	wp_deregister_script('jquery-ui-widget');
-//	wp_deregister_script('jquery-ui-position');
-
-//	wp_enqueue_script('jquery-ui-core', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.core.min.js', array('jquery-1.4.2'), '1.8rc3');
-//	wp_enqueue_script('jquery-ui-widget', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.widget.min.js', array('jquery-1.4.2', 'jquery-ui-core'), '1.8rc3');
-//	wp_enqueue_script('jquery-ui-position', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.position.min.js', array('jquery-1.4.2', 'jquery-ui-core'), '1.8rc3');
-//	wp_enqueue_script('jquery-ui-mouse', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.mouse.min.js', array('jquery-1.4.2', 'jquery-ui-core, jquery-ui-widget'), '1.8rc3');
-//	wp_enqueue_script('jquery-ui-autocomplete-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery.ui.autocomplete.min.js', array('jquery-1.4.2', 'jquery-ui-core-1.8', 'jquery-ui-widget-1.8', 'jquery-ui-position-1.8'), '1.8rc3');
-
-	// Or more simply, used the packaged version downloaded from jqueryui.com
-	//wp_enqueue_script('jquery-ui-autocomplete-1.8', MEDIA_CREDIT_URL . 'js/jquery-ui/jquery-ui-1.8rc3.custom.min.js', array('jquery-1.4.2', 'jquery-ui-core'), '1.8rc3');
-	//wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-autocomplete'), '1.0', true);
-}
-add_action('wp_print_scripts', 'media_credit_scripts');
 
 function media_credit_settings_section() {
 	echo "<a name='media-credit'></a>";

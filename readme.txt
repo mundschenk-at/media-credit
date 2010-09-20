@@ -3,26 +3,28 @@ Contributors: sbressler
 Donate link: http://www.scottbressler.com/blog/plugins/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 2.8
-Tested up to: 3.0
-Stable tag: 1.1
+Tested up to: 3.0.1
+Stable tag: 1.1.1
 
-This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
+Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
 == Description ==
 
-This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
+Feel free to get in touch with me about anything you'd like me to add to this plugin or any feedback. I love hearing from my users! E-mail me [here](mailto:sbressler@gmail.com "E-mail Scott!").
+
+This plugin adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
 When adding media through the Media Uploader tool or editing media already in the Media Library, this plugin adds a new field to the media form that allows users to assign credit for given media to a user of your blog (assisted with autocomplete) or to any freeform text (e.g. courtesy photos, etc.).
 
-When this media is then inserted into a post, a new shortcode surrounds the media, [media-credit], inside of any caption, with the media credit information. Media credit inside this shortcode is then displayed on your blog under your media with the class .media-credit, which has some default styling but you can customize to your heart's content.
+When this media is then inserted into a post, a new shortcode, [media-credit], surrounds the media, inside of any caption, with the provided media credit information. Media credit inside this shortcode is then displayed on your blog under your media with the class .media-credit, which has some default styling but which you can customize to your heart's content.
 
-Feel free to get in touch with me about anything you'd like me to add to this plugin. E-mail me [here](mailto:sbressler@gmail.com "E-mail Scott!").
+You can also display all the media by an author on the author's page. See more in the [FAQ](http://wordpress.org/extend/plugins/media-credit/faq/).
 
 == Installation ==
 
 This section describes how to install the plugin and get it working.
 
-The easiest way to install this plugin is to go to **Add New** in the **Plugins** section of your blog admin and search for "Media Credit". On the far right side of the search results, click "Install."
+The easiest way to install this plugin is to go to **Add New** in the **Plugins** section of your blog admin and search for "Media Credit." On the far right side of the search results, click "Install."
 
 If the automatic process above fails, follow these simple steps to do a manual install:
 
@@ -32,7 +34,7 @@ If the automatic process above fails, follow these simple steps to do a manual i
 
 == Frequently Asked Questions ==
 
-= I disabled the plugin and now unparsed [media-credit] shortcodes are appearing all over my site - help! =
+= I disabled the plugin and now unparsed [media-credit] shortcodes are appearing all over my site. Help! =
 
 Add this to your theme's functions.php file to get rid of those pesky media-credit shortcodes:
 
@@ -45,7 +47,7 @@ if ( !array_key_exists( 'media-credit', $shortcode_tags ) )
 	add_shortcode('media-credit', 'ignore_media_credit_shortcode' );
 ?>`
 
-Also, I'd really appreciate it if you gave me [some feedback](mailto:sbressler@gmail.com "Let Scott know why you disabled the plugin!") as to why you disabled the plugin.
+Also, I'd really appreciate it if you gave me [some feedback](mailto:sbressler@gmail.com "Let Scott know why you disabled the plugin!") as to why you disabled the plugin and how it could have better suited your needs.
 
 = Can I display all or recent media credited to a given author? =
 
@@ -72,40 +74,47 @@ Feel free to get in touch with me about anything you'd like me to add to this li
 
 == Changelog ==
 
-= 1.1 =
+= 1.1.1 (Sep. 19, 2010) =
+* Updating media credit in the Media Library really does update the credit within posts correctly now! (props: Greg Wrey)
+* Adding multiple images with freeform media credit to a post also now works as expected (props: Greg Wrey)
+
+= 1.1 (Jun. 25, 2010) =
 * Now compatible with TinyMCE! Media credit will appear inline (i.e. below the photo) when using the Visual editor rather than as an ugly shortcode.
 * Updating media credit in the Media Library will now correctly and safely update it in an attached post, regardless of whether it's a WP user or not
 
-= 1.0.2 =
+= 1.0.2 (May 3, 2010) =
 * Added filter on the_author so that media credit is properly displayed in Media Library (not yet for unattached media, though - will be added in WP 3.1 hopefully)
 * Made $post parameter actually optional in template tags (used global $post if not given)
 
-= 1.0.1 =
+= 1.0.1 (Apr. 26, 2010) =
 * Changed post meta field from media-credit to _media_credit so that it doesn't appear in custom fields section on Post edit page normally. Upgrade script will handle changing the key for all existing metadata.
 
-= 1.0 =
+= 1.0 (Apr. 26, 2010) =
 * Added author media rendering methods (see [FAQ](http://wordpress.org/extend/plugins/media-credit/faq/))
 * If media credit is edited in the Media Library, the media credit in the post to which media is attached to will now update as well!
 * Only load JS and CSS in admin on pages that need it
 * Blank credit can now be assigned to media
 * Switched rendering of media-credit shortcode credit info to div instead of span for more readable RSS feed
 
-= 0.5.5 =
+= 0.5.5 (Mar. 9, 2010) =
 * Switched autocomplete to an older, more stable version - should be working great now for all blogs!
 * With above, fixed loss of control of AJAX functionality in WordPress admin area
 * Default options are now correctly registered when the plugin is activated
 * Any pre-existing options will not be overwritten when activating the plugin
 * Separator and organization names on the settings page are properly escaped
 
-= 0.5.1 =
+= 0.5.1 (Mar. 5, 2010) =
 * Fixed autocomplete when selecting credit so that it only shows currently selectable users (particularly important for WordPress MU users).
 * Made it so that upon clicking in the Credit field the text already there will be highlighted - start typing right away!
 * Hid media credit inline with attachments if the "Display credits after post" option is enabled.
 
-= 0.5 =
+= 0.5 (Mar. 4, 2010) =
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+Updating media credit in the Media Library really does update the credit within posts correctly now!
 
 = 1.1 =
 Media credit looks good with TinyMCE and updating media credit in the Media Library will now correctly and safely update it in an attached post, regardless of whether it's a WP user or not.
