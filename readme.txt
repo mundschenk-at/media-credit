@@ -63,7 +63,21 @@ I'm so glad you asked; you certainly can! Just call `<?php get_media_credit_html
 
 Yep! If you would prefer plain-text rather than a link for all media credit (and leaving out the separator and organization), call `<?php get_media_credit($post); ?>` which uses the same parameter as above. To echo the results, call `<?php the_media_credit($post); ?>`.
 
-Feel free to get in touch with me about anything you'd like me to add to this list. E-mail me [here](mailto:sbressler@gmail.com "E-mail Scott!").
+= Can I link to an artist inside a media credit field? =
+
+You sure can. Just link to the artist's website in the name attribute in the media-credit shortcode, found in HTML view for a post, or directly when adding an image. For example, if your post contains:
+
+`[media-credit name="Artist" align="alignleft" width="300"]<img src="http://www.mysite.com/files/2010/09/image.jpg" width="300" height="450" class="size-300 wp-image-2" />[/media-credit]`
+
+change it to:
+
+`[media-credit name="<a href='http://www.artistwebsite.com/'>Artist</a>" align="alignleft" width="300"]<img src="http://www.mysite.com/files/2010/09/image.jpg" width="300" height="450" class="size-300 wp-image-2" />[/media-credit]`
+
+Note the link to www.artistwebsite.com above.
+
+(Thanks to Mike Schuerlein for this excellent question!)
+
+<strong>Feel free to get in touch with me about anything you'd like me to add to this list. E-mail me [here](mailto:sbressler@gmail.com "E-mail Scott!").</strong>
 
 == Screenshots ==
 
