@@ -27,8 +27,9 @@ function mediaCreditAutocomplete(id, currAuthorId, currAuthor) {
 				addID(id, ui.item.id);
 			}
 		})*/
-		.autocomplete(PLUGIN_DIR + "search.php", {
+		.autocomplete(ajaxurl, {
 		//	delay: 200
+			extraParams: { action: 'media_credit_author_names' }
 		})
 		.result(function(event, data, formatted) {
 			addID(id, data[1]);

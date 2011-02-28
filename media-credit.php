@@ -3,7 +3,7 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 1.1.1
+Version: 1.1.2
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 License: GPL2
@@ -30,17 +30,16 @@ function set_default_media_credit_options() {
 		'credit_at_end' => false
 	);
 	$installed_options = get_option( MEDIA_CREDIT_OPTION );
-	if ( empty( $installed_options ) ) { // Install plugin
+	if ( empty( $installed_options ) ) { // Install plugin for the first time
 		add_option( MEDIA_CREDIT_OPTION, $options );
 		$installed_options = $options;
-	} else if ( !array_key_exists( 'version', $installed_options ) ) { // Upgrade plugin to 1.0 (0.5.5 didn't have a version number)
+	} else if ( !isset( $installed_options['version'] ) ) { // Upgrade plugin to 1.0 (0.5.5 didn't have a version number)
 		$installed_options['version'] = $options['version'];
 		$installed_options['install_date'] = $options['install_date'];
 		update_option( MEDIA_CREDIT_OPTION, $installed_options );
 	}
 
-	$curr_version = version_number_float( $installed_options['version'] );
-	if ( $curr_version < version_number_float( '1.0.1' ) ) { // Upgrade plugin to 1.0.1
+	if ( version_compare( $installed_options['version'], '1.0.1', '<' ) ) { // Upgrade plugin to 1.0.1
 		// Update all media-credit postmeta keys to _media_credit
 		global $wpdb;
 		$wpdb->update( $wpdb->postmeta, array( 'meta_key' => MEDIA_CREDIT_POSTMETA_KEY ), array( 'meta_key' => 'media-credit' ) );
@@ -173,15 +172,17 @@ add_filter('attachment_fields_to_edit', 'add_media_credit', 10, 2);
  * @param object $attachment Object of attachment containing few fields, unused in this method.
  */
 function save_media_credit($post, $attachment) {
-	$key = "media-credit-{$post['ID']}";
-	if ( isset( $_POST[$key] ) && $_POST[$key] != '' ) { // a valid WP user was selected
-		$new_author = $_POST[$key];
-		$post['post_author'] = $new_author; // update post_author with the chosen user
+	$wp_user_id = $_POST["media-credit-{$post['ID']}"];
+	$freeform_name = $_POST["free-form-{$post['ID']}"];
+	if ( isset( $wp_user_id ) && $wp_user_id != '' && $freeform_name === get_the_author_meta( 'display_name', $wp_user_id ) ) {
+		// a valid WP user was selected, and the display name matches the free-form
+		// the final conditional is necessary for the case when a valid user is selected, filling in the hidden field,
+		// then free-form text is entered after that. if so, the free-form text is what should be used
+		$post['post_author'] = $wp_user_id; // update post_author with the chosen user
 		delete_post_meta($post['ID'], MEDIA_CREDIT_POSTMETA_KEY); // delete any residual metadata from a free-form field (as inserted below)
 		update_media_credit_in_post($post, true);
 	} else { // free-form text was entered, insert postmeta with credit. if free-form text is blank, insert a single space in postmeta.
-		$posted_field = $_POST['free-form-' . $post['ID']];
-		$freeform = empty( $posted_field ) ? MEDIA_CREDIT_EMPTY_META_STRING : $posted_field;
+		$freeform = empty( $freeform_name ) ? MEDIA_CREDIT_EMPTY_META_STRING : $freeform_name;
 		update_post_meta($post['ID'], MEDIA_CREDIT_POSTMETA_KEY, $freeform); // insert '_media_credit' metadata field for image with free-form text
 		update_media_credit_in_post($post, false, $freeform);
 	}
@@ -197,7 +198,7 @@ add_filter('attachment_fields_to_save', 'save_media_credit', 10, 2);
  * @param string $freeform Credit for attachment with freeform string. Empty if attachment should be credited to a user of this blog, as indicated by $wp_user above.
  */
 function update_media_credit_in_post($post, $wp_user, $freeform = '') {
-	if ( isset( $post['post_parent'] ) ) {
+	if ( isset( $post['post_parent'] ) && $post['post_parent'] !== 0 ) {
 		$parent = get_post( $post['post_parent'], ARRAY_A );
 		$image = wp_get_attachment_image_src($post['ID']);
 		$image = get_image_filename_from_full_url($image[0]);
@@ -278,7 +279,7 @@ function media_credit_shortcode($atts, $content = null) {
 		return $output;
 
 	$options = get_option( MEDIA_CREDIT_OPTION );
-	if ( array_key_exists( 'credit_at_end', $options ) && $options['credit_at_end'] )
+	if ( !empty( $options['credit_at_end'] ) )
 		return do_shortcode( $content );
 
 	extract(shortcode_atts(array(
@@ -328,17 +329,84 @@ function add_media_credits_to_end( $content ) {
 	return $content . '<div class="media-credit-end">' . $image_credit . '</div>';
 }
 $options = get_option( MEDIA_CREDIT_OPTION );
-if ( array_key_exists( 'credit_at_end', $options ) && $options['credit_at_end'] )
+if ( !empty( $options['credit_at_end'] ) )
 	add_filter( 'the_content', 'add_media_credits_to_end', 10, 1 );
 
 function media_credit_stylesheet() {
 	$options = get_option( MEDIA_CREDIT_OPTION );
-	if ( array_key_exists( 'credit_end_end', $options ) && $options['credit_at_end'] ) // Do not display inline media credit if media credit is displayed at end of posts.
+	if ( !empty( $options['credit_at_end'] ) ) // Do not display inline media credit if media credit is displayed at end of posts.
 		wp_enqueue_style( 'media-credit-end', MEDIA_CREDIT_URL . 'css/media-credit-end.css', array(), 1.0, 'all');
 	else
 		wp_enqueue_style( 'media-credit', MEDIA_CREDIT_URL . 'css/media-credit.css', array(), 1.0, 'all');
 }
 add_action('wp_print_styles', 'media_credit_stylesheet');
+
+
+//----- Add AJAX hook for Media Credit autocomplete box ----//
+
+// hit ajaxurl with action=media_credit_author_names and q= your search.
+add_action( 'wp_ajax_media_credit_author_names', 'media_credit_author_names_ajax' );
+function media_credit_author_names_ajax() {
+	if ( ! isset( $_GET['q'] ) ) {
+		die('0'); // standard response for failure
+	}
+
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		die('-1'); // standard response for permissions
+	}
+
+	if ( isset( $_GET['q'] ) ) {
+		if ($authors = get_editable_authors_by_name( wp_get_current_user()->id, $_GET['q'], $_GET['limit'] ) ) {
+			foreach ( $authors as $author )
+				echo "$author->display_name|$author->ID\n";
+		}
+		echo '';
+	}
+
+	die(0);
+}
+
+/**
+ * Returns the users that are editable by $user_id (normally the current user) and that contain $name within their
+ * display name. Important to use this function rather than just selected all users for WPMU bloggers.
+ *
+ * Basis for this function is proudly stolen from wp-{admin/}includes/user.php :)
+ */
+function get_editable_authors_by_name( $user_id, $name, $limit ) {
+	global $wpdb;
+	
+	// get_editable_user_ids was deprecated in WordPress 3.1, so let's avoid it unless we're running on a site with
+	// WordPress < 3.1.
+	if ( !function_exists ( 'get_users' ) ) {
+		$editable = get_editable_user_ids( $user_id );
+	} else {
+		// use a similar call that's used in post_author_meta_box() to get a list of eligible users
+		$editable = get_users( array(
+			'who' => 'authors',
+			'fields' => 'id',
+			'include_selected' => true
+		) );
+	}
+
+	if ( !$editable ) {
+		return false;
+	} else {
+		$editable = join(',', $editable);
+		// Prepare autocomplete term for query: add wildcard after, and replace all spaces with wildcards
+		// 'Scott Bressler' becomes 'Scott%Bressler%', and literal _ and %'s are escaped.
+		$name = str_replace( ' ', '%', like_escape( $name ) ) . '%';
+		$authors = $wpdb->get_results( $wpdb->prepare( "
+			SELECT ID, display_name
+			FROM $wpdb->users
+			WHERE ID IN ($editable)
+				AND upper(display_name) LIKE %s
+			ORDER BY display_name
+			LIMIT 0, $limit",
+			strtoupper($name) ));
+	}
+
+	return apply_filters('get_editable_authors_by_name', $authors, $name);
+}
 
 
 //----- Add menus and settings for plugin -----//
@@ -491,16 +559,6 @@ function is_media_settings_page( ) {
 	global $pagenow;
 	
 	return $pagenow == 'options-media.php';
-}
-
-/**
- * Returns a float value representing the provided string version. e.g. 1.0.1 will be returned as 1.01. This is useful for version number comparisons.
- */
-function version_number_float( $version ) {
-	$version_numbers = explode('.', $version);
-	for ($i = 0, $multiplier = 1; $i < count( $version_numbers ); ++$i, $multiplier /= 10)
-		$version_float += $version_numbers[$i] * $multiplier;
-	return $version_float;
 }
 
 ?>
