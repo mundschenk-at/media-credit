@@ -3,8 +3,8 @@ Contributors: sbressler
 Donate link: http://www.scottbressler.com/blog/plugins/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 2.8
-Tested up to: 3.0.1
-Stable tag: 1.1.1
+Tested up to: 3.1
+Stable tag: 1.1.2
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -88,6 +88,11 @@ Note the link to www.artistwebsite.com above.
 
 == Changelog ==
 
+= 1.1.2 (Mar. 1, 2011) =
+* Fixes total autocomplete failure on WordPress 3.1
+* Fixes freeform credit situation where a user was selected but freeform text was entered afterward
+* Fixes extra output on activation notices (they weren't serious, but I imagine some people were freaking out seeing them)
+
 = 1.1.1 (Sep. 19, 2010) =
 * Updating media credit in the Media Library really does update the credit within posts correctly now! (props: Greg Wrey)
 * Adding multiple images with freeform media credit to a post also now works as expected (props: Greg Wrey)
@@ -126,6 +131,9 @@ Note the link to www.artistwebsite.com above.
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.1.2 =
+Updating plugin to maintain full-functionality in WordPress 3.1, with some minor bug fixes
 
 = 1.1.1 =
 Updating media credit in the Media Library really does update the credit within posts correctly now!
