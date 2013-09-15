@@ -4,9 +4,28 @@
 
 		init : function(ed, url) {
 			var t = this;
-
 			t.url = url;
 
+			ed.onInit.add(function(ed) {
+				ed.dom.events.add(ed.getBody(), 'mousedown', function(e) {
+					var parent;
+		
+					if ( e.target.nodeName == 'IMG' && ( parent = ed.dom.getParent(e.target, 'div.mceTemp') ) ) {
+						if ( tinymce.isGecko )
+							ed.selection.select(parent);
+						else if ( tinymce.isWebKit )
+							ed.dom.events.prevent(e);
+					}
+				});
+			});
+			
+			//replace shortcode as its inserted into editor (which uses the exec command)
+			ed.onExecCommand.add(function(ed, cmd) {
+			    if (cmd ==='mceInsertContent'){
+					tinyMCE.activeEditor.setContent( t._do_shcode(tinyMCE.activeEditor.getContent()) );
+				}
+			});
+			
 			ed.onBeforeSetContent.add(function(ed, o) {
 				o.content = t._do_shcode(o.content);
 			});
@@ -18,7 +37,9 @@
 		},
 
 		_do_shcode : function(co) {
-			return co.replace(/\[media-credit([^\]]+)\]([\s\S]+?)\[\/media-credit\][\s\u00a0]*/g, function(a,b,c){
+			// changed regexp to mirror the shortcode for wp-caption
+			return co.replace(/(?:<p>)?\[media-credit([^\]]+)\]([\s\S]+?)\[\/media-credit\](?:<\/p>)?/g, function(a,b,c){
+				
 				var id, name, cls, w, credit, div_cls;
 				
 				b = b.replace(/\\'|\\&#39;|\\&#039;/g, '&#39;').replace(/\\"|\\&quot;/g, '&quot;');
@@ -38,7 +59,7 @@
 				
 				div_cls = (cls == 'aligncenter') ? 'mceMediaCredit mceTemp mceIEcenter' : 'mceMediaCredit mceTemp';
 
-				return '<div class="'+div_cls+'" draggable><span name="'+name+'" id="'+id+'" class="media-credit-mce '+cls+'" style="width: '+(10+parseInt(w))+
+				return '<div class="'+div_cls+'"><span name="'+name+'" id="'+id+'" class="media-credit-mce '+cls+'" style="width: '+(10+parseInt(w))+
 				'px"><span class="media-credit-dt">'+c+'</span><span class="media-credit-dd">'+credit+'</span></span></div>';
 			});
 		},
@@ -46,9 +67,6 @@
 		_get_shcode : function(co) {
 			return co.replace(/<div class="mceMediaCredit mceTemp[^"]*">\s*<span([^>]+)>\s*<span[^>]+>([\s\S]+?)<\/span>\s*<span[^>]+>(.+?)<\/span>\s*<\/span>\s*<\/div>\s*/gi, function(a,b,c,name){
 				var id, cls, w;
-				
-				//id = b.match(/id=['"]([^'"]+)/i);
-				//name = b.match(/name=['"]([^'"]+)/i);
 				cls = b.match(/class=['"]([^'"]+)/i);
 				w = c.match(/width=['"]([0-9]+)/);
 
@@ -85,7 +103,7 @@
 				author : 'Scott Bressler',
 				authorurl : 'http://www.scottbressler.com/blog/plugins/',
 				infourl : 'http://www.scottbressler.com/blog/plugins/media-credit/',
-				version : "1.0"
+				version : "1.5"
 			};
 		}
 	});

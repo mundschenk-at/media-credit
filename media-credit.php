@@ -3,13 +3,13 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 1.1.2
+Version: 1.2.0
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '1.1.1' );
+define( 'MEDIA_CREDIT_VERSION', '1.2.0' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -151,19 +151,29 @@ function get_freeform_media_credit($post = null) {
 function add_media_credit($fields, $post) {
 	$credit = get_media_credit($post);
 	// add requirement for jquery ui core, jquery ui widgets, jquery ui position
-	$html = "<input id='attachments[$post->ID][media-credit]' class='media-credit-input' size='30' value='$credit' name='free-form-{$post->ID}' />";
-	$author = ( get_freeform_media_credit($post) == '' ) ? $post->post_author : '';
-	$author_display = get_media_credit($post);
-	$html .= "<input name='media-credit-$post->ID' id='media-credit-$post->ID' type='hidden' value='$author' />";
-	$html .= "<script type='text/javascript'>jQuery(document).ready(function() {mediaCreditAutocomplete($post->ID, " . (($author == '') ? -1 : $author) . ", '$author_display');});</script>";
+	$html = "<input id='attachments[$post->ID][media-credit]' class='media-credit-input' size='30' value='$credit' name='attachments[$post->ID][media-credit]'  />";
 	$fields['media-credit'] = array(
 		'label' => __('Credit:'),
 		'input' => 'html',
-		'html' => $html
+		'html' => $html,
+		'show_in_edit' => true,
+		'show_in_modal' => true,
+	);
+	
+	$author = ( get_freeform_media_credit($post) == '' ) ? $post->post_author : '';
+	$author_display = get_media_credit($post);
+	$author_for_script = ($author == '') ? -1 : $author;
+	$html_hidden = "<input name='attachments[$post->ID][media-credit-hidden]' id='attachments[$post->ID][media-credit-hidden]' type='hidden' value='$author' class='media-credit-hidden' data-author='$author_for_script' data-post-id='$post->ID' data-author-display='$author_display' />";
+	$fields["media-credit-hidden"] = array(
+		'input' => 'html',
+		'html' => $html_hidden,
+		'show_in_edit' => true,
+		'show_in_modal' => true,
 	);
 	return $fields;
 }
 add_filter('attachment_fields_to_edit', 'add_media_credit', 10, 2);
+
 
 /**
  * Change the post_author to the entered media credit from add_media_credit() above.
@@ -172,8 +182,9 @@ add_filter('attachment_fields_to_edit', 'add_media_credit', 10, 2);
  * @param object $attachment Object of attachment containing few fields, unused in this method.
  */
 function save_media_credit($post, $attachment) {
-	$wp_user_id = $_POST["media-credit-{$post['ID']}"];
-	$freeform_name = $_POST["free-form-{$post['ID']}"];
+	$wp_user_id = $attachment['media-credit-hidden'];
+	$freeform_name = $attachment['media-credit'];
+		
 	if ( isset( $wp_user_id ) && $wp_user_id != '' && $freeform_name === get_the_author_meta( 'display_name', $wp_user_id ) ) {
 		// a valid WP user was selected, and the display name matches the free-form
 		// the final conditional is necessary for the case when a valid user is selected, filling in the hidden field,
@@ -236,18 +247,13 @@ function get_image_filename_from_full_url( $image ) {
 function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $caption, $title, $align) {
 	$post = get_post($attachment_id);
 	$credit_meta = get_freeform_media_credit($post);
+	
 	if ( $credit_meta == MEDIA_CREDIT_EMPTY_META_STRING )
 		return $html;
 	else if ( $credit_meta != '' )
 		$credit = 'name="' . $credit_meta . '"';
 	else {
 		$credit = 'id=' . $post->post_author;
-		// Add the new author to the $mediaCredit object in the DOM that TinyMCE will use
-		echo "
-		<script type='text/javascript'>
-		window.parent.\$mediaCredit.id[" . $post->post_author . "] = '" . get_the_author_meta( 'display_name', $post->post_author ) . "';
-		</script>
-		";
 	}
 	
 	if ( ! preg_match( '/width="([0-9]+)/', $html, $matches ) )
@@ -344,10 +350,10 @@ add_action('wp_print_styles', 'media_credit_stylesheet');
 
 //----- Add AJAX hook for Media Credit autocomplete box ----//
 
-// hit ajaxurl with action=media_credit_author_names and q= your search.
+// hit ajaxurl with action=media_credit_author_names and term= your search.
 add_action( 'wp_ajax_media_credit_author_names', 'media_credit_author_names_ajax' );
 function media_credit_author_names_ajax() {
-	if ( ! isset( $_GET['q'] ) ) {
+	if ( ! isset( $_POST['term'] ) ) {
 		die('0'); // standard response for failure
 	}
 
@@ -355,10 +361,11 @@ function media_credit_author_names_ajax() {
 		die('-1'); // standard response for permissions
 	}
 
-	if ( isset( $_GET['q'] ) ) {
-		if ($authors = get_editable_authors_by_name( wp_get_current_user()->id, $_GET['q'], $_GET['limit'] ) ) {
+	if ( isset( $_POST['term'] ) ) {
+		if ($authors = get_editable_authors_by_name( wp_get_current_user()->id, $_POST['term'], $_POST['limit'] ) ) {
 			foreach ( $authors as $author )
-				echo "$author->display_name|$author->ID\n";
+				$results[] = (object) array("id"=>$author->ID, "label"=>$author->display_name, "value"=>$author->display_name);
+			echo json_encode($results);
 		}
 		echo '';
 	}
@@ -432,8 +439,7 @@ function media_credit_init() { // whitelist options
 		wp_enqueue_script( 'media-credit', MEDIA_CREDIT_URL . 'js/media-credit-preview.js', array('jquery'), 1.0, true);
 
 	if ( is_media_edit_page( ) ) {
-		wp_enqueue_script('jquery-autocomplete', MEDIA_CREDIT_URL . 'js/jquery.autocomplete.pack.js', array('jquery'), '1.1');
-		wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-autocomplete'), '1.0', true);
+		wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-ui-autocomplete' /*, 'jquery-livequery'*/), '1.2', true);
 	}
 
 	// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages
@@ -449,7 +455,7 @@ function media_credit_init() { // whitelist options
 // TinyMCE integration hooks
 function media_credit_mce_external_plugins( $plugins ) {
 	$options = get_option( MEDIA_CREDIT_OPTION );
-	$authors = get_media_credit_authors_for_post();
+	$authors = get_users(); //get_media_credit_authors_for_post();
 	echo "
 	<script type='text/javascript'>
 	var \$mediaCredit = {
@@ -551,7 +557,8 @@ function media_credit_options_validate($input) {
 function is_media_edit_page( ) {
 	global $pagenow;
 	
-	$media_edit_pages = array('post-new.php', 'post.php', 'page.php', 'page-new.php', 'media-upload.php', 'media.php', 'media-new.php');
+	$media_edit_pages = array('post-new.php', 'post.php', 'page.php', 'page-new.php', 'media-upload.php', 'media.php', 'media-new.php', 'ajax-actions.php');
+		
 	return in_array($pagenow, $media_edit_pages);
 }
 
