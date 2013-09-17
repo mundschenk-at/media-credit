@@ -241,6 +241,32 @@ function get_image_filename_from_full_url( $image ) {
 	return $image_filename;
 }
 
+add_shortcode('wp_caption', 'media_credit_caption_shortcode');
+add_shortcode('caption', 'media_credit_caption_shortcode');
+
+/**
+ * Modified Caption shortcode.
+ *
+ * Fixes the new style caption shortcode parsing and then calls the stock
+ * shortcode function.
+ *
+ * @param array $attr Attributes attributed to the shortcode.
+ * @param string $content Optional. Shortcode content.
+ * @return string
+ */
+function media_credit_caption_shortcode($attr, $content = null) {
+        // New-style shortcode with the caption inside the shortcode with the link and image tags.
+        if ( ! isset( $attr['caption'] ) ) {
+                if ( preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#is', $content, $matches ) ) {
+                        $content = $matches[1];
+                        $attr['caption'] = trim( $matches[2] );
+                }
+        }
+	
+        return img_caption_shortcode($attr, $content);
+}
+
+
 /**
  * Add media credit information to media using shortcode notation before sending to editor.
  */
