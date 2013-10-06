@@ -474,8 +474,18 @@ function media_credit_init() { // whitelist options
 
 	if ( 'true' == get_user_option('rich_editing') ) {
 		add_filter( 'mce_external_plugins', 'media_credit_mce_external_plugins' );
+		add_filter( 'tiny_mce_plugins', 'media_credit_tiny_mce_plugins' );
 		add_filter( 'mce_css', 'media_credit_mce_css' );
 	}
+}
+
+/*
+ * Remove default editimage plugin
+ */
+function media_credit_tiny_mce_plugins( $plugins ) {
+	if ( false !== ( $key = array_search('wpeditimage', $plugins ) ) )
+		unset( $plugins[ $key ] );
+	return $plugins;
 }
 
 // TinyMCE integration hooks
@@ -497,7 +507,10 @@ function media_credit_mce_external_plugins( $plugins ) {
 	};
 	</script>
 	";
+	$plugins['wpeditimage2'] = MEDIA_CREDIT_URL . 'js/media-credit-editimage.js';
 	$plugins['mediacredit'] = MEDIA_CREDIT_URL . 'js/media-credit-tinymce.js';
+	error_log(print_r($plugins, TRUE)); 
+		
 	return $plugins;
 }
 /*
