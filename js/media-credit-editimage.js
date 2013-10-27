@@ -2,13 +2,14 @@
 (function() {
 	tinymce.create('tinymce.plugins.wpEditImage2', {
 		url: '',
+		wp_url: '',
 		editor: {},
 
 		init: function(ed, url) {
 			var t = this, mouse = {};
 
 			t.url = url;
-			t.wp_url = '/wp-includes/js/tinymce/plugins/wpeditimage/';
+			t.wp_url = '/wp-includes/js/tinymce/plugins/wpeditimage';
 			t.editor = ed;
 			t._createButtons();
 
@@ -287,7 +288,7 @@
 			W = 650 < vp.w ? 650 : vp.w;
 
 			ed.windowManager.open({
-				file: url + '/editimage.html',
+				file: wp_url + '/editimage.html',
 				width: W+'px',
 				height: H+'px',
 				inline: true
