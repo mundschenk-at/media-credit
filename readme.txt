@@ -88,7 +88,7 @@ Note the link to www.artistwebsite.com above.
 
 == Changelog ==
 
-= 1.2 (Sep. 17, 2013) =
+= 2.0 (Oct. 27, 2013) =
 * Compatibility with Wordpress 3.5 media dialog
 * Fixes for bugs in Visual editor
 * Fixed shortcode parsing (broken since Wordpress 3.4)
