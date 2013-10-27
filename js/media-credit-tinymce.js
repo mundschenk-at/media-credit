@@ -22,7 +22,6 @@
 			//replace shortcode as its inserted into editor (which uses the exec command)
 			ed.onExecCommand.add(function(ed, cmd) {
 			    if (cmd ==='mceInsertContent'){
-					//tinyMCE.activeEditor.setContent( t._do_shcode(tinyMCE.activeEditor.getContent()) );
 			    	tinyMCE.activeEditor.setContent(tinyMCE.activeEditor.getContent());
 				}
 			});

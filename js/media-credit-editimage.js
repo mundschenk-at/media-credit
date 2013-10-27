@@ -14,12 +14,6 @@
 			t._createButtons();
 
 			ed.addCommand('WP_EditImage', t._editImage);
-
-
-			ed.onPreInit.add(function() {
-				// Allow pseudo elements
-				//ed.schema.addValidElements('figure[*]');
-			});
 			
 			ed.onInit.add(function(ed) {
 				ed.dom.events.add(ed.getBody(), 'mousedown', function(e) {
@@ -130,7 +124,6 @@
 		},
 
 		_do_shcode : function(content) {
-			//console.debug("caption-shortcode");
 			return content.replace(/(?:<p>)?\[(?:wp_)?caption([^\]]+)\]([\s\S]+?)\[\/(?:wp_)?caption\](?:<\/p>)?/g, function(a,b,c){
 			//    if ( preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#is', $content, $matches ) ) {
 
@@ -180,14 +173,9 @@
 		_get_shcode : function(content) {
 		
 			return content.replace(/<div (?:id="attachment_|class="mceCaption)[^>]*>((?:<span class="mceMediaCredit[^>]*>[\s\S]+<\/span>)|[\s\S]+?)<\/div>/g, function(a, b){
-//				console.log ("foo1: " + a);
-//				console.log ("foo2: " + b);
 
-				
 				var ret = b.replace(/<dl ([^>]+)>\s*<dt [^>]+>([\s\S]+?)<\/dt>\s*<dd [^>]+>([\s\S]*?)<\/dd>\s*<\/dl>/gi, function(a,b,c,cap){
 					var id, cls, w;
-
-//					console.log ("bar1: " + a);
 					
 					w = c.match(/width="([0-9]*)"/);
 					w = ( w && w[1] ) ? w[1] : '';
@@ -212,8 +200,6 @@
 
 					return '[caption id="'+id+'" align="'+cls+'" width="'+w+'"]'+c+' '+cap+'[/caption]';
 				});
-
-//				console.log ("outside: " + ret);
 				
 				if ( ret.indexOf('[caption') !== 0 ) {
 					// the caption html seems brocken, try to find the image that may be wrapped in a link

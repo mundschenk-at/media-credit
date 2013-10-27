@@ -266,17 +266,6 @@ function media_credit_caption_shortcode($attr, $content = null) {
         return img_caption_shortcode($attr, $content);
 }
 
-function print_filters_for( $hook = '' ) {
-	global $wp_filter;
-	if( empty( $hook ) || !isset( $wp_filter[$hook] ) )
-		return;
-
-	error_log( '<pre>');
-	error_log (print_r( $wp_filter[$hook] , true));
-	error_log('</pre>');
-}
-
-
 /**
  * Add media credit information to media using shortcode notation before sending to editor.
  */
@@ -302,10 +291,6 @@ function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $captio
 		$align = 'none';
 	
 	$shcode = '[media-credit ' . $credit . ' align="align' . $align . '" width="' . $width . '"]' . $html . '[/media-credit]';
-	
-	error_log("shortcode: " . $shcode);
-	error_log("html: " . $html);
-	print_filters_for("image_send_to_editor");
 	
 	return apply_filters( 'media_add_credit_shortcode', $shcode, $html );
 }
@@ -523,7 +508,6 @@ function media_credit_mce_external_plugins( $plugins ) {
 	";
 	$plugins['wpeditimage2'] = MEDIA_CREDIT_URL . 'js/media-credit-editimage.js';
 	$plugins['mediacredit'] = MEDIA_CREDIT_URL . 'js/media-credit-tinymce.js';
-	error_log(print_r($plugins, TRUE)); 
 		
 	return $plugins;
 }
