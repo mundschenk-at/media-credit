@@ -19,7 +19,7 @@
 				ed.dom.events.add(ed.getBody(), 'mousedown', function(e) {
 					var parent;
 
-					if ( e.target.nodeName == 'IMG' && ( parent = ed.dom.getParent(e.target, 'div.mceCaption') ) ) {
+					if ( e.target.nodeName == 'IMG' && ( parent = ed.dom.getParent(e.target, 'div.mceTemp') ) ) {
 						if ( tinymce.isGecko )
 							ed.selection.select(parent);
 						else if ( tinymce.isWebKit )
@@ -36,7 +36,7 @@
 						DL = ed.dom.getParent(n, 'dl.wp-caption');
 
 						if ( DL )
-							DIV = ed.dom.getParent(DL, 'div.mceCaption');
+							DIV = ed.dom.getParent(DL, 'div.mceTemp');
 
 						if ( DIV ) {
 							ed.dom.events.cancel(e);
@@ -111,7 +111,7 @@
 				var node, p;
 
 				if ( cmd == 'mceInsertContent' ) {
-					node = ed.dom.getParent(ed.selection.getNode(), 'div.mceCaption');
+					node = ed.dom.getParent(ed.selection.getNode(), 'div.mceTemp');
 
 					if ( !node )
 						return;
@@ -161,7 +161,7 @@
 				if ( !w || !cap )
 					return c;
 
-				div_cls = 'mceCaption ' + id;
+				div_cls = 'mceTemp ' + id;
 				if ( cls == 'aligncenter' )
 					div_cls += ' mceIEcenter';
 
@@ -172,7 +172,7 @@
 
 		_get_shcode : function(content) {
 		
-			return content.replace(/<div (?:id="attachment_|class="mceCaption)[^>]*>((?:<span class="mceMediaCredit[^>]*>[\s\S]+<\/span>)|[\s\S]+?)<\/div>/g, function(a, b){
+			return content.replace(/<div (?:id="attachment_|class="mceTemp)[^>]*>((?:<span class="mceMediaCredit[^>]*>[\s\S]+<\/span>)|[\s\S]+?)<\/div>/g, function(a, b){
 
 				var ret = b.replace(/<dl ([^>]+)>\s*<dt [^>]+>([\s\S]+?)<\/dt>\s*<dd [^>]+>([\s\S]*?)<\/dd>\s*<\/dl>/gi, function(a,b,c,cap){
 					var id, cls, w;
@@ -250,7 +250,7 @@
 				var ed = tinymce.activeEditor, el = ed.selection.getNode(), parent;
 
 				if ( el.nodeName == 'IMG' && ed.dom.getAttrib(el, 'class').indexOf('mceItem') == -1 ) {
-					if ( (parent = ed.dom.getParent(el, 'div')) && ed.dom.hasClass(parent, 'mceCaption') ) {
+					if ( (parent = ed.dom.getParent(el, 'div')) && ed.dom.hasClass(parent, 'mceTemp') ) {
 						ed.dom.remove(parent);
 					} else {
 						if ( el.parentNode.nodeName == 'A' && el.parentNode.childNodes.length == 1 )
