@@ -10,7 +10,7 @@
 				ed.dom.events.add(ed.getBody(), 'mousedown', function(e) {
 					var parent;
 		
-					if ( e.target.nodeName == 'IMG' && ( parent = ed.dom.getParent(e.target, 'div.mceTemp') ) ) {
+					if ( e.target.nodeName == 'IMG' && ( parent = ed.dom.getParent(e.target, 'div.mceMediaCredit') ) ) {
 						if ( tinymce.isGecko )
 							ed.selection.select(parent);
 						else if ( tinymce.isWebKit )
@@ -22,7 +22,8 @@
 			//replace shortcode as its inserted into editor (which uses the exec command)
 			ed.onExecCommand.add(function(ed, cmd) {
 			    if (cmd ==='mceInsertContent'){
-					tinyMCE.activeEditor.setContent( t._do_shcode(tinyMCE.activeEditor.getContent()) );
+					//tinyMCE.activeEditor.setContent( t._do_shcode(tinyMCE.activeEditor.getContent()) );
+			    	tinyMCE.activeEditor.setContent(tinyMCE.activeEditor.getContent());
 				}
 			});
 			
@@ -57,15 +58,15 @@
 				w = ( w && w[1] ) ? w[1] : '';
 				if ( ! w || ! credit ) return c;
 				
-				div_cls = (cls == 'aligncenter') ? 'mceMediaCredit mceTemp mceIEcenter' : 'mceMediaCredit mceTemp';
+				div_cls = (cls == 'aligncenter') ? 'mceMediaCredit mceIEcenter' : 'mceMediaCredit';
 
-				return '<div class="'+div_cls+'"><span name="'+name+'" id="'+id+'" class="media-credit-mce '+cls+'" style="width: '+(10+parseInt(w))+
-				'px"><span class="media-credit-dt">'+c+'</span><span class="media-credit-dd">'+credit+'</span></span></div>';
+				return '<span class="'+div_cls+'"><span name="'+name+'" id="'+id+'" class="media-credit-mce '+cls+'" style="width: '+(10+parseInt(w))+
+				'px"><span class="media-credit-dt">'+c+'</span><span class="media-credit-dd">'+credit+'</span></span></span>';
 			});
 		},
 
 		_get_shcode : function(co) {
-			return co.replace(/<div class="mceMediaCredit mceTemp[^"]*">\s*<span([^>]+)>\s*<span[^>]+>([\s\S]+?)<\/span>\s*<span[^>]+>(.+?)<\/span>\s*<\/span>\s*<\/div>\s*/gi, function(a,b,c,name){
+			return co.replace(/<span class="mceMediaCredit[^"]*">\s*<span([^>]+)>\s*<span[^>]+>([\s\S]+?)<\/span>\s*<span[^>]+>(.+?)<\/span>\s*<\/span>\s*<\/span>\s*/gi, function(a,b,c,name){
 				var id, cls, w;
 				cls = b.match(/class=['"]([^'"]+)/i);
 				w = c.match(/width=['"]([0-9]+)/);

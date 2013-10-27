@@ -15,11 +15,17 @@
 
 			ed.addCommand('WP_EditImage', t._editImage);
 
+
+			ed.onPreInit.add(function() {
+				// Allow pseudo elements
+				//ed.schema.addValidElements('figure[*]');
+			});
+			
 			ed.onInit.add(function(ed) {
 				ed.dom.events.add(ed.getBody(), 'mousedown', function(e) {
 					var parent;
 
-					if ( e.target.nodeName == 'IMG' && ( parent = ed.dom.getParent(e.target, 'div.mceTemp') ) ) {
+					if ( e.target.nodeName == 'IMG' && ( parent = ed.dom.getParent(e.target, 'div.mceCaption') ) ) {
 						if ( tinymce.isGecko )
 							ed.selection.select(parent);
 						else if ( tinymce.isWebKit )
@@ -36,7 +42,7 @@
 						DL = ed.dom.getParent(n, 'dl.wp-caption');
 
 						if ( DL )
-							DIV = ed.dom.getParent(DL, 'div.mceTemp');
+							DIV = ed.dom.getParent(DL, 'div.mceCaption');
 
 						if ( DIV ) {
 							ed.dom.events.cancel(e);
@@ -111,7 +117,7 @@
 				var node, p;
 
 				if ( cmd == 'mceInsertContent' ) {
-					node = ed.dom.getParent(ed.selection.getNode(), 'div.mceTemp');
+					node = ed.dom.getParent(ed.selection.getNode(), 'div.mceCaption');
 
 					if ( !node )
 						return;
@@ -162,7 +168,7 @@
 				if ( !w || !cap )
 					return c;
 
-				div_cls = 'mceTemp';
+				div_cls = 'mceCaption ' + id;
 				if ( cls == 'aligncenter' )
 					div_cls += ' mceIEcenter';
 
@@ -173,7 +179,7 @@
 
 		_get_shcode : function(content) {
 		
-			return content.replace(/<div (?:id="attachment_|class="mceTemp)[^>]*>((?:<div class="mceMediaCredit[^>]*>[\s\S]+<\/div>)|[\s\S]+)<\/div>/g, function(a, b){
+			return content.replace(/<div (?:id="attachment_|class="mceCaption)[^>]*>((?:<span class="mceMediaCredit[^>]*>[\s\S]+<\/span>)|[\s\S]+?)<\/div>/g, function(a, b){
 //				console.log ("foo1: " + a);
 //				console.log ("foo2: " + b);
 
@@ -258,7 +264,7 @@
 				var ed = tinymce.activeEditor, el = ed.selection.getNode(), parent;
 
 				if ( el.nodeName == 'IMG' && ed.dom.getAttrib(el, 'class').indexOf('mceItem') == -1 ) {
-					if ( (parent = ed.dom.getParent(el, 'div')) && ed.dom.hasClass(parent, 'mceTemp') ) {
+					if ( (parent = ed.dom.getParent(el, 'div')) && ed.dom.hasClass(parent, 'mceCaption') ) {
 						ed.dom.remove(parent);
 					} else {
 						if ( el.parentNode.nodeName == 'A' && el.parentNode.childNodes.length == 1 )
@@ -278,7 +284,7 @@
 		},
 		
 		_editImage : function() {
-			var ed = tinymce.activeEditor, url = this.url, el = ed.selection.getNode(), vp, H, W, cls = el.className;
+			var ed = tinymce.activeEditor, url = this.wp_url, el = ed.selection.getNode(), vp, H, W, cls = el.className;
 
 			if ( cls.indexOf('mceItem') != -1 || cls.indexOf('wpGallery') != -1 || el.nodeName != 'IMG' )
 				return;
@@ -288,7 +294,7 @@
 			W = 650 < vp.w ? 650 : vp.w;
 
 			ed.windowManager.open({
-				file: wp_url + '/editimage.html',
+				file: url + '/editimage.html',
 				width: W+'px',
 				height: H+'px',
 				inline: true

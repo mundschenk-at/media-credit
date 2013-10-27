@@ -266,11 +266,21 @@ function media_credit_caption_shortcode($attr, $content = null) {
         return img_caption_shortcode($attr, $content);
 }
 
+function print_filters_for( $hook = '' ) {
+	global $wp_filter;
+	if( empty( $hook ) || !isset( $wp_filter[$hook] ) )
+		return;
+
+	error_log( '<pre>');
+	error_log (print_r( $wp_filter[$hook] , true));
+	error_log('</pre>');
+}
+
 
 /**
  * Add media credit information to media using shortcode notation before sending to editor.
  */
-function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $caption, $title, $align) {
+function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $caption, $title, $align, $url, $size, $alt = '' ) {
 	$post = get_post($attachment_id);
 	$credit_meta = get_freeform_media_credit($post);
 	
@@ -293,9 +303,13 @@ function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $captio
 	
 	$shcode = '[media-credit ' . $credit . ' align="align' . $align . '" width="' . $width . '"]' . $html . '[/media-credit]';
 	
+	error_log("shortcode: " . $shcode);
+	error_log("html: " . $html);
+	print_filters_for("image_send_to_editor");
+	
 	return apply_filters( 'media_add_credit_shortcode', $shcode, $html );
 }
-add_filter('image_send_to_editor', 'send_media_credit_to_editor_by_shortcode', 10, 5);
+add_filter('image_send_to_editor', 'send_media_credit_to_editor_by_shortcode', 10, 8);
 
 /**
  * Add shortcode for media credit. Allows for credit to be specified for media attached to a post
