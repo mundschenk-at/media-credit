@@ -4,7 +4,7 @@ Donate link: http://www.scottbressler.com/blog/plugins/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 3.5
 Tested up to: 3.7
-Stable tag: 2.0
+Stable tag: 2.0.1
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -87,6 +87,9 @@ Note the link to www.artistwebsite.com above.
 
 
 == Changelog ==
+
+= 2.0.1 (Oct. 29, 2013) =
+* Bumped version number to fix update notice for users of 1.1.2
 
 = 2.0 (Oct. 27, 2013) =
 * Compatibility with Wordpress 3.5 media dialog
