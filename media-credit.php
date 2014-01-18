@@ -318,7 +318,7 @@ function media_credit_shortcode($atts, $content = null) {
 		'name' => '',
 		'align'	=> 'alignnone',
 		'width'	=> '',
-	), $atts));
+	), $atts, 'media-credit'));
 	
 	if ($id !== -1)
 		$author_link = get_media_credit_html_by_user_ID($id);
