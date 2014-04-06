@@ -298,7 +298,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	}
 	
 	function extractImageData( imageNode ) {
-		var classes, extraClasses, metadata, captionBlock, caption, link, width, height,
+		var classes, extraClasses, metadata, captionBlock, caption, link, width, height, mediaCreditBlock,
 			dom = editor.dom,
 			isIntRegExp = /^\d+$/;
 
@@ -314,7 +314,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			linkClassName: '',
 			linkTargetBlank: false,
 			linkRel: '',
-			title: ''
+			title: '',
+			mediacredit: ''
 		};
 
 		metadata.url = dom.getAttrib( imageNode, 'src' );
@@ -375,7 +376,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 					.replace( /<br[^>]*>/g, '$&\n' ).replace( /^<p>/, '' ).replace( /<\/p>$/, '' );
 			}
 		}
-
+		
 		// Extract linkTo
 		if ( imageNode.parentNode && imageNode.parentNode.nodeName === 'A' ) {
 			link = imageNode.parentNode;
@@ -385,6 +386,18 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			metadata.linkClassName = link.className;
 		}
 
+		// Extract media-credit
+		if ( link ) {
+			mediaCreditBlock = dom.getNext( link, '.mceMediaCreditTemp' );			
+;
+		} else {
+			mediaCreditBlock = dom.getNext( imageNode, '.mceMediaCreditTemp' );;
+		}
+		
+		if (mediaCreditBlock) {
+			metadata.align = (metadata.align && metadata.align != 'none' ) ? metadata.align : dom.getAttrib(mediaCreditBlock, 'data-media-credit-align', '').replace( 'align', '' );
+		}
+		
 		return metadata;
 	}
 
