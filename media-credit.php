@@ -3,7 +3,7 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 2.0.1
+Version: 2.0.2
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 License: GPL2
@@ -506,7 +506,7 @@ function media_credit_mce_external_plugins( $plugins ) {
 	};
 	</script>
 	";
-	$plugins['wpeditimage2'] = MEDIA_CREDIT_URL . 'js/media-credit-editimage.js';
+	//$plugins['wpeditimage2'] = MEDIA_CREDIT_URL . 'js/media-credit-editimage.js';
 	$plugins['mediacredit'] = MEDIA_CREDIT_URL . 'js/media-credit-tinymce.js';
 		
 	return $plugins;
@@ -604,5 +604,122 @@ function is_media_settings_page( ) {
 	
 	return $pagenow == 'options-media.php';
 }
+
+/*
+ * Bulk edit for authors
+ */
+if(is_admin()) {
+	// admin actions/filters
+	add_action('admin_footer', 'media_credit_bulk_admin_footer');
+	add_action('load-upload.php', 'media_credit_bulk_action');
+	add_action('admin_notices', 'media_credit_bulk_admin_notices');
+}
+
+/*
+ * Step 1: add the custom Bulk Action to the select menus
+ */
+function media_credit_bulk_admin_footer() {
+	global $pagenow;
+
+	if($pagenow == 'upload.php') {
+		?>
+            <script type="text/javascript">
+                jQuery(document).ready(function() {
+                    jQuery('<option>').val('edit_media_credit').text('<?php _e('Edit media credit')?>').appendTo("select[name='action']");                        
+                    jQuery('<option>').val('edit_media_credit').text('<?php _e('Edit media credit')?>').appendTo("select[name='action2']");
+                });
+            </script>
+        <?php
+    }
+}
+
+
+/*
+ * Step 2: handle the custom Bulk Action
+ * 
+ * Based on the post http://wordpress.stackexchange.com/questions/29822/custom-bulk-action
+ */
+function media_credit_bulk_action() {
+    global $typenow,$pagenow;
+    $post_type = $typenow;
+
+    if (($post_type == 'attachment') && ($pagenow == 'upload.php')) {
+
+        // get the action
+        $wp_list_table = _get_list_table('WP_Media_List_Table');  // depending on your resource type this could be WP_Users_List_Table, WP_Comments_List_Table, etc
+        $action = $wp_list_table->current_action();
+                
+        $allowed_actions = array("edit_media_credit");
+        if(!in_array($action, $allowed_actions)) return;
+	
+        // security check
+        check_admin_referer('bulk-media');
+
+        // make sure ids are submitted.  depending on the resource type, this may be 'media' or 'ids'
+        if(isset($_REQUEST['media'])) {
+            $post_ids = array_map('intval', $_REQUEST['media']);
+        }
+
+        if(empty($post_ids)) return;
+
+        // this is based on wp-admin/edit.php
+        $sendback = remove_query_arg( array('exported', 'untrashed', 'deleted', 'ids'), wp_get_referer() );
+        if ( ! $sendback )
+            //$sendback = admin_url( "edit.php?post_type=$post_type" );
+            $sendback = admin_url( "upload.php?post_type=$post_type" );
+
+        $pagenum = $wp_list_table->get_pagenum();
+        $sendback = add_query_arg( 'paged', $pagenum, $sendback );
+
+        switch($action) {
+            case 'edit_media_credit':
+
+                // if we set up user permissions/capabilities, the code might look like:
+                //if ( !current_user_can($post_type_object->cap->export_post, $post_id) )
+                //  wp_die( __('You are not allowed to export this post.') );
+
+                $media_credit_updated = 0;
+                foreach( $post_ids as $post_id ) {
+
+                    //if ( !$this->media_credit_update($post_id) )
+                     //   wp_die( __('Error exporting post.') );
+
+                    $media_credit_updated++;
+                }
+
+                $sendback = add_query_arg( array('media_credit_updated' => $media_credit_updated, 'ids' => join(',', $post_ids) ), $sendback );
+            break;
+
+            default: return;
+        }
+
+        $sendback = remove_query_arg( array('action', 'action2', 'tags_input', 'post_author', 'comment_status', 'ping_status', '_status',  'post', 'bulk_edit', 'post_view'), $sendback );
+
+        wp_redirect($sendback);
+        exit();
+    }
+}
+
+
+/**
+ * Step 3: display an admin notice on the Posts page after exporting
+ */
+function media_credit_bulk_admin_notices() {
+    global $post_type, $pagenow;
+
+    if($pagenow == 'upload.php' && isset($_REQUEST['media_credit_updated']) && (int) $_REQUEST['media_credit_updated']) {
+        $message = sprintf( _n( 'Media credit updated.', 'Media credit for %s attachments updated.', $_REQUEST['media_credit_updated'] ), number_format_i18n( $_REQUEST['media_credit_updated'] ) );
+        echo "<div class=\"updated\"><p>{$message}</p></div>";
+    }
+}
+
+
+function add_book_columns($columns) {
+	unset($columns['author']);
+	return array_merge($columns,
+			array('publisher' => __('Publisher'),
+					'book_author' =>__( 'Book Author')));
+}
+add_filter('manage_attachment_posts_columns' , 'add_book_columns');
 
 ?>

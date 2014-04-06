@@ -1,21 +1,24 @@
-span.media-credit-mce {
+span.mceMediaCreditTemp {
 	font-size: 11px;
 	font-family: Helvetica, Tahoma, Verdana, Arial, sans-serif;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	background: rgba(255, 255, 255, 0.8);
+	width: 100%;
+	padding: 0;
+	margin: 0;
 }
-span.media-credit-mce.alignright {
-	text-align: right;
+span.mceMediaCreditTemp a {
+    color: blue;
+    font-weight: inherit;
+    font-size: inherit;
+    font-family: inherit;
 }
-span.media-credit-mce
-	span.media-credit-dd {
-		display: block;
-	}
-span.media-credit-mce.alignright
-	span.media-credit-dd {
-		text-align: right;
-		margin-right: 5px;
-	}
-span.media-credit-mce.alignleft
-	span.media-credit-dd {
-		text-align: left;
-		margin-left: 5px;
-	}
+
+
+dt.wp-caption-dt,
+div.mceMediaCreditOuterTemp {
+    position: relative;
+    overflow:hidden;
+}
