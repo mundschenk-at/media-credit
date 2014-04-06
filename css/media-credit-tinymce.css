@@ -8,6 +8,7 @@ span.mceMediaCreditTemp {
 	width: 100%;
 	padding: 0;
 	margin: 0;
+	font-weight: normal;
 }
 span.mceMediaCreditTemp a {
     color: blue;

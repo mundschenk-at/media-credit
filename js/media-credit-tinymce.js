@@ -395,7 +395,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	function updateImage( imageNode, imageData ) {
 		var classes, className, node, html, parent, wrap, linkNode,
 			captionNode, dd, dl, id, attrs, linkAttrs, width, height,
-			mediaCreditNode, mediaCreditOuterNode, mediaCreditHTML = '',
+			mediaCreditNode, mediaCreditHTML = '',
 			dom = editor.dom;
 
 		classes = tinymce.explode( imageData.extraClasses, ' ' );
@@ -404,8 +404,21 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			classes = [];
 		}
 
+		// setup nodes for later checks
+		if ( imageNode.parentNode && imageNode.parentNode.nodeName === 'A' && ! hasTextContent( imageNode.parentNode ) ) {
+			node = imageNode.parentNode;
+		} else {
+			node = imageNode;
+		}
+		mediaCreditNode = dom.getNext( node, '.mceMediaCreditTemp' );			
+		
+		// set alignment if there is no caption
 		if ( ! imageData.caption ) {
-			classes.push( 'align' + imageData.align );
+			if (mediaCreditNode) {
+				dom.setAttrib( mediaCreditNode, 'data-media-credit-align', 'align' + imageData.align );
+			} else {
+				classes.push( 'align' + imageData.align );
+			}
 		}
 
 		if ( imageData.attachment_id ) {
@@ -423,6 +436,11 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			height = imageData.customHeight;
 		}
 
+		// set width for [media-credit] in any case
+		if (mediaCreditNode) {
+			dom.setAttrib( mediaCreditNode, 'style', 'width:' + width + 'px');
+		}
+		
 		attrs = {
 			src: imageData.url,
 			width: width || null,
@@ -463,17 +481,16 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 		captionNode = editor.dom.getParent( imageNode, '.mceTemp' );
 
-		if ( imageNode.parentNode && imageNode.parentNode.nodeName === 'A' && ! hasTextContent( imageNode.parentNode ) ) {
-			node = imageNode.parentNode;
-		} else {
-			node = imageNode;
-		}
-
 		if ( imageData.caption ) {
 
 			id = imageData.attachment_id ? 'attachment_' + imageData.attachment_id : null;
 			className = 'wp-caption align' + ( imageData.align || 'none' );
 
+			// set alignment for nested media-credit if necessary
+			if (mediaCreditNode) {
+				dom.setAttrib( mediaCreditNode, 'data-media-credit-align', 'align' + imageData.align );
+			}
+			
 			if ( ! editor.getParam( 'wpeditimage_html5_captions' ) ) {
 				width = parseInt( width, 10 );
 				width += 10;
@@ -500,7 +517,6 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				id = id ? 'id="'+ id +'" ' : '';
 
 				// unhook media-credit wrapper
-				mediaCreditNode = dom.getNext( node, '.mceMediaCreditTemp' );			
 				if (mediaCreditNode) {
 					mediaCreditHTML = dom.getOuterHTML( mediaCreditNode );
 				}
