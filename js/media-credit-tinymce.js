@@ -527,10 +527,20 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				}
 			}
 		} else if ( captionNode ) {
-			// Remove the caption wrapper and place the image in new paragraph
-			parent = dom.create( 'p' );
+			// Remove the caption wrapper and place the image in new media-credit wrapper or a new paragraph
+			mediaCreditNode = dom.getNext( node, '.mceMediaCreditTemp' );
+			
+			if (mediaCreditNode) {
+				parent = dom.create( 'div', { 'class': 'mceMediaCreditOuterTemp' } );
+			} else {
+				parent = dom.create( 'p' );
+			}
 			captionNode.parentNode.insertBefore( parent, captionNode );
 			parent.appendChild( node );
+			if (mediaCreditNode) {
+				parent.appendChild( mediaCreditNode );
+			}
+			
 			dom.remove( captionNode );
 		}
 
