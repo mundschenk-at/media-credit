@@ -395,6 +395,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	function updateImage( imageNode, imageData ) {
 		var classes, className, node, html, parent, wrap, linkNode,
 			captionNode, dd, dl, id, attrs, linkAttrs, width, height,
+			mediaCreditNode, mediaCreditOuterNode, mediaCreditHTML = '',
 			dom = editor.dom;
 
 		classes = tinymce.explode( imageData.extraClasses, ' ' );
@@ -498,15 +499,26 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			} else {
 				id = id ? 'id="'+ id +'" ' : '';
 
+				// unhook media-credit wrapper
+				mediaCreditNode = dom.getNext( node, '.mceMediaCreditTemp' );			
+				if (mediaCreditNode) {
+					mediaCreditHTML = dom.getOuterHTML( mediaCreditNode );
+				}
+				
 				// should create a new function for generating the caption markup
 				html =  '<dl ' + id + 'class="' + className +'" style="width: '+ width +'px">' +
-					'<dt class="wp-caption-dt">' + dom.getOuterHTML( node ) + '</dt><dd class="wp-caption-dd">'+ imageData.caption +'</dd></dl>';
+					'<dt class="wp-caption-dt">' + dom.getOuterHTML( node ) + mediaCreditHTML  + '</dt><dd class="wp-caption-dd">'+ imageData.caption +'</dd></dl>';
 
-				if ( parent = dom.getParent( node, 'p' ) ) {
+				if ( (parent = dom.getParent( node, 'p' )) || 
+					 (parent = dom.getParent( node, '.mceMediaCreditOuterTemp' )) ) {
 					wrap = dom.create( 'div', { 'class': 'mceTemp' }, html );
 					dom.insertAfter( wrap, parent );
 					dom.remove( node );
 
+					if (mediaCreditNode) {
+						dom.remove( mediaCreditNode );
+					}
+					
 					if ( dom.isEmpty( parent ) ) {
 						dom.remove( parent );
 					}
