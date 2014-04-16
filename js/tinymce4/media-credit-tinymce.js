@@ -3,7 +3,7 @@
  */
 
 /* global tinymce */
-tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
+tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	var toolbarActive = false;
 
 	function parseShortcode( content ) {
@@ -142,7 +142,7 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 			credit = name ? name : ($mediaCredit.id[id] + $mediaCredit.separator + $mediaCredit.organization);
 			credit = credit.replace(/<[^>]+>(.*)<\/[^>]+>/g, '$1'); // basic sanitation
 
-			out = img + '<span class="mceMediaCreditTemp" style="max-width:' + width + 'px" data-media-credit-id="' + id + '" data-media-credit-name="' + encodeURIComponent(name) + '" data-media-credit-align="' + align + '" contenteditable="false" >' + credit + '</span>';
+			out = img + '<span class="mceMediaCreditTemp mceNonEditable" style="max-width:' + width + 'px" data-media-credit-id="' + id + '" data-media-credit-name="' + encodeURIComponent(name) + '" data-media-credit-align="' + align + '" >' + credit + '</span>';
 			
 			if (standalone) {
 				out = '<div class="mceMediaCreditOuterTemp">' + out + '</div>';
@@ -224,10 +224,10 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 	
 	function getMediaCreditShortcode( content, standalone ) {
 		standalone = (typeof standalone == 'undefined' ? false : standalone);
-		var pattern = /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp" ([^>]*)>([\s\S]+?)<\/span>/g
+		var pattern = /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span>/g
 		
 		if (standalone) {
-			pattern = /<div class="mceMediaCreditOuterTemp">((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp" ([^>]*)>([\s\S]+?)<\/span><\/div>/g
+			pattern = /<div class="mceMediaCreditOuterTemp">((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span><\/div>/g
 		}
 		
 		return content.replace( pattern , function( a, b, c, d) {
@@ -298,7 +298,7 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 	}
 	
 	function extractImageData( imageNode ) {
-		var classes, extraClasses, metadata, captionBlock, caption, link, width, height,
+		var classes, extraClasses, metadata, captionBlock, caption, link, width, height, mediaCreditBlock,
 			dom = editor.dom,
 			isIntRegExp = /^\d+$/;
 
@@ -314,7 +314,8 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 			linkClassName: '',
 			linkTargetBlank: false,
 			linkRel: '',
-			title: ''
+			title: '',
+			mediacredit: ''
 		};
 
 		metadata.url = dom.getAttrib( imageNode, 'src' );
@@ -375,7 +376,7 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 					.replace( /<br[^>]*>/g, '$&\n' ).replace( /^<p>/, '' ).replace( /<\/p>$/, '' );
 			}
 		}
-
+		
 		// Extract linkTo
 		if ( imageNode.parentNode && imageNode.parentNode.nodeName === 'A' ) {
 			link = imageNode.parentNode;
@@ -385,6 +386,18 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 			metadata.linkClassName = link.className;
 		}
 
+		// Extract media-credit
+		if ( link ) {
+			mediaCreditBlock = dom.getNext( link, '.mceMediaCreditTemp' );			
+;
+		} else {
+			mediaCreditBlock = dom.getNext( imageNode, '.mceMediaCreditTemp' );;
+		}
+		
+		if (mediaCreditBlock) {
+			metadata.align = (metadata.align && metadata.align != 'none' ) ? metadata.align : dom.getAttrib(mediaCreditBlock, 'data-media-credit-align', '').replace( 'align', '' );
+		}
+		
 		return metadata;
 	}
 
@@ -395,6 +408,7 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 	function updateImage( imageNode, imageData ) {
 		var classes, className, node, html, parent, wrap, linkNode,
 			captionNode, dd, dl, id, attrs, linkAttrs, width, height,
+			mediaCreditNode, mediaCreditHTML = '',
 			dom = editor.dom;
 
 		classes = tinymce.explode( imageData.extraClasses, ' ' );
@@ -403,8 +417,21 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 			classes = [];
 		}
 
+		// setup nodes for later checks
+		if ( imageNode.parentNode && imageNode.parentNode.nodeName === 'A' && ! hasTextContent( imageNode.parentNode ) ) {
+			node = imageNode.parentNode;
+		} else {
+			node = imageNode;
+		}
+		mediaCreditNode = dom.getNext( node, '.mceMediaCreditTemp' );			
+		
+		// set alignment if there is no caption
 		if ( ! imageData.caption ) {
-			classes.push( 'align' + imageData.align );
+			if (mediaCreditNode) {
+				dom.setAttrib( mediaCreditNode, 'data-media-credit-align', 'align' + imageData.align );
+			} else {
+				classes.push( 'align' + imageData.align );
+			}
 		}
 
 		if ( imageData.attachment_id ) {
@@ -422,6 +449,11 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 			height = imageData.customHeight;
 		}
 
+		// set width for [media-credit] in any case
+		if (mediaCreditNode) {
+			dom.setAttrib( mediaCreditNode, 'style', 'width:' + width + 'px');
+		}
+		
 		attrs = {
 			src: imageData.url,
 			width: width || null,
@@ -462,17 +494,16 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 
 		captionNode = editor.dom.getParent( imageNode, '.mceTemp' );
 
-		if ( imageNode.parentNode && imageNode.parentNode.nodeName === 'A' && ! hasTextContent( imageNode.parentNode ) ) {
-			node = imageNode.parentNode;
-		} else {
-			node = imageNode;
-		}
-
 		if ( imageData.caption ) {
 
 			id = imageData.attachment_id ? 'attachment_' + imageData.attachment_id : null;
 			className = 'wp-caption align' + ( imageData.align || 'none' );
 
+			// set alignment for nested media-credit if necessary
+			if (mediaCreditNode) {
+				dom.setAttrib( mediaCreditNode, 'data-media-credit-align', 'align' + imageData.align );
+			}
+			
 			if ( ! editor.getParam( 'wpeditimage_html5_captions' ) ) {
 				width = parseInt( width, 10 );
 				width += 10;
@@ -498,15 +529,25 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 			} else {
 				id = id ? 'id="'+ id +'" ' : '';
 
+				// unhook media-credit wrapper
+				if (mediaCreditNode) {
+					mediaCreditHTML = dom.getOuterHTML( mediaCreditNode );
+				}
+				
 				// should create a new function for generating the caption markup
 				html =  '<dl ' + id + 'class="' + className +'" style="width: '+ width +'px">' +
-					'<dt class="wp-caption-dt">' + dom.getOuterHTML( node ) + '</dt><dd class="wp-caption-dd">'+ imageData.caption +'</dd></dl>';
+					'<dt class="wp-caption-dt">' + dom.getOuterHTML( node ) + mediaCreditHTML  + '</dt><dd class="wp-caption-dd">'+ imageData.caption +'</dd></dl>';
 
-				if ( parent = dom.getParent( node, 'p' ) ) {
+				if ( (parent = dom.getParent( node, 'p' )) || 
+					 (parent = dom.getParent( node, '.mceMediaCreditOuterTemp' )) ) {
 					wrap = dom.create( 'div', { 'class': 'mceTemp' }, html );
 					dom.insertAfter( wrap, parent );
 					dom.remove( node );
 
+					if (mediaCreditNode) {
+						dom.remove( mediaCreditNode );
+					}
+					
 					if ( dom.isEmpty( parent ) ) {
 						dom.remove( parent );
 					}
@@ -515,10 +556,20 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 				}
 			}
 		} else if ( captionNode ) {
-			// Remove the caption wrapper and place the image in new paragraph
-			parent = dom.create( 'p' );
+			// Remove the caption wrapper and place the image in new media-credit wrapper or a new paragraph
+			mediaCreditNode = dom.getNext( node, '.mceMediaCreditTemp' );
+			
+			if (mediaCreditNode) {
+				parent = dom.create( 'div', { 'class': 'mceMediaCreditOuterTemp' } );
+			} else {
+				parent = dom.create( 'p' );
+			}
 			captionNode.parentNode.insertBefore( parent, captionNode );
 			parent.appendChild( node );
+			if (mediaCreditNode) {
+				parent.appendChild( mediaCreditNode );
+			}
+			
 			dom.remove( captionNode );
 		}
 
@@ -947,7 +998,8 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 		if ( cmd === 'mceInsertContent' ) {
 			// When inserting content, if the caret is inside a caption create new paragraph under
 			// and move the caret there
-			if ( node = dom.getParent( editor.selection.getNode(), 'div.mceTemp' ) ) {
+			if ( (node = dom.getParent( editor.selection.getNode(), 'div.mceTemp' )) ||
+				 (node = dom.getParent( editor.selection.getNode(), 'div.mceMediaCreditOuterTemp' )) ) {
 				p = dom.create( 'p' );
 				dom.insertAfter( p, node );
 				editor.selection.setCursorLocation( p, 0 );
@@ -1010,6 +1062,10 @@ tinymce.PluginManager.add( 'wpeditimage2', function( editor ) {
 			node = selection.getNode();
 			wrap = dom.getParent( node, 'div.mceTemp' );
 
+			if ( !wrap ) {
+				wrap = dom.getParent( node, 'div.mceMediaCreditOuterTemp' )
+			}
+			
 			if ( wrap ) {
 				dom.events.cancel( event ); // Doesn't cancel all :(
 
