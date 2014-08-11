@@ -33,9 +33,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			}
 			
 			c = trim( c );
-			//img = c.match( /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)([\s\S]*)/i );
 			img = c.match(/((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?(?:\s*\[\/media-credit\])?)([\s\S]*)/i);
-						
+			img = img != null ? img : c.match( /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)([\s\S]*)/i ); // alternative match if there is no media-credit shortcode
+			
 			if ( img && img[2] ) {
 				cap = trim( img[2] );
 				img = trim( img[1] );
@@ -58,7 +58,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				w = w[1];
 			}
 
-			if ( ! w || ! cap ) {
+			if ( ! w || ! cap ) {				
 				return c;
 			}
 

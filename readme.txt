@@ -4,7 +4,7 @@ Donate link: http://www.scottbressler.com/blog/plugins/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 3.9
 Tested up to: 3.9
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -87,6 +87,9 @@ Note the link to www.artistwebsite.com above.
 
 
 == Changelog ==
+
+= 2.1.1 (Aug. 11, 2014) =
+* Fix Visual Editor mode when credit field is empty
 
 = 2.1.0 (Apr. 16, 2014) =
 * Compatibility with Wordpress 3.9 (TinyMCE 4.x)
