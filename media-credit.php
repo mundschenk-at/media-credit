@@ -605,6 +605,8 @@ function is_media_settings_page( ) {
 	return $pagenow == 'options-media.php';
 }
 
+if (defined(EXPERIMENTAL_FEATURES)) {
+
 /*
  * Bulk edit for authors
  */
@@ -721,5 +723,7 @@ function add_book_columns($columns) {
 					'book_author' =>__( 'Book Author')));
 }
 add_filter('manage_attachment_posts_columns' , 'add_book_columns');
+
+} // EXPERIMENTAL FEATURES
 
 ?>
