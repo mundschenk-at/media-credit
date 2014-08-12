@@ -10,7 +10,7 @@ Adds a "Credit" field when uploading media to posts and displays it under the im
 
 == Description ==
 
-Feel free to get in touch with me about anything you'd like me to add to this plugin or any feedback. I love hearing from my users! E-mail me [here](mailto:sbressler@gmail.com "E-mail Scott!").
+Feel free to get in touch with me about anything you'd like me to add to this plugin or any feedback. We love hearing from our users! [Start a thread on the plugin forum](https://wordpress.org/tags/media-credit#postform) and we'll get back to you shortly!
 
 This plugin adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -89,7 +89,7 @@ Note the link to www.artistwebsite.com above.
 == Changelog ==
 
 = 2.1.2 (Aug. 12, 2014) =
-* Fixed a packagin error that rendered the plugin inoperational
+* Fixed a packaging error that rendered the plugin inoperational
 
 = 2.1.1 (Aug. 11, 2014) =
 * Fix Visual Editor mode when credit field is empty
