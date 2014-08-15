@@ -88,6 +88,10 @@ Note the link to www.artistwebsite.com above.
 
 == Changelog ==
 
+= 2.1.3 (Aug. xx, 2014) =
+* Added option to prevent attachment authors as default credit
+* Updated TinyMCE plugin for Wordpress 4.0
+
 = 2.1.2 (Aug. 12, 2014) =
 * Fixed a packaging error that rendered the plugin inoperational
 
