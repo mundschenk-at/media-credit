@@ -9,7 +9,7 @@ Author URI: http://www.scottbressler.com/blog/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '2.1.2' );
+define( 'MEDIA_CREDIT_VERSION', '2.1.3' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -27,7 +27,8 @@ function set_default_media_credit_options() {
 		'install_date' => date( 'Y-m-d' ),
 		'separator' => MEDIA_CREDIT_DEFAULT_SEPARATOR,
 		'organization' => MEDIA_CREDIT_DEFAULT_ORGANIZATION,
-		'credit_at_end' => false
+		'credit_at_end' => false,
+		'no_default_credit' => false
 	);
 	$installed_options = get_option( MEDIA_CREDIT_OPTION );
 	if ( empty( $installed_options ) ) { // Install plugin for the first time
@@ -45,6 +46,13 @@ function set_default_media_credit_options() {
 		$wpdb->update( $wpdb->postmeta, array( 'meta_key' => MEDIA_CREDIT_POSTMETA_KEY ), array( 'meta_key' => 'media-credit' ) );
 
 		$installed_options['version'] = '1.0.1';
+		update_option( MEDIA_CREDIT_OPTION, $installed_options );
+	}
+	
+	if ( version_compare( $installed_options['version'], '2.1.3', '<' ) ) { // Upgrade plugin to 2.1.3
+		// Update all media-credit postmeta keys to _media_credit
+		$installed_options['version'] = '2.1.3';
+		$installed_options['no_default_credit'] = $options['no_default_credit'];
 		update_option( MEDIA_CREDIT_OPTION, $installed_options );
 	}
 }
@@ -184,7 +192,7 @@ add_filter('attachment_fields_to_edit', 'add_media_credit', 10, 2);
 function save_media_credit($post, $attachment) {
 	$wp_user_id = $attachment['media-credit-hidden'];
 	$freeform_name = $attachment['media-credit'];
-		
+	
 	if ( isset( $wp_user_id ) && $wp_user_id != '' && $freeform_name === get_the_author_meta( 'display_name', $wp_user_id ) ) {
 		// a valid WP user was selected, and the display name matches the free-form
 		// the final conditional is necessary for the case when a valid user is selected, filling in the hidden field,
@@ -272,13 +280,16 @@ function media_credit_caption_shortcode($attr, $content = null) {
 function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $caption, $title, $align, $url, $size, $alt = '' ) {
 	$post = get_post($attachment_id);
 	$credit_meta = get_freeform_media_credit($post);
+	$options = get_option( MEDIA_CREDIT_OPTION );
 	
 	if ( $credit_meta == MEDIA_CREDIT_EMPTY_META_STRING )
 		return $html;
 	else if ( $credit_meta != '' )
 		$credit = 'name="' . $credit_meta . '"';
-	else {
+	else if ( $option['no_default_credit'] == false ) {
 		$credit = 'id=' . $post->post_author;
+	} else {
+		return $html;
 	}
 	
 	if ( ! preg_match( '/width="([0-9]+)/', $html, $matches ) )
@@ -453,7 +464,8 @@ function add_media_credit_menu() {
 	add_settings_field('separator', 'Separator', 'media_credit_separator', 'media', MEDIA_CREDIT_OPTION);
 	add_settings_field('organization', 'Organization', 'media_credit_organization', 'media', MEDIA_CREDIT_OPTION);
 	add_settings_field('credit_at_end', 'Display credit after posts', 'media_credit_end_of_post', 'media', MEDIA_CREDIT_OPTION);
-
+	add_settings_field('no_default_credit', 'Do not display default credit', 'media_credit_no_default_credit', 'media', MEDIA_CREDIT_OPTION);
+	
 	// Call register settings function
 	add_action( 'admin_init', 'media_credit_init' );
 }
@@ -581,6 +593,14 @@ function media_credit_end_of_post() {
 	$curr_user = wp_get_current_user();
 	echo "<br /><em>Preview</em>: Images courtesy of <span id='preview'><a href='" . get_author_posts_url($curr_user->ID) . "'>$curr_user->display_name</a>${options['separator']}${options['organization']}</span>, Jane Doe and John Smith";
 	echo "<br /><strong>Warning</strong>: This will cause credit for all images in all posts to display at the bottom of every post on this blog";
+}
+
+function media_credit_no_default_credit() {
+	$options = get_option( MEDIA_CREDIT_OPTION );
+	$no_default_credit = array_key_exists( 'no_default_credit', $options ) ? $options['no_default_credit'] : false;
+	$explanation = "Do not display the attachment author as default credit if it has not been set explicitly (= freeform credits only).";
+	echo "<input type='checkbox' id='media-credit[no_default_credit]' name='media-credit[no_default_credit]' value='1' " . checked(1, $no_default_credit, false) . " />";
+	echo "<label for='media-credit[credit_at_end]' style='margin-left:5px'>$explanation</label>";
 }
 
 function media_credit_options_validate($input) {
