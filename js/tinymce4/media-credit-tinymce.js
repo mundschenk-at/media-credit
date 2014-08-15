@@ -673,8 +673,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		dom.setAttrib( node, 'data-wp-imgselect', 1 );
 		rectangle = dom.getRect( node );
 
-		toolbarHtml = '<div class="dashicons dashicons-edit edit" data-mce-bogus="all"></div>' +
-			'<div class="dashicons dashicons-no-alt remove" data-mce-bogus="all"></div>';
+		toolbarHtml = '<i class="dashicons dashicons-edit edit" data-mce-bogus="all"></i>' +
+			'<i class="dashicons dashicons-no-alt remove" data-mce-bogus="all"></i>';
 
 		toolbar = dom.create( 'p', {
 			'id': 'wp-image-toolbar',
