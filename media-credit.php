@@ -504,11 +504,15 @@ function media_credit_tiny_mce_plugins( $plugins ) {
 function media_credit_mce_external_plugins( $plugins ) {
 	$options = get_option( MEDIA_CREDIT_OPTION );
 	$authors = get_users(); //get_media_credit_authors_for_post();
+	
+	$json_separator = json_encode($options['separator']);
+	$json_organization = json_encode($options['organization']);
+	
 	echo "
 	<script type='text/javascript'>
 	var \$mediaCredit = {
-		'separator': '{$options['separator']}',
-		'organization': '{$options['organization']}',
+		'separator': {$json_separator},
+		'organization': {$json_organization},
 		'id': 
 		{
 		";
