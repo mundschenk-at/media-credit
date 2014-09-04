@@ -3,8 +3,8 @@ Contributors: sbressler, pputzer
 Donate link: http://www.scottbressler.com/blog/plugins/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 3.9
-Tested up to: 3.9
-Stable tag: 2.1.2
+Tested up to: 4.0
+Stable tag: 2.2.0
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -88,9 +88,10 @@ Note the link to www.artistwebsite.com above.
 
 == Changelog ==
 
-= 2.1.3 (Aug. xx, 2014) =
+= 2.2.0 (Sep. 4, 2014) =
 * Added option to prevent attachment authors as default credit
 * Updated TinyMCE plugin for Wordpress 4.0
+* Various bugfixes
 
 = 2.1.2 (Aug. 12, 2014) =
 * Fixed a packaging error that rendered the plugin inoperational
@@ -153,6 +154,9 @@ Note the link to www.artistwebsite.com above.
 * Initial release.
 
 == Upgrade Notice ==
+
+= 2.2.0 =
+Updating plugin to maintain full-functionality in WordPress 4.0, with some minor bug fixes
 
 = 1.1.2 =
 Updating plugin to maintain full-functionality in WordPress 3.1, with some minor bug fixes
