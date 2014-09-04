@@ -173,6 +173,7 @@ function add_media_credit($fields, $post) {
 	$author_for_script = ($author == '') ? -1 : $author;
 	$html_hidden = "<input name='attachments[$post->ID][media-credit-hidden]' id='attachments[$post->ID][media-credit-hidden]' type='hidden' value='$author' class='media-credit-hidden' data-author='$author_for_script' data-post-id='$post->ID' data-author-display='$author_display' />";
 	$fields["media-credit-hidden"] = array(
+		'label' => '', /* necessary for HTML type fields */
 		'input' => 'html',
 		'html' => $html_hidden,
 		'show_in_edit' => true,
