@@ -512,8 +512,10 @@ function media_credit_mce_external_plugins( $plugins ) {
 		'id': 
 		{
 		";
-		foreach ($authors as $author)
-			echo "'{$author->ID}': '{$author->display_name}',";
+		foreach ($authors as $author) {
+			$json_author = json_encode($author->display_name);
+			echo "'{$author->ID}': {$json_author},";
+		}
 		echo "
 		}
 	};
