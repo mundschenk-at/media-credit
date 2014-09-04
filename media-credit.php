@@ -49,9 +49,9 @@ function set_default_media_credit_options() {
 		update_option( MEDIA_CREDIT_OPTION, $installed_options );
 	}
 	
-	if ( version_compare( $installed_options['version'], '2.1.3', '<' ) ) { // Upgrade plugin to 2.1.3
+	if ( version_compare( $installed_options['version'], '2.2.0', '<' ) ) { // Upgrade plugin to 2.2.0
 		// Update all media-credit postmeta keys to _media_credit
-		$installed_options['version'] = '2.1.3';
+		$installed_options['version'] = '2.2.0';
 		$installed_options['no_default_credit'] = $options['no_default_credit'];
 		update_option( MEDIA_CREDIT_OPTION, $installed_options );
 	}
@@ -287,7 +287,7 @@ function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $captio
 		return $html;
 	else if ( $credit_meta != '' )
 		$credit = 'name="' . $credit_meta . '"';
-	else if ( $option['no_default_credit'] == false ) {
+	else if ( $options['no_default_credit'] == false ) {
 		$credit = 'id=' . $post->post_author;
 	} else {
 		return $html;
