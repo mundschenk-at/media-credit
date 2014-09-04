@@ -4,7 +4,7 @@ Donate link: http://www.scottbressler.com/blog/plugins/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 3.9
 Tested up to: 4.0
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -87,6 +87,9 @@ Note the link to www.artistwebsite.com above.
 
 
 == Changelog ==
+
+= 2.2.1 (Sep. 4, 2014) =
+* Fixed E_NOTICE level error message
 
 = 2.2.0 (Sep. 4, 2014) =
 * Added option to prevent attachment authors as default credit
