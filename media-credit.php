@@ -9,7 +9,7 @@ Author URI: http://www.scottbressler.com/blog/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '2.1.3' );
+define( 'MEDIA_CREDIT_VERSION', '2.2.0' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
