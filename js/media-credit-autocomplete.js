@@ -26,8 +26,9 @@ function mediaCreditAutocomplete(id, currAuthorId, currAuthor) {
 					}, 
 			minLength: 2,
 			select: function(event, ui) {
-				console.log("select-event");
 				addID(id, ui.item.id);
+				jQuery("#attachments\\[" + id + "\\]\\[media-credit\\]").attr("value", ui.item.value).change();
+				return false;
 			},
 		    open: function(){
 		        jQuery(this).autocomplete('widget').css('z-index', 2000000);
@@ -36,8 +37,8 @@ function mediaCreditAutocomplete(id, currAuthorId, currAuthor) {
 		});
 }
 
-function addID(id, author) {
-	jQuery("#attachments\\[" + id + "\\]\\[media-credit-hidden\\]").attr("value", author);
+function addID(id, author_id) {
+	jQuery("#attachments\\[" + id + "\\]\\[media-credit-hidden\\]").attr("value", author_id);
 }
 
 function removeID(id) {

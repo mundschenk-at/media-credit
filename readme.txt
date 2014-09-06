@@ -4,7 +4,7 @@ Donate link: http://www.scottbressler.com/blog/plugins/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 3.9
 Tested up to: 4.0
-Stable tag: 2.2.1
+Stable tag: 2.2.2
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -87,6 +87,10 @@ Note the link to www.artistwebsite.com above.
 
 
 == Changelog ==
+
+= 2.2.2 (Sep. 6, 2014) =
+* Fixed long-standing bug with saving autocompleted credits
+* Fixed missing autocomplete in WP 4.0 media grid
 
 = 2.2.1 (Sep. 4, 2014) =
 * Fixed E_NOTICE level error message

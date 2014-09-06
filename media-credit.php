@@ -3,13 +3,13 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 2.2.1
+Version: 2.2.2
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '2.2.1' );
+define( 'MEDIA_CREDIT_VERSION', '2.2.2' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -193,7 +193,7 @@ add_filter('attachment_fields_to_edit', 'add_media_credit', 10, 2);
 function save_media_credit($post, $attachment) {
 	$wp_user_id = $attachment['media-credit-hidden'];
 	$freeform_name = $attachment['media-credit'];
-	
+		
 	if ( isset( $wp_user_id ) && $wp_user_id != '' && $freeform_name === get_the_author_meta( 'display_name', $wp_user_id ) ) {
 		// a valid WP user was selected, and the display name matches the free-form
 		// the final conditional is necessary for the case when a valid user is selected, filling in the hidden field,
@@ -621,8 +621,8 @@ function media_credit_options_validate($input) {
 function is_media_edit_page( ) {
 	global $pagenow;
 	
-	$media_edit_pages = array('post-new.php', 'post.php', 'page.php', 'page-new.php', 'media-upload.php', 'media.php', 'media-new.php', 'ajax-actions.php');
-		
+	$media_edit_pages = array('post-new.php', 'post.php', 'page.php', 'page-new.php', 'media-upload.php', 'media.php', 'media-new.php', 'ajax-actions.php', 'upload.php');
+			
 	return in_array($pagenow, $media_edit_pages);
 }
 
