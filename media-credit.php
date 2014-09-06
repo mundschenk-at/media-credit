@@ -3,13 +3,13 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 2.2.2
+Version: 2.2.3
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '2.2.2' );
+define( 'MEDIA_CREDIT_VERSION', '2.2.3' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -474,10 +474,10 @@ function add_media_credit_menu() {
 function media_credit_init() { // whitelist options
 	register_setting( 'media', MEDIA_CREDIT_OPTION, 'media_credit_options_validate' );
 	if ( is_media_settings_page( ) )
-		wp_enqueue_script( 'media-credit', MEDIA_CREDIT_URL . 'js/media-credit-preview.js', array('jquery'), 1.0, true);
+		wp_enqueue_script( 'media-credit', MEDIA_CREDIT_URL . 'js/media-credit-preview.js', array('jquery'), MEDIA_CREDIT_VERSION, true);
 
 	if ( is_media_edit_page( ) ) {
-		wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-ui-autocomplete' /*, 'jquery-livequery'*/), '1.2', true);
+		wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-ui-autocomplete'), MEDIA_CREDIT_VERSION, true);
 	}
 
 	// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages
