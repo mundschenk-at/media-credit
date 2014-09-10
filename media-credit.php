@@ -378,9 +378,9 @@ if ( !empty( $options['credit_at_end'] ) )
 function media_credit_stylesheet() {
 	$options = get_option( MEDIA_CREDIT_OPTION );
 	if ( !empty( $options['credit_at_end'] ) ) // Do not display inline media credit if media credit is displayed at end of posts.
-		wp_enqueue_style( 'media-credit-end', MEDIA_CREDIT_URL . 'css/media-credit-end.css', array(), 1.0, 'all');
+		wp_enqueue_style( 'media-credit-end', MEDIA_CREDIT_URL . 'css/media-credit-end.css', array(), MEDIA_CREDIT_VERSION, 'all');
 	else
-		wp_enqueue_style( 'media-credit', MEDIA_CREDIT_URL . 'css/media-credit.css', array(), 1.0, 'all');
+		wp_enqueue_style( 'media-credit', MEDIA_CREDIT_URL . 'css/media-credit.css', array(), MEDIA_CREDIT_VERSION, 'all');
 }
 add_action('wp_print_styles', 'media_credit_stylesheet');
 
