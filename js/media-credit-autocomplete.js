@@ -1,6 +1,6 @@
 function mediaCreditAutocomplete(id, currAuthorId, currAuthor) {
-	var PLUGIN_DIR = "../wp-content/plugins/media-credit/"; //TODO: better way to do this?
-	var inputField = "input#attachments\\[" + id + "\\]\\[media-credit\\]";
+	var inputField = "#attachments\\[" + id + "\\]\\[media-credit\\]";
+	var hiddenField = "#attachments\\[" + id + "\\]\\[media-credit-hidden\\]";
 	
 	jQuery(inputField)
 		.click(function() {
@@ -27,7 +27,7 @@ function mediaCreditAutocomplete(id, currAuthorId, currAuthor) {
 			minLength: 2,
 			select: function(event, ui) {
 				addID(id, ui.item.id);
-				jQuery("#attachments\\[" + id + "\\]\\[media-credit\\]").attr("value", ui.item.value).change();
+				jQuery(inputField).attr("value", ui.item.value).change();
 				return false;
 			},
 		    open: function(){
@@ -35,24 +35,21 @@ function mediaCreditAutocomplete(id, currAuthorId, currAuthor) {
 		        return false;
 		    },
 		});
-}
-
-function addID(id, author_id) {
-	jQuery("#attachments\\[" + id + "\\]\\[media-credit-hidden\\]").attr("value", author_id);
-}
-
-function removeID(id) {
-	jQuery("#attachments\\[" + id + "\\]\\[media-credit-hidden\\]").attr("value", "");
-}
-
-function setupMediaCreditAutocomplete() {
-	that = jQuery('.media-credit-hidden');
 	
-	myData = that.data();
-	mediaCreditAutocomplete(myData.postId, myData.author, myData.authorDisplay);
-}
+	function addID(id, author_id) {
+		jQuery(hiddenField).attr("value", author_id);
+	}
 
+	function removeID(id) {
+		jQuery(hiddenField).attr("value", "");
+	}
+}
 
 jQuery(document).ready(function() {
+	function setupMediaCreditAutocomplete() {
+		myData = jQuery('.media-credit-hidden').data();
+		mediaCreditAutocomplete(myData.postId, myData.author, myData.authorDisplay);
+	}
+	
 	jQuery(document).on('focusin', '.media-credit-input:not(.ui-autocomplete-input)', null, setupMediaCreditAutocomplete);
 });
