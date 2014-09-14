@@ -593,6 +593,14 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			dom.remove( captionNode );
 		}
 
+        if ( wp.media.events ) {
+                wp.media.events.trigger( 'editor:image-update', {
+                        editor: editor,
+                        metadata: imageData,
+                        image: imageNode
+                } );
+        }
+
 		editor.nodeChanged();
 		// Refresh the toolbar
 		addToolbar( imageNode );
@@ -606,12 +614,25 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			return;
 		}
 
+		
+        metadata = extractImageData(img);
+
+		// Manipulate the metadata by reference that is fed into
+		// the PostImage model used in the media modal
+		wp.media.events.trigger('editor:image-edit', {
+			editor : editor,
+			metadata : metadata,
+			image : img
+		});
+
 		frame = wp.media({
 			frame: 'image',
 			state: 'image-details',
-			metadata: extractImageData( img )
+			metadata: metadata
 		} );
 
+		wp.media.events.trigger( 'editor:frame-create', { frame: frame } );
+		
 		callback = function( imageData ) {
 			editor.focus();
 			editor.undoManager.transact( function() {
