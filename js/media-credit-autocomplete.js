@@ -1,18 +1,15 @@
-function mediaCreditAutocomplete(id, currAuthorId, currAuthor) {
-	var inputField = "#attachments\\[" + id + "\\]\\[media-credit\\]";
-	var hiddenField = "#attachments\\[" + id + "\\]\\[media-credit-hidden\\]";
-	
+function mediaCreditAutocomplete(inputField, hiddenField, currAuthorId, currAuthor) {
 	jQuery(inputField)
 		.click(function() {
 			this.select();
 			if (this.value == currAuthor) {
-				removeID(id);
+				removeID();
 			}
 
 		})
 		.blur(function() {
-			if (this.value == "") {
-				removeID(id);
+			if (this.value == '') {
+				removeID();
 			}
 		})
 		/* --- For jQuery UI autocomplete */
@@ -22,12 +19,12 @@ function mediaCreditAutocomplete(id, currAuthorId, currAuthor) {
 									{ action: 'media_credit_author_names',
 									  term: request.term,
 									  limit: 100 }, 
-									function(data) { response(data); }, "json"); 
+									function(data) { response(data); }, 'json'); 
 					}, 
 			minLength: 2,
 			select: function(event, ui) {
-				addID(id, ui.item.id);
-				jQuery(inputField).attr("value", ui.item.value).change();
+				addID(ui.item.id);
+				jQuery(inputField).attr('value', ui.item.value).change();
 				return false;
 			},
 		    open: function(){
@@ -36,19 +33,22 @@ function mediaCreditAutocomplete(id, currAuthorId, currAuthor) {
 		    },
 		});
 	
-	function addID(id, author_id) {
-		jQuery(hiddenField).attr("value", author_id);
+	function addID(author_id) {
+		jQuery(hiddenField).attr('value', author_id);
 	}
 
-	function removeID(id) {
-		jQuery(hiddenField).attr("value", "");
+	function removeID() {
+		jQuery(hiddenField).attr('value', '');
 	}
 }
 
 jQuery(document).ready(function() {
 	function setupMediaCreditAutocomplete() {
-		myData = jQuery('.media-credit-hidden').data();
-		mediaCreditAutocomplete(myData.postId, myData.author, myData.authorDisplay);
+		var myData = jQuery('.media-credit-hidden').data();
+		var inputField = '#attachments\\[' + myData.postId + '\\]\\[media-credit\\]';
+		var hiddenField = '#attachments\\[' + myData.postId + '\\]\\[media-credit-hidden\\]';
+
+		mediaCreditAutocomplete(inputField, hiddenField, myData.author, myData.authorDisplay);
 	}
 	
 	jQuery(document).on('focusin', '.media-credit-input:not(.ui-autocomplete-input)', null, setupMediaCreditAutocomplete);
