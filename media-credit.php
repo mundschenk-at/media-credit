@@ -220,14 +220,7 @@ add_filter('attachment_fields_to_save', 'save_media_credit', 10, 2);
 function update_media_credit_in_post($post, $wp_user, $freeform = '') {
 	if ( isset( $post['post_parent'] ) && $post['post_parent'] !== 0 ) {
 		$parent = get_post( $post['post_parent'], ARRAY_A );
-		$image = wp_get_attachment_image_src($post['ID']);
-		$image = get_image_filename_from_full_url($image[0]);
-		// Verify that the media credit we're changing is for this image by matching on "wp-image-THE_ID" which is a class the img tag is in
-		$pattern = '/(media-credit.*)(id=.* |name=".*" )(align.*src=".*' . $image . '.*wp-image-' . $post['ID'] . ')/';
-		$author = ($wp_user ? 'id=' : 'name="');
-		$author .= empty($freeform) ? $post['post_author'] : ($freeform . '"');
-		$replacement = '${1}' . $author . ' ${3}';
-		$parent['post_content'] = preg_replace($pattern, $replacement, $parent['post_content']);
+		$parent['post_content'] = media_credit_filter_post_content($parent['post_content'], $post['ID'], $post['post_author'], $freeform);
 		wp_update_post($parent);
 	}
 }
@@ -410,6 +403,79 @@ function media_credit_author_names_ajax() {
 	die(0);
 }
 
+/*
+ * AJAX hook for filtering post content after editing media files
+*/
+add_action( 'wp_ajax_media_credit_filter_content', 'media_credit_filter_content_ajax' );
+function media_credit_filter_content_ajax() {
+	if ( ! isset( $_POST['post_content'] ) || !isset( $_POST['image_id'] ) || ! isset($_POST['author_id']) || ! isset($_POST['freeform']) ) {
+		wp_send_json_error();
+	}
+
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		wp_send_json_error();
+	}
+
+	$results = preg_replace('/\\\"/', '"', $_POST['post_content']);
+		
+	if ($_POST['image_id'] > 0) {
+		$results = media_credit_filter_post_content($results, $_POST['image_id'], $_POST['author_id'], $_POST['freeform']);
+	}
+	
+	wp_send_json_success($results);
+}
+
+function media_credit_filter_post_content($content, $image_id, $author_id, $freeform) {
+	preg_match_all( '/' . get_shortcode_regex() . '/s', $content, $matches, PREG_SET_ORDER );
+	
+	if (! empty( $matches ) ) {
+		foreach ( $matches as $shortcode ) {	
+			if ( 'media-credit' === $shortcode[2] ) {
+				$attr = shortcode_parse_atts( $shortcode[3] );
+				$img = $shortcode[5];
+					
+				$image_filename = wp_get_attachment_image_src($_POST['image_id']);
+				$image_filename = get_image_filename_from_full_url($image_filename[0]);
+				
+				
+				if (preg_match('/src=".*' . $image_filename . '/', $img) && preg_match('/wp-image-' . $image_id . '/', $img)) {
+	
+					if ($author_id > 0) {
+						$attr['id'] = $author_id;
+						unset($attr['name']);
+					} else {
+						$attr['name'] = $freeform;
+						unset($attr['id']);
+					}
+		
+					$new_shortcode = '[media-credit';
+	
+					if (isset($attr['id'])) {
+						$new_shortcode .= ' id=' . $attr['id'];
+						unset ($attr['id']);
+					}
+					if (isset($attr['name'])) {
+						$new_shortcode .= ' name="' . $attr['name'] . '"';
+						unset ($attr['name']);
+					}
+	
+					foreach ($attr as $name => $value) {
+						$new_shortcode .= ' ' . $name . '="' . $value . '"';
+					}
+					$new_shortcode .= ']' . $img . '[/media-credit]';
+		
+					$content = str_replace($shortcode[0], $new_shortcode, $content);
+				}
+					
+			} elseif ( ! empty( $shortcode[5] ) && has_shortcode( $shortcode[5], 'media-credit' ) ) {
+				$content = str_replace($shortcode[5], media_credit_filter_post_content($shortcode[5], $image_id, $author_id, $freeform), $content);
+			}
+		}
+	}
+		
+	return $content;
+}
+
 /**
  * Returns the users that are editable by $user_id (normally the current user) and that contain $name within their
  * display name. Important to use this function rather than just selected all users for WPMU bloggers.
@@ -478,6 +544,7 @@ function media_credit_init() { // whitelist options
 
 	if ( is_media_edit_page( ) ) {
 		wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-ui-autocomplete'), MEDIA_CREDIT_VERSION, true);
+		wp_enqueue_script('media-credit-media-handling', MEDIA_CREDIT_URL . 'js/media-credit-media-handling.js', array('jquery'), MEDIA_CREDIT_VERSION, true);
 	}
 
 	// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages
