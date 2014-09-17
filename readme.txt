@@ -4,7 +4,7 @@ Donate link: http://www.scottbressler.com/blog/plugins/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 3.9
 Tested up to: 4.0
-Stable tag: 2.2.3
+Stable tag: 2.3.0
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -79,6 +79,10 @@ Note the link to www.artistwebsite.com above.
 
 <strong>Feel free to get in touch with me about anything you'd like me to add to this list. E-mail me [here](mailto:sbressler@gmail.com "E-mail Scott!").</strong>
 
+= Why do I get unparsed [media-credit] shortcodes in my Facebook/Twitter/... previews with JetPack Publicize? =
+
+Unfortunately, this is a known bug in JetPack that can only be fixed by Automattic. As a workaround, use a different plugin for posting to social networks. Alternativel, if you make sure that you haven't got any images with credits within the first 55 words of your article, you should be fine, too.
+
 == Screenshots ==
 
 1. Media can easily be credited to the creator of the media with the new Credit field visible when uploading or editing media
@@ -87,6 +91,12 @@ Note the link to www.artistwebsite.com above.
 
 
 == Changelog ==
+
+= 2.3.0 (Sep. 18, 2014) =
+* Code clean-up
+* Added support for visual editing of shortcodes
+* Fixed edited posts not updating when credits are changed via the media modal.
+* Added FAQ regarding unparsed shortcodes with JetPack Publicize
 
 = 2.2.3 (Sep. 10, 2014) =
 * Add plugin version to CSS & JS files to ensure the autocomplete bugfix is applied.
