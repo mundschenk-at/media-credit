@@ -327,7 +327,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			linkTargetBlank: false,
 			linkRel: '',
 			title: '',
-			mediacredit: ''
+			mediaCreditName: '',
+			mediaCreditID: ''
 		};
 
 		metadata.url = dom.getAttrib( imageNode, 'src' );
@@ -411,6 +412,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		
 		if (mediaCreditBlock) {
 			metadata.align = (metadata.align && metadata.align != 'none' ) ? metadata.align : dom.getAttrib(mediaCreditBlock, 'data-media-credit-align', '').replace( 'align', '' );
+			metadata.mediaCreditName =  dom.getAttrib(mediaCreditBlock, 'data-media-credit-name', '');
+			metadata.mediaCreditID =  dom.getAttrib(mediaCreditBlock, 'data-media-credit-id', '');
 		}
 		
 		return metadata;

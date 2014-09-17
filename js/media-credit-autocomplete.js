@@ -25,6 +25,7 @@ function mediaCreditAutocomplete(inputField, hiddenField, currAuthorId, currAuth
 			select: function(event, ui) {
 				addID(ui.item.id);
 				jQuery(inputField).attr('value', ui.item.value).change();
+				jQuery(hiddenField).change(); // only needed for property dialog
 				return false;
 			},
 		    open: function(){
