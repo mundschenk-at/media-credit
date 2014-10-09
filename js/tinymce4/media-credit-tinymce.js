@@ -658,10 +658,10 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	function removeImage( node ) {
 		var wrap;
 
-		if ( node.nodeName === 'DIV' && editor.dom.hasClass( node, 'mceTemp' ) ) {
+		if ( node.nodeName === 'DIV' && ( editor.dom.hasClass( node, 'mceTemp' ) || editor.dom.hasClass( node, 'mceMediaCreditOuterTemp' ) ) ) {
 			wrap = node;
 		} else if ( node.nodeName === 'IMG' || node.nodeName === 'DT' || node.nodeName === 'A' ) {
-			wrap = editor.dom.getParent( node, 'div.mceTemp' );
+			wrap = editor.dom.getParent( node, 'div.mceTemp' ) || editor.dom.getParent( node, 'div.mceMediaCreditOuterTemp' );
 		}
 
 		if ( wrap ) {
@@ -1187,10 +1187,10 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		} else if ( keyCode === tinymce.util.VK.DELETE || keyCode === tinymce.util.VK.BACKSPACE ) {
 			node = selection.getNode();
 
-			if ( node.nodeName === 'DIV' && dom.hasClass( node, 'mceTemp' ) ) {
+			if ( node.nodeName === 'DIV' && (dom.hasClass( node, 'mceTemp' ) || dom.hasClass( node, 'mceMediaCreditOuterTemp' ))) {
 				wrap = node;
 			} else if ( node.nodeName === 'IMG' || node.nodeName === 'DT' || node.nodeName === 'A' ) {
-				wrap = dom.getParent( node, 'div.mceTemp' );
+				wrap = dom.getParent( node, 'div.mceTemp' ) || editor.dom.getParent( node, 'div.mceMediaCreditOuterTemp' );
 			}
 
 			if ( wrap ) {
