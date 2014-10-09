@@ -416,7 +416,8 @@ function media_credit_filter_content_ajax() {
 		wp_send_json_error();
 	}
 
-	$results = preg_replace('/\\\"/', '"', $_POST['post_content']);
+	// unescape single & double quotes
+	$results = preg_replace(array('/\\\"/', "/\\\'/"), array('"', "'"), $_POST['post_content']); 
 		
 	if ($_POST['image_id'] > 0) {
 		$results = media_credit_filter_post_content($results, $_POST['image_id'], $_POST['author_id'], $_POST['freeform']);
