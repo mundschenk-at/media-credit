@@ -358,8 +358,6 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				metadata.attachment_id = parseInt( name.replace( 'wp-image-', '' ), 10 );
 			} else if ( /^align/.test( name ) ) {
 				metadata.align = name.replace( 'align', '' );
-            } else if ( name && name !== 'wp-caption' ) { 
-            	captionClassName.push( name ); 
 			} else if ( /^size/.test( name ) ) {
 				metadata.size = name.replace( 'size-', '' );
 			} else {
@@ -381,6 +379,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			tinymce.each( classes, function( name ) {
 				if ( /^align/.test( name ) ) {
 					metadata.align = name.replace( 'align', '' );
+	            } else if ( name && name !== 'wp-caption' ) { 
+            		captionClassName.push( name ); 
 				}
 			} );
 
