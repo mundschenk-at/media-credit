@@ -92,7 +92,7 @@ Unfortunately, this is a known bug in JetPack that can only be fixed by Automatt
 
 == Changelog ==
 
-= 2.3.1 (Oct. 22, 2014) =
+= 2.3.2 (Oct. 22, 2014) =
 * Fixed editing of image classes in the visual editor
 
 = 2.3.1 (Oct. 9, 2014) =
