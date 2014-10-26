@@ -4,7 +4,7 @@ Donate link: http://www.scottbressler.com/blog/plugins/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 3.9
 Tested up to: 4.0
-Stable tag: 2.3.2
+Stable tag: 2.3.3
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -91,6 +91,9 @@ Unfortunately, this is a known bug in JetPack that can only be fixed by Automatt
 
 
 == Changelog ==
+
+= 2.3.3 (Oct. 26, 2014) =
+* Fixed encoding bug with HTML credit lines
 
 = 2.3.2 (Oct. 22, 2014) =
 * Fixed editing of image classes in the visual editor

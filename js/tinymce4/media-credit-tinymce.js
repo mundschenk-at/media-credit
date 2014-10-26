@@ -146,10 +146,29 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			credit = name ? name : ($mediaCredit.id[id] + $mediaCredit.separator + $mediaCredit.organization);
 			credit = credit.replace(/<[^>]+>(.*)<\/[^>]+>/g, '$1'); // basic sanitation
 
-			out = img + '<span class="mceMediaCreditTemp mceNonEditable" style="max-width:' + width + 'px" data-media-credit-id="' + id + '" data-media-credit-name="' + encodeURIComponent(name) + '" data-media-credit-align="' + align + '" >' + credit + '</span>';
+
+			out = img + wp.html.string({
+				tag: 'span',
+				content: credit,
+				attrs: {
+					"class": "mceMediaCreditTemp mceNonEditable",
+					style: "max-width: " + width + "px",
+					"data-media-credit-id": id,
+					"data-media-credit-name": name,
+					"data-media-credit-align": align
+				}
+			});
+//			out = img + '<span class="mceMediaCreditTemp mceNonEditable" style="max-width:' + width + 'px" data-media-credit-id="' + id + '" data-media-credit-name="' + encodeURIComponent(name) + '" data-media-credit-align="' + align + '" >' + credit + '</span>';
 			
 			if (standalone) {
-				out = '<div class="mceMediaCreditOuterTemp">' + out + '</div>';
+				out = wp.html.string({
+					tag: "div",
+					content: out,
+					attrs: {
+						class: "mceMediaCreditOuterTemp"
+					}
+				});
+				//out = <div class="mceMediaCreditOuterTemp">' + out + '</div>';
 			}
 			
 			return out;
@@ -254,13 +273,11 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		
 			w = c.match( /width:\s*([0-9]*)\s*px/ );
 			w = ( w && w[1] ) ? w[1] : '';
-					
+		
 			id = parseAttribute( c, 'data-media-credit-id', '[0-9]+', true );
 			align = parseAttribute( c, 'data-media-credit-align', '[^\'"]*', false );
-			name = decodeURIComponent(parseAttribute( c, 'data-media-credit-name', '[^"]*', false ));
-			
-			//name = trim( c ).replace( /data-media-credit-name=['"]/, '' ).replace( /['"]$/, '' );
-
+			name = _.unescape(parseAttribute( c, 'data-media-credit-name', '[^"]*', false ));
+						
 			if ( ! w || ! (name || id) ) {
 				return b;
 			}
@@ -328,7 +345,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			linkRel: '',
 			title: '',
 			mediaCreditName: '',
-			mediaCreditID: ''
+			mediaCreditID: '',
+			foobar: 'xx',
 		};
 
 		metadata.url = dom.getAttrib( imageNode, 'src' );
