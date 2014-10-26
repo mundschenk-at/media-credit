@@ -346,7 +346,6 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			title: '',
 			mediaCreditName: '',
 			mediaCreditID: '',
-			foobar: 'xx',
 		};
 
 		metadata.url = dom.getAttrib( imageNode, 'src' );
