@@ -3,13 +3,13 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 2.3.3
+Version: 2.3.4
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '2.3.3' );
+define( 'MEDIA_CREDIT_VERSION', '2.3.4' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -392,7 +392,7 @@ function media_credit_author_names_ajax() {
 	}
 
 	if ( isset( $_POST['term'] ) ) {
-		if ($authors = get_editable_authors_by_name( wp_get_current_user()->id, $_POST['term'], $_POST['limit'] ) ) {
+		if ($authors = get_editable_authors_by_name( wp_get_current_user()->ID, $_POST['term'], $_POST['limit'] ) ) {
 			foreach ( $authors as $author )
 				$results[] = (object) array("id"=>$author->ID, "label"=>$author->display_name, "value"=>$author->display_name);
 			echo json_encode($results);
@@ -505,7 +505,7 @@ function get_editable_authors_by_name( $user_id, $name, $limit ) {
 		$editable = join(',', $editable);
 		// Prepare autocomplete term for query: add wildcard after, and replace all spaces with wildcards
 		// 'Scott Bressler' becomes 'Scott%Bressler%', and literal _ and %'s are escaped.
-		$name = str_replace( ' ', '%', like_escape( $name ) ) . '%';
+		$name = str_replace( ' ', '%', $wpdb->esc_like( $name ) ) . '%';
 		$authors = $wpdb->get_results( $wpdb->prepare( "
 			SELECT ID, display_name
 			FROM $wpdb->users
