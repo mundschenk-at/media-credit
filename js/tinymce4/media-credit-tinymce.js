@@ -498,24 +498,22 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				tag: 'span',
 				content: credit,
 				attrs: {
-					"class": "mceMediaCreditTemp mceNonEditable",
-					style: "max-width: " + width + "px",
-					"data-media-credit-id": id,
-					"data-media-credit-name": name,
-					"data-media-credit-align": align
+					'class': 'mceMediaCreditTemp mceNonEditable',
+					'data-media-credit-id': id,
+					'data-media-credit-name': name,
+					'data-media-credit-align': align
 				}
 			});
-//			out = img + '<span class="mceMediaCreditTemp mceNonEditable" style="max-width:' + width + 'px" data-media-credit-id="' + id + '" data-media-credit-name="' + encodeURIComponent(name) + '" data-media-credit-align="' + align + '" >' + credit + '</span>';
 			
 			if (standalone) {
 				out = wp.html.string({
-					tag: "div",
+					tag: 'div',
 					content: out,
 					attrs: {
-						'class': "mceMediaCreditOuterTemp"
+						'class': 'mceMediaCreditOuterTemp ' + align,
+						style: 'width: ' + (width + 10) + 'px'
 					}
 				});
-				//out = <div class="mceMediaCreditOuterTemp">' + out + '</div>';
 			}
 			
 			return out;
@@ -604,11 +602,10 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		var pattern = /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span>/g;
 		
 		if (standalone) {
-			pattern = /<div class="mceMediaCreditOuterTemp">((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span><\/div>/g;
+			pattern = /<div class="mceMediaCreditOuterTemp[^"]*"[^>]*>((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span><\/div>/g;
 		}
 		
-		return content.replace( pattern , function( a, b, c, d) {
-
+		return content.replace( pattern , function( a, b, c, d) {			
 			var out = '', id, name, w, align, 
 				trim = tinymce.trim;
 
@@ -618,7 +615,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				return '<p>' + d + '</p>';
 			}
 		
-			w = c.match( /width:\s*([0-9]*)\s*px/ );
+			//w = c.match( /width:\s*([0-9]*)\s*px/ );
+			w = b.match( /width="([0-9]*)"/ );
 			w = ( w && w[1] ) ? w[1] : '';
 		
 			id = parseAttribute( c, 'data-media-credit-id', '[0-9]+', true );
@@ -802,7 +800,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	function updateImage( imageNode, imageData ) {
 		var classes, className, node, html, parent, wrap, linkNode,
 			captionNode, dd, dl, id, attrs, linkAttrs, width, height, align,
-			mediaCreditNode, mediaCreditHTML = '',
+			mediaCreditNode, mediaCreditWrapper, mediaCreditHTML = '',
 			dom = editor.dom;
 
 		classes = tinymce.explode( imageData.extraClasses, ' ' );
@@ -844,9 +842,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		}
 
 		// set width for [media-credit] in any case
-		if (mediaCreditNode) {
-			dom.setAttrib( mediaCreditNode, 'style', 'width:' + width + 'px');
-		}
+//		if (mediaCreditNode) {
+//			dom.setAttrib( mediaCreditNode, 'style', 'width:' + width + 'px');
+//		}
 		
 		attrs = {
 			src: imageData.url,
@@ -901,7 +899,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 			// set alignment for nested media-credit if necessary
 			if (mediaCreditNode) {
-				dom.setAttrib( mediaCreditNode, 'data-media-credit-align', 'align' + imageData.align );
+				dom.setAttrib( mediaCreditNode, 'data-media-credit-align', align );
 			}
 			
 			if ( ! editor.getParam( 'wpeditimage_html5_captions' ) ) {
@@ -964,7 +962,10 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			mediaCreditNode = dom.getNext( node, '.mceMediaCreditTemp' );
 			
 			if (mediaCreditNode) {
-				parent = dom.create( 'div', { 'class': 'mceMediaCreditOuterTemp' } );
+				align = 'align' + ( imageData.align || 'none' ); 
+
+				parent = dom.create( 'div', { 'class': 'mceMediaCreditOuterTemp ' + align,
+											  'style': 'width: ' + (width + 10) + 'px' } );
 			} else {
 				parent = dom.create( 'p' );
 			}
@@ -975,6 +976,15 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			}
 			
 			dom.remove( captionNode );
+		} else {
+			// no caption data, just update the media-credit wrapper
+			mediaCreditWrapper = dom.getParent( mediaCreditNode, '.mceMediaCreditOuterTemp' );
+			
+			if ( mediaCreditWrapper ) {
+				align = 'align' + ( imageData.align || 'none' ); 
+				mediaCreditWrapper.className = mediaCreditWrapper.className.replace( / ?align(left|center|right|none)/g, ' ' ) + align; 
+				dom.setAttrib( mediaCreditWrapper, 'style', 'width: ' + (width + 10) + 'px' );
+			}
 		}
 
         if ( wp.media.events ) {
@@ -1319,7 +1329,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	});
 
 	editor.on( 'ObjectResized', function( event ) {
-        var node = event.target;
+        var node = event.target, mediaCreditNode;
         	
 	    if ( node.nodeName === 'IMG' ) {
 	            editor.undoManager.transact( function() {
@@ -1351,7 +1361,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	editor.on( 'BeforeExecCommand', function( event ) {
 		var node, p, DL, align, replacement,
 			cmd = event.command,
-			dom = editor.dom;
+			dom = editor.dom,
+			mediaCreditNode;
 
 		if ( cmd === 'mceInsertContent' ) {
 			// When inserting content, if the caret is inside a caption create new paragraph under
@@ -1374,7 +1385,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
             } 
  
             node = DL || node; 
- 
+    		mediaCreditNode = dom.getNext( dom.getParent(node, 'a' ), '.mceMediaCreditTemp' ) || dom.select( '.mceMediaCreditTemp', node );			
+
             if ( editor.dom.hasClass( node, align ) ) { 
                 replacement = ' alignnone'; 
             } else { 
@@ -1382,7 +1394,18 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
             } 
  
             node.className = node.className.replace( / ?align(left|center|right|none)/g, '' ) + replacement; 
- 
+			
+            // set alignment for nested media-credit if necessary
+			if (mediaCreditNode) {
+				dom.setAttrib( mediaCreditNode, 'data-media-credit-align', align );
+				
+				var parent = dom.getParent(mediaCreditNode, 'div.mceMediaCreditOuterTemp');
+				if (parent) {
+					// also update container alignment for visual presentation in stand-alone case
+					parent.className = parent.className.replace( / ?align(left|center|right|none)/g, '' ) + replacement; 
+				}
+			}
+            
             editor.nodeChanged(); 
             event.preventDefault(); 
  

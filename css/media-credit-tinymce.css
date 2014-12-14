@@ -23,3 +23,24 @@ div.mceMediaCreditOuterTemp {
     position: relative;
     overflow:hidden;
 }
+
+.mceMediaCreditOuterTemp {
+    background: none repeat scroll 0 0 #fff;
+    border: 1px solid #aaa;
+    border-radius: 0;
+    margin-bottom: 6px;
+    padding-top: 5px;
+    text-align: center;
+}
+
+.mceMediaCreditOuterTemp a, .mceMediaCreditOuterTemp img {
+    border: 0 none;
+    padding: 0;
+    float: none;
+    margin: 0;
+}
+
+.mceMediaCreditOuterTemp.aligncenter img {
+    margin: auto;
+    margin-bottom: 6px;
+}
