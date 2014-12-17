@@ -92,7 +92,7 @@ Unfortunately, this is a known bug in JetPack that can only be fixed by Automatt
 
 == Changelog ==
 
-= 2.4.0 (Dec. xx, 2014) =
+= 2.4.0 (Dec. 17, 2014) =
 * Replaced some deprecated calls
 * Fixed bug that didn't add shortcode when editing a "plain" image tag.
 * Updated UI for Wordpress 4.1
