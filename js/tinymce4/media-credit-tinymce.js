@@ -800,7 +800,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	function updateImage( imageNode, imageData ) {
 		var classes, className, node, html, parent, wrap, linkNode,
 			captionNode, dd, dl, id, attrs, linkAttrs, width, height, align,
-			mediaCreditNode, mediaCreditWrapper, mediaCreditHTML = '',
+			mediaCreditNode, mediaCreditWrapper, 
 			dom = editor.dom;
 
 		classes = tinymce.explode( imageData.extraClasses, ' ' );
@@ -816,7 +816,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			node = imageNode;
 		}
 		mediaCreditNode = dom.getNext( node, '.mceMediaCreditTemp' );			
-		
+				
 		// set alignment if there is no caption
 		if ( ! imageData.caption ) {
 			if (mediaCreditNode) {
@@ -841,11 +841,6 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			height = imageData.customHeight;
 		}
 
-		// set width for [media-credit] in any case
-//		if (mediaCreditNode) {
-//			dom.setAttrib( mediaCreditNode, 'style', 'width:' + width + 'px');
-//		}
-		
 		attrs = {
 			src: imageData.url,
 			width: width || null,
@@ -965,7 +960,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				align = 'align' + ( imageData.align || 'none' ); 
 
 				parent = dom.create( 'div', { 'class': 'mceMediaCreditOuterTemp ' + align,
-											  'style': 'width: ' + (width + 10) + 'px' } );
+											  'style': 'width: ' + (parseInt(width) + 10) + 'px' } );
 			} else {
 				parent = dom.create( 'p' );
 			}

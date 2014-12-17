@@ -29,9 +29,13 @@
 			dom = editor.dom,
 			image  = options.image,
 			model = frame.content.get().model,
+			align = model.get('align'),
+			width = model.get('width'),
+			credit,
 			mediaCreditName = model.get('mediaCreditName'),
 			mediaCreditID = model.get('mediaCreditID'),
-			mediaCreditBlock, link;
+			mediaCreditBlock,
+			mediaCreditWrapper;
 
 		/* Extract mediaCreditBlock in visual editor */
 		if ( image.parentNode && image.parentNode.nodeName === 'A' ) {
@@ -39,13 +43,42 @@
 		} else {
 			mediaCreditBlock = dom.getNext( image, '.mceMediaCreditTemp' );;
 		}
-
+		
 		if ($mediaCredit.id[mediaCreditID] !== mediaCreditName)
 			mediaCreditID = '';
 
 		credit = mediaCreditID ? ($mediaCredit.id[mediaCreditID] + $mediaCredit.separator + $mediaCredit.organization) : mediaCreditName;
 		credit = credit.replace(/<[^>]+>(.*)<\/[^>]+>/g, '$1'); // basic sanitation
 		
+		if (mediaCreditBlock === null) {
+			align = 'align' + ( align || 'none' ); 
+			
+			// create new representation for media-credit
+			mediaCreditBlock = dom.create ('span', {
+												'class': 'mceMediaCreditTemp mceNonEditable',
+												'data-media-credit-id': mediaCreditID,
+												'data-media-credit-name': mediaCreditName,
+												'data-media-credit-align': align
+											}, credit);
+			
+			if ( image.parentNode && image.parentNode.nodeName === 'A' ) {
+				dom.insertAfter( mediaCreditBlock, image.parentNode );
+			} else {
+				dom.insertAfter( mediaCreditBlock, image );
+			}
+			
+			if ( !dom.getParent( mediaCreditBlock, 'dl.wp-caption' ) ) {
+				// standalone [media-credit]
+				mediaCreditWrapper = dom.create( 'div', { 'class': 'mceMediaCreditOuterTemp ' + align,
+					  									  'style': 'width: ' + (parseInt(width) + 10) + 'px' } );
+				
+				// swap existing parent with our new wrapper
+				dom.insertAfter(mediaCreditWrapper, mediaCreditBlock.parentNode);
+				dom.add(mediaCreditWrapper, mediaCreditBlock.parentNode);
+				dom.remove(mediaCreditBlock.parentNode, true);
+			}
+
+		}
 		
 		dom.setAttrib(mediaCreditBlock, 'data-media-credit-name', mediaCreditName);
 		dom.setAttrib(mediaCreditBlock, 'data-media-credit-id', mediaCreditID);
