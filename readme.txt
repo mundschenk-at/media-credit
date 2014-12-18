@@ -59,7 +59,7 @@ These options can be changed with a more verbose call to the function: `<?php di
 
 I'm so glad you asked; you certainly can! Just call `<?php get_media_credit_html($post); ?>` with an attachment_id (int) or post object for an attachment to get the media credit, including a link to the author page. To echo the results, call `<?php the_media_credit_html($post); ?>`.
 
-= Is there a template tag that just gives plain text rather than a link to the author page for users of my blog? =
+= Is there a template tag that just gives plain text rather than a link to th	e author page for users of my blog? =
 
 Yep! If you would prefer plain-text rather than a link for all media credit (and leaving out the separator and organization), call `<?php get_media_credit($post); ?>` which uses the same parameter as above. To echo the results, call `<?php the_media_credit($post); ?>`.
 
