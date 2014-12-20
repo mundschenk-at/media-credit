@@ -92,6 +92,9 @@ Unfortunately, this is a known bug in JetPack that can only be fixed by Automatt
 
 == Changelog ==
 
+= 2.4.1 (Dec. 20, 2014) =
+* Fix missing newlines when switching between HTML and Visual mode in the post editor
+
 = 2.4.0 (Dec. 17, 2014) =
 * Replaced some deprecated calls
 * Fixed bug that didn't add shortcode when editing a "plain" image tag.

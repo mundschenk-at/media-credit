@@ -594,6 +594,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		 */
 		result = getMediaCreditShortcode( result, true );
 		
+		console.log("RECONSTRUCTED: ", result);
+		
 		return result;
 	}
 	
@@ -605,17 +607,24 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			pattern = /<div class="mceMediaCreditOuterTemp[^"]*"[^>]*>((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span><\/div>/g;
 		}
 		
+		console.log("Reconstructing media credit ...");
+		console.log("CONTENT: ", content);
+		
 		return content.replace( pattern , function( a, b, c, d) {			
 			var out = '', id, name, w, align, 
 				trim = tinymce.trim;
 
+			console.log("A: ", a);
+			console.log("B: ", b);
+			console.log("C: ", c);
+			console.log("D: ", d);
+			
 			if ( b.indexOf('<img ') === -1 ) {
 				// Broken credit. The user managed to drag the image out?
 				// Try to return the credit text as a paragraph.
 				return '<p>' + d + '</p>';
 			}
 		
-			//w = c.match( /width:\s*([0-9]*)\s*px/ );
 			w = b.match( /width="([0-9]*)"/ );
 			w = ( w && w[1] ) ? w[1] : '';
 		
@@ -629,7 +638,12 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			
 			credit = id ? ('id='+id) : ('name="'+name+'"');
 			out = '[media-credit ' + credit + ' align="' + align +'" width="' + w + '"]'+ b +'[/media-credit]';
-				
+			
+			// correct newlines for standalone credits - [caption] has special handling in /wp-admin/js/editor.js for this case
+//			if ( standalone ) {
+//				out += '\n\n';
+//			}
+			
 			if ( out.indexOf('[media-credit') !== 0 ) {
 				// the caption html seems broken, try to find the image that may be wrapped in a link
 				// and may be followed by <p> with the caption text.

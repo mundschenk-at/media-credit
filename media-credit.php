@@ -3,13 +3,13 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 2.4.0
+Version: 2.4.1
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '2.4.0' );
+define( 'MEDIA_CREDIT_VERSION', '2.4.1' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -573,6 +573,7 @@ function media_credit_enqueue_editor( $options ) {
 		// safeguards to avoid errors in this situation
 		
 		wp_enqueue_script( 'media-credit-image-properties', plugins_url( 'js/tinymce4/media-credit-image-properties.js', __FILE__ ), array( 'jquery' ), MEDIA_CREDIT_VERSION, true );
+		wp_enqueue_script( 'media-credit-tinymce-switch', plugins_url( 'js/tinymce4/media-credit-tinymce-switch.js', __FILE__ ), array( 'jquery' ), MEDIA_CREDIT_VERSION, true );
 	}
 }
 
