@@ -10,7 +10,7 @@ Adds a "Credit" field when uploading media to posts and displays it under the im
 
 == Description ==
 
-Feel free to get in touch with me about anything you'd like me to add to this plugin or any feedback. We love hearing from our users! [Start a thread on the plugin forum](https://wordpress.org/tags/media-credit#postform) and we'll get back to you shortly!
+Feel free to get in touch with us about anything you'd like me to add to this plugin or any feedback. We love hearing from our users! [Start a thread on the plugin forum](https://wordpress.org/tags/media-credit#postform) and we'll get back to you shortly!
 
 This plugin adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -47,7 +47,7 @@ if ( !array_key_exists( 'media-credit', $shortcode_tags ) )
 	add_shortcode('media-credit', 'ignore_media_credit_shortcode' );
 ?>`
 
-Also, I'd really appreciate it if you gave me [some feedback](mailto:sbressler@gmail.com "Let Scott know why you disabled the plugin!") as to why you disabled the plugin and how it could have better suited your needs.
+Also, I'd really appreciate it if you gave us [some feedback](https://wordpress.org/tags/media-credit#postform) as to why you disabled the plugin and how it could have better suited your needs.
 
 = Can I display all or recent media credited to a given author? =
 
@@ -77,7 +77,7 @@ Note the link to www.artistwebsite.com above.
 
 (Thanks to Mike Schuerlein for this excellent question!)
 
-<strong>Feel free to get in touch with me about anything you'd like me to add to this list. E-mail me [here](mailto:sbressler@gmail.com "E-mail Scott!").</strong>
+<strong>Feel free to get in touch with me about anything you'd like us to add to this list. Post in the WordPress.org [support forums here](https://wordpress.org/tags/media-credit#postform).</strong>
 
 = Why do I get unparsed [media-credit] shortcodes in my Facebook/Twitter/... previews with JetPack Publicize? =
 
