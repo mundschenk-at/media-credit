@@ -88,7 +88,7 @@ Unfortunately, this is a known bug in JetPack that can only be fixed by Automatt
 
 = Your question was not answered in the FAQ? =
 
-<strong>Feel free to get in touch with us about anything you'd like us to add to this list by leaving a message in the [support forums here](https://wordpress.org/tags/media-credit#postform).</strong>
+<strong>Feel free to get in touch with us about anything you'd like us to add to this list by leaving a message in the Wordpress.org [support forums here](https://wordpress.org/tags/media-credit#postform).</strong>
 
 == Screenshots ==
 
