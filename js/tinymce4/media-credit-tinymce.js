@@ -442,7 +442,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		
 		return content.replace(pattern, function(a,b,c){
 
-			var id, align, w, img, width, out,
+			var id, align, w, img, width, out, link, name, credit
 				trim = tinymce.trim;
 
 			id = b.match( /id=['"]?([0-9]+)['"]? ?/ );
@@ -460,6 +460,11 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				b = b.replace( w[0], '' );
 			}
 
+			link = b.match( /link=['"]([^'"]*)['"] ?/ );		
+			if ( link ) {
+				b = b.replace( link[0], '' );
+			}
+			
 			//name = b.match(/name=['"]([^'"]*)['"] ?/i);
 			name = trim( b ).replace( /name=['"]/, '' ).replace( /['"]$/, '' );
 			
@@ -476,24 +481,28 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			
 			id = ( id && id[1] ) ? id[1] : '';
 			align = ( align && align[1] ) ? align[1] : 'alignnone';
-
+			link = ( link && link[1] ) ? link[1] : '';
+			
 			if ( ! w && img ) {
 				w = img.match( /width=['"]([0-9]*)['"]/ );
 			}
 
 			if ( w && w[1] ) {
 				w = w[1];
-			}
-
+			}	
+			
 			if ( ! w || ! (name || id) ) {
 				return c;
 			}
 
 			width = parseInt( w, 10 );
+			if ( ! editor.getParam( 'wpeditimage_html5_captions' ) ) {
+				width += 10;
+			}
+			
 			credit = name ? name : ($mediaCredit.id[id] + $mediaCredit.separator + $mediaCredit.organization);
 			credit = credit.replace(/<[^>]+>(.*)<\/[^>]+>/g, '$1'); // basic sanitation
-
-
+			
 			out = img + wp.html.string({
 				tag: 'span',
 				content: credit,
@@ -501,7 +510,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 					'class': 'mceMediaCreditTemp mceNonEditable',
 					'data-media-credit-id': id,
 					'data-media-credit-name': name,
-					'data-media-credit-align': align
+					'data-media-credit-align': align,
+					'data-media-credit-link' : link
 				}
 			});
 			
@@ -511,7 +521,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 					content: out,
 					attrs: {
 						'class': 'mceMediaCreditOuterTemp ' + align,
-						style: 'width: ' + (width + 10) + 'px'
+						style: 'width: ' + width + 'px'
 					}
 				});
 			}
@@ -606,7 +616,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		}
 		
 		return content.replace( pattern , function( a, b, c, d) {			
-			var out = '', id, name, w, align, 
+			var out = '', id, name, w, align, link, 
 				trim = tinymce.trim;
 			
 			if ( b.indexOf('<img ') === -1 ) {
@@ -621,12 +631,18 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			id = parseAttribute( c, 'data-media-credit-id', '[0-9]+', true );
 			align = parseAttribute( c, 'data-media-credit-align', '[^\'"]*', false );
 			name = _.unescape(parseAttribute( c, 'data-media-credit-name', '[^"]*', false ));
-						
+			link = _.unescape(parseAttribute( c, 'data-media-credit-link', '[^"]*', false ));
+			
 			if ( ! w || ! (name || id) ) {
 				return b;
 			}
 			
 			credit = id ? ('id='+id) : ('name="'+name+'"');
+			
+			if ( link ) {
+				credit += ' link="' + link + '"';
+			}
+			
 			out = '[media-credit ' + credit + ' align="' + align +'" width="' + w + '"]'+ b +'[/media-credit]';
 			
 			if ( out.indexOf('[media-credit') !== 0 ) {
@@ -690,6 +706,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			title: '',
 			mediaCreditName: '',
 			mediaCreditID: '',
+			mediaCreditLink: '',
 		};
 
 		metadata.url = dom.getAttrib( imageNode, 'src' );
@@ -774,6 +791,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			metadata.align = (metadata.align && metadata.align != 'none' ) ? metadata.align : dom.getAttrib(mediaCreditBlock, 'data-media-credit-align', '').replace( 'align', '' );
 			metadata.mediaCreditName =  dom.getAttrib(mediaCreditBlock, 'data-media-credit-name', '');
 			metadata.mediaCreditID =  dom.getAttrib(mediaCreditBlock, 'data-media-credit-id', '');
+			metadata.mediaCreditLink =  dom.getAttrib(mediaCreditBlock, 'data-media-credit-link', '');
 		}
 		
 		return metadata;
