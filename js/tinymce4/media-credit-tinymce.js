@@ -64,9 +64,23 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
         } ); 
     } ); 
 
-
+	editor.once( 'preinit', function() {
+		toolbar = editor.wp._createToolbar( [
+             'wp_img_alignleft',
+             'wp_img_aligncenter',
+             'wp_img_alignright',
+             'wp_img_alignnone',
+             'wp_img_edit',
+             'wp_img_remove'
+             ] );
+	} );
+	
 	editor.on( 'wptoolbar', function( event ) { 
-		if ( event.element.nodeName === 'IMG' && ! isPlaceholder( event.element ) ) { 
+		console.log('wptoolbar');
+		
+		if ( event.element.nodeName === 'IMG' && ! isPlaceholder( event.element ) ) {
+			console.log('dude, where is my bar?');
+			
 			event.toolbar = toolbar; 
 		} 
 	} ); 
@@ -87,15 +101,6 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
             } 
         }); 
     } 
-
-
-
-    
-    DOM.bind( window, 'resize scroll', function() { 
-        if ( ! toolbarIsHidden && editorWrapParent.hasClass( 'wp-editor-expand' ) ) { 
-            hide(); 
-        } 
-    }); 
     
 	function parseShortcode( content ) {
 		
