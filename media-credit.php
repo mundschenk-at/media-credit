@@ -3,13 +3,13 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 2.4.1
+Version: 2.5.0
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '2.4.1' );
+define( 'MEDIA_CREDIT_VERSION', '2.5.0' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -98,11 +98,14 @@ function the_media_credit($post = null) {
  */
 function get_media_credit_html($post = null) {
 	$post = get_post($post);
+	if (!is_object($post)) return '';
+	
 	$credit_meta = get_freeform_media_credit($post);
 	if ( $credit_meta != '' )
 		return $credit_meta;
 	$credit_wp_author = get_wpuser_media_credit($post);
 	$options = get_option(MEDIA_CREDIT_OPTION);
+	
 	return '<a href="' . get_author_posts_url($post->post_author) . '">' . $credit_wp_author . '</a>'
 	 . $options['separator'] . $options['organization'];
 }
@@ -321,15 +324,21 @@ function media_credit_shortcode($atts, $content = null) {
 	extract(shortcode_atts(array(
 		'id' => -1,
 		'name' => '',
+		'link' => '',
 		'align'	=> 'alignnone',
 		'width'	=> '',
 	), $atts, 'media-credit'));
 	
-	if ($id !== -1)
+	if ( $id !== -1 ) {
 		$author_link = get_media_credit_html_by_user_ID($id);
-	else
+	} else if ( !empty($link) ) {
+		$author_link = '<a href="' . esc_attr($link) . '">' . $name . '</a>';
+	} else {
 		$author_link = $name;
-		
+	}
+
+	error_log("Link is $link");
+	
 	return '<div class="media-credit-container ' . esc_attr($align) . '" style="width: ' . (10 + (int) $width) . 'px">'
 	. do_shortcode( $content ) . '<span class="media-credit">' . $author_link . '</span></div>';
 }

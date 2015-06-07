@@ -4,7 +4,7 @@ Donate link: http://www.scottbressler.com/blog/plugins/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.1
 Tested up to: 4.1
-Stable tag: 2.4.1
+Stable tag: 2.5.0
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -98,6 +98,10 @@ Unfortunately, this is a known bug in JetPack that can only be fixed by Automatt
 
 
 == Changelog ==
+
+= 2.5.0 (Jun, 7, 2015) =
+* Added URL parameter to shortcode and GUI
+* Display image toolbar with WP 4.1
 
 = 2.4.1 (Dec. 20, 2014) =
 * Fix missing newlines when switching between HTML and Visual mode in the post editor

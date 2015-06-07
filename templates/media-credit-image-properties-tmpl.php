@@ -5,5 +5,9 @@
 			<input id="attachments[shortcode][media-credit]" type="text" data-setting="mediaCreditName" class="media-credit-input" value="{{ data.mediaCreditName }}" />
 			<input id="attachments[shortcode][media-credit-hidden]" type="hidden" data-setting="mediaCreditID" data-post-id="shortcode" data-author="{{ data.mediaCreditID }}" data-author-display="{{ data.mediaCreditName }}" class="media-credit-hidden" value="{{ data.mediaCreditID }}" />
 		</label>
+		<label class="setting media-credit-link">
+			<span><?php esc_html_e( 'Credit URL', 'media-credit' ); ?></span>
+			<input id="attachments[shortcode][media-credit-link]" type="url" data-setting="mediaCreditLink" class="media-credit-input" value="{{ data.mediaCreditLink }}" />
+		</label>
 	</div>
 </script>
