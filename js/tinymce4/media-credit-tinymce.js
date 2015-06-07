@@ -75,12 +75,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
              ] );
 	} );
 	
-	editor.on( 'wptoolbar', function( event ) { 
-		console.log('wptoolbar');
-		
+	editor.on( 'wptoolbar', function( event ) { 		
 		if ( event.element.nodeName === 'IMG' && ! isPlaceholder( event.element ) ) {
-			console.log('dude, where is my bar?');
-			
 			event.toolbar = toolbar; 
 		} 
 	} ); 
