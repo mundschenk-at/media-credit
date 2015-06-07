@@ -996,21 +996,18 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 						}
 
 						if ( imgNode.parentNode && imgNode.parentNode.nodeName === 'A' ) {
-							//html = dom.getOuterHTML( imgNode.parentNode );
 							node = imgNode.parentNode;
 						} else {
-							//html = dom.getOuterHTML( imgNode );
 							node = imgNode;
 						}
 
 						html = '<dl ' + captionId + captionAlign + captionWidth + '>' +
                             '<dt class="wp-caption-dt"></dt><dd class="wp-caption-dd">'+ caption +'</dd></dl>'; 
 	 
-	                        wrap = dom.create( 'div', { 'class': 'mceTemp' }, html ); 
+						wrap = dom.create( 'div', { 'class': 'mceTemp' }, html ); 
 	 
-	                        if ( parent = dom.getParent( node, 'p' ) ) { 
-	                            parent.parentNode.insertBefore( wrap, parent ); 
-							}
+						if ( parent = dom.getParent( node, 'p' ) ) { 
+							parent.parentNode.insertBefore( wrap, parent ); 
 						} else {
                             node.parentNode.insertBefore( wrap, node ); 
                         } 
