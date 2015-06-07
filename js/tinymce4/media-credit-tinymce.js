@@ -180,7 +180,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
  
         windowPos = window.pageYOffset || document.documentElement.scrollTop; 
         adminbar = tinymce.$( '#wpadminbar' )[0]; 
-        mceToolbar = tinymce.$( '.mce-tinymce .mce-toolbar-grp' )[0]; 
+        mceToolbar = tinymce.$( '.mce-toolbar-grp', editor.getContainer() )[0];
         boundary = imageNode.getBoundingClientRect(); 
         boundaryMiddle = ( boundary.left + boundary.right ) / 2; 
         boundaryVerticalMiddle = ( boundary.top + boundary.bottom ) / 2; 
@@ -189,7 +189,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
         windowWidth = window.innerWidth; 
         toolbarWidth = toolbarNode.offsetWidth; 
         toolbarHalf = toolbarWidth / 2; 
-        iframe = editor.getContentAreaContainer().firstChild; 
+        iframe = document.getElementById( editor.id + '_ifr' );
         iframePos = DOM.getPos( iframe ); 
         iframeWidth = iframe.offsetWidth; 
         iframeHeigth = iframe.offsetHeight; 
@@ -242,8 +242,10 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
         left = boundaryMiddle - toolbarHalf; 
         left += iframePos.x; 
  
-        if ( toolbarWidth >= windowWidth ) { 
-            className += ' mce-arrow-full'; 
+        if ( boundary.left < 0 || boundary.right > iframeWidth ) { 
+        	left = iframePos.x + ( iframeWidth - toolbarWidth ) / 2; 
+        } else if ( toolbarWidth >= windowWidth ) { 
+        	className += ' mce-arrow-full'; 
             left = 0; 
         } else if ( ( left < 0 && boundary.left + toolbarWidth > windowWidth ) || 
             ( left + toolbarWidth > windowWidth && boundary.right - toolbarWidth < 0 ) ) { 
@@ -1520,6 +1522,12 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		}
 	});
 
+	editor.on( 'beforeexeccommand', function( event ) { 
+		if ( isPlaceholder( editor.selection.getNode() ) ) { 
+			event.preventDefault(); 
+		} 
+	} ); 
+	
 	return {
 		_do_shcode: parseShortcode,
 		_get_shcode: getShortcode
