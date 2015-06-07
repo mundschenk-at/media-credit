@@ -1,0 +1,45 @@
+span.mceMediaCreditTemp {
+	font-size: 11px;
+	font-family: Helvetica, Tahoma, Verdana, Arial, sans-serif;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	background: rgba(255, 255, 255, 0.8);
+	width: 100%;
+	padding: 0;
+	margin: 0;
+	font-weight: normal;
+}
+span.mceMediaCreditTemp a {
+    color: blue;
+    font-weight: inherit;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+
+dt.wp-caption-dt,
+div.mceMediaCreditOuterTemp {
+    position: relative;
+    overflow:hidden;
+}
+
+.mceMediaCreditOuterTemp {
+    background: none repeat scroll 0 0 #fff;
+    border: 1px solid #aaa;
+    border-radius: 0;
+    margin-bottom: 6px;
+    text-align: center;
+}
+
+.mceMediaCreditOuterTemp a, .mceMediaCreditOuterTemp img {
+    border: 0 none;
+    padding: 0;
+    float: none;
+    margin: 0;
+}
+
+.mceMediaCreditOuterTemp.aligncenter img {
+    margin: auto;
+    margin-bottom: 6px;
+}
