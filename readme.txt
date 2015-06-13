@@ -65,23 +65,18 @@ Yep! If you would prefer plain-text rather than a link for all media credit (and
 
 = Can I link to an artist inside a media credit field? =
 
-You sure can. Just link to the artist's website in the name attribute in the media-credit shortcode, found in HTML view for a post, or directly when adding an image. For example, if your post contains:
+You sure can. Just add the link attribute in the media-credit shortcode, found in HTML view for a post, or directly when adding an image. For example, if your post contains:
 
 `[media-credit name="Artist" align="alignleft" width="300"]<img src="http://www.mysite.com/files/2010/09/image.jpg" width="300" height="450" class="size-300 wp-image-2" />[/media-credit]`
 
 change it to:
 
-`[media-credit name="<a href='http://www.artistwebsite.com/'>Artist</a>" align="alignleft" width="300"]<img src="http://www.mysite.com/files/2010/09/image.jpg" width="300" height="450" class="size-300 wp-image-2" />[/media-credit]`
+`[media-credit name="Artist" link="http://www.artistwebsite.com/" align="alignleft" width="300"]<img src="http://www.mysite.com/files/2010/09/image.jpg" width="300" height="450" class="size-300 wp-image-2" />[/media-credit]`
 
 Note the link to www.artistwebsite.com above.
 
 (Thanks to Mike Schuerlein for this excellent question!)
 
-<<<<<<< .mine
-=======
-<strong>Feel free to get in touch with me about anything you'd like us to add to this list. Post in the WordPress.org [support forums here](https://wordpress.org/tags/media-credit#postform).</strong>
-
->>>>>>> .r1100619
 = Why do I get unparsed [media-credit] shortcodes in my Facebook/Twitter/... previews with JetPack Publicize? =
 
 Unfortunately, this is a known bug in JetPack that can only be fixed by Automattic. As a workaround, use a different plugin for posting to social networks. Alternativel, if you make sure that you haven't got any images with credits within the first 55 words of your article, you should be fine, too.
