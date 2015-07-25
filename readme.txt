@@ -75,15 +75,13 @@ change it to:
 
 Note the link to www.artistwebsite.com above.
 
-(Thanks to Mike Schuerlein for this excellent question!)
-
 = Why do I get unparsed [media-credit] shortcodes in my Facebook/Twitter/... previews with JetPack Publicize? =
 
 Unfortunately, this is a known bug in JetPack that can only be fixed by Automattic. As a workaround, use a different plugin for posting to social networks. Alternativel, if you make sure that you haven't got any images with credits within the first 55 words of your article, you should be fine, too.
 
 = Your question was not answered in the FAQ? =
 
-<strong>Feel free to get in touch with us about anything you'd like us to add to this list by leaving a message in the Wordpress.org [support forums here](https://wordpress.org/tags/media-credit#postform).</strong>
+Feel free to get in touch with us about anything you'd like us to add to this list by <strong>leaving a message in the Wordpress.org [support forums here](https://wordpress.org/tags/media-credit#postform).</strong>
 
 == Screenshots ==
 
