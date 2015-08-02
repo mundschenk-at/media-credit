@@ -603,7 +603,7 @@ function media_credit_tiny_mce_plugins( $plugins ) {
 // TinyMCE integration hooks
 function media_credit_mce_external_plugins( $plugins ) {
 	$options = get_option( MEDIA_CREDIT_OPTION );
-	$authors = get_users(); //get_media_credit_authors_for_post();
+	$authors = get_users( array( 'who' => 'authors' ) ); //get_media_credit_authors_for_post();
 	
 	$json_separator = json_encode($options['separator']);
 	$json_organization = json_encode($options['organization']);
