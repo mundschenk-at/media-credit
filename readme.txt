@@ -95,6 +95,8 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 = 2.6.0 (Aug. xx, 2015) =
 - limit selectable users to authors (no subscribers)
 - URL can be set from Media Library, not just in the post editor
+- Credit URL can override the automatic author link
+-
 
 = 2.5.1 (Aug. 2, 2015) =
 * Forgot to remove some debug output
