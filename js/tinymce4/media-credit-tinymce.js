@@ -801,12 +801,10 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	}
 
 	function removeImage( node ) {
-		var wrap;
-
-		if ( node.nodeName === 'DIV' && ( editor.dom.hasClass( node, 'mceTemp' ) || editor.dom.hasClass( node, 'mceMediaCreditOuterTemp' ) ) ) {
-			wrap = node;
-		} else if ( node.nodeName === 'IMG' || node.nodeName === 'DT' || node.nodeName === 'A' ) {
-			wrap = editor.dom.getParent( node, 'div.mceTemp' ) || editor.dom.getParent( node, 'div.mceMediaCreditOuterTemp' );
+        var wrap = editor.dom.getParent( node, 'div.mceTemp' ) || editor.dom.getParent( node, 'div.mceMediaCreditOuterTemp' );
+ 
+        if ( ! wrap && node.nodeName === 'IMG' ) { 
+            wrap = editor.dom.getParent( node, 'a' ); 
 		}
 
 		if ( wrap ) {
