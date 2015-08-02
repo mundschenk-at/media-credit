@@ -336,8 +336,6 @@ function media_credit_shortcode($atts, $content = null) {
 	} else {
 		$author_link = $name;
 	}
-
-	error_log("Link is $link");
 	
 	return '<div class="media-credit-container ' . esc_attr($align) . '" style="width: ' . (10 + (int) $width) . 'px">'
 	. do_shortcode( $content ) . '<span class="media-credit">' . $author_link . '</span></div>';
