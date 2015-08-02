@@ -493,18 +493,13 @@ function media_credit_filter_post_content($content, $image_id, $author_id, $free
 function get_editable_authors_by_name( $user_id, $name, $limit ) {
 	global $wpdb;
 	
-	// get_editable_user_ids was deprecated in WordPress 3.1, so let's avoid it unless we're running on a site with
-	// WordPress < 3.1.
-	if ( !function_exists ( 'get_users' ) ) {
-		$editable = get_editable_user_ids( $user_id );
-	} else {
-		// use a similar call that's used in post_author_meta_box() to get a list of eligible users
-		$editable = get_users( array(
-			'who' => 'authors',
-			'fields' => 'id',
-			'include_selected' => true
-		) );
-	}
+	// get_editable_user_ids was deprecated in WordPress 3.1, so let's 
+	// use a similar call that's used in post_author_meta_box() to get a list of eligible users
+	$editable = get_users( array(
+		'who' => 'authors',
+		'fields' => 'id',
+		'include_selected' => true
+	) );
 
 	if ( !$editable ) {
 		return false;
