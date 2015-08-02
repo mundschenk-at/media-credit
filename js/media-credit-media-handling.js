@@ -8,7 +8,7 @@
 	wp.media.view.AttachmentCompat = wp.media.view.AttachmentCompat.extend({
 
 	    save: function( event ) {
-	    	var author_id, freeform, image_id;
+	    	var author_id, freeform, image_id, url;
 	    	
 	    	_.each( this.$el.serializeArray(), function( pair ) {	    		
 	    		if (!image_id) {
@@ -20,6 +20,12 @@
 	    		if (!freeform) {
 	    			if (pair.name.match(/attachments\[\d+\]\[media-credit\]/gm)) {
 	    				freeform = pair.value;
+	    			}
+	    		}
+	    		
+	    		if (!url) {
+	    			if (pair.name.match(/attachments\[\d+\]\[media-credit-url\]/gm)) {
+	    				url = pair.value;
 	    			}
 	    		}
 	    		
@@ -40,7 +46,8 @@
 					'author_id' : author_id,
 					'freeform'  : freeform,
 					'post_content' : previous_content,
-					'image_id' : image_id
+					'image_id' : image_id,
+					'url' : url
 				},
 				success : function(s) {
 					var new_content = s;//.replace(/\\"/gm, '"');

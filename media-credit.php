@@ -3,16 +3,17 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 2.5.1
+Version: 2.6.0
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '2.5.1' );
+define( 'MEDIA_CREDIT_VERSION', '2.6.0' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
+define( 'MEDIA_CREDIT_URL_POSTMETA_KEY', '_media_credit_url' );
 define( 'MEDIA_CREDIT_OPTION', 'media-credit' );
 define( 'MEDIA_CREDIT_DEFAULT_SEPARATOR', ' | ' );
 define( 'MEDIA_CREDIT_DEFAULT_ORGANIZATION', get_bloginfo() );
@@ -31,6 +32,7 @@ function set_default_media_credit_options() {
 		'no_default_credit' => false
 	);
 	$installed_options = get_option( MEDIA_CREDIT_OPTION );
+		
 	if ( empty( $installed_options ) ) { // Install plugin for the first time
 		add_option( MEDIA_CREDIT_OPTION, $options );
 		$installed_options = $options;
@@ -92,6 +94,25 @@ function the_media_credit($post = null) {
 }
 
 /**
+ * Template tag to return the media credit URL as plain text for some media attachment.
+ *
+ * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ */
+function get_media_credit_url($post = null) {
+	$post = get_post($post);
+	return get_post_meta($post->ID, MEDIA_CREDIT_URL_POSTMETA_KEY, true);
+}
+
+/**
+ * Template tag to print the media credit URL as plain text for some media attachment.
+ *
+ * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ */
+function the_media_credit_url($post = null) {
+	echo get_media_credit_url($post);
+}
+
+/**
  * Template tag to return the media credit as HTML with a link to the author page if one exists for some media attachment.
  *
  * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
@@ -101,13 +122,22 @@ function get_media_credit_html($post = null) {
 	if (!is_object($post)) return '';
 	
 	$credit_meta = get_freeform_media_credit($post);
-	if ( $credit_meta != '' )
-		return $credit_meta;
-	$credit_wp_author = get_wpuser_media_credit($post);
-	$options = get_option(MEDIA_CREDIT_OPTION);
+	$credit_url = get_media_credit_url($post);
 	
-	return '<a href="' . get_author_posts_url($post->post_author) . '">' . $credit_wp_author . '</a>'
-	 . $options['separator'] . $options['organization'];
+	if ( $credit_meta != '' ) {
+		if (!empty($credit_url)) {
+			return '<a href="' . esc_url($credit_url) . '">' . $credit_meta . '</a>';
+		} else {
+			return $credit_meta;
+		}
+	} else {	
+		$credit_wp_author = get_wpuser_media_credit($post);
+		$options = get_option(MEDIA_CREDIT_OPTION);
+		$url = !empty($credit_url) ? $credit_url : get_author_posts_url($post->post_author);
+		
+		return '<a href="' . esc_url($url) . '">' . $credit_wp_author . '</a>'
+		 		. $options['separator'] . $options['organization'];
+	}	
 }
 
 /**
@@ -161,7 +191,6 @@ function get_freeform_media_credit($post = null) {
 // Add an autocomplete field with the blog users to $fields
 function add_media_credit($fields, $post) {
 	$credit = get_media_credit($post);
-	// add requirement for jquery ui core, jquery ui widgets, jquery ui position
 	$html = "<input id='attachments[$post->ID][media-credit]' class='media-credit-input' size='30' value='$credit' name='attachments[$post->ID][media-credit]'  />";
 	$fields['media-credit'] = array(
 		'label' => __('Credit:'),
@@ -169,6 +198,16 @@ function add_media_credit($fields, $post) {
 		'html' => $html,
 		'show_in_edit' => true,
 		'show_in_modal' => true,
+	);
+	
+	$url = get_media_credit_url($post);
+	$html = "<input id='attachments[$post->ID][media-credit-url]' class='media-credit-input' type='url' size='30' value='$url' name='attachments[$post->ID][media-credit-url]' />";
+	$fields['media-credit-url'] = array(
+			'label' => __('Credit URL:'),
+			'input' => 'html',
+			'html' => $html, //FIXME
+			'show_in_edit' => true,
+			'show_in_modal' => true,
 	);
 	
 	$author = ( get_freeform_media_credit($post) == '' ) ? $post->post_author : '';
@@ -196,18 +235,22 @@ add_filter('attachment_fields_to_edit', 'add_media_credit', 10, 2);
 function save_media_credit($post, $attachment) {
 	$wp_user_id = $attachment['media-credit-hidden'];
 	$freeform_name = $attachment['media-credit'];
-		
+	$url = $attachment['media-credit-url'];
+	
+	// we need to update the credit URL in any case
+	update_post_meta($post['ID'], MEDIA_CREDIT_URL_POSTMETA_KEY, $url); // insert '_media_credit_url' metadata field
+	
 	if ( isset( $wp_user_id ) && $wp_user_id != '' && $freeform_name === get_the_author_meta( 'display_name', $wp_user_id ) ) {
 		// a valid WP user was selected, and the display name matches the free-form
 		// the final conditional is necessary for the case when a valid user is selected, filling in the hidden field,
 		// then free-form text is entered after that. if so, the free-form text is what should be used
 		$post['post_author'] = $wp_user_id; // update post_author with the chosen user
 		delete_post_meta($post['ID'], MEDIA_CREDIT_POSTMETA_KEY); // delete any residual metadata from a free-form field (as inserted below)
-		update_media_credit_in_post($post, true);
+		update_media_credit_in_post($post, true, '', $url);
 	} else { // free-form text was entered, insert postmeta with credit. if free-form text is blank, insert a single space in postmeta.
 		$freeform = empty( $freeform_name ) ? MEDIA_CREDIT_EMPTY_META_STRING : $freeform_name;
 		update_post_meta($post['ID'], MEDIA_CREDIT_POSTMETA_KEY, $freeform); // insert '_media_credit' metadata field for image with free-form text
-		update_media_credit_in_post($post, false, $freeform);
+		update_media_credit_in_post($post, false, $freeform, $url);
 	}
 	return $post;
 }
@@ -219,11 +262,12 @@ add_filter('attachment_fields_to_save', 'save_media_credit', 10, 2);
  * @param object $post Object of attachment containing all fields from get_post().
  * @param bool $wp_user True if attachment should be credited to a user of this blog, false otherwise.
  * @param string $freeform Credit for attachment with freeform string. Empty if attachment should be credited to a user of this blog, as indicated by $wp_user above.
+ * @param string $url Credit URL for linking. Empty means default link for user of this blog, no link for freeform credit.
  */
-function update_media_credit_in_post($post, $wp_user, $freeform = '') {
+function update_media_credit_in_post($post, $wp_user, $freeform = '', $url = '') {
 	if ( isset( $post['post_parent'] ) && $post['post_parent'] !== 0 ) {
 		$parent = get_post( $post['post_parent'], ARRAY_A );
-		$parent['post_content'] = media_credit_filter_post_content($parent['post_content'], $post['ID'], $post['post_author'], $freeform);
+		$parent['post_content'] = media_credit_filter_post_content($parent['post_content'], $post['ID'], $post['post_author'], $freeform, $url);
 		wp_update_post($parent);
 	}
 }
@@ -277,6 +321,7 @@ function media_credit_caption_shortcode($attr, $content = null) {
 function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $caption, $title, $align, $url, $size, $alt = '' ) {
 	$post = get_post($attachment_id);
 	$credit_meta = get_freeform_media_credit($post);
+	$credit_url = get_media_credit_url($post);
 	$options = get_option( MEDIA_CREDIT_OPTION );
 	
 	if ( $credit_meta == MEDIA_CREDIT_EMPTY_META_STRING )
@@ -287,6 +332,10 @@ function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $captio
 		$credit = 'id=' . $post->post_author;
 	} else {
 		return $html;
+	}
+	
+	if (!empty($credit_url)) {
+		$credit .= ' link="' . $credit_url . '"';
 	}
 	
 	if ( ! preg_match( '/width="([0-9]+)/', $html, $matches ) )
@@ -330,7 +379,10 @@ function media_credit_shortcode($atts, $content = null) {
 	), $atts, 'media-credit'));
 	
 	if ( $id !== -1 ) {
-		$author_link = get_media_credit_html_by_user_ID($id);
+		$url = empty($link) ? get_author_posts_url($id) : $link;					
+		$credit_wp_author = get_the_author_meta( 'display_name', $id );
+		$options = get_option(MEDIA_CREDIT_OPTION);		
+		$author_link = '<a href="' . esc_url($url) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 	} else if ( !empty($link) ) {
 		$author_link = '<a href="' . esc_attr($link) . '">' . $name . '</a>';
 	} else {
@@ -415,7 +467,11 @@ function media_credit_author_names_ajax() {
 */
 add_action( 'wp_ajax_media_credit_filter_content', 'media_credit_filter_content_ajax' );
 function media_credit_filter_content_ajax() {
-	if ( ! isset( $_POST['post_content'] ) || !isset( $_POST['image_id'] ) || ! isset($_POST['author_id']) || ! isset($_POST['freeform']) ) {
+	if ( ! isset( $_POST['post_content'] ) ||
+		 ! isset( $_POST['image_id'] ) || 
+		 ! isset( $_POST['author_id'] ) || 
+		 ! isset( $_POST['freeform'] ) || 
+		 ! isset( $_POST['url'] ) ) {
 		wp_send_json_error();
 	}
 
@@ -427,13 +483,13 @@ function media_credit_filter_content_ajax() {
 	$results = preg_replace(array('/\\\"/', "/\\\'/"), array('"', "'"), $_POST['post_content']); 
 		
 	if ($_POST['image_id'] > 0) {
-		$results = media_credit_filter_post_content($results, $_POST['image_id'], $_POST['author_id'], $_POST['freeform']);
+		$results = media_credit_filter_post_content($results, $_POST['image_id'], $_POST['author_id'], $_POST['freeform'], $_POST['url']);
 	}
 	
 	wp_send_json_success($results);
 }
 
-function media_credit_filter_post_content($content, $image_id, $author_id, $freeform) {
+function media_credit_filter_post_content($content, $image_id, $author_id, $freeform, $url = '') {
 	preg_match_all( '/' . get_shortcode_regex() . '/s', $content, $matches, PREG_SET_ORDER );
 	
 	if (! empty( $matches ) ) {
@@ -442,7 +498,7 @@ function media_credit_filter_post_content($content, $image_id, $author_id, $free
 				$attr = shortcode_parse_atts( $shortcode[3] );
 				$img = $shortcode[5];
 					
-				$image_filename = wp_get_attachment_image_src($_POST['image_id']);
+				$image_filename = wp_get_attachment_image_src($image_id);
 				$image_filename = get_image_filename_from_full_url($image_filename[0]);
 				
 				
@@ -456,6 +512,12 @@ function media_credit_filter_post_content($content, $image_id, $author_id, $free
 						unset($attr['id']);
 					}
 		
+					if ( !empty($url) ) {
+						$attr['link'] = $url;
+					} else {
+						unset($attr['link']);
+					}
+					
 					$new_shortcode = '[media-credit';
 	
 					if (isset($attr['id'])) {
@@ -476,7 +538,7 @@ function media_credit_filter_post_content($content, $image_id, $author_id, $free
 				}
 					
 			} elseif ( ! empty( $shortcode[5] ) && has_shortcode( $shortcode[5], 'media-credit' ) ) {
-				$content = str_replace($shortcode[5], media_credit_filter_post_content($shortcode[5], $image_id, $author_id, $freeform), $content);
+				$content = str_replace($shortcode[5], media_credit_filter_post_content($shortcode[5], $image_id, $author_id, $freeform, $url), $content);
 			}
 		}
 	}
