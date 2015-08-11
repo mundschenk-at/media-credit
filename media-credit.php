@@ -421,7 +421,14 @@ function add_media_credits_to_end( $content ) {
 		$count++;
 	}
 	
-	return $content . '<div class="media-credit-end">' . $image_credit . '</div>';
+	/*
+	 * Filter hook to modify the end credits.
+	 * 
+	 * @param $value - default end credit mark-up
+	 * @param $content - the original content
+	 * @param $credit_unique - a unique array of media credits for the post.
+	 */
+	return apply_filter( 'media_credit_at_end', $content . '<div class="media-credit-end">' . $image_credit . '</div>', $content, $credit_unique );
 }
 $options = get_option( MEDIA_CREDIT_OPTION );
 if ( !empty( $options['credit_at_end'] ) )
