@@ -213,9 +213,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			}
 			
 			if ( name ) {
-				b = b.replace( name[0], '' );
-			} else {
-				name = ''; // otherwise null gets handled as a string
+				b = b.replace( name[0], '' );				
 			}
 			
 			c = trim( c );
@@ -228,7 +226,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			id = ( id && id[1] ) ? id[1] : '';
 			align = ( align && align[1] ) ? align[1] : 'alignnone';
 			link = ( link && link[1] ) ? link[1] : '';
-			
+			name = ( name && name[1] ) ? name[1] : '';
+					
 			if ( ! w && img ) {
 				w = img.match( /width=['"]([0-9]*)['"]/ );
 			}
@@ -248,16 +247,16 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			
 			credit = '' + (name ? name : ($mediaCredit.id[id] + $mediaCredit.separator + $mediaCredit.organization));
 			credit = credit.replace(/<[^>]+>(.*)<\/[^>]+>/g, '$1'); // basic sanitation
-			
+						
 			out = img + wp.html.string({
 				tag: 'span',
 				content: credit,
 				attrs: {
 					'class': 'mceMediaCreditTemp mceNonEditable',
 					'data-media-credit-id': id,
-					'data-media-credit-name': name,
+					'data-media-credit-name': _.escape(name),
 					'data-media-credit-align': align,
-					'data-media-credit-link' : link
+					'data-media-credit-link' : _.escape(link)
 				}
 			});
 			
@@ -366,7 +365,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		}
 		
 		return content.replace( pattern , function( a, b, c, d) {			
-			var out = '', id, name, w, align, link, 
+			var out = '', id, name, w, align, link, quoted_name,
 				trim = tinymce.trim;
 			
 			if ( b.indexOf('<img ') === -1 ) {
@@ -387,7 +386,13 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				return b;
 			}
 			
-			credit = id ? ('id='+id) : ('name="'+name+'"');
+			if ( name.indexOf('"') > -1 ) {
+				quoted_name = "name='" + name + "'";
+			} else {
+				quoted_name = 'name="' + name + '"';
+			}
+			
+			credit = id ? ('id='+id) : quoted_name;
 			
 			if ( link ) {
 				credit += ' link="' + link + '"';
@@ -539,7 +544,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		
 		if (mediaCreditBlock) {
 			metadata.align = (metadata.align && metadata.align != 'none' ) ? metadata.align : dom.getAttrib(mediaCreditBlock, 'data-media-credit-align', '').replace( 'align', '' );
-			metadata.mediaCreditName =  dom.getAttrib(mediaCreditBlock, 'data-media-credit-name', '');
+			metadata.mediaCreditName =  dom.getAttrib(mediaCreditBlock, 'data-media-credit-name', '');		
 			metadata.mediaCreditID =  dom.getAttrib(mediaCreditBlock, 'data-media-credit-id', '');
 			metadata.mediaCreditLink =  dom.getAttrib(mediaCreditBlock, 'data-media-credit-link', '');
 		}
