@@ -1,7 +1,7 @@
 /*
  * Extend editor formatting when switching between HTML and Visual mode.
  * 
- * Based on /wp-admin/js/editor.js
+ * Based on revision 33771 of /wp-admin/js/editor.js (removep)
  * 
  */
 
@@ -10,98 +10,102 @@
 
     $(function () {
 
-		window.switchEditors._wp_Nop = function( content ) {
-				var blocklist1, blocklist2,
-					preserve_linebreaks = false,
-					preserve_br = false;
-		
-				// Protect pre|script tags
-				if ( content.indexOf( '<pre' ) !== -1 || content.indexOf( '<script' ) !== -1 ) {
-					preserve_linebreaks = true;
-					content = content.replace( /<(pre|script)[^>]*>[\s\S]+?<\/\1>/g, function( a ) {
-						a = a.replace( /<br ?\/?>(\r\n|\n)?/g, '<wp-line-break>' );
-						a = a.replace( /<\/?p( [^>]*)?>(\r\n|\n)?/g, '<wp-line-break>' );
-						return a.replace( /\r?\n/g, '<wp-line-break>' );
-					});
-				}
-		
-				// keep <br> tags inside captions and remove line breaks
-				if ( content.indexOf( '[caption' ) !== -1 ) {
-					preserve_br = true;
-					content = content.replace( /\[caption[\s\S]+?\[\/caption\]/g, function( a ) {
-						return a.replace( /<br([^>]*)>/g, '<wp-temp-br$1>' ).replace( /[\r\n\t]+/, '' );
-					});
-				}
-		
-				// Pretty it up for the source editor
-				blocklist1 = 'blockquote|ul|ol|li|table|thead|tbody|tfoot|tr|th|td|div|h[1-6]|p|fieldset';
-				content = content.replace( new RegExp( '\\s*</(' + blocklist1 + ')>\\s*', 'g' ), '</$1>\n' );
-				content = content.replace( new RegExp( '\\s*<((?:' + blocklist1 + ')(?: [^>]*)?)>', 'g' ), '\n<$1>' );
-		
-				// Mark </p> if it has any attributes.
-				content = content.replace( /(<p [^>]+>.*?)<\/p>/g, '$1</p#>' );
-		
-				// Separate <div> containing <p>
-				content = content.replace( /<div( [^>]*)?>\s*<p>/gi, '<div$1>\n\n' );
-		
-				// Remove <p> and <br />
-				content = content.replace( /\s*<p>/gi, '' );
-				content = content.replace( /\s*<\/p>\s*/gi, '\n\n' );
-				content = content.replace( /\n[\s\u00a0]+\n/g, '\n\n' );
-				content = content.replace( /\s*<br ?\/?>\s*/gi, '\n' );
-		
-				// Fix some block element newline issues
-				content = content.replace( /\s*<div/g, '\n<div' );
-				content = content.replace( /<\/div>\s*/g, '</div>\n' );
-				content = content.replace( /\s*\[caption([^\[]+)\[\/caption\]\s*/gi, '\n\n[caption$1[/caption]\n\n' );
-				content = content.replace( /caption\]\n\n+\[caption/g, 'caption]\n\n[caption' );
-
-				// BEGIN MODIFICATION
-				// Also handle media-credit shortcode
-				content = content.replace( /\s*\[media-credit([^\[]+)\[\/media-credit\]\s*/gi, '\n\n[media-credit$1[/media-credit]\n\n' );
-				content = content.replace( /\[\/media-credit\]\n\n([^\[]*)\[\/caption\]/gi, '[/media-credit] $1[/caption]' ); // remove extra newlines for nested media-credit
-				content = content.replace( /\s*\[caption([^\[]+)\[media-credit([^\[]+)\[\/media-credit\]([^\[]*)\[\/caption\]\s*/gi, '\n\n[caption$1[media-credit$2[/media-credit]$3[/caption]\n\n' );
-				// END MODIFICATION		
-				
-				blocklist2 = 'blockquote|ul|ol|li|table|thead|tbody|tfoot|tr|th|td|h[1-6]|pre|fieldset';
-				content = content.replace( new RegExp('\\s*<((?:' + blocklist2 + ')(?: [^>]*)?)\\s*>', 'g' ), '\n<$1>' );
-				content = content.replace( new RegExp('\\s*</(' + blocklist2 + ')>\\s*', 'g' ), '</$1>\n' );
-				content = content.replace( /<li([^>]*)>/g, '\t<li$1>' );
-		
-				if ( content.indexOf( '<option' ) !== -1 ) {
-					content = content.replace( /\s*<option/g, '\n<option' );
-					content = content.replace( /\s*<\/select>/g, '\n</select>' );
-				}
-		
-				if ( content.indexOf( '<hr' ) !== -1 ) {
-					content = content.replace( /\s*<hr( [^>]*)?>\s*/g, '\n\n<hr$1>\n\n' );
-				}
-		
-				if ( content.indexOf( '<object' ) !== -1 ) {
-					content = content.replace( /<object[\s\S]+?<\/object>/g, function( a ) {
-						return a.replace( /[\r\n]+/g, '' );
-					});
-				}
-		
-				// Unmark special paragraph closing tags
-				content = content.replace( /<\/p#>/g, '</p>\n' );
-				content = content.replace( /\s*(<p [^>]+>[\s\S]*?<\/p>)/g, '\n$1' );
-		
-				// Trim whitespace
-				content = content.replace( /^\s+/, '' );
-				content = content.replace( /[\s\u00a0]+$/, '' );
-		
-				// put back the line breaks in pre|script
-				if ( preserve_linebreaks ) {
-					content = content.replace( /<wp-line-break>/g, '\n' );
-				}
-		
-				// and the <br> tags in captions
-				if ( preserve_br ) {
-					content = content.replace( /<wp-temp-br([^>]*)>/g, '<br$1>' );
-				}
-		
-				return content;
+		window.switchEditors._wp_Nop = function( html ) {
+				var blocklist = 'blockquote|ul|ol|li|table|thead|tbody|tfoot|tr|th|td|h[1-6]|fieldset',
+				blocklist1 = blocklist + '|div|p',
+				blocklist2 = blocklist + '|pre',
+				preserve_linebreaks = false,
+				preserve_br = false;
+	
+			if ( ! html ) {
+				return '';
+			}
+	
+			// Protect pre|script tags
+			if ( html.indexOf( '<pre' ) !== -1 || html.indexOf( '<script' ) !== -1 ) {
+				preserve_linebreaks = true;
+				html = html.replace( /<(pre|script)[^>]*>[\s\S]+?<\/\1>/g, function( a ) {
+					a = a.replace( /<br ?\/?>(\r\n|\n)?/g, '<wp-line-break>' );
+					a = a.replace( /<\/?p( [^>]*)?>(\r\n|\n)?/g, '<wp-line-break>' );
+					return a.replace( /\r?\n/g, '<wp-line-break>' );
+				});
+			}
+	
+			// keep <br> tags inside captions and remove line breaks
+			if ( html.indexOf( '[caption' ) !== -1 ) {
+				preserve_br = true;
+				html = html.replace( /\[caption[\s\S]+?\[\/caption\]/g, function( a ) {
+					return a.replace( /<br([^>]*)>/g, '<wp-temp-br$1>' ).replace( /[\r\n\t]+/, '' );
+				});
+			}
+	
+			// Pretty it up for the source editor
+			html = html.replace( new RegExp( '\\s*</(' + blocklist1 + ')>\\s*', 'g' ), '</$1>\n' );
+			html = html.replace( new RegExp( '\\s*<((?:' + blocklist1 + ')(?: [^>]*)?)>', 'g' ), '\n<$1>' );
+	
+			// Mark </p> if it has any attributes.
+			html = html.replace( /(<p [^>]+>.*?)<\/p>/g, '$1</p#>' );
+	
+			// Separate <div> containing <p>
+			html = html.replace( /<div( [^>]*)?>\s*<p>/gi, '<div$1>\n\n' );
+	
+			// Remove <p> and <br />
+			html = html.replace( /\s*<p>/gi, '' );
+			html = html.replace( /\s*<\/p>\s*/gi, '\n\n' );
+			html = html.replace( /\n[\s\u00a0]+\n/g, '\n\n' );
+			html = html.replace( /\s*<br ?\/?>\s*/gi, '\n' );
+	
+			// Fix some block element newline issues
+			html = html.replace( /\s*<div/g, '\n<div' );
+			html = html.replace( /<\/div>\s*/g, '</div>\n' );
+			html = html.replace( /\s*\[caption([^\[]+)\[\/caption\]\s*/gi, '\n\n[caption$1[/caption]\n\n' );
+			html = html.replace( /caption\]\n\n+\[caption/g, 'caption]\n\n[caption' );
+	
+			// BEGIN MODIFICATION
+			// Also handle media-credit shortcode
+			html = html.replace( /\s*\[media-credit([^\[]+)\[\/media-credit\]\s*/gi, '\n\n[media-credit$1[/media-credit]\n\n' );
+			html = html.replace( /\[\/media-credit\]\n\n([^\[]*)\[\/caption\]/gi, '[/media-credit] $1[/caption]' ); // remove extra newlines for nested media-credit
+			html = html.replace( /\s*\[caption([^\[]+)\[media-credit([^\[]+)\[\/media-credit\]([^\[]*)\[\/caption\]\s*/gi, '\n\n[caption$1[media-credit$2[/media-credit]$3[/caption]\n\n' );
+			// END MODIFICATION				
+			
+			html = html.replace( new RegExp('\\s*<((?:' + blocklist2 + ')(?: [^>]*)?)\\s*>', 'g' ), '\n<$1>' );
+			html = html.replace( new RegExp('\\s*</(' + blocklist2 + ')>\\s*', 'g' ), '</$1>\n' );
+			html = html.replace( /<li([^>]*)>/g, '\t<li$1>' );
+	
+			if ( html.indexOf( '<option' ) !== -1 ) {
+				html = html.replace( /\s*<option/g, '\n<option' );
+				html = html.replace( /\s*<\/select>/g, '\n</select>' );
+			}
+	
+			if ( html.indexOf( '<hr' ) !== -1 ) {
+				html = html.replace( /\s*<hr( [^>]*)?>\s*/g, '\n\n<hr$1>\n\n' );
+			}
+	
+			if ( html.indexOf( '<object' ) !== -1 ) {
+				html = html.replace( /<object[\s\S]+?<\/object>/g, function( a ) {
+					return a.replace( /[\r\n]+/g, '' );
+				});
+			}
+	
+			// Unmark special paragraph closing tags
+			html = html.replace( /<\/p#>/g, '</p>\n' );
+			html = html.replace( /\s*(<p [^>]+>[\s\S]*?<\/p>)/g, '\n$1' );
+	
+			// Trim whitespace
+			html = html.replace( /^\s+/, '' );
+			html = html.replace( /[\s\u00a0]+$/, '' );
+	
+			// put back the line breaks in pre|script
+			if ( preserve_linebreaks ) {
+				html = html.replace( /<wp-line-break>/g, '\n' );
+			}
+	
+			// and the <br> tags in captions
+			if ( preserve_br ) {
+				html = html.replace( /<wp-temp-br([^>]*)>/g, '<br$1>' );
+			}
+	
+			return html;
 		};
 
     });

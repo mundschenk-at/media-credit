@@ -183,7 +183,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		
 		return content.replace(pattern, function(a,b,c){
 
-			var id, align, w, img, width, out, link, name, credit
+			var id, align, w, img, width, out, link, name, credit,
 				trim = tinymce.trim;
 
 			id = b.match( /id=['"]?([0-9]+)['"]? ?/ );
@@ -206,11 +206,16 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				b = b.replace( link[0], '' );
 			}
 			
-			//name = b.match(/name=['"]([^'"]*)['"] ?/i);
-			name = trim( b ).replace( /name=['"]/, '' ).replace( /['"]$/, '' );
+			/* Name matching is more complicated to allow both ' and " inside each other */
+			name = b.match(/name=[']([^']*)['] ?/i);
+			if ( !name ) {
+				name = b.match(/name=["]([^"]*)["] ?/i);
+			}
 			
 			if ( name ) {
 				b = b.replace( name[0], '' );
+			} else {
+				name = ''; // otherwise null gets handled as a string
 			}
 			
 			c = trim( c );
@@ -241,7 +246,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				width += 10;
 			}
 			
-			credit = name ? name : ($mediaCredit.id[id] + $mediaCredit.separator + $mediaCredit.organization);
+			credit = '' + (name ? name : ($mediaCredit.id[id] + $mediaCredit.separator + $mediaCredit.organization));
 			credit = credit.replace(/<[^>]+>(.*)<\/[^>]+>/g, '$1'); // basic sanitation
 			
 			out = img + wp.html.string({
