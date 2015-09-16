@@ -6,6 +6,7 @@ Description: This plugin adds a "Credit" field to the media uploading and editin
 Version: 2.6.3
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
+Text Domain: media-credit
 License: GPL2
 */
 
@@ -21,6 +22,16 @@ define( 'WP_IMAGE_CLASS_NAME_PREFIX', 'wp-image-' );
 define( 'WP_ATTACHMENT_CLASS_NAME_PREFIX', 'attachment_' );
 
 require_once( 'display.php' );
+
+/**
+ * Load plugin textdomain.
+ *
+ * @since 2.6.3
+ */
+function media_credit_load_textdomain() {
+  load_plugin_textdomain( 'media-credit', false, dirname( plugin_basename( __FILE__ ) ) . '/translations' ); 
+}
+add_action( 'plugins_loaded', 'media_credit_load_textdomain' );
 
 function set_default_media_credit_options() {
 	$options = array(
@@ -196,7 +207,7 @@ function add_media_credit($fields, $post) {
 	$credit = get_media_credit($post);
 	$html = "<input id='attachments[$post->ID][media-credit]' class='media-credit-input' size='30' value='$credit' name='attachments[$post->ID][media-credit]'  />";
 	$fields['media-credit'] = array(
-		'label' => __('Credit:'),
+		'label' => __('Credit:', 'media-credit'),
 		'input' => 'html',
 		'html' => $html,
 		'show_in_edit' => true,
@@ -206,7 +217,7 @@ function add_media_credit($fields, $post) {
 	$url = get_media_credit_url($post);
 	$html = "<input id='attachments[$post->ID][media-credit-url]' class='media-credit-input' type='url' size='30' value='$url' name='attachments[$post->ID][media-credit-url]' />";
 	$fields['media-credit-url'] = array(
-			'label' => __('Credit URL:'),
+			'label' => __('Credit URL:', 'media-credit'),
 			'input' => 'html',
 			'html' => $html, //FIXME
 			'show_in_edit' => true,
@@ -421,22 +432,17 @@ function add_media_credits_to_end( $content ) {
 	$credit_unique = array_unique($credit_unique);
 	
 	/* If no images are left, don't display credit line */
-	if ( count($images) == 0 ) 
+	if ( count($credit_unique) == 0 ) 
 		return $content;
 	
-	$image_credit = (count($images) > 1 ? 'Images' : 'Image') . ' courtesy of ';
+	//$image_credit = (count($images) > 1 ? 'Images' : 'Image') . ' courtesy of ';
+	$image_credit = _nx( 'Image courtesy of %1s', 'Images courtesy of %2s and %1s', count($credit_unique), 
+						 '%1s is always the position of the last credit, %2s of the concatenated other credits', 'media-credit' );
 	
-	$count = 0;	
-	foreach ($credit_unique as $credit) {
-		if ( $count > 0 ) {
-			if ( $count < count($credit_unique) - 1 )
-				$image_credit .= ', ';
-			else
-				$image_credit .= __(' and ');
-		}
-		$image_credit .= $credit;
-		$count++;
-	}
+	$last_credit = array_pop($credit_unique);
+	$other_credits = implode( _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit'), $credit_unique );
+	
+	$image_credit = sprintf( $image_credit, $last_credit, $other_credits);	
 	
 	/*
 	 * Filter hook to modify the end credits.
@@ -636,6 +642,9 @@ function media_credit_init() { // whitelist options
 		wp_enqueue_script('media-credit-media-handling', MEDIA_CREDIT_URL . 'js/media-credit-media-handling.js', array('jquery'), MEDIA_CREDIT_VERSION, true);
 	}
 
+	/* Also handle customizer */
+	add_action('customize_controls_enqueue_scripts', 'media_credit_customize_controls_enqueue_scripts' );
+	
 	// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages
 	if ( !current_user_can('edit_posts') && !current_user_can('edit_pages') )
 		return;
@@ -649,6 +658,15 @@ function media_credit_init() { // whitelist options
 	add_action( 'wp_enqueue_editor', 'media_credit_enqueue_editor', 10, 1 );
 	add_action( 'print_media_templates', 'media_credit_image_properties_template' );
 }
+
+/* 
+ * Fix media handling in customize.php
+ */
+function media_credit_customize_controls_enqueue_scripts() {
+	wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-ui-autocomplete'), MEDIA_CREDIT_VERSION, true);
+	wp_enqueue_script('media-credit-media-handling', MEDIA_CREDIT_URL . 'js/media-credit-media-handling.js', array('jquery'), MEDIA_CREDIT_VERSION, true);
+}
+
 
 /*
  * Add MCE views
@@ -753,14 +771,14 @@ function media_credit_settings_section() {
 
 function media_credit_separator() {
 	$options = get_option( MEDIA_CREDIT_OPTION );
-	$explanation = "Text used to separate author names from organization when crediting media to users of this blog";
+	$explanation = __("Text used to separate author names from organization when crediting media to users of this blog", 'media-credit');
 	echo "<input type='text' id='media-credit[separator]' name='media-credit[separator]' value='{$options['separator']}' autocomplete='off' />";
 	echo "<label for='media-credit[separator]' style='margin-left:5px'>$explanation</label>";
 }
 
 function media_credit_organization() {
 	$options = get_option( MEDIA_CREDIT_OPTION );
-	$explanation = "Organization used when crediting media to users of this blog";
+	$explanation = __("Organization used when crediting media to users of this blog", 'media-credit');
 	echo "<input type='text' name='media-credit[organization]' value='{$options['organization']}' autocomplete='off' />";
 	echo "<label for='media-credit[separator]' style='margin-left:5px'>$explanation</label>";
 }
@@ -774,7 +792,7 @@ function media_credit_preview() {
 function media_credit_end_of_post() {
 	$options = get_option( MEDIA_CREDIT_OPTION );
 	$credit_at_end = array_key_exists( 'credit_at_end', $options ) ? $options['credit_at_end'] : false;
-	$explanation = "Display media credit for all the images attached to a post after the post content. Style with CSS class 'media-credit-end'";
+	$explanation = __("Display media credit for all the images attached to a post after the post content. Style with CSS class 'media-credit-end'", 'media-credit');
 	echo "<input type='checkbox' id='media-credit[credit_at_end]' name='media-credit[credit_at_end]' value='1' " . checked(1, $credit_at_end, false) . " />";
 	echo "<label for='media-credit[credit_at_end]' style='margin-left:5px'>$explanation</label>";
 	
@@ -786,7 +804,7 @@ function media_credit_end_of_post() {
 function media_credit_no_default_credit() {
 	$options = get_option( MEDIA_CREDIT_OPTION );
 	$no_default_credit = array_key_exists( 'no_default_credit', $options ) ? $options['no_default_credit'] : false;
-	$explanation = "Do not display the attachment author as default credit if it has not been set explicitly (= freeform credits only).";
+	$explanation = __("Do not display the attachment author as default credit if it has not been set explicitly (= freeform credits only).", 'media-credit');
 	echo "<input type='checkbox' id='media-credit[no_default_credit]' name='media-credit[no_default_credit]' value='1' " . checked(1, $no_default_credit, false) . " />";
 	echo "<label for='media-credit[credit_at_end]' style='margin-left:5px'>$explanation</label>";
 }
@@ -802,9 +820,9 @@ function media_credit_options_validate($input) {
 function is_media_edit_page( ) {
 	global $pagenow;
 	
-	$media_edit_pages = array('post-new.php', 'post.php', 'page.php', 'page-new.php', 'media-upload.php', 'media.php', 'media-new.php', 'ajax-actions.php', 'upload.php');
-			
-	return in_array($pagenow, $media_edit_pages);
+	$media_edit_pages = array('post-new.php', 'post.php', 'page.php', 'page-new.php', 'media-upload.php', 'media.php', 'media-new.php', 'ajax-actions.php', 'upload.php', 'customize.php');
+	
+ 	return in_array($pagenow, $media_edit_pages);
 }
 
 function is_media_settings_page( ) {
