@@ -96,7 +96,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 * Honor 'Do not display default credit' option in conjunction with 'Display credit after posts'
 * Added translation functions to user visible strings
 * Added German translation
-- Fixed responsive image breakage on some themes
+* Fixed responsive image breakage on some themes
 * Fixed autocomplete in customizer
 
 = 2.6.2 (Aug. 29, 2015) =

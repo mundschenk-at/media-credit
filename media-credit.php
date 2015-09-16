@@ -405,7 +405,30 @@ function media_credit_shortcode($atts, $content = null) {
 		$author_link = $name;
 	}
 	
-	return '<div class="media-credit-container ' . esc_attr($align) . '" style="width: ' . (10 + (int) $width) . 'px">'
+	$credit_width = (int) $width + current_theme_supports( 'html5', 'caption' ) ? 0 : 10;
+	
+	/**
+	 * Filter the width of an image's credit/caption. 
+	 * We could use a media-credit specific filter, but we don't to be more compatible
+	 * with existing themes.
+	 *
+	 * By default, the caption is 10 pixels greater than the width of the image,
+	 * to prevent post content from running up against a floated image.
+	 *
+	 * @see img_caption_shortcode()
+	 *
+	 * @param int    $caption_width Width of the caption in pixels. To remove this inline style,
+	 *                              return zero.
+	 * @param array  $atts          Attributes of the media-credit shortcode.
+	 * @param string $content       The image element, possibly wrapped in a hyperlink.
+	 */
+	$credit_width = apply_filters( 'img_caption_shortcode_width', $credit_width, $atts, $content );
+	
+	$style = '';
+	if ( $credit_width )
+		$style = ' style="width: ' . (int) $credit_width . 'px"';
+	
+	return '<div class="media-credit-container ' . esc_attr($align) . '"' . $style . '>'
 	. do_shortcode( $content ) . '<span class="media-credit">' . $author_link . '</span></div>';
 }
 add_shortcode('media-credit', 'media_credit_shortcode');
