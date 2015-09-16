@@ -4,7 +4,7 @@ Donate link: http://www.scottbressler.com/blog/plugins/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.2
 Tested up to: 4.3.1
-Stable tag: 2.7
+Stable tag: 2.7.1
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -91,6 +91,10 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 
 == Changelog ==
+
+= 2.7.1 (Sep. 16, 2015) =
+* Missed a few strings
+* Fixed incorrect positional parameter strings
 
 = 2.7 (Sep. 16, 2015) =
 * Honor 'Do not display default credit' option in conjunction with 'Display credit after posts'

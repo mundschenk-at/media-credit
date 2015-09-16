@@ -3,14 +3,14 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 2.7
+Version: 2.7.1
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 Text Domain: media-credit
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '2.7' );
+define( 'MEDIA_CREDIT_VERSION', '2.7.1' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -30,7 +30,6 @@ require_once( 'display.php' );
  */
 function media_credit_load_textdomain() {
   load_plugin_textdomain( 'media-credit', false, dirname( plugin_basename( __FILE__ ) ) . '/translations/' ); 
-  error_log("Loading textdomin " . dirname( plugin_basename( __FILE__ ) ) . '/translations/');
 }
 add_action( 'plugins_loaded', 'media_credit_load_textdomain' );
 
@@ -459,9 +458,8 @@ function add_media_credits_to_end( $content ) {
 	if ( count($credit_unique) == 0 ) 
 		return $content;
 	
-	//$image_credit = (count($images) > 1 ? 'Images' : 'Image') . ' courtesy of ';
-	$image_credit = _nx( 'Image courtesy of %1s', 'Images courtesy of %2s and %1s', count($credit_unique), 
-						 '%1s is always the position of the last credit, %2s of the concatenated other credits', 'media-credit' );
+	$image_credit = _nx( 'Image courtesy of %1$s', 'Images courtesy of %2$s and %1$s', count($credit_unique), 
+						 '%1$s is always the position of the last credit, %2$s of the concatenated other credits', 'media-credit' );
 	
 	$last_credit = array_pop($credit_unique);
 	$other_credits = implode( _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit'), $credit_unique );
@@ -789,8 +787,8 @@ function media_credit_action_links($links, $file) {
 add_filter('plugin_action_links', 'media_credit_action_links', 10, 2);
 
 function media_credit_settings_section() {
-	echo "<a name='media-credit'></a>";
-	echo "<p>Choose how to display media credit on your blog:</p>";
+	echo '<a name="media-credit"></a>';
+	echo '<p>' . __('Choose how to display media credit on your blog:', 'media-credit') . '</p>';
 }
 
 function media_credit_separator() {
@@ -821,8 +819,12 @@ function media_credit_end_of_post() {
 	echo "<label for='media-credit[credit_at_end]' style='margin-left:5px'>$explanation</label>";
 	
 	$curr_user = wp_get_current_user();
-	echo "<br /><em>Preview</em>: Images courtesy of <span id='preview'><a href='" . get_author_posts_url($curr_user->ID) . "'>$curr_user->display_name</a>${options['separator']}${options['organization']}</span>, Jane Doe and John Smith";
-	echo "<br /><strong>Warning</strong>: This will cause credit for all images in all posts to display at the bottom of every post on this blog";
+	$preview = _nx( 'Image courtesy of %1$s', 'Images courtesy of %2$s and %1$s', 2,
+					'%1$s is always the position of the last credit, %2$s of the concatenated other credits', 'media-credit' );	
+	$preview = sprintf( $preview, "John Smith", "<span id='preview'><a href='" . get_author_posts_url($curr_user->ID) . "'>$curr_user->display_name</a>${options['separator']}${options['organization']}</span>, Jane Doe");
+	
+	echo "<br /><em>" . __('Preview', 'media-credit') . '</em>: ' . $preview;
+	echo "<br /><strong>" . __('Warning', 'media-credit') . "</strong>: " . __('This will cause credit for all images in all posts to display at the bottom of every post on this blog', 'media-credit');
 }
 
 function media_credit_no_default_credit() {

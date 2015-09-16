@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Media Credit 2.6.3\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/media-credit-svn\n"
-"POT-Creation-Date: 2015-09-16 17:21:34+00:00\n"
-"PO-Revision-Date: 2015-09-16 19:59+0100\n"
+"POT-Creation-Date: 2015-09-16 22:54:08+00:00\n"
+"PO-Revision-Date: 2015-09-17 00:54+0100\n"
 "Last-Translator: Peter Putzer <peter.putzer@gmail.com>\n"
 "Language-Team: Peter Putzer <pepe@mnd.sc>\n"
 "Language: de_DE\n"
@@ -16,60 +16,64 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#: media-credit.php:211
+#: media-credit.php:210
 msgid "Credit:"
 msgstr "Urheberschaft:"
 
-#: media-credit.php:221
+#: media-credit.php:220
 msgid "Credit URL:"
 msgstr "Urheberschaftsverlinkung"
 
-#: media-credit.php:440
+#: media-credit.php:461 media-credit.php:822
 msgctxt ""
-"%1s is always the position of the last credit, %2s of the concatenated other "
-"credits"
-msgid "Image courtesy of %1s"
-msgid_plural "Images courtesy of %2s and %1s"
-msgstr[0] "Bild mit freundlicher Genehmigung von %1s"
-msgstr[1] "Bilder mit freundlicher Genehmigung von %2s und %1s"
+"%1$s is always the position of the last credit, %2$s of the concatenated "
+"other credits"
+msgid "Image courtesy of %1$s"
+msgid_plural "Images courtesy of %2$s and %1$s"
+msgstr[0] "Bild mit freundlicher Genehmigung von %1$s"
+msgstr[1] "Bilder mit freundlicher Genehmigung von %2$s und %1$s"
 
-#: media-credit.php:444
+#: media-credit.php:465
 msgctxt ""
 "String used to join multiple image credits for \"Display credit after post\""
 msgid ", "
 msgstr ", "
 
-#. #-#-#-#-#  media-credit-svn.pot (Media Credit 2.6.3)  #-#-#-#-#
+#. #-#-#-#-#  media-credit-svn.pot (Media Credit 2.7)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
-#: media-credit.php:625
+#: media-credit.php:646
 msgid "Media Credit"
 msgstr "Media Credit"
 
-#: media-credit.php:626
+#: media-credit.php:647 media-credit.php:827
 msgid "Preview"
 msgstr "Vorschau"
 
-#: media-credit.php:627
+#: media-credit.php:648
 msgid "Separator"
 msgstr "Trennzeichen"
 
-#: media-credit.php:628
+#: media-credit.php:649
 msgid "Organization"
 msgstr "Organisation"
 
-#: media-credit.php:629
+#: media-credit.php:650
 msgid "Display credit after posts"
 msgstr "Urheberschaftshinweis am Beitragsende anzeigen"
 
-#: media-credit.php:630
+#: media-credit.php:651
 msgid "Do not display default credit"
 msgstr "Default-Urheberschaftshinweise nicht anzeigen"
 
-#: media-credit.php:761
+#: media-credit.php:782
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: media-credit.php:775
+#: media-credit.php:791
+msgid "Choose how to display media credit on your blog:"
+msgstr "Bitte auswählen, wie Urheberschaftshinweise angezeigt werden sollen:"
+
+#: media-credit.php:796
 msgid ""
 "Text used to separate author names from organization when crediting media to "
 "users of this blog"
@@ -77,13 +81,13 @@ msgstr ""
 "Text wird bei Urheberschaftshinweisen auf Benutzerinnen und Benutzer dieses "
 "Blogs als Trennzeichen zwischen dem Namen und der Organisation verwendet"
 
-#: media-credit.php:782
+#: media-credit.php:803
 msgid "Organization used when crediting media to users of this blog"
 msgstr ""
 "Organisationsangabe für Urheberschaftshinweise auf Benutzerinnen und "
 "Benutzer dieses Blogs"
 
-#: media-credit.php:796
+#: media-credit.php:817
 msgid ""
 "Display media credit for all the images attached to a post after the post "
 "content. Style with CSS class 'media-credit-end'"
@@ -91,7 +95,19 @@ msgstr ""
 "Urheberschaftshinweis am Ende jedes Blog-Beitrags anzeigen. Die Gestaltung "
 "ist mittels der CSS-Klasse 'media-credit-end' möglich."
 
-#: media-credit.php:808
+#: media-credit.php:828
+msgid "Warning"
+msgstr "Achtung"
+
+#: media-credit.php:828
+msgid ""
+"This will cause credit for all images in all posts to display at the bottom "
+"of every post on this blog"
+msgstr ""
+"Die Urheberschaftshinweise für alle Bilder in allen Beiträgen werden am Ende "
+"jedes Beitrags angezeigt werden"
+
+#: media-credit.php:834
 msgid ""
 "Do not display the attachment author as default credit if it has not been "
 "set explicitly (= freeform credits only)."
@@ -127,3 +143,11 @@ msgstr "Scott Bressler"
 #. Author URI of the plugin/theme
 msgid "http://www.scottbressler.com/blog/"
 msgstr "http://www.scottbressler.com/blog/"
+
+#~ msgctxt ""
+#~ "%1s is always the position of the last credit, %2s of the concatenated "
+#~ "other credits"
+#~ msgid "Image courtesy of %1s"
+#~ msgid_plural "Images courtesy of %2s and %1s"
+#~ msgstr[0] "Bild mit freundlicher Genehmigung von %1s"
+#~ msgstr[1] "Bilder mit freundlicher Genehmigung von %2s und %1s"
