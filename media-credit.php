@@ -3,14 +3,14 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 2.6.3
+Version: 2.7
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 Text Domain: media-credit
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '2.6.3' );
+define( 'MEDIA_CREDIT_VERSION', '2.7' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -26,7 +26,7 @@ require_once( 'display.php' );
 /**
  * Load plugin textdomain.
  *
- * @since 2.6.3
+ * @since 2.7
  */
 function media_credit_load_textdomain() {
   load_plugin_textdomain( 'media-credit', false, dirname( plugin_basename( __FILE__ ) ) . '/translations/' ); 
