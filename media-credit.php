@@ -29,7 +29,8 @@ require_once( 'display.php' );
  * @since 2.6.3
  */
 function media_credit_load_textdomain() {
-  load_plugin_textdomain( 'media-credit', false, dirname( plugin_basename( __FILE__ ) ) . '/translations' ); 
+  load_plugin_textdomain( 'media-credit', false, dirname( plugin_basename( __FILE__ ) ) . '/translations/' ); 
+  error_log("Loading textdomin " . dirname( plugin_basename( __FILE__ ) ) . '/translations/');
 }
 add_action( 'plugins_loaded', 'media_credit_load_textdomain' );
 
@@ -621,12 +622,12 @@ if ( is_admin() )
 
 function add_media_credit_menu() {
 	// Display settings for plugin on the built-in Media options page
-	add_settings_section(MEDIA_CREDIT_OPTION, 'Media Credit', 'media_credit_settings_section', 'media');
-	add_settings_field('preview', '<em>Preview</em>', 'media_credit_preview', 'media', MEDIA_CREDIT_OPTION);
-	add_settings_field('separator', 'Separator', 'media_credit_separator', 'media', MEDIA_CREDIT_OPTION);
-	add_settings_field('organization', 'Organization', 'media_credit_organization', 'media', MEDIA_CREDIT_OPTION);
-	add_settings_field('credit_at_end', 'Display credit after posts', 'media_credit_end_of_post', 'media', MEDIA_CREDIT_OPTION);
-	add_settings_field('no_default_credit', 'Do not display default credit', 'media_credit_no_default_credit', 'media', MEDIA_CREDIT_OPTION);
+	add_settings_section(MEDIA_CREDIT_OPTION, __('Media Credit', 'media-credit'), 'media_credit_settings_section', 'media');
+	add_settings_field('preview', sprintf('<em>%s</em>', __('Preview', 'media-credit') ), 'media_credit_preview', 'media', MEDIA_CREDIT_OPTION);
+	add_settings_field('separator', __('Separator', 'media-credit'), 'media_credit_separator', 'media', MEDIA_CREDIT_OPTION);
+	add_settings_field('organization', __('Organization', 'media-credit'), 'media_credit_organization', 'media', MEDIA_CREDIT_OPTION);
+	add_settings_field('credit_at_end', __('Display credit after posts', 'media-credit'), 'media_credit_end_of_post', 'media', MEDIA_CREDIT_OPTION);
+	add_settings_field('no_default_credit', __('Do not display default credit', 'media-credit'), 'media_credit_no_default_credit', 'media', MEDIA_CREDIT_OPTION);
 	
 	// Call register settings function
 	add_action( 'admin_init', 'media_credit_init' );

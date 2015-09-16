@@ -1,0 +1,114 @@
+# Copyright (C) 2015 Media Credit
+# This file is distributed under the same license as the Media Credit package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Media Credit 2.6.3\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/media-credit-svn\n"
+"POT-Creation-Date: 2015-09-16 17:21:34+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: media-credit.php:211
+msgid "Credit:"
+msgstr ""
+
+#: media-credit.php:221
+msgid "Credit URL:"
+msgstr ""
+
+#: media-credit.php:440
+msgctxt ""
+"%1s is always the position of the last credit, %2s of the concatenated other "
+"credits"
+msgid "Image courtesy of %1s"
+msgid_plural "Images courtesy of %2s and %1s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: media-credit.php:444
+msgctxt ""
+"String used to join multiple image credits for \"Display credit after post\""
+msgid ", "
+msgstr ""
+
+#. #-#-#-#-#  media-credit-svn.pot (Media Credit 2.6.3)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: media-credit.php:625
+msgid "Media Credit"
+msgstr ""
+
+#: media-credit.php:626
+msgid "Preview"
+msgstr ""
+
+#: media-credit.php:627
+msgid "Separator"
+msgstr ""
+
+#: media-credit.php:628
+msgid "Organization"
+msgstr ""
+
+#: media-credit.php:629
+msgid "Display credit after posts"
+msgstr ""
+
+#: media-credit.php:630
+msgid "Do not display default credit"
+msgstr ""
+
+#: media-credit.php:761
+msgid "Settings"
+msgstr ""
+
+#: media-credit.php:775
+msgid ""
+"Text used to separate author names from organization when crediting media to "
+"users of this blog"
+msgstr ""
+
+#: media-credit.php:782
+msgid "Organization used when crediting media to users of this blog"
+msgstr ""
+
+#: media-credit.php:796
+msgid ""
+"Display media credit for all the images attached to a post after the post "
+"content. Style with CSS class 'media-credit-end'"
+msgstr ""
+
+#: media-credit.php:808
+msgid ""
+"Do not display the attachment author as default credit if it has not been "
+"set explicitly (= freeform credits only)."
+msgstr ""
+
+#: templates/media-credit-image-properties-tmpl.php:4
+msgid "Credit"
+msgstr ""
+
+#: templates/media-credit-image-properties-tmpl.php:9
+msgid "Credit URL"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://www.scottbressler.com/blog/plugins/media-credit/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"This plugin adds a \"Credit\" field to the media uploading and editing tool "
+"and inserts this credit when the images appear on your blog."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Scott Bressler"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.scottbressler.com/blog/"
+msgstr ""
