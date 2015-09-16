@@ -3,13 +3,13 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 2.6.2
+Version: 2.6.3
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '2.6.2' );
+define( 'MEDIA_CREDIT_VERSION', '2.6.3' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -116,8 +116,9 @@ function the_media_credit_url($post = null) {
  * Template tag to return the media credit as HTML with a link to the author page if one exists for some media attachment.
  *
  * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ * @param boolean $include_default_credit Optional flag to decide if default credits (owner) should be returned as well. Default is true.
  */
-function get_media_credit_html($post = null) {
+function get_media_credit_html($post = null, $include_default_credit = true) {
 	$post = get_post($post);
 	if (!is_object($post)) return '';
 	
@@ -130,14 +131,16 @@ function get_media_credit_html($post = null) {
 		} else {
 			return $credit_meta;
 		}
-	} else {	
+	} else if ( $include_default_credit ) {	
 		$credit_wp_author = get_wpuser_media_credit($post);
 		$options = get_option(MEDIA_CREDIT_OPTION);
 		$url = !empty($credit_url) ? $credit_url : get_author_posts_url($post->post_author);
 		
 		return '<a href="' . esc_url($url) . '">' . $credit_wp_author . '</a>'
 		 		. $options['separator'] . $options['organization'];
-	}	
+	} else {
+		return '';
+	}
 }
 
 /**
@@ -366,7 +369,8 @@ function media_credit_shortcode($atts, $content = null) {
 	if ( $output != '' )
 		return $output;
 
-	$options = get_option( MEDIA_CREDIT_OPTION );
+	$options = get_option( MEDIA_CREDIT_OPTION ); 
+	
 	if ( !empty( $options['credit_at_end'] ) )
 		return do_shortcode( $content );
 
@@ -401,11 +405,24 @@ function add_media_credits_to_end( $content ) {
 	
 	if ( count($images) == 0 )
 		return $content;
-	
+
+	/* Look at "no default credits" option */
+	$options = get_option( MEDIA_CREDIT_OPTION );
+	$include_default_credit = empty( $options['no_default_credit'] );
+
 	$credit_unique = array();
-	foreach ($images as $image)
-		$credit_unique[] = get_media_credit_html($image);
+	foreach ($images as $image) {
+		$credit = get_media_credit_html($image, $include_default_credit);
+		
+		if (! empty( $credit ) ) {
+			$credit_unique[] = $credit;
+		}
+	}
 	$credit_unique = array_unique($credit_unique);
+	
+	/* If no images are left, don't display credit line */
+	if ( count($images) == 0 ) 
+		return $content;
 	
 	$image_credit = (count($images) > 1 ? 'Images' : 'Image') . ' courtesy of ';
 	
