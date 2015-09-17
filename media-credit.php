@@ -821,7 +821,10 @@ function media_credit_end_of_post() {
 	$curr_user = wp_get_current_user();
 	$preview = _nx( 'Image courtesy of %1$s', 'Images courtesy of %2$s and %1$s', 2,
 					'%1$s is always the position of the last credit, %2$s of the concatenated other credits', 'media-credit' );	
-	$preview = sprintf( $preview, "John Smith", "<span id='preview'><a href='" . get_author_posts_url($curr_user->ID) . "'>$curr_user->display_name</a>${options['separator']}${options['organization']}</span>, Jane Doe");
+	$preview = sprintf( $preview, _x('John Smith', 'Example name for preview', 'media-credit'), 
+								  "<span id='preview'><a href='" . get_author_posts_url($curr_user->ID) . "'>$curr_user->display_name</a>${options['separator']}${options['organization']}</span>" 
+								  			. _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' ) 
+											. _x( 'Jane Doe', 'Example name for preview', 'media-credit' ) );
 	
 	echo "<br /><em>" . __('Preview', 'media-credit') . '</em>: ' . $preview;
 	echo "<br /><strong>" . __('Warning', 'media-credit') . "</strong>: " . __('This will cause credit for all images in all posts to display at the bottom of every post on this blog', 'media-credit');
