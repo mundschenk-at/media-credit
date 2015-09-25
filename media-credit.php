@@ -359,7 +359,7 @@ function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $captio
 		return $html;
 	else if ( $credit_meta != '' )
 		$credit = 'name="' . $credit_meta . '"';
-	else if ( $options['no_default_credit'] == false ) {
+	else if ( empty( $options['no_default_credit'] ) ) {
 		$credit = 'id=' . $post->post_author;
 	} else {
 		return $html;
