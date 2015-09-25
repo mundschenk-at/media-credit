@@ -330,6 +330,23 @@ function media_credit_caption_shortcode($attr, $content = null) {
 }
 
 /**
+ * New way (in core consideration) to fix the caption shortcode parsing. Proof of concept at this point.
+ * 
+ * @param array $matches
+ * @param string $content
+ * @param string $regex
+ */
+function media_credit_img_caption_shortcode_content($matches, $content, $regex) {
+	$result = array();
+	
+	if ( preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#is', $content, $result ) )	
+		return $result;
+	else 
+		return $matches;
+}
+//add_filter('img_caption_shortcode_content', 'media_credit_img_caption_shortcode_content', 10, 3);
+
+/**
  * Add media credit information to media using shortcode notation before sending to editor.
  */
 function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $caption, $title, $align, $url, $size, $alt = '' ) {
