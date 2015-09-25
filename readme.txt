@@ -92,7 +92,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
-= 2.7.2 (Sep. xx, 2015) =
+= 2.7.2 (Sep. 25, 2015) =
 * Fixed silent error message regarding unset no_default_credit option
 * Fixed wpautop handling. Probably.
 
