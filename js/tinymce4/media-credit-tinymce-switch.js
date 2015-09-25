@@ -10,13 +10,13 @@
 
     $(function () {
 
-		window.switchEditors._wp_Nop = function( html ) {
+		window.wp.editor.removep = window.switchEditors._wp_Nop = function( html ) {
 				var blocklist = 'blockquote|ul|ol|li|table|thead|tbody|tfoot|tr|th|td|h[1-6]|fieldset',
 				blocklist1 = blocklist + '|div|p',
 				blocklist2 = blocklist + '|pre',
 				preserve_linebreaks = false,
 				preserve_br = false;
-	
+					
 			if ( ! html ) {
 				return '';
 			}
@@ -64,6 +64,7 @@
 			// BEGIN MODIFICATION
 			// Also handle media-credit shortcode
 			html = html.replace( /\s*\[media-credit([^\[]+)\[\/media-credit\]\s*/gi, '\n\n[media-credit$1[/media-credit]\n\n' );
+						
 			html = html.replace( /\[\/media-credit\]\n\n([^\[]*)\[\/caption\]/gi, '[/media-credit] $1[/caption]' ); // remove extra newlines for nested media-credit
 			html = html.replace( /\s*\[caption([^\[]+)\[media-credit([^\[]+)\[\/media-credit\]([^\[]*)\[\/caption\]\s*/gi, '\n\n[caption$1[media-credit$2[/media-credit]$3[/caption]\n\n' );
 			// END MODIFICATION				
@@ -106,7 +107,6 @@
 			}
 	
 			return html;
-		};
-
+		};		
     });
 }(jQuery));
