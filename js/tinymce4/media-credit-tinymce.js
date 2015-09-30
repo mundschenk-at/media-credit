@@ -108,6 +108,11 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		result = content.replace( /(?:<p>)?\[(?:wp_)?caption([^\]]+)\]([\s\S]+?)\[\/(?:wp_)?caption\](?:<\/p>)?/g, function( a, b, c ) {
             var id, align, classes, caption, img, width; 
 
+            id = b.match( /id=['"]([^'"]*)['"] ?/ );
+            if ( id ) {
+            	b = b.replace( id[0], '' );
+            }
+            
             align = b.match( /align=['"]([^'"]*)['"] ?/ ); 
             if ( align ) { 
             	b = b.replace( align[0], '' ); 
@@ -137,7 +142,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			}
 
 			img = parseMediaCreditShortcode(img);
-			
+					
 			id = ( id && id[1] ) ? id[1].replace( /[<>&]+/g,  '' ) : '';
 			align = ( align && align[1] ) ? align[1] : 'alignnone';
 			classes = ( classes && classes[1] ) ? ' ' + classes[1].replace( /[<>&]+/g,  '' ) : ''; 
@@ -315,10 +320,10 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 					return c;
 				}
-
+                
 				id = b.match( /id="([^"]*)"/ );
 				id = ( id && id[1] ) ? id[1] : '';
-
+				
                 classes = classes.replace( /wp-caption ?|align[a-z]+ ?/gi, '' ); 
              		 
                 if ( classes ) { 
@@ -445,7 +450,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			captionClassName = [], 
 			dom = editor.dom,
 			isIntRegExp = /^\d+$/;
-
+		
 		// default attributes
 		metadata = {
 			attachment_id: false,
@@ -484,9 +489,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 		classes = tinymce.explode( imageNode.className, ' ' );
 		extraClasses = [];
-
-		tinymce.each( classes, function( name ) {
-
+		
+		tinymce.each( classes, function( name ) {			
 			if ( /^wp-image/.test( name ) ) {
 				metadata.attachment_id = parseInt( name.replace( 'wp-image-', '' ), 10 );
 			} else if ( /^align/.test( name ) ) {
@@ -576,7 +580,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			dom = editor.dom;
 
 		classes = tinymce.explode( imageData.extraClasses, ' ' );
-
+		
 		if ( ! classes ) {
 			classes = [];
 		}
