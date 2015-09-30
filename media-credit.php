@@ -789,7 +789,11 @@ function get_media_credit_authors_for_post($post = null) {
 }
 
 function media_credit_mce_css($css) {
-	return $css . "," . MEDIA_CREDIT_URL . 'css/media-credit-tinymce.css';
+	if ( ! empty( $css ) ) {
+		$css .= ",";
+	}
+	
+	return $css . MEDIA_CREDIT_URL . 'css/media-credit-tinymce.css';
 }
 
 
