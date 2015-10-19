@@ -3,14 +3,14 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 2.7.3
+Version: 2.7.4
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 Text Domain: media-credit
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '2.7.3' );
+define( 'MEDIA_CREDIT_VERSION', '2.7.4' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -482,6 +482,9 @@ function add_media_credits_to_end( $content ) {
 	$other_credits = implode( _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit'), $credit_unique );
 	
 	$image_credit = sprintf( $image_credit, $last_credit, $other_credits);	
+	
+	// restore credit array for filter
+	$credit_unique[] = $last_credit;
 	
 	/*
 	 * Filter hook to modify the end credits.
