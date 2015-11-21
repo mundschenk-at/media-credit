@@ -1,7 +1,6 @@
 'use strict';
 module.exports = function(grunt) {
 
-
 	// load all tasks
 	require('load-grunt-tasks')(grunt, {scope: 'devDependencies'});
 
@@ -51,7 +50,7 @@ module.exports = function(grunt) {
 	            options: {
 	                plugin_slug: 'media-credit',
 //	                svn_user: 'your-wp-repo-username',  
-	                build_dir: 'build' //relative path to your build directory
+	                build_dir: 'build', //relative path to your build directory
 	                assets_dir: 'wp-assets' //relative path to your assets directory (optional).
 	            },
 	        }
@@ -66,12 +65,11 @@ module.exports = function(grunt) {
 	grunt.registerTask( 'build', [
 		'wp_readme_to_markdown',
 		'copy',
-  	] );
+  	]);
 
   	grunt.registerTask('deploy' ,[
   		'wp_readme_to_markdown',
   		'copy',
   		'wp_deploy'
   	]);
-	
 };
