@@ -37,7 +37,25 @@ module.exports = function(grunt) {
   	        options: {
   	        	screenshot_url: '{screenshot}.png',
   	        }
-	    },	    
+	    },
+		copy: {
+			main: {
+				files:[
+					{expand: true, nonull: true, src: ['readme.txt','*.php'], dest: 'build/'},
+					{expand: true, nonull: true, src: ['css/**','js/**','templates/**','translations/**'], dest: 'build/'},
+				],
+			}
+		},
+	    wp_deploy: {
+	        deploy: { 
+	            options: {
+	                plugin_slug: 'media-credit',
+//	                svn_user: 'your-wp-repo-username',  
+	                build_dir: 'build' //relative path to your build directory
+	                assets_dir: 'wp-assets' //relative path to your assets directory (optional).
+	            },
+	        }
+	    },
 	});
 
 	grunt.registerTask( 'default', [
@@ -45,4 +63,15 @@ module.exports = function(grunt) {
 		'makepot',
     ]);
 
+	grunt.registerTask( 'build', [
+		'wp_readme_to_markdown',
+		'copy',
+  	] );
+
+  	grunt.registerTask('deploy' ,[
+  		'wp_readme_to_markdown',
+  		'copy',
+  		'wp_deploy'
+  	]);
+	
 };

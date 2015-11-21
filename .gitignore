@@ -7,3 +7,6 @@
 
 # Node.js/Grunt
 node_modules/*
+
+# grunt-wp-deploy
+build/*
