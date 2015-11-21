@@ -1,0 +1,12 @@
+{
+  "name": "media-credit",
+  "version": "2.7.4",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-cli": "~0.1.13",
+    "grunt-phpunit": "^0.3.6",
+    "grunt-wp-i18n": "~0.4.7",
+    "load-grunt-tasks": "~0.6.0",
+    "grunt-wp-readme-to-markdown": "~1.0.0"
+  }
+}
