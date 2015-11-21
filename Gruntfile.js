@@ -12,6 +12,7 @@ module.exports = function(grunt) {
 	                domainPath: '/translations/', // Where to save the POT file.
 	                potFilename: 'media-credit.pot', // Name of the POT file.
 	                type: 'wp-plugin',
+	                exclude: ['build/.*'],
 	                updateTimestamp: false
 	            }
 	        }
