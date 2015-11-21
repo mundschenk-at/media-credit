@@ -31,9 +31,12 @@ module.exports = function(grunt) {
 	    wp_readme_to_markdown: {
 	        readme: {
 	            files: {
-	              'README.md': 'readme.txt'
+	              'README.md': 'readme.txt',
 	            },
-	        },
+  	        },
+  	        options: {
+  	        	screenshot_url: 'http://ps.w.org/{plugin}/trunk/{screenshot}.png',
+  	        }
 	    },	    
 	});
 
