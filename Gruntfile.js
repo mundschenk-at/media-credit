@@ -35,7 +35,7 @@ module.exports = function(grunt) {
 	            },
   	        },
   	        options: {
-  	        	screenshot_url: 'http://ps.w.org/{plugin}/trunk/{screenshot}.png',
+  	        	screenshot_url: '{screenshot}.png',
   	        }
 	    },	    
 	});
