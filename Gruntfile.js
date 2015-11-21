@@ -34,7 +34,7 @@ module.exports = function(grunt) {
 	            },
   	        },
   	        options: {
-  	        	screenshot_url: '{screenshot}.png',
+  	        	screenshot_url: 'wp-assets/{screenshot}.png',
   	        }
 	    },
 		copy: {

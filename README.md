@@ -86,13 +86,13 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 ## Screenshots ##
 
 ### 1. Media can easily be credited to the creator of the media with the new Credit field visible when uploading or editing media ###
-![Media can easily be credited to the creator of the media with the new Credit field visible when uploading or editing media](screenshot-1.png)
+![Media can easily be credited to the creator of the media with the new Credit field visible when uploading or editing media](wp-assets/screenshot-1.png)
 
 ### 2. Media credit is nicely displayed underneath photos appearing on your blog ###
-![Media credit is nicely displayed underneath photos appearing on your blog](screenshot-2.png)
+![Media credit is nicely displayed underneath photos appearing on your blog](wp-assets/screenshot-2.png)
 
 ### 3. Recent media items attributed to an author can be displayed nicely on the author's page using a very simple template tag (see the [FAQ](http://wordpress.org/extend/plugins/media-credit/faq/) for more information) ###
-![Recent media items attributed to an author can be displayed nicely on the author's page using a very simple template tag (see the [FAQ](http://wordpress.org/extend/plugins/media-credit/faq/) for more information)](screenshot-3.png)
+![Recent media items attributed to an author can be displayed nicely on the author's page using a very simple template tag (see the [FAQ](http://wordpress.org/extend/plugins/media-credit/faq/) for more information)](wp-assets/screenshot-3.png)
 
 
 
