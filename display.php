@@ -1,5 +1,26 @@
 <?php
 
+/**
+ *  This file is part of Media Credit.
+ *
+ *  Copyright 2013-2015 Peter Putzer.
+ *  Copyright 2010-2011 Scott Bressler.
+ *
+ *	This program is free software; you can redistribute it and/or
+ *	modify it under the terms of the GNU General Public License,
+ *	version 2 as published by the Free Software Foundation.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *  MA 02110-1301, USA.
+ */
+
 function display_author_media($author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = "<h3>Recent Media</h3>", $exclude_unattached = true) {
 	$media = author_media($author_id, $limit, $exclude_unattached);
 	if (!$media)
@@ -26,7 +47,7 @@ function display_author_media($author_id, $sidebar = true, $limit = 10, $link_wi
 function author_media_and_posts($id, $include_posts = true, $limit = 0, $exclude_unattached = true) {
 	global $wpdb;
 	$posts_query = $attached = $date_query = $limit_query = "";
-	
+
 	if ($include_posts)
 		$posts_query = "OR (post_type = 'post'
 					AND post_parent = '0'
@@ -44,14 +65,14 @@ function author_media_and_posts($id, $include_posts = true, $limit = 0, $exclude
 
 	if ($limit > 0)
 		$limit_query = " LIMIT $limit";
-	
+
 	$results = $wpdb->get_results( $wpdb->prepare( "
 			SELECT *
 			FROM $wpdb->posts
 			WHERE post_author = %d" . $date_query . "
 				AND ( (post_type = 'attachment' " .
 					$attached .
-					$posts_query . "		
+					$posts_query . "
 				AND ID NOT IN (
 					SELECT post_id
 					FROM $wpdb->postmeta
@@ -60,12 +81,10 @@ function author_media_and_posts($id, $include_posts = true, $limit = 0, $exclude
 			GROUP BY ID
 			ORDER BY post_date DESC" . $limit_query,
 			$id ) );
-	
+
 	return $results;
 }
 
 function author_media($id, $limit = 0, $exclude_unattached = true) {
 	return author_media_and_posts($id, false, $limit, $exclude_unattached);
 }
-			
-?>
