@@ -215,7 +215,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		}
 
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
-		add_filter( 'the_author', 'get_media_credit' );
+		add_filter( 'the_author', 'Media_Credit_Template_Tags::get_media_credit' );
 	}
 
 	/**
@@ -383,7 +383,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @return array The list of fields.
 	 */
 	public function add_media_credit_fields( $fields, $post ) {
-		$credit = get_media_credit($post);
+		$credit = Media_Credit_Template_Tags::get_media_credit($post);
 		$html = "<input id='attachments[$post->ID][media-credit]' class='media-credit-input' size='30' value='$credit' name='attachments[$post->ID][media-credit]'  />";
 		$fields['media-credit'] = array(
 			'label' => __('Credit:', 'media-credit'),
@@ -393,7 +393,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			'show_in_modal' => true,
 		);
 
-		$url = get_media_credit_url($post);
+		$url = Media_Credit_Template_Tags::get_media_credit_url($post);
 		$html = "<input id='attachments[$post->ID][media-credit-url]' class='media-credit-input' type='url' size='30' value='$url' name='attachments[$post->ID][media-credit-url]' />";
 		$fields['media-credit-url'] = array(
 			'label' => __('Credit URL:', 'media-credit'),
@@ -403,8 +403,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			'show_in_modal' => true,
 		);
 
-		$author = ( get_freeform_media_credit($post) == '' ) ? $post->post_author : '';
-		$author_display = get_media_credit($post);
+		$author = ( Media_Credit_Template_Tags::get_freeform_media_credit($post) == '' ) ? $post->post_author : '';
+		$author_display = Media_Credit_Template_Tags::get_media_credit($post);
 		$author_for_script = ($author == '') ? -1 : $author;
 		$html_hidden = "<input name='attachments[$post->ID][media-credit-hidden]' id='attachments[$post->ID][media-credit-hidden]' type='hidden' value='$author' class='media-credit-hidden' data-author='$author_for_script' data-post-id='$post->ID' data-author-display='$author_display' />";
 		$fields["media-credit-hidden"] = array(
@@ -425,9 +425,9 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @param object $attachment Object of attachment containing few fields, unused in this method.
 	 */
 	function save_media_credit_fields( $post, $attachment ) {
-		$wp_user_id = $attachment['media-credit-hidden'];
+		$wp_user_id    = $attachment['media-credit-hidden'];
 		$freeform_name = $attachment['media-credit'];
-		$url = $attachment['media-credit-url'];
+		$url           = $attachment['media-credit-url'];
 
 		// we need to update the credit URL in any case
 		update_post_meta( $post['ID'], self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field
@@ -489,10 +489,10 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @return unknown
 	 */
 	public function image_send_to_editor( $html, $attachment_id, $caption, $title, $align, $url, $size, $alt = '' ) {
-		$post = get_post( $attachment_id );
-		$credit_meta = get_freeform_media_credit( $post );
-		$credit_url = get_media_credit_url( $post );
-		$options = get_option( self::OPTION );
+		$post        = get_post( $attachment_id );
+		$credit_meta = Media_Credit_Template_Tags::get_freeform_media_credit( $post );
+		$credit_url  = Media_Credit_Template_Tags::get_media_credit_url( $post );
+		$options     = get_option( self::OPTION );
 
 		if ( $credit_meta == self::EMPTY_META_STRING ) {
 			return $html;

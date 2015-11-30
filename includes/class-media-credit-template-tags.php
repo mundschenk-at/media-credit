@@ -173,7 +173,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 														WHERE post_author = %d {$date_query}
 													    AND ( (post_type = 'attachment' {$attached} {$posts_query}
 													    AND ID NOT IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s )
-														GROUP BY ID ORDER BY post_date DESC {$limit_query}, $id, self::POSTMETA_KEY ) );
+														GROUP BY ID ORDER BY post_date DESC {$limit_query}", $id, self::POSTMETA_KEY ) );
 
 		return $results;
 	}
