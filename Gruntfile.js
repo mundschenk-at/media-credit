@@ -28,6 +28,10 @@ module.exports = function(grunt) {
 //	            configuration: 'phpunit.xml',
 //	        }
 //	    }
+	    clean: {
+	    	  build: ["build/*"]//,
+	    	  //release: ["path/to/another/dir/one", "path/to/another/dir/two"]
+    	},
 	    wp_readme_to_markdown: {
 	        readme: {
 	            files: {
@@ -42,7 +46,7 @@ module.exports = function(grunt) {
 			main: {
 				files:[
 					{expand: true, nonull: true, src: ['readme.txt','*.php'], dest: 'build/'},
-					{expand: true, nonull: true, src: ['css/**','js/**','templates/**','translations/**'], dest: 'build/'},
+					{expand: true, nonull: true, src: ['admin/**','public/**','includes/**','translations/**'], dest: 'build/'},
 				],
 			}
 		},
@@ -56,6 +60,81 @@ module.exports = function(grunt) {
 	            },
 	        }
 	    },
+        jshint: {
+            files: [
+                'admin/js/*.js',
+                'public/js/**/*.js'
+            ],
+            options: {
+                expr: true,
+                globals: {
+                    jQuery: true,
+                    console: true,
+                    module: true,
+                    document: true
+                }
+            }
+        },    
+        sass: {
+            dist: {
+                options: {
+                    banner: '/*! <%= pkg.name %> <%= pkg.version %> filename.min.css <%= grunt.template.today("yyyy-mm-dd h:MM:ss TT") %> */\n',
+                    style: 'compressed'
+                },
+                files: [{
+                    expand: true,
+                    cwd: 'assets/scss',
+                    src: [
+                        '*.scss'
+                    ],
+                    dest: 'assets/css',
+                    ext: '.min.css'
+                }]
+            },
+            dev: {
+                options: {
+                    banner: '/*! <%= pkg.name %> <%= pkg.version %> filename.css <%= grunt.template.today("yyyy-mm-dd h:MM:ss TT") %> */\n',
+                    style: 'expanded'
+                },
+                files: [{
+                    expand: true,
+                    cwd: 'assets/scss',
+                    src: [
+                        '*.scss'
+                    ],
+                    dest: 'assets/css',
+                    ext: '.css'
+                }]
+            }
+        },
+        uglify: {
+            dist: {
+                options: {
+                    banner: '/*! <%= pkg.name %> <%= pkg.version %> filename.min.js <%= grunt.template.today("yyyy-mm-dd h:MM:ss TT") %> */\n',
+                    report: 'gzip'
+                },
+                files: grunt.file.expandMapping(['admin/js/**/*.js', 'public/js/**/*.js'], 'build/', {
+                    rename: function(destBase, destPath) {
+                        return destBase+destPath.replace('.js', '.min.js');
+                    }
+                })
+            },
+//            dev: {
+//                options: {
+//                    banner: '/*! <%= pkg.name %> <%= pkg.version %> filename.js <%= grunt.template.today("yyyy-mm-dd h:MM:ss TT") %> */\n',
+//                    beautify: true,
+//                    compress: false,
+//                    mangle: false
+//                },
+//                files: {
+//                    'assets/js/filename.js' : [
+//                        'assets/path/to/file.js',
+//                        'assets/path/to/another/file.js',
+//                        'assets/dynamic/paths/**/*.js'
+//                    ]
+//                }
+//            }
+        }
 	});
 
 	grunt.registerTask( 'default', [
@@ -66,11 +145,14 @@ module.exports = function(grunt) {
 	grunt.registerTask( 'build', [
 		'wp_readme_to_markdown',
 		'copy',
+		'uglify:dist'
   	]);
 
   	grunt.registerTask('deploy' ,[
   		'wp_readme_to_markdown',
+		'clean:build',
   		'copy',
+		'uglify:dist',
   		'wp_deploy'
   	]);
 };
