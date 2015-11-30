@@ -184,4 +184,49 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 
 		return $results;
 	}
+
+	/**
+	 * Displays the recently added media attachments for given author.
+	 *
+	 * @param number  $author_id
+	 * @param boolean $sidebar Display as sidebar or inline. Optional. Default true.
+	 * @param number  $limit Optional. Default 10.
+	 * @param boolean $link_without_parent Optional. Default false.
+	 * @param string  $header HTML-formatted heading. Optional. Default <h3>Recent Media</h3> (translated).
+	 * @param boolean $exclude_unattached Optional. Default true.
+	 */
+	public static function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = null, $exclude_unattached = true ) {
+
+		$media = author_media( $author_id, $limit, $exclude_unattached );
+		if ( empty( $media ) ) {
+			return; // abort
+		}
+
+		// more complex default argument
+		if ( null === $header ) {
+			$header = '<h3>' . __( 'Recent Media', 'media-credit' ) . '</h3>';
+		}
+
+		$id = "id = " . ( $sidebar ? "recent-media-sidebar" : "recent-media-inline" );
+		$container = "div";
+
+		echo "<div {$id}>$header";
+		foreach ( $media as $post ) {
+
+			setup_postdata( $post );
+
+			// If media is attached to a post, link to the parent post. Otherwise, link to attachment page itself.
+			if ( $post->post_parent > 0 || !$link_without_parent ) {
+				$image = wp_get_attachment_image( $post->ID, 'thumbnail' );
+			} else {
+				$image = wp_get_attachment_link( $post->ID, 'thumbnail', true );
+			}
+
+			$image = preg_replace( '/title=".*"/', '', $image ); // remove title attribute from image
+			$link = $post->post_parent > 0 ? "<a href='" . get_permalink( $post->post_parent ) . "' title='" . get_the_title( $post->post_parent ) . "'>$image</a>" : $image;
+
+			echo "<$container class='author-media' id='attachment-$post->ID'>$link</$container>";
+		}
+		echo "</div>";
+	}
 }
