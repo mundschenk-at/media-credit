@@ -1,4 +1,0 @@
-/* New jquery-ui-autocomplete plugin */
-.ui-selectmenu-menu {
-	z-index: 2000000 !important; /* to ensure visibility with media modal in WP >= 3.5 */
-}

@@ -99,7 +99,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, $this->ressource_url . 'css/media-credit-admin.css', array(), $this->version, 'all' );
+		//wp_enqueue_style( $this->plugin_name, $this->ressource_url . 'css/media-credit-admin.css', array(), $this->version, 'all' );
 
 	}
 
