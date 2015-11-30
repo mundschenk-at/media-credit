@@ -1,0 +1,170 @@
+<?php
+
+/**
+ * This file is part of Media Credit.
+ *
+ * Copyright 2013-2015 Peter Putzer.
+ * Copyright 2010-2011 Scott Bressler.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License,
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ * @link       https://mundschenk.at
+ * @since      3.0.0
+ *
+ * @package    Media_Credit
+ * @subpackage Media_Credit/includes
+ */
+
+/**
+ * Template tag to return the media credit as plain text for some media attachment.
+ *
+ * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ */
+function get_media_credit( $post = null ) {
+	return Media_Credit_Template_Tags::get_media_credit( $post );
+}
+
+/**
+ * Template tag to print the media credit as plain text for some media attachment.
+ *
+ * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ */
+function the_media_credit( $post = null ) {
+	echo get_media_credit( $post );
+}
+
+/**
+ * Template tag to return the media credit URL as plain text for some media attachment.
+ *
+ * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ */
+function get_media_credit_url( $post = null ) {
+	return Media_Credit_Template_Tags::get_media_credit_url( $post );
+}
+
+/**
+ * Template tag to print the media credit URL as plain text for some media attachment.
+ *
+ * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ */
+function the_media_credit_url( $post = null ) {
+	echo get_media_credit_url( $post );
+}
+
+/**
+ * Template tag to return the media credit as HTML with a link to the author page if one exists for some media attachment.
+ *
+ * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ * @param boolean $include_default_credit Optional flag to decide if default credits (owner) should be returned as well. Default is true.
+ */
+function get_media_credit_html($post = null, $include_default_credit = true) {
+	return Media_Credit_Template_Tags::get_media_credit_html( $post, $include_default_credit );
+}
+
+/**
+ * Template tag to print the media credit as HTML with a link to the author page if one exists for some media attachment.
+ *
+ * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ */
+function the_media_credit_html( $post = null ) {
+	echo get_media_credit_html( $post );
+}
+
+/**
+ * Template tag to return the media credit as HTML with a link to the author page if one exists for a WordPress user.
+ *
+ * @param int $id User ID of a WordPress user.
+ */
+function get_media_credit_html_by_user_ID( $id ) {
+	return Media_Credit_Template_Tags::get_media_credit_html_by_user_id( $id );
+}
+
+/**
+ * Template tag to print the media credit as HTML with a link to the author page if one exists for a WordPress user.
+ *
+ * @param int $id User ID of a WordPress user.
+ */
+function the_media_credit_html_by_user_ID( $id ) {
+	echo get_media_credit_html_by_user_ID( $id );
+}
+
+/**
+ *
+ * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ */
+function get_wpuser_media_credit( $post = null ) {
+
+	_deprecated_function( __FUNCTION__, '3.0.0' );
+
+	return Media_Credit_Template_Tags::get_wpuser_media_credit( $post );
+}
+
+/**
+ *
+ * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ */
+function get_freeform_media_credit( $post = null ) {
+
+	_deprecated_function( __FUNCTION__, '3.0.0' );
+
+	return Media_Credit_Template_Tags::get_freeform_media_credit( $post );
+}
+
+/**
+ *
+ * @param unknown $author_id
+ * @param string $sidebar
+ * @param number $limit
+ * @param string $link_without_parent
+ * @param string $header
+ * @param string $exclude_unattached
+ */
+function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = "<h3>Recent Media</h3>", $exclude_unattached = true ) {
+
+	$media = author_media($author_id, $limit, $exclude_unattached);
+	if ( empty( $media ) ) {
+		return; // abort
+	}
+
+	$id = "id = " . ($sidebar ? "recent-media-sidebar" : "recent-media-inline");
+	$container = "div";
+
+	echo "<div $id>$header";
+	foreach ( $media as $post ) {
+
+		setup_postdata( $post );
+
+		// If media is attached to a post, link to the parent post. Otherwise, link to attachment page itself.
+		if ( $post->post_parent > 0 || !$link_without_parent ) {
+			$image = wp_get_attachment_image( $post->ID, 'thumbnail' );
+		} else {
+			$image = wp_get_attachment_link( $post->ID, 'thumbnail', true );
+		}
+
+		$image = preg_replace( '/title=".*"/', '', $image ); // remove title attribute from image
+		$link = $post->post_parent > 0 ? "<a href='" . get_permalink( $post->post_parent ) . "' title='" . get_the_title( $post->post_parent ) . "'>$image</a>" : $image;
+
+		echo "<$container class='author-media' id='attachment-$post->ID'>$link</$container>";
+	}
+	echo "</div>";
+}
+
+function author_media_and_posts( $id, $include_posts = true, $limit = 0, $exclude_unattached = true ) {
+	return Media_Credit_Template_Tags::author_media_and_posts( $id, $include_posts, $limit, $exclude_unattached );
+}
+
+function author_media( $id, $limit = 0, $exclude_unattached = true ) {
+	return author_media_and_posts( $id, false, $limit, $exclude_unattached );
+}

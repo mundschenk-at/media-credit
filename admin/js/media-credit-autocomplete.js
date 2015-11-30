@@ -14,12 +14,19 @@ function mediaCreditAutocomplete(inputField, hiddenField, currAuthorId, currAuth
 		})
 		/* --- For jQuery UI autocomplete */
 		.autocomplete({
-			source: function(request, response) { 
-						jQuery.post(ajaxurl, 
-									{ action: 'media_credit_author_names',
-									  term: request.term,
-									  limit: 100 }, 
-									function(data) { response(data); }, 'json'); 
+			source: function(request, response) {
+						var options = {
+							type : 'POST',
+							data : {
+								'term'  : request.term,
+								'limit' : 100,
+							},
+							success : function( data ) {
+								response( data );
+							}
+						};
+
+						wp.media.ajax('media_credit_author_names', options);
 					}, 
 			minLength: 2,
 			select: function(event, ui) {
