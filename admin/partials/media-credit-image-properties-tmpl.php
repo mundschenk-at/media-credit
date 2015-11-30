@@ -1,4 +1,17 @@
-<script type="text/html" id="tmpl-media-credit-image-properties">
+<?php
+
+/**
+ * Provide a admin area view for the plugin
+ *
+ * This file is used to markup the admin-facing aspects of the plugin.
+ *
+ * @link       https://mundschenk.at
+ * @since      1.0.0
+ *
+ * @package    Media_Credit
+ * @subpackage Media_Credit/admin/partials
+ */
+?><script type="text/html" id="tmpl-media-credit-image-properties">
 	<div class="image-settings-group media-credit-properties">
 		<label class="setting media-credit-text">
 			<span><?php esc_html_e( 'Credit', 'media-credit' ); ?></span>
