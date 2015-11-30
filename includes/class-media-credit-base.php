@@ -21,7 +21,7 @@
  * MA 02110-1301, USA.
  *
  * @link       https://mundschenk.at
- * @since      1.0.0
+ * @since      3.0.0
  *
  * @package    Media_Credit
  * @subpackage Media_Credit/includes

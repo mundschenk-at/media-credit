@@ -21,7 +21,7 @@
  *  MA 02110-1301, USA.
  *
  * @link       https://mundschenk.at
- * @since      1.0.0
+ * @since      3.0.0
  *
  * @package    Media_Credit
  * @subpackage Media_Credit/includes
@@ -56,10 +56,6 @@ class Media_Credit_Setup implements Media_Credit_Base {
 	 * @var      string    $version    The current version of the plugin.
 	 */
 	protected $version;
-
-	const MEDIA_CREDIT_DEFAULT_SEPARATOR = ' | ';
-	const MEDIA_CREDIT_POSTMETA_KEY = '_media_credit';
-	const MEDIA_CREDIT_URL_POSTMETA_KEY = '_media_credit_url';
 
 	/**
 	 * The default organization name (if no custom name is set).
@@ -99,7 +95,7 @@ class Media_Credit_Setup implements Media_Credit_Base {
 		$default_options = array(
 			'version'           => $this->version,
 			'install_date'      => date( 'Y-m-d' ),
-			'separator'         => self::MEDIA_CREDIT_DEFAULT_SEPARATOR,
+			'separator'         => self::DEFAULT_SEPARATOR,
 			'organization'      => $this->default_organization,
 			'credit_at_end'     => false,
 			'no_default_credit' => false,
@@ -120,7 +116,7 @@ class Media_Credit_Setup implements Media_Credit_Base {
 		if ( version_compare( $installed_options['version'], '1.0.1', '<' ) ) {
 			// Update all media-credit postmeta keys to _media_credit
 			global $wpdb;
-			$wpdb->update( $wpdb->postmeta, array( 'meta_key' => self::MEDIA_CREDIT_POSTMETA_KEY ), array( 'meta_key' => 'media-credit' ) );
+			$wpdb->update( $wpdb->postmeta, array( 'meta_key' => self::POSTMETA_KEY ), array( 'meta_key' => 'media-credit' ) );
 
 			$installed_options['version'] = '1.0.1';
 			update_option( $this->plugin_name, $installed_options );
