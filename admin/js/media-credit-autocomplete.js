@@ -7,7 +7,7 @@ jQuery( document ).ready( function() {
 				removeID();
 			}
 		} ).blur( function() {
-			if ( this.value == '' ) {
+			if ( this.value === '' ) {
 				removeID();
 			}
 		} )
