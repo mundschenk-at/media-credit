@@ -39,7 +39,7 @@
 class Media_Credit_Template_Tags implements Media_Credit_Base {
 
 	/**
-	 * Template tag to return the media credit as plain text for some media attachment.
+	 * Returns the media credit as plain text for some media attachment.
 	 *
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 * @return string The media credit.
@@ -54,22 +54,24 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	}
 
 	/**
-	 * Template tag to return the media credit URL as plain text for some media attachment.
+	 * Returns the media credit URL as plain text for some media attachment.
 	 *
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @return string The credit URL (or the empty string if none is set).
 	 */
 	public static function get_media_credit_url( $post = null ) {
 
 		$post = get_post( $post );
 
-		return get_post_meta($post->ID, self::URL_POSTMETA_KEY, true);
+		return get_post_meta( $post->ID, self::URL_POSTMETA_KEY, true );
 	}
 
 	/**
-	 * Template tag to return the media credit as HTML with a link to the author page if one exists for some media attachment.
+	 * Returns the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 * @param boolean $include_default_credit Optional flag to decide if default credits (owner) should be returned as well. Default is true.
+	 * @return string The media credit HTML (or the empty string if no credit is set).
 	 */
 	public static function get_media_credit_html( $post = null, $include_default_credit = true ) {
 
@@ -101,22 +103,24 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	}
 
 	/**
-	 * Template tag to return the media credit as HTML with a link to the author page if one exists for a WordPress user.
+	 * Returns the media credit as HTML with a link to the author page if one exists for a WordPress user.
 	 *
 	 * @param int $id User ID of a WordPress user.
+	 * @return string
 	 */
 	public static function get_media_credit_html_by_user_ID( $id ) {
 
 		$credit_wp_author = get_the_author_meta( 'display_name', $id );
 		$options = get_option( self::OPTION );
 
-		return '<a href="' . get_author_posts_url( $id ) . '">' . $credit_wp_author . '</a>' . $options['separator'] .
-			 $options['organization'];
+		return '<a href="' . get_author_posts_url( $id ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 	}
 
 	/**
+ 	 * Returns the default media credit for a given post/attachment (i.e. the post author).
 	 *
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @return string The post author display name.
 	 */
 	public static function get_wpuser_media_credit( $post = null ) {
 
@@ -126,8 +130,10 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	}
 
 	/**
+	 * Returns the freeform emdia credit for a given post/attachment.
 	 *
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @return string The freeform credit (or the empty string).
 	 */
 	public static function get_freeform_media_credit( $post = null ) {
 
@@ -137,11 +143,12 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	}
 
 	/**
+	 * Returns the recently added media attachments and posts for a given author.
 	 *
-	 * @param unknown $id
-	 * @param string $include_posts
-	 * @param number $limit
-	 * @param string $exclude_unattached
+	 * @param number  $author_id
+	 * @param boolean $include_posts Optional. Default true.
+	 * @param number  $limit Optional. Default 0.
+	 * @param boolean $exclude_unattached Optional. Default true.
 	 */
 	public static function author_media_and_posts( $id, $include_posts = true, $limit = 0, $exclude_unattached = true ) {
 

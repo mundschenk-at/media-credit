@@ -101,8 +101,12 @@ function the_media_credit_html_by_user_ID( $id ) {
 }
 
 /**
+ * Retrieve the default media credit for a given post/attachment (i.e. the post author).
+ *
+ * @deprecated since 3.0.0
  *
  * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ * @return string The post author display name.
  */
 function get_wpuser_media_credit( $post = null ) {
 
@@ -112,8 +116,12 @@ function get_wpuser_media_credit( $post = null ) {
 }
 
 /**
+ * Retrieve the freeform emdia credit for a given post/attachment.
+ *
+ * @deprecated since 3.0.0
  *
  * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+ * @return string The freeform credit (or the empty string).
  */
 function get_freeform_media_credit( $post = null ) {
 
@@ -123,25 +131,31 @@ function get_freeform_media_credit( $post = null ) {
 }
 
 /**
+ * Template tag to display the recently added media attachments for given author.
  *
- * @param unknown $author_id
- * @param string $sidebar
- * @param number $limit
- * @param string $link_without_parent
- * @param string $header
- * @param string $exclude_unattached
+ * @param number  $author_id
+ * @param boolean $sidebar Display as sidebar or inline. Optional. Default true.
+ * @param number  $limit Optional. Default 10.
+ * @param boolean $link_without_parent Optional. Default false.
+ * @param string  $header HTML-formatted heading. Optional. Default <h3>Recent Media</h3> (translated).
+ * @param boolean $exclude_unattached Optional. Default true.
  */
-function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = "<h3>Recent Media</h3>", $exclude_unattached = true ) {
+function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = null, $exclude_unattached = true ) {
 
-	$media = author_media($author_id, $limit, $exclude_unattached);
+	$media = author_media( $author_id, $limit, $exclude_unattached );
 	if ( empty( $media ) ) {
 		return; // abort
 	}
 
-	$id = "id = " . ($sidebar ? "recent-media-sidebar" : "recent-media-inline");
+	// more complex default argument
+	if ( null === $header ) {
+		$header = '<h3>' . __( 'Recent Media', 'media-credit' ) . '</h3>';
+	}
+
+	$id = "id = " . ( $sidebar ? "recent-media-sidebar" : "recent-media-inline" );
 	$container = "div";
 
-	echo "<div $id>$header";
+	echo "<div {$id}>$header";
 	foreach ( $media as $post ) {
 
 		setup_postdata( $post );
@@ -161,10 +175,25 @@ function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_w
 	echo "</div>";
 }
 
-function author_media_and_posts( $id, $include_posts = true, $limit = 0, $exclude_unattached = true ) {
-	return Media_Credit_Template_Tags::author_media_and_posts( $id, $include_posts, $limit, $exclude_unattached );
+/**
+ * Template tag to return the recently added media attachments and posts for a given author.
+ *
+ * @param number  $author_id
+ * @param boolean $include_posts Optional. Default true.
+ * @param number  $limit Optional. Default 0.
+ * @param boolean $exclude_unattached Optional. Default true.
+ */
+function author_media_and_posts( $author_id, $include_posts = true, $limit = 0, $exclude_unattached = true ) {
+	return Media_Credit_Template_Tags::author_media_and_posts( $author_id, $include_posts, $limit, $exclude_unattached );
 }
 
-function author_media( $id, $limit = 0, $exclude_unattached = true ) {
-	return author_media_and_posts( $id, false, $limit, $exclude_unattached );
+/**
+ * Template tag to return the recently added media attachments for a given author.
+ *
+ * @param number  $author_id
+ * @param number  $limit Optional. Default 0.
+ * @param boolean $exclude_unattached Optional. Default true.
+ */
+function author_media( $author_id, $limit = 0, $exclude_unattached = true ) {
+	return author_media_and_posts( $author_id, false, $limit, $exclude_unattached );
 }
