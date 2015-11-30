@@ -252,7 +252,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 
 		$credit_unique = array();
 		foreach ( $images as $image ) {
-			$credit = get_media_credit_html( $image, $include_default_credit );
+			$credit = Media_Credit_Template_Tags::get_media_credit_html( $image, $include_default_credit );
 
 			if ( ! empty( $credit ) ) {
 				$credit_unique[] = $credit;
