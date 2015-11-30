@@ -3,14 +3,14 @@
 Plugin Name: Media Credit
 Plugin URI: http://www.scottbressler.com/blog/plugins/media-credit/
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 2.7.4
+Version: 2.7.5
 Author: Scott Bressler
 Author URI: http://www.scottbressler.com/blog/
 Text Domain: media-credit
 License: GPL2
 */
 
-define( 'MEDIA_CREDIT_VERSION', '2.7.4' );
+define( 'MEDIA_CREDIT_VERSION', '2.7.5' );
 define( 'MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/') );
 define( 'MEDIA_CREDIT_EMPTY_META_STRING', ' ' );
 define( 'MEDIA_CREDIT_POSTMETA_KEY', '_media_credit' );
@@ -29,7 +29,7 @@ require_once( 'display.php' );
  * @since 2.7
  */
 function media_credit_load_textdomain() {
-  load_plugin_textdomain( 'media-credit', false, dirname( plugin_basename( __FILE__ ) ) . '/translations/' ); 
+  load_plugin_textdomain( 'media-credit', false, dirname( plugin_basename( __FILE__ ) ) . '/translations/' );
 }
 add_action( 'plugins_loaded', 'media_credit_load_textdomain' );
 
@@ -43,7 +43,7 @@ function set_default_media_credit_options() {
 		'no_default_credit' => false
 	);
 	$installed_options = get_option( MEDIA_CREDIT_OPTION );
-		
+
 	if ( empty( $installed_options ) ) { // Install plugin for the first time
 		add_option( MEDIA_CREDIT_OPTION, $options );
 		$installed_options = $options;
@@ -61,7 +61,7 @@ function set_default_media_credit_options() {
 		$installed_options['version'] = '1.0.1';
 		update_option( MEDIA_CREDIT_OPTION, $installed_options );
 	}
-	
+
 	if ( version_compare( $installed_options['version'], '2.2.0', '<' ) ) { // Upgrade plugin to 2.2.0
 		// Update all media-credit postmeta keys to _media_credit
 		$installed_options['version'] = '2.2.0';
@@ -132,21 +132,21 @@ function the_media_credit_url($post = null) {
 function get_media_credit_html($post = null, $include_default_credit = true) {
 	$post = get_post($post);
 	if (!is_object($post)) return '';
-	
+
 	$credit_meta = get_freeform_media_credit($post);
 	$credit_url = get_media_credit_url($post);
-	
+
 	if ( $credit_meta != '' ) {
 		if (!empty($credit_url)) {
 			return '<a href="' . esc_url($credit_url) . '">' . $credit_meta . '</a>';
 		} else {
 			return $credit_meta;
 		}
-	} else if ( $include_default_credit ) {	
+	} else if ( $include_default_credit ) {
 		$credit_wp_author = get_wpuser_media_credit($post);
 		$options = get_option(MEDIA_CREDIT_OPTION);
 		$url = !empty($credit_url) ? $credit_url : get_author_posts_url($post->post_author);
-		
+
 		return '<a href="' . esc_url($url) . '">' . $credit_wp_author . '</a>'
 		 		. $options['separator'] . $options['organization'];
 	} else {
@@ -213,7 +213,7 @@ function add_media_credit($fields, $post) {
 		'show_in_edit' => true,
 		'show_in_modal' => true,
 	);
-	
+
 	$url = get_media_credit_url($post);
 	$html = "<input id='attachments[$post->ID][media-credit-url]' class='media-credit-input' type='url' size='30' value='$url' name='attachments[$post->ID][media-credit-url]' />";
 	$fields['media-credit-url'] = array(
@@ -223,7 +223,7 @@ function add_media_credit($fields, $post) {
 			'show_in_edit' => true,
 			'show_in_modal' => true,
 	);
-	
+
 	$author = ( get_freeform_media_credit($post) == '' ) ? $post->post_author : '';
 	$author_display = get_media_credit($post);
 	$author_for_script = ($author == '') ? -1 : $author;
@@ -250,10 +250,10 @@ function save_media_credit($post, $attachment) {
 	$wp_user_id = $attachment['media-credit-hidden'];
 	$freeform_name = $attachment['media-credit'];
 	$url = $attachment['media-credit-url'];
-	
+
 	// we need to update the credit URL in any case
 	update_post_meta($post['ID'], MEDIA_CREDIT_URL_POSTMETA_KEY, $url); // insert '_media_credit_url' metadata field
-	
+
 	if ( isset( $wp_user_id ) && $wp_user_id != '' && $freeform_name === get_the_author_meta( 'display_name', $wp_user_id ) ) {
 		// a valid WP user was selected, and the display name matches the free-form
 		// the final conditional is necessary for the case when a valid user is selected, filling in the hidden field,
@@ -292,7 +292,7 @@ function update_media_credit_in_post($post, $wp_user, $freeform = '', $url = '')
  * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-150x150.jpg, returns ParksTrip2010_100706_1487 (ignores size at end of string)
  * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-thumb.jpg, return ParksTrip2010_100706_1487-thumb
  * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-1.jpg, return ParksTrip2010_100706_1487-1
- * 
+ *
  * @param string $image Full URL to an image.
  * @return string The filename of the image excluding any size or extension, as given in the example above.
  */
@@ -325,23 +325,23 @@ function media_credit_caption_shortcode($attr, $content = null) {
                         $attr['caption'] = trim( $matches[2] );
                 }
         }
-	
+
         return img_caption_shortcode($attr, $content);
 }
 
 /**
  * New way (in core consideration) to fix the caption shortcode parsing. Proof of concept at this point.
- * 
+ *
  * @param array $matches
  * @param string $content
  * @param string $regex
  */
 function media_credit_img_caption_shortcode_content($matches, $content, $regex) {
 	$result = array();
-	
-	if ( preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#is', $content, $result ) )	
+
+	if ( preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#is', $content, $result ) )
 		return $result;
-	else 
+	else
 		return $matches;
 }
 //add_filter('img_caption_shortcode_content', 'media_credit_img_caption_shortcode_content', 10, 3);
@@ -354,7 +354,7 @@ function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $captio
 	$credit_meta = get_freeform_media_credit($post);
 	$credit_url = get_media_credit_url($post);
 	$options = get_option( MEDIA_CREDIT_OPTION );
-	
+
 	if ( $credit_meta == MEDIA_CREDIT_EMPTY_META_STRING )
 		return $html;
 	else if ( $credit_meta != '' )
@@ -364,11 +364,11 @@ function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $captio
 	} else {
 		return $html;
 	}
-	
+
 	if (!empty($credit_url)) {
 		$credit .= ' link="' . $credit_url . '"';
 	}
-	
+
 	if ( ! preg_match( '/width="([0-9]+)/', $html, $matches ) )
 		return $html;
 
@@ -377,9 +377,9 @@ function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $captio
 	$html = preg_replace( '/(class=["\'][^\'"]*)align(none|left|right|center)\s?/', '$1', $html );
 	if ( empty($align) )
 		$align = 'none';
-	
+
 	$shcode = '[media-credit ' . $credit . ' align="align' . $align . '" width="' . $width . '"]' . $html . '[/media-credit]';
-	
+
 	return apply_filters( 'media_add_credit_shortcode', $shcode, $html );
 }
 add_filter('image_send_to_editor', 'send_media_credit_to_editor_by_shortcode', 10, 8);
@@ -388,7 +388,7 @@ add_filter('image_send_to_editor', 'send_media_credit_to_editor_by_shortcode', 1
  * Add shortcode for media credit. Allows for credit to be specified for media attached to a post
  * by either specifying the ID of a WordPress user or with a raw string for the name assigned credit.
  * If an ID is present, it will take precedence over a name.
- * 
+ *
  * Usage: [media-credit id=1 align="aligncenter" width="300"] or [media-credit name="Another User" align="aligncenter" width="300"]
  */
 function media_credit_shortcode($atts, $content = null) {
@@ -397,8 +397,8 @@ function media_credit_shortcode($atts, $content = null) {
 	if ( $output != '' )
 		return $output;
 
-	$options = get_option( MEDIA_CREDIT_OPTION ); 
-	
+	$options = get_option( MEDIA_CREDIT_OPTION );
+
 	if ( !empty( $options['credit_at_end'] ) )
 		return do_shortcode( $content );
 
@@ -409,22 +409,22 @@ function media_credit_shortcode($atts, $content = null) {
 		'align'	=> 'alignnone',
 		'width'	=> '',
 	), $atts, 'media-credit'));
-	
+
 	if ( $id !== -1 ) {
-		$url = empty($link) ? get_author_posts_url($id) : $link;					
+		$url = empty($link) ? get_author_posts_url($id) : $link;
 		$credit_wp_author = get_the_author_meta( 'display_name', $id );
-		$options = get_option(MEDIA_CREDIT_OPTION);		
+		$options = get_option(MEDIA_CREDIT_OPTION);
 		$author_link = '<a href="' . esc_url($url) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 	} else if ( !empty($link) ) {
 		$author_link = '<a href="' . esc_attr($link) . '">' . $name . '</a>';
 	} else {
 		$author_link = $name;
 	}
-	
+
 	$credit_width = (int) $width + current_theme_supports( 'html5', 'caption' ) ? 0 : 10;
-	
+
 	/**
-	 * Filter the width of an image's credit/caption. 
+	 * Filter the width of an image's credit/caption.
 	 * We could use a media-credit specific filter, but we don't to be more compatible
 	 * with existing themes.
 	 *
@@ -439,11 +439,11 @@ function media_credit_shortcode($atts, $content = null) {
 	 * @param string $content       The image element, possibly wrapped in a hyperlink.
 	 */
 	$credit_width = apply_filters( 'img_caption_shortcode_width', $credit_width, $atts, $content );
-	
+
 	$style = '';
 	if ( $credit_width )
 		$style = ' style="width: ' . (int) $credit_width . 'px"';
-	
+
 	return '<div class="media-credit-container ' . esc_attr($align) . '"' . $style . '>'
 	. do_shortcode( $content ) . '<span class="media-credit">' . $author_link . '</span></div>';
 }
@@ -453,7 +453,7 @@ function add_media_credits_to_end( $content ) {
 	// Find the attachment_IDs of all media used in $content
 	preg_match_all( '/' . WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $matches );
 	$images = $matches[1];
-	
+
 	if ( count($images) == 0 )
 		return $content;
 
@@ -464,31 +464,31 @@ function add_media_credits_to_end( $content ) {
 	$credit_unique = array();
 	foreach ($images as $image) {
 		$credit = get_media_credit_html($image, $include_default_credit);
-		
+
 		if (! empty( $credit ) ) {
 			$credit_unique[] = $credit;
 		}
 	}
 	$credit_unique = array_unique($credit_unique);
-	
+
 	/* If no images are left, don't display credit line */
-	if ( count($credit_unique) == 0 ) 
+	if ( count($credit_unique) == 0 )
 		return $content;
-	
-	$image_credit = _nx( 'Image courtesy of %1$s', 'Images courtesy of %2$s and %1$s', count($credit_unique), 
+
+	$image_credit = _nx( 'Image courtesy of %1$s', 'Images courtesy of %2$s and %1$s', count($credit_unique),
 						 '%1$s is always the position of the last credit, %2$s of the concatenated other credits', 'media-credit' );
-	
+
 	$last_credit = array_pop($credit_unique);
 	$other_credits = implode( _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit'), $credit_unique );
-	
-	$image_credit = sprintf( $image_credit, $last_credit, $other_credits);	
-	
+
+	$image_credit = sprintf( $image_credit, $last_credit, $other_credits);
+
 	// restore credit array for filter
 	$credit_unique[] = $last_credit;
-	
+
 	/*
 	 * Filter hook to modify the end credits.
-	 * 
+	 *
 	 * @param $value - default end credit mark-up
 	 * @param $content - the original content
 	 * @param $credit_unique - a unique array of media credits for the post.
@@ -540,9 +540,9 @@ function media_credit_author_names_ajax() {
 add_action( 'wp_ajax_media_credit_filter_content', 'media_credit_filter_content_ajax' );
 function media_credit_filter_content_ajax() {
 	if ( ! isset( $_POST['post_content'] ) ||
-		 ! isset( $_POST['image_id'] ) || 
-		 ! isset( $_POST['author_id'] ) || 
-		 ! isset( $_POST['freeform'] ) || 
+		 ! isset( $_POST['image_id'] ) ||
+		 ! isset( $_POST['author_id'] ) ||
+		 ! isset( $_POST['freeform'] ) ||
 		 ! isset( $_POST['url'] ) ) {
 		wp_send_json_error();
 	}
@@ -552,30 +552,30 @@ function media_credit_filter_content_ajax() {
 	}
 
 	// unescape single & double quotes
-	$results = preg_replace(array('/\\\"/', "/\\\'/"), array('"', "'"), $_POST['post_content']); 
-		
+	$results = preg_replace(array('/\\\"/', "/\\\'/"), array('"', "'"), $_POST['post_content']);
+
 	if ($_POST['image_id'] > 0) {
 		$results = media_credit_filter_post_content($results, $_POST['image_id'], $_POST['author_id'], $_POST['freeform'], $_POST['url']);
 	}
-	
+
 	wp_send_json_success($results);
 }
 
 function media_credit_filter_post_content($content, $image_id, $author_id, $freeform, $url = '') {
 	preg_match_all( '/' . get_shortcode_regex() . '/s', $content, $matches, PREG_SET_ORDER );
-	
+
 	if (! empty( $matches ) ) {
-		foreach ( $matches as $shortcode ) {	
+		foreach ( $matches as $shortcode ) {
 			if ( 'media-credit' === $shortcode[2] ) {
 				$attr = shortcode_parse_atts( $shortcode[3] );
 				$img = $shortcode[5];
-					
+
 				$image_filename = wp_get_attachment_image_src($image_id);
 				$image_filename = get_image_filename_from_full_url($image_filename[0]);
-				
-				
+
+
 				if (preg_match('/src=".*' . $image_filename . '/', $img) && preg_match('/wp-image-' . $image_id . '/', $img)) {
-	
+
 					if ($author_id > 0) {
 						$attr['id'] = $author_id;
 						unset($attr['name']);
@@ -583,15 +583,15 @@ function media_credit_filter_post_content($content, $image_id, $author_id, $free
 						$attr['name'] = $freeform;
 						unset($attr['id']);
 					}
-		
+
 					if ( !empty($url) ) {
 						$attr['link'] = $url;
 					} else {
 						unset($attr['link']);
 					}
-					
+
 					$new_shortcode = '[media-credit';
-	
+
 					if (isset($attr['id'])) {
 						$new_shortcode .= ' id=' . $attr['id'];
 						unset ($attr['id']);
@@ -600,21 +600,21 @@ function media_credit_filter_post_content($content, $image_id, $author_id, $free
 						$new_shortcode .= ' name="' . $attr['name'] . '"';
 						unset ($attr['name']);
 					}
-	
+
 					foreach ($attr as $name => $value) {
 						$new_shortcode .= ' ' . $name . '="' . $value . '"';
 					}
 					$new_shortcode .= ']' . $img . '[/media-credit]';
-		
+
 					$content = str_replace($shortcode[0], $new_shortcode, $content);
 				}
-					
+
 			} elseif ( ! empty( $shortcode[5] ) && has_shortcode( $shortcode[5], 'media-credit' ) ) {
 				$content = str_replace($shortcode[5], media_credit_filter_post_content($shortcode[5], $image_id, $author_id, $freeform, $url), $content);
 			}
 		}
 	}
-		
+
 	return $content;
 }
 
@@ -626,8 +626,8 @@ function media_credit_filter_post_content($content, $image_id, $author_id, $free
  */
 function get_editable_authors_by_name( $user_id, $name, $limit ) {
 	global $wpdb;
-	
-	// get_editable_user_ids was deprecated in WordPress 3.1, so let's 
+
+	// get_editable_user_ids was deprecated in WordPress 3.1, so let's
 	// use a similar call that's used in post_author_meta_box() to get a list of eligible users
 	$editable = get_users( array(
 		'who' => 'authors',
@@ -669,7 +669,7 @@ function add_media_credit_menu() {
 	add_settings_field('organization', __('Organization', 'media-credit'), 'media_credit_organization', 'media', MEDIA_CREDIT_OPTION);
 	add_settings_field('credit_at_end', __('Display credit after posts', 'media-credit'), 'media_credit_end_of_post', 'media', MEDIA_CREDIT_OPTION);
 	add_settings_field('no_default_credit', __('Do not display default credit', 'media-credit'), 'media_credit_no_default_credit', 'media', MEDIA_CREDIT_OPTION);
-	
+
 	// Call register settings function
 	add_action( 'admin_init', 'media_credit_init' );
 }
@@ -686,7 +686,7 @@ function media_credit_init() { // whitelist options
 
 	/* Also handle customizer */
 	add_action('customize_controls_enqueue_scripts', 'media_credit_customize_controls_enqueue_scripts' );
-	
+
 	// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages
 	if ( !current_user_can('edit_posts') && !current_user_can('edit_pages') )
 		return;
@@ -696,12 +696,12 @@ function media_credit_init() { // whitelist options
 		add_filter( 'tiny_mce_plugins', 'media_credit_tiny_mce_plugins' );
 		add_filter( 'mce_css', 'media_credit_mce_css' );
 	}
-	
+
 	add_action( 'wp_enqueue_editor', 'media_credit_enqueue_editor', 10, 1 );
 	add_action( 'print_media_templates', 'media_credit_image_properties_template' );
 }
 
-/* 
+/*
  * Fix media handling in customize.php
  */
 function media_credit_customize_controls_enqueue_scripts() {
@@ -719,7 +719,7 @@ function media_credit_enqueue_editor( $options ) {
 		// because in some cases such as /wp-admin/press-this.php the media
 		// library isn't enqueued and shouldn't be. The script includes
 		// safeguards to avoid errors in this situation
-		
+
 		wp_enqueue_script( 'media-credit-image-properties', plugins_url( 'js/tinymce4/media-credit-image-properties.js', __FILE__ ), array( 'jquery' ), MEDIA_CREDIT_VERSION, true );
 		wp_enqueue_script( 'media-credit-tinymce-switch', plugins_url( 'js/tinymce4/media-credit-tinymce-switch.js', __FILE__ ), array( 'jquery' ), MEDIA_CREDIT_VERSION, true );
 	}
@@ -728,7 +728,7 @@ function media_credit_enqueue_editor( $options ) {
 /*
  * Template for setting Media Credit in image properties
  */
-function media_credit_image_properties_template() {	
+function media_credit_image_properties_template() {
 	include dirname( __FILE__ ) . '/templates/media-credit-image-properties-tmpl.php';
 }
 
@@ -745,16 +745,16 @@ function media_credit_tiny_mce_plugins( $plugins ) {
 function media_credit_mce_external_plugins( $plugins ) {
 	$options = get_option( MEDIA_CREDIT_OPTION );
 	$authors = get_users( array( 'who' => 'authors' ) ); //get_media_credit_authors_for_post();
-	
+
 	$json_separator = json_encode($options['separator']);
 	$json_organization = json_encode($options['organization']);
-	
+
 	echo "
 	<script type='text/javascript'>
 	var \$mediaCredit = {
 		'separator': {$json_separator},
 		'organization': {$json_organization},
-		'id': 
+		'id':
 		{
 		";
 		foreach ($authors as $author) {
@@ -768,7 +768,7 @@ function media_credit_mce_external_plugins( $plugins ) {
 	";
 	$plugins['mediacredit'] = MEDIA_CREDIT_URL . 'js/tinymce4/media-credit-tinymce.js';
 	$plugins['noneditable'] = MEDIA_CREDIT_URL . 'js/tinymce4/tinymce-noneditable.js';
-			
+
 	return $plugins;
 }
 /*
@@ -776,14 +776,14 @@ function media_credit_mce_external_plugins( $plugins ) {
  */
 function get_media_credit_authors_for_post($post = null) {
 	global $post;
-	
+
 	// Find the user IDs of all media used in post_content credited to WP users
 	preg_match_all( '/\[media-credit id=(\d+)/', $post->post_content, $matches );
 	$users = array_unique( $matches[1] );
-	
+
 	if ( empty($users) )
 		return array();
-	
+
 	$users_data = array();
 	foreach ($users as $user)
 		$users_data[] = get_userdata($user);
@@ -795,7 +795,7 @@ function media_credit_mce_css($css) {
 	if ( ! empty( $css ) ) {
 		$css .= ",";
 	}
-	
+
 	return $css . MEDIA_CREDIT_URL . 'css/media-credit-tinymce.css';
 }
 
@@ -841,15 +841,15 @@ function media_credit_end_of_post() {
 	$explanation = __("Display media credit for all the images attached to a post after the post content. Style with CSS class 'media-credit-end'", 'media-credit');
 	echo "<input type='checkbox' id='media-credit[credit_at_end]' name='media-credit[credit_at_end]' value='1' " . checked(1, $credit_at_end, false) . " />";
 	echo "<label for='media-credit[credit_at_end]' style='margin-left:5px'>$explanation</label>";
-	
+
 	$curr_user = wp_get_current_user();
 	$preview = _nx( 'Image courtesy of %1$s', 'Images courtesy of %2$s and %1$s', 2,
-					'%1$s is always the position of the last credit, %2$s of the concatenated other credits', 'media-credit' );	
-	$preview = sprintf( $preview, _x('John Smith', 'Example name for preview', 'media-credit'), 
-								  "<span id='preview'><a href='" . get_author_posts_url($curr_user->ID) . "'>$curr_user->display_name</a>${options['separator']}${options['organization']}</span>" 
-								  			. _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' ) 
+					'%1$s is always the position of the last credit, %2$s of the concatenated other credits', 'media-credit' );
+	$preview = sprintf( $preview, _x('John Smith', 'Example name for preview', 'media-credit'),
+								  "<span id='preview'><a href='" . get_author_posts_url($curr_user->ID) . "'>$curr_user->display_name</a>${options['separator']}${options['organization']}</span>"
+								  			. _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' )
 											. _x( 'Jane Doe', 'Example name for preview', 'media-credit' ) );
-	
+
 	echo "<br /><em>" . __('Preview', 'media-credit') . '</em>: ' . $preview;
 	echo "<br /><strong>" . __('Warning', 'media-credit') . "</strong>: " . __('This will cause credit for all images in all posts to display at the bottom of every post on this blog', 'media-credit');
 }
@@ -872,15 +872,15 @@ function media_credit_options_validate($input) {
 
 function is_media_edit_page( ) {
 	global $pagenow;
-	
+
 	$media_edit_pages = array('post-new.php', 'post.php', 'page.php', 'page-new.php', 'media-upload.php', 'media.php', 'media-new.php', 'ajax-actions.php', 'upload.php', 'customize.php');
-	
+
  	return in_array($pagenow, $media_edit_pages);
 }
 
 function is_media_settings_page( ) {
 	global $pagenow;
-	
+
 	return $pagenow == 'options-media.php';
 }
 
