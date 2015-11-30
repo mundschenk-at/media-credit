@@ -1,8 +1,8 @@
-# Copyright (C) 2015 Scott Bressler
+# Copyright (C) 2015 Peter Putzer
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: Media Credit 2.7.4\n"
+"Project-Id-Version: Media Credit 3.0.0\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/media-credit\n"
 "POT-Creation-Date: 2015-09-16 22:54:08+00:00\n"
 "MIME-Version: 1.0\n"
@@ -13,88 +13,89 @@ msgstr ""
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "X-Generator: grunt-wp-i18n 0.4.9\n"
 
-#: media-credit.php:210
-msgid "Credit:"
-msgstr ""
-
-#: media-credit.php:220
-msgid "Credit URL:"
-msgstr ""
-
 #. Plugin Name of the plugin/theme
 msgid "Media Credit"
 msgstr ""
 
-#: media-credit.php:667 media-credit.php:853
+#: admin/class-media-credit-admin.php:349
+#: admin/class-media-credit-admin.php:684
 msgid "Preview"
 msgstr ""
 
-#: media-credit.php:668
+#: admin/class-media-credit-admin.php:351
 msgid "Separator"
 msgstr ""
 
-#: media-credit.php:669
+#: admin/class-media-credit-admin.php:353
 msgid "Organization"
 msgstr ""
 
-#: media-credit.php:670
+#: admin/class-media-credit-admin.php:355
 msgid "Display credit after posts"
 msgstr ""
 
-#: media-credit.php:671
+#: admin/class-media-credit-admin.php:357
 msgid "Do not display default credit"
 msgstr ""
 
-#: media-credit.php:806
+#: admin/class-media-credit-admin.php:389
+msgid "Credit:"
+msgstr ""
+
+#: admin/class-media-credit-admin.php:399
+msgid "Credit URL:"
+msgstr ""
+
+#: admin/class-media-credit-admin.php:623
 msgid "Settings"
 msgstr ""
 
-#: media-credit.php:815
+#: admin/class-media-credit-admin.php:634
 msgid "Choose how to display media credit on your blog:"
 msgstr ""
 
-#: media-credit.php:820
+#: admin/class-media-credit-admin.php:642
 msgid ""
 "Text used to separate author names from organization when crediting media "
 "to users of this blog"
 msgstr ""
 
-#: media-credit.php:827
+#: admin/class-media-credit-admin.php:652
 msgid "Organization used when crediting media to users of this blog"
 msgstr ""
 
-#: media-credit.php:841
+#: admin/class-media-credit-admin.php:672
 msgid ""
 "Display media credit for all the images attached to a post after the post "
 "content. Style with CSS class 'media-credit-end'"
 msgstr ""
 
-#: media-credit.php:854
+#: admin/class-media-credit-admin.php:685
 msgid "Warning"
 msgstr ""
 
-#: media-credit.php:854
+#: admin/class-media-credit-admin.php:685
 msgid ""
 "This will cause credit for all images in all posts to display at the bottom "
 "of every post on this blog"
 msgstr ""
 
-#: media-credit.php:860
+#: admin/class-media-credit-admin.php:694
 msgid ""
 "Do not display the attachment author as default credit if it has not been "
 "set explicitly (= freeform credits only)."
 msgstr ""
 
-#: templates/media-credit-image-properties-tmpl.php:4
+#: admin/partials/media-credit-image-properties-tmpl.php:17
 msgid "Credit"
 msgstr ""
 
-#: templates/media-credit-image-properties-tmpl.php:9
+#: admin/partials/media-credit-image-properties-tmpl.php:22
 msgid "Credit URL"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
-msgid "http://www.scottbressler.com/blog/plugins/media-credit/"
+msgid "https://code.mundschenk.at/media-credit/"
 msgstr ""
 
 #. Description of the plugin/theme
@@ -104,14 +105,15 @@ msgid ""
 msgstr ""
 
 #. Author of the plugin/theme
-msgid "Scott Bressler"
+msgid "Peter Putzer"
 msgstr ""
 
 #. Author URI of the plugin/theme
-msgid "http://www.scottbressler.com/blog/"
+msgid "https://mundschenk.at/"
 msgstr ""
 
-#: media-credit.php:478 media-credit.php:846
+#: admin/class-media-credit-admin.php:677
+#: public/class-media-credit-public.php:268
 msgctxt ""
 "%1$s is always the position of the last credit, %2$s of the concatenated "
 "other credits"
@@ -120,17 +122,18 @@ msgid_plural "Images courtesy of %2$s and %1$s"
 msgstr[0] ""
 msgstr[1] ""
 
-#: media-credit.php:482 media-credit.php:850
-msgctxt "String used to join multiple image credits for \"Display credit after post\""
-msgid ", "
-msgstr ""
-
-#: media-credit.php:848
+#: admin/class-media-credit-admin.php:679
 msgctxt "Example name for preview"
 msgid "John Smith"
 msgstr ""
 
-#: media-credit.php:851
+#: admin/class-media-credit-admin.php:682
 msgctxt "Example name for preview"
 msgid "Jane Doe"
+msgstr ""
+
+#: admin/class-media-credit-admin.php:681
+#: public/class-media-credit-public.php:272
+msgctxt "String used to join multiple image credits for \"Display credit after post\""
+msgid ", "
 msgstr ""
