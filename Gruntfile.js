@@ -46,7 +46,7 @@ module.exports = function(grunt) {
 			main: {
 				files:[
 					{expand: true, nonull: true, src: ['readme.txt','*.php'], dest: 'build/'},
-					{expand: true, nonull: true, src: ['admin/**','public/**','includes/**','translations/**'], dest: 'build/'},
+					{expand: true, nonull: true, src: ['admin/**','public/**','includes/**','translations/**', '!**/scss/**'], dest: 'build/'},
 				],
 			}
 		},
@@ -78,33 +78,35 @@ module.exports = function(grunt) {
         sass: {
             dist: {
                 options: {
-                    banner: '/*! <%= pkg.name %> <%= pkg.version %> filename.min.css <%= grunt.template.today("yyyy-mm-dd h:MM:ss TT") %> */\n',
-                    style: 'compressed'
+                    style: 'compressed',
+                    sourcemap: 'none'
                 },
-                files: [{
-                    expand: true,
-                    cwd: 'assets/scss',
-                    src: [
-                        '*.scss'
-                    ],
-                    dest: 'assets/css',
-                    ext: '.min.css'
-                }]
+                files: [ { expand: true,
+		                   cwd: 'admin/scss',
+		                   src: [ '*.scss' ],
+		                   dest: 'build/admin/css',
+		                   ext: '.min.css' },
+	                     { expand: true,
+		                   cwd: 'public/scss',
+		                   src: [ '*.scss' ],
+		                   dest: 'build/public/css',
+		                   ext: '.min.css' } ]
             },
             dev: {
                 options: {
-                    banner: '/*! <%= pkg.name %> <%= pkg.version %> filename.css <%= grunt.template.today("yyyy-mm-dd h:MM:ss TT") %> */\n',
-                    style: 'expanded'
+                    style: 'expanded',
+                    sourcemap: 'none'
                 },
-                files: [{
-                    expand: true,
-                    cwd: 'assets/scss',
-                    src: [
-                        '*.scss'
-                    ],
-                    dest: 'assets/css',
-                    ext: '.css'
-                }]
+                files: [ { expand: true,
+		                   cwd: 'admin/scss',
+		                   src: [ '*.scss' ],
+		                   dest: 'admin/css',
+		                   ext: '.css' },
+	                     { expand: true,
+		                   cwd: 'public/scss',
+		                   src: [ '*.scss' ],
+		                   dest: 'public/css',
+		                   ext: '.css' } ]
             }
         },
         uglify: {
@@ -140,11 +142,14 @@ module.exports = function(grunt) {
 	grunt.registerTask( 'default', [
 	    'wp_readme_to_markdown',
 		'makepot',
+		'sass:dev'
     ]);
 
 	grunt.registerTask( 'build', [
 		'wp_readme_to_markdown',
+		'clean:build',
 		'copy',
+		'sass:dist',
 		'uglify:dist'
   	]);
 
@@ -152,6 +157,7 @@ module.exports = function(grunt) {
   		'wp_readme_to_markdown',
 		'clean:build',
   		'copy',
+		'sass:dist',
 		'uglify:dist',
   		'wp_deploy'
   	]);
