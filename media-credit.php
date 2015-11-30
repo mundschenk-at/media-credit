@@ -43,6 +43,11 @@ function media_credit_autoloader( $class_name ) {
 }
 
 /**
+ * Load legacy template tags.
+ */
+require_once( plugin_dir_path( __FILE__ ) . 'includes/media-credit-template.php' );
+
+/**
  * Begins execution of the plugin.
  *
  * Since everything within the plugin is registered via hooks,
