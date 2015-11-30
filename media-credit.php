@@ -4,7 +4,7 @@
 	Plugin Name: Media Credit
 	Plugin URI: https://code.mundschenk.at/media-credit/
 	Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-	Version: 3.0.0
+	Version: 3.0-alpha
 	Author: Peter Putzer
 	Author: Scott Bressler
 	Author URI: https://mundschenk.at/
@@ -20,7 +20,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * An autoloader implementation for our classes.
  *
- * @param unknown $class_name
+ * @param string $class_name
  */
 function media_credit_autoloader( $class_name ) {
 	if ( false === strpos( $class_name, 'Media_Credit' ) ) {
