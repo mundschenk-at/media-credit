@@ -92,6 +92,14 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
+= 3.0 (unreleased) =
+* Refactored plugin for a more future-proof architecture.
+* Moved all non-'template tag' functions out of the global namespace. This might break themes that relied on these (undocumented) functions. Please test before updating if you are running a highly customized installation of Media Credit.
+* ...
+
+= 2.7.5 (Nov. 30, 2015) =
+* Fixed a bug in Preview script.
+
 = 2.7.4 (Oct. 19, 2015) =
 * Fixed empty credit array for media_credit_at_end filter when there is only one (unique) credit. Props David Higgins.
 
@@ -234,6 +242,9 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Upgrade Notice ==
 
+= 2.7.5 =
+In the near future, version 3.0 of Media Credit will be released. In preparation, please ensure that your theme uses only the public functions documented in [TODO: link](https://code.mundschenk.at/media-credit/template-tags/).
+
 = 2.2.0 =
 Updating plugin to maintain full-functionality in WordPress 4.0, with some minor bug fixes
 
@@ -261,7 +272,7 @@ Fixed autocomplete and losing control of AJAX functionality in WordPress admin, 
 = 0.5.1 =
 Autocomplete list of users is filtered better, particularly for WordPress MU users.
 
-== Other Notes == 
+== Other Notes ==
 **Options**
 
 This plugin provides a few options which appear on the **Media** page under **Settings**. These options are:
