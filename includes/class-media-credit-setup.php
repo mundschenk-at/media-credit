@@ -80,7 +80,7 @@ class Media_Credit_Setup implements Media_Credit_Base {
 	public function register( $plugin_file ) {
 		register_activation_hook(   $plugin_file, array( $this, 'activate' ) );
 		register_deactivation_hook( $plugin_file, array( $this, 'deactivate' ) );
-		register_uninstall_hook(    $plugin_file, array( $this, 'uninstall' ) );
+		register_uninstall_hook(    $plugin_file, __CLASS__ . '::uninstall' );
 	}
 
 	/**
@@ -146,7 +146,7 @@ class Media_Credit_Setup implements Media_Credit_Base {
 	 *
 	 * @since    3.0.0
 	 */
-	public function uninstall() {
-		delete_option( $this->plugin_name );
+	static function uninstall() {
+		delete_option( self::OPTION );
 	}
 }
