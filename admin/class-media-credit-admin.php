@@ -265,7 +265,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			wp_send_json_error( '-1' ); // standard response for permissions
 		}
 
-		$authors = $this->get_editable_authors_by_name( wp_get_current_user()->id, $_POST['term'], $_POST['limit'] );
+		$authors = $this->get_editable_authors_by_name( wp_get_current_user()->ID, $_POST['term'], $_POST['limit'] );
 		if ( empty( $authors ) ) {
 			wp_send_json_error( '0' ); // standard response for failure
 		}
