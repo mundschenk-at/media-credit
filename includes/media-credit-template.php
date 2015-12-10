@@ -78,7 +78,7 @@ if ( ! function_exists( 'get_media_credit_html' ) ) {
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 * @param boolean $include_default_credit Optional flag to decide if default credits (owner) should be returned as well. Default is true.
 	 */
-	function get_media_credit_html($post = null, $include_default_credit = true) {
+	function get_media_credit_html( $post = null, $include_default_credit = true ) {
 		return Media_Credit_Template_Tags::get_media_credit_html( $post, $include_default_credit );
 	}
 }
@@ -94,25 +94,25 @@ if ( ! function_exists( 'the_media_credit_html' ) ) {
 	}
 }
 
-if ( ! function_exists( 'get_media_credit_html_by_user_ID' ) ) {
+if ( ! function_exists( 'get_media_credit_html_by_user_id' ) ) {
 	/**
 	 * Template tag to return the media credit as HTML with a link to the author page if one exists for a WordPress user.
 	 *
 	 * @param int $id User ID of a WordPress user.
 	 */
-	function get_media_credit_html_by_user_ID( $id ) {
+	function get_media_credit_html_by_user_id( $id ) {
 		return Media_Credit_Template_Tags::get_media_credit_html_by_user_id( $id );
 	}
 }
 
-if ( ! function_exists( 'the_media_credit_html_by_user_ID' ) ) {
+if ( ! function_exists( 'the_media_credit_html_by_user_id' ) ) {
 	/**
 	 * Template tag to print the media credit as HTML with a link to the author page if one exists for a WordPress user.
 	 *
 	 * @param int $id User ID of a WordPress user.
 	 */
-	function the_media_credit_html_by_user_ID( $id ) {
-		echo get_media_credit_html_by_user_ID( $id );
+	function the_media_credit_html_by_user_id( $id ) {
+		echo get_media_credit_html_by_user_id( $id );
 	}
 }
 
