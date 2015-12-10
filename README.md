@@ -101,7 +101,8 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 ### 3.0 (unreleased) ###
 * Refactored plugin for a more future-proof architecture.
 * Moved all non-'template tag' functions out of the global namespace. This might break themes that relied on these (undocumented) functions. Please test before updating if you are running a highly customized installation of Media Credit.
-* ...
+* Wrap standalone media credits in <figure> if HTML5 support for captions is enabled.
+* Uses WordPress language packs for translations
 
 ### 2.7.5 (Nov. 30, 2015) ###
 * Fixed a bug in Preview script.
@@ -249,7 +250,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 ## Upgrade Notice ##
 
 ### 2.7.5 ###
-In the near future, version 3.0 of Media Credit will be released. In preparation, please ensure that your theme uses only the public functions documented in [TODO: link](https://code.mundschenk.at/media-credit/template-tags/).
+In the near future, version 3.0 of Media Credit will be released. In preparation, please ensure that your theme uses only the public functions documented in the [Media Credit API](https://code.mundschenk.at/media-credit/template-tags/).
 
 ### 2.2.0 ###
 Updating plugin to maintain full-functionality in WordPress 4.0, with some minor bug fixes
