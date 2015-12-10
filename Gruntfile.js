@@ -30,7 +30,6 @@ module.exports = function(grunt) {
 //	    }
 	    clean: {
 	    	  build: ["build/*"]//,
-	    	  //release: ["path/to/another/dir/one", "path/to/another/dir/two"]
     	},
 	    wp_readme_to_markdown: {
 	        readme: {
@@ -46,7 +45,7 @@ module.exports = function(grunt) {
 			main: {
 				files:[
 					{expand: true, nonull: true, src: ['readme.txt','*.php'], dest: 'build/'},
-					{expand: true, nonull: true, src: ['admin/**','public/**','includes/**','translations/**', '!**/scss/**'], dest: 'build/'},
+					{expand: true, nonull: true, src: ['admin/**','public/**','includes/**', '!**/scss/**'], dest: 'build/'},
 				],
 			}
 		},
@@ -141,7 +140,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask( 'default', [
 	    'wp_readme_to_markdown',
-		'makepot',
+		//'makepot',
 		'sass:dev'
     ]);
 
