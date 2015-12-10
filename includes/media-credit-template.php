@@ -105,6 +105,19 @@ if ( ! function_exists( 'get_media_credit_html_by_user_id' ) ) {
 	}
 }
 
+if ( ! function_exists( 'get_media_credit_html_by_user_ID' ) ) {
+	/**
+	 * An alias for get_media_credit_html_by_user_id.
+	 *
+	 * @deprecated since 3.0.0
+	 *
+	 * @param int $id User ID of a WordPress user.
+	 */
+	function get_media_credit_html_by_user_ID( $id ) {
+		return get_media_credit_html_by_user_id( $id );
+	}
+}
+
 if ( ! function_exists( 'the_media_credit_html_by_user_id' ) ) {
 	/**
 	 * Template tag to print the media credit as HTML with a link to the author page if one exists for a WordPress user.
@@ -113,6 +126,19 @@ if ( ! function_exists( 'the_media_credit_html_by_user_id' ) ) {
 	 */
 	function the_media_credit_html_by_user_id( $id ) {
 		echo get_media_credit_html_by_user_id( $id );
+	}
+}
+
+if ( ! function_exists( 'the_media_credit_html_by_user_ID' ) ) {
+	/**
+	 * An alias for the_media_credit_html_by_user_id.
+	 *
+	 * @deprecated since 3.0.0
+	 *
+	 * @param int $id User ID of a WordPress user.
+	 */
+	function the_media_credit_html_by_user_ID( $id ) {
+		return the_media_credit_html_by_user_id( $id );
 	}
 }
 

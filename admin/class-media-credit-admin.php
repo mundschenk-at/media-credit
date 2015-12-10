@@ -149,38 +149,44 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 	/**
 	 * Add our own version of the wpeditimage plugin.
+	 * The plugins depend on the global variable echoed in admin_head().
 	 *
 	 * @param array $plugins An array of plugins to load.
 	 * @return array The array of plugins to load.
 	 */
 	public function tinymce_external_plugins( $plugins ) {
+		$plugins['mediacredit'] = $this->ressource_url . 'js/tinymce4/media-credit-tinymce.js';
+		$plugins['noneditable'] = $this->ressource_url . 'js/tinymce4/tinymce-noneditable.js';
+
+		return $plugins;
+	}
+
+
+	/**
+	 * Add our global variable for the TinyMCE plugin.
+	 *
+	 * @param array $plugins An array of plugins to load.
+	 * @return array The array of plugins to load.
+	 */
+	public function admin_head() {
 		$options = get_option( self::OPTION );
 		$authors = get_users( array( 'who' => 'authors' ) ); //get_media_credit_authors_for_post();
 
 		$json_separator = json_encode($options['separator']);
 		$json_organization = json_encode($options['organization']);
-
-		echo "
+		?>
 		<script type='text/javascript'>
-		var \$mediaCredit = {
-		'separator': {$json_separator},
-		'organization': {$json_organization},
-		'id':
-		{
-		";
-		foreach ($authors as $author) {
-			$json_author = json_encode($author->display_name);
-			echo "'{$author->ID}': {$json_author},";
-		}
-		echo "
-		}
-		};
+			var $mediaCredit = {
+				'separator': {<?php echo $json_separator; ?>},
+				'organization': {<?php echo $json_organization; ?>},
+				'id': {	<?php
+					foreach ($authors as $author) {
+						echo "'{$author->ID}': " . json_encode($author->display_name) . ", ";
+					}
+				?>}
+			};
 		</script>
-		";
-		$plugins['mediacredit'] = $this->ressource_url . 'js/tinymce4/media-credit-tinymce.js';
-		$plugins['noneditable'] = $this->ressource_url . 'js/tinymce4/tinymce-noneditable.js';
-
-		return $plugins;
+		<?php
 	}
 
 	/**
@@ -209,9 +215,10 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages
 		if ( ( current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) && user_can_richedit() ) {
+			add_action( 'admin_head',           array( $this, 'admin_head' ) );
 			add_filter( 'mce_external_plugins', array( $this, 'tinymce_external_plugins' ) );
-			add_filter( 'tiny_mce_plugins', array( $this, 'tinymce_internal_plugins' ) );
-			add_filter( 'mce_css', array( $this, 'tinymce_css' ) );
+			add_filter( 'tiny_mce_plugins',     array( $this, 'tinymce_internal_plugins' ) );
+			add_filter( 'mce_css',              array( $this, 'tinymce_css' ) );
 		}
 
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
