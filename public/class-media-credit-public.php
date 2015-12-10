@@ -140,6 +140,9 @@ class Media_Credit_Public implements Media_Credit_Base {
 			if ( preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#is', $content, $matches ) ) {
 				$content = $matches[1];
 				$attr['caption'] = trim( $matches[2] );
+
+				// Add attribute "standalone=0" to [media-credit] shortcode if present
+				$content = preg_replace( '#\[media-credit([^]]+)\]#', '[media-credit standalone=0$1]', $content );
 			}
 		}
 
@@ -172,6 +175,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 	 */
 	function media_credit_shortcode( $atts, $content = null ) {
 		// Allow plugins/themes to override the default media credit template.
+		// TODO: documentation
 		$output = apply_filters( 'media_credit_shortcode', '', $atts, $content );
 		if ( $output != '' ) {
 			return $output;
@@ -183,11 +187,14 @@ class Media_Credit_Public implements Media_Credit_Base {
 			return do_shortcode( $content );
 		}
 
-		$atts = shortcode_atts(	array( 'id'    => -1,
-				   					   'name'  => '',
-									   'link'  => '',
-									   'align' => 'alignnone',
-									   'width' => '' ),	$atts, 'media-credit' );
+		$atts = shortcode_atts(	array( 'id'         => -1,
+				   					   'name'       => '',
+									   'link'       => '',
+									   'standalone' => 'true',
+									   'align'      => 'alignnone',
+									   'width'      => '' ),	$atts, 'media-credit' );
+
+		$atts['standalone'] = filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
 
 		if ( -1 !== $atts['id'] ) {
 			$url = empty( $link ) ? get_author_posts_url( $atts['id'] ) : $atts['link'];
@@ -203,7 +210,8 @@ class Media_Credit_Public implements Media_Credit_Base {
 			}
 		}
 
-		$credit_width = (int) $atts['width'] + current_theme_supports( 'html5', 'caption' ) ? 0 : 10;
+		$html5_enabled = current_theme_supports( 'html5', 'caption' );
+		$credit_width = (int) $atts['width'] + ( $html5_enabled ? 0 : 10 );
 
 		/**
 		 * Filter the width of an image's credit/caption.
@@ -227,8 +235,15 @@ class Media_Credit_Public implements Media_Credit_Base {
 			$style = ' style="width: ' . (int) $credit_width . 'px"';
 		}
 
-		return '<div class="media-credit-container ' . esc_attr( $atts['align'] ) . '"' . $style . '>' .
-			   do_shortcode( $content ) . '<span class="media-credit">' . $author_link . '</span></div>';
+		$output =  '<div class="media-credit-container ' . esc_attr( $atts['align'] ) . '"' . $style . '>' .
+			     do_shortcode( $content ) . '<span class="media-credit">' . $author_link . '</span></div>';
+
+		// Wrap output in <figure> if HTML5 is supported & the shortcode is a standalone one
+		if ( ! empty( $atts['standalone'] ) && $html5_enabled ) {
+			$output = '<figure class="wp-caption ' . esc_attr( $atts['align'] ) . '"' . $style . '>' . $output . '</figure>';
+		}
+
+		return $output;
 	}
 
 	/**
