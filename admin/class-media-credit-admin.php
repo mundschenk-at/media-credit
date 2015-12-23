@@ -177,8 +177,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		?>
 		<script type='text/javascript'>
 			var $mediaCredit = {
-				'separator': {<?php echo $json_separator; ?>},
-				'organization': {<?php echo $json_organization; ?>},
+				'separator': <?php echo $json_separator; ?>,
+				'organization': <?php echo $json_organization; ?>,
 				'id': {	<?php
 					foreach ($authors as $author) {
 						echo "'{$author->ID}': " . json_encode($author->display_name) . ", ";
