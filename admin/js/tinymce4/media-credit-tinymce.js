@@ -1271,25 +1271,31 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
  
         editor.on( 'dragstart', function() { 
             var node = editor.selection.getNode(); 
- 
+
             if ( node.nodeName === 'IMG' ) { 
                 wrap = editor.dom.getParent( node, '.mceTemp' ); 
+ 
+                if ( ! wrap && node.parentNode.nodeName === 'A' && ! hasTextContent( node.parentNode ) ) { 
+                	wrap = node.parentNode; 
+                } 
             } 
         } ); 
  
         editor.on( 'drop', function( event ) { 
-            var rng; 
- 
-            if ( wrap && ( rng = tinymce.dom.RangeUtils.getCaretRangeFromPoint( event.clientX, event.clientY, editor.getDoc() ) ) ) { 
+            var dom = editor.dom, 
+ 	            rng = tinymce.dom.RangeUtils.getCaretRangeFromPoint( event.clientX, event.clientY, editor.getDoc() ); 
+
+            // Don't allow anything to be dropped in a captioned image. 
+         	if ( dom.getParent( rng.startContainer, '.mceTemp' ) ) { 
+                event.preventDefault(); 
+            } else if ( wrap ) { 
                 event.preventDefault(); 
  
-                if ( ! editor.dom.getParent( rng.startContainer, '.mceTemp' ) ) { 
-                    editor.undoManager.transact( function() { 
-                        editor.selection.setRng( rng ); 
-                        editor.selection.setNode( wrap ); 
-                        editor.dom.remove( wrap ); 
-                    } ); 
-                } 
+                editor.undoManager.transact( function() { 
+                    editor.selection.setRng( rng ); 
+                    editor.selection.setNode( wrap ); 
+                    dom.remove( wrap ); 
+                } ); 
             } 
  
             wrap = null; 
