@@ -94,7 +94,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 			$credit_wp_author = self::get_wpuser_media_credit( $post );
 
 			$options = get_option( self::OPTION );
-			$url = ! empty( $credit_url ) ? $credit_url : self::get_author_posts_url( $post->post_author );
+			$url = ! empty( $credit_url ) ? $credit_url : get_author_posts_url( $post->post_author );
 
 			$credit = '<a href="' . esc_url( $url ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 		}
