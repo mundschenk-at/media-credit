@@ -1,9 +1,8 @@
 === Media Credit ===
-Contributors: sbressler, pputzer
-Donate link: http://www.scottbressler.com/blog/plugins/
+Contributors: pputzer, sbressler
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.2
-Tested up to: 4.4
+Tested up to: 4.4.1
 Stable tag: 2.7.5
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
@@ -96,7 +95,8 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 * Refactored plugin for a more future-proof architecture.
 * Moved all non-'template tag' functions out of the global namespace. This might break themes that relied on these (undocumented) functions. Please test before updating if you are running a highly customized installation of Media Credit.
 * Wrap standalone media credits in <figure> if HTML5 support for captions is enabled.
-* Uses WordPress language packs for translations
+* Uses WordPress language packs for translations.
+* Fixed previously broken use case when both caption and credit are removed from an image in the visual editor.
 
 = 2.7.5 (Nov. 30, 2015) =
 * Fixed a bug in Preview script.
