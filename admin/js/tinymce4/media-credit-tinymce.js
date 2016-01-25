@@ -746,33 +746,50 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 					node.append(mediaCreditNode);
 				}
 			}
-		} else if ( captionNode ) {
-			// Remove the caption wrapper and place the image in new media-credit wrapper or a new paragraph
-			mediaCreditNode = dom.getNext( node, '.mceMediaCreditTemp' );
-		
-			if (mediaCreditNode) {
-				align = 'align' + ( imageData.align || 'none' ); 
+		} else {
+			// no caption, so we might need to remove the credit name
+			removeCreditNode = ! imageData.mediaCreditName && ! imageData.mediaCreditID;
 
-				parent = dom.create( 'div', { 'class': 'mceMediaCreditOuterTemp ' + align,
-											  'style': 'width: ' + width + 'px' } );
+			if ( captionNode ) {
+				// Remove the caption wrapper and place the image in new media-credit wrapper or a new paragraph
+				mediaCreditNode = dom.getNext( node, '.mceMediaCreditTemp' );
+			
+				if ( mediaCreditNode && ! removeCreditNode ) {
+					align = 'align' + ( imageData.align || 'none' ); 
+	
+					parent = dom.create( 'div', { 'class': 'mceMediaCreditOuterTemp ' + align,
+												  'style': 'width: ' + width + 'px' } );
+				} else {
+					parent = dom.create( 'p' );
+				}
+				captionNode.parentNode.insertBefore( parent, captionNode );
+				parent.appendChild( node );
+				if ( mediaCreditNode && ! removeCreditNode ) {
+					parent.appendChild( mediaCreditNode );
+				}
+				
+				dom.remove( captionNode );
 			} else {
-				parent = dom.create( 'p' );
-			}
-			captionNode.parentNode.insertBefore( parent, captionNode );
-			parent.appendChild( node );
-			if (mediaCreditNode) {
-				parent.appendChild( mediaCreditNode );
-			}
-			
-			dom.remove( captionNode );
-		} else {
-			// no caption data, just update the media-credit wrapper
-			mediaCreditWrapper = dom.getParent( mediaCreditNode, '.mceMediaCreditOuterTemp' );
-			
-			if ( mediaCreditWrapper ) {
-				align = 'align' + ( imageData.align || 'none' ); 
-				mediaCreditWrapper.className = mediaCreditWrapper.className.replace( / ?align(left|center|right|none)/g, ' ' ) + align; 
-				dom.setAttrib( mediaCreditWrapper, 'style', 'width: ' + width + 'px' );
+				// no caption data, just update the media-credit wrapper
+				mediaCreditWrapper = dom.getParent( mediaCreditNode, '.mceMediaCreditOuterTemp' );
+				
+				if ( mediaCreditWrapper ) {
+					if ( removeCreditNode ) {
+						// create new parent
+						parent = dom.create( 'p' );
+						
+						// insert at correct position
+						mediaCreditWrapper.parentNode.insertBefore( parent, mediaCreditWrapper );
+						parent.appendChild( node );
+						
+						// remove old wrapper
+						dom.remove( mediaCreditWrapper );
+					} else {					
+						align = 'align' + ( imageData.align || 'none' ); 
+						mediaCreditWrapper.className = mediaCreditWrapper.className.replace( / ?align(left|center|right|none)/g, ' ' ) + align; 
+						dom.setAttrib( mediaCreditWrapper, 'style', 'width: ' + width + 'px' );
+					}
+				}
 			}
 		}
 
