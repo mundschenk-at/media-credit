@@ -10,3 +10,6 @@ node_modules/*
 
 # grunt-wp-deploy
 build/*
+
+# SASS cache
+.sass-cache/*
