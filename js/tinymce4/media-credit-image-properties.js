@@ -14,7 +14,7 @@
 	}
 
 	wp.media.events.on( 'editor:image-edit', function( options ) {	
-		if (options.metadata.mediaCreditName === '' && options.metadata.mediaCreditID !== '') {
+		if (options.metadata.mediaCreditName === '' && options.metadata.mediaCreditID !== '') {
 			options.metadata.mediaCreditName = $mediaCredit['id'][options.metadata.mediaCreditID];
 		}
 	} );
@@ -45,15 +45,16 @@
 			mediaCreditBlock = dom.getNext( image, '.mceMediaCreditTemp' );;
 		}
 		
-		if ($mediaCredit.id[mediaCreditID] !== mediaCreditName)
+		if ( $mediaCredit.id[mediaCreditID] !== mediaCreditName ) {
 			mediaCreditID = '';
+		}
 
 		credit = mediaCreditID ? ($mediaCredit.id[mediaCreditID] + $mediaCredit.separator + $mediaCredit.organization) : mediaCreditName;
 		credit = credit.replace(/<[^>]+>(.*)<\/[^>]+>/g, '$1'); // basic sanitation
 		align = 'align' + ( align || 'none' ); 
 		
 		// no current media block
-		if (mediaCreditBlock === null) {			
+		if ( mediaCreditBlock === null && ( mediaCreditName || mediaCreditID ) ) {			
 			// create new representation for media-credit
 			mediaCreditBlock = dom.create ('span', {
 												'class': 'mceMediaCreditTemp mceNonEditable',
@@ -70,22 +71,25 @@
 			}
 		}
 		
-		// check for media-credit nested inside caption
-		if ( !dom.getParent( mediaCreditBlock, 'dl.wp-caption' ) ) {
-			// standalone [media-credit]
-			mediaCreditWrapper = dom.create( 'div', { 'class': 'mceMediaCreditOuterTemp ' + align,
-				  									  'style': 'width: ' + (parseInt(width) + 10) + 'px' } );
-		
-			// swap existing parent with our new wrapper
-			dom.insertAfter(mediaCreditWrapper, mediaCreditBlock.parentNode);
-			dom.add(mediaCreditWrapper, mediaCreditBlock.parentNode);
-			dom.remove(mediaCreditBlock.parentNode, true);
-		}		
-				
-		dom.setAttrib(mediaCreditBlock, 'data-media-credit-name', mediaCreditName);
-		dom.setAttrib(mediaCreditBlock, 'data-media-credit-id', mediaCreditID);
-		dom.setAttrib(mediaCreditBlock, 'data-media-credit-link', mediaCreditLink);
-		dom.setHTML(mediaCreditBlock, credit);
+		if ( mediaCreditBlock ) {
+			
+			// check for media-credit nested inside caption
+			if ( !dom.getParent( mediaCreditBlock, 'dl.wp-caption' ) ) {
+				// standalone [media-credit]
+				mediaCreditWrapper = dom.create( 'div', { 'class': 'mceMediaCreditOuterTemp ' + align,
+					  									  'style': 'width: ' + (parseInt(width) + 10) + 'px' } );
+			
+				// swap existing parent with our new wrapper
+				dom.insertAfter(mediaCreditWrapper, mediaCreditBlock.parentNode);
+				dom.add(mediaCreditWrapper, mediaCreditBlock.parentNode);
+				dom.remove(mediaCreditBlock.parentNode, true);
+			}		
+					
+			dom.setAttrib(mediaCreditBlock, 'data-media-credit-name', mediaCreditName);
+			dom.setAttrib(mediaCreditBlock, 'data-media-credit-id', mediaCreditID);
+			dom.setAttrib(mediaCreditBlock, 'data-media-credit-link', mediaCreditLink);
+			dom.setHTML(mediaCreditBlock, credit);
+		}
 	} );
 
 	MediaCreditImagePropertiesView = wp.Backbone.View.extend( {
