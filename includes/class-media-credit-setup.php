@@ -93,12 +93,13 @@ class Media_Credit_Setup implements Media_Credit_Base {
 		 * A hash containing the default options.
 		 */
 		$default_options = array(
-			'version'           => $this->version,
-			'install_date'      => date( 'Y-m-d' ),
-			'separator'         => self::DEFAULT_SEPARATOR,
-			'organization'      => $this->default_organization,
-			'credit_at_end'     => false,
-			'no_default_credit' => false,
+			'version'               => $this->version,
+			'install_date'          => date( 'Y-m-d' ),
+			'separator'             => self::DEFAULT_SEPARATOR,
+			'organization'          => $this->default_organization,
+			'credit_at_end'         => false,
+			'no_default_credit'     => false,
+			'post_thumbnail_credit' => false,
 		);
 
 		$installed_options = get_option( self::OPTION );
@@ -126,6 +127,13 @@ class Media_Credit_Setup implements Media_Credit_Base {
 		if ( version_compare( $installed_options['version'], '2.2.0', '<' ) ) {
 			$installed_options['version'] = '2.2.0';
 			$installed_options['no_default_credit'] = $default_options['no_default_credit'];
+			update_option( $this->plugin_name, $installed_options );
+		}
+
+		// Upgrade plugin to 3.0.0
+		if ( version_compare( $installed_options['version'], '3.0.0', '<' ) ) {
+			$installed_options['version'] = '3.0.0';
+			$installed_options['post_thumbnail_credit'] = $default_options['post_thumbnail_credit'];
 			update_option( $this->plugin_name, $installed_options );
 		}
 	}

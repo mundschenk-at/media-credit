@@ -363,6 +363,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 							array( $this, 'print_end_of_post_field' ), 'media', $this->plugin_name );
 		add_settings_field( 'no_default_credit', __( 'Do not display default credit', 'media-credit' ),
 							array( $this, 'print_no_default_credit_field' ), 'media', $this->plugin_name );
+		add_settings_field( 'post_thumbnail_credit', __( 'Display credit for featured images', 'media-credit' ),
+							array( $this, 'print_post_thumbnail_credit_field' ), 'media', $this->plugin_name );
 	}
 
 	/**
@@ -700,7 +702,18 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$no_default_credit = array_key_exists( 'no_default_credit', $options ) ? $options['no_default_credit'] : false;
 		$explanation = __("Do not display the attachment author as default credit if it has not been set explicitly (= freeform credits only).", 'media-credit');
 		echo "<input type='checkbox' id='media-credit[no_default_credit]' name='media-credit[no_default_credit]' value='1' " . checked(1, $no_default_credit, false) . " />";
-		echo "<label for='media-credit[credit_at_end]' style='margin-left:5px'>$explanation</label>";
+		echo "<label for='media-credit[no_default_credit]' style='margin-left:5px'>$explanation</label>";
+	}
+
+	/**
+	 * Print HTML for "post thumbnail credit" input field.
+	 */
+	public function print_post_thumbnail_credit_field() {
+		$options = get_option( self::OPTION );
+		$post_thumbnail_credit = array_key_exists( 'post_thumbnail_credit', $options ) ? $options['post_thumbnail_credit'] : false;
+		$explanation = __("Try to add media credit to featured images (depends on theme support).", 'media-credit');
+		echo "<input type='checkbox' id='media-credit[post_thumbnail_credit]' name='media-credit[post_thumbnail_credit]' value='1' " . checked(1, $post_thumbnail_credit, false) . " />";
+		echo "<label for='media-credit[post_thumbnail_credit]' style='margin-left:5px'>$explanation</label>";
 	}
 
 	/**
