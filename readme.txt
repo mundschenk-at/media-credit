@@ -3,7 +3,7 @@ Contributors: pputzer, sbressler
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.2
 Tested up to: 4.4.2
-Stable tag: 2.7.6
+Stable tag: 3.0.0
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -91,7 +91,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
-= 3.0 (Mar. 6, 2016) =
+= 3.0.0 (Mar. 6, 2016) =
 * Refactored plugin for a more future-proof architecture.
 * Moved all non-'template tag' functions out of the global namespace. This might break themes that relied on these (undocumented) functions. Please test before updating if you are running a highly customized installation of Media Credit.
 * Wrap standalone media credits in <figure> if HTML5 support for captions is enabled.
