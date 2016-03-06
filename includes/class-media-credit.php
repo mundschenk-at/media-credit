@@ -169,6 +169,11 @@ class Media_Credit implements Media_Credit_Base {
 		if ( ! empty( $options['credit_at_end'] ) ) {
 			$this->loader->add_filter( 'the_content', $plugin_public, 'add_media_credits_to_end', 10, 1 );
 		}
+
+		// post thumbnail credits
+		if ( ! empty( $options['post_thumbnail_credit'] ) ) {
+			$this->loader->add_filter( 'post_thumbnail_html', $plugin_public, 'add_media_credit_to_post_thumbnail', 10, 5 );
+		}
 	}
 
 	/**

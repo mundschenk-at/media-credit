@@ -300,4 +300,42 @@ class Media_Credit_Public implements Media_Credit_Base {
 		 */
 		return apply_filters( 'media_credit_at_end', $content . '<div class="media-credit-end">' . $image_credit . '</div>', $content, $credit_unique );
 	}
+
+	/**
+	 * Add media credit to post thumbnails (in the loop).
+	 *
+	 * @param string       $html              The post thumbnail HTML.
+	 * @param int          $post_id           The post ID.
+	 * @param string 	   $post_thumbnail_id The post thumbnail ID.
+	 * @param string|array $size              The post thumbnail size. Image size or array of width and height values (in that order). Default 'post-thumbnail'.
+	 * @param string|array $attr              Query string or array of attributes. Default ''.
+	 */
+	public function add_media_credit_to_post_thumbnail( $html, $post_id, $post_thumbnail_id, $size, $attr ) {
+		if ( ! in_the_loop() ) {
+			return $html; // abort
+		}
+
+		// Allow plugins/themes to override the default media credit template.
+		// TODO: documentation
+		/**
+		 * Provide a shortcut filter for post thumbnail media credits.
+		 */
+		$output = apply_filters( 'media_credit_post_thumbnail', '', $html, $post_id, $post_thumbnail_id );
+		if ( '' !== $output ) {
+			return $output;
+		}
+
+		if ( preg_match( "/<img[^>]+width=([\"'])([0-9]+)\\1/", $html, $matches ) ) {
+			$credit_width = $matches[2];
+		}
+
+		$credit = Media_Credit_Template_Tags::get_media_credit( $post_thumbnail_id, true );
+
+		$style = '';
+		if ( ! empty( $credit_width ) ) {
+			$style = ' style="width: ' . (int) $credit_width . 'px"';
+		}
+
+		return $html . '<span class="media-credit"' . $style . '>' . $credit. '</span>';
+	}
 }
