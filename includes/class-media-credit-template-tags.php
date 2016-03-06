@@ -161,7 +161,8 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 		$posts_query .= ")";
 
 		if ( $exclude_unattached ) {
-			$attached = " AND post_parent != '0'";
+			$attached = " AND post_parent != '0' AND post_parent IN (SELECT id FROM {$wpdb->posts} WHERE post_status='publish')";
+
 		}
 		$attached .= ") ";
 

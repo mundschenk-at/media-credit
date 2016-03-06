@@ -97,6 +97,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 * Wrap standalone media credits in <figure> if HTML5 support for captions is enabled.
 * Uses WordPress language packs for translations.
 * Fixed previously broken use case when both caption and credit are removed from an image in the visual editor.
+* Check if parent is already published when displaying "attached" media.
 
 = 2.7.5 (Nov. 30, 2015) =
 * Fixed a bug in Preview script.
