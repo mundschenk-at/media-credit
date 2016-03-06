@@ -14,7 +14,7 @@
 	}
 
 	wp.media.events.on( 'editor:image-edit', function( options ) {	
-		if (options.metadata.mediaCreditName === '' && options.metadata.mediaCreditID !== '') {
+		if (options.metadata.mediaCreditName === '' && options.metadata.mediaCreditID !== '') {
 			options.metadata.mediaCreditName = $mediaCredit['id'][options.metadata.mediaCreditID];
 		}
 	} );

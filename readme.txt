@@ -2,8 +2,8 @@
 Contributors: pputzer, sbressler
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.2
-Tested up to: 4.4.1
-Stable tag: 2.7.5
+Tested up to: 4.4.2
+Stable tag: 2.7.6
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -99,6 +99,10 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 * Fixed previously broken use case when both caption and credit are removed from an image in the visual editor.
 * Added check whether parent is already published when displaying "attached" media.
 * Added support for featured image credits.
+
+= 2.7.6 (Feb. 7, 2016) =
+* Backported fix for removing both credit and caption in Visual Editor (from 3.0 development branch).
+* Please note: This will likely be the last patch before 3.0.
 
 = 2.7.5 (Nov. 30, 2015) =
 * Fixed a bug in Preview script.
