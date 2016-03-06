@@ -97,12 +97,14 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 ## Changelog ##
 
-### 3.0 (unreleased) ###
+### 3.0 (Mar. 6, 2016) ###
 * Refactored plugin for a more future-proof architecture.
 * Moved all non-'template tag' functions out of the global namespace. This might break themes that relied on these (undocumented) functions. Please test before updating if you are running a highly customized installation of Media Credit.
 * Wrap standalone media credits in <figure> if HTML5 support for captions is enabled.
 * Uses WordPress language packs for translations.
 * Fixed previously broken use case when both caption and credit are removed from an image in the visual editor.
+* Added check whethe parent is already published when displaying "attached" media.
+* Added support for featured image credits.
 
 ### 2.7.5 (Nov. 30, 2015) ###
 * Fixed a bug in Preview script.
