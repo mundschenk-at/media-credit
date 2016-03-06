@@ -41,16 +41,24 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	/**
 	 * Returns the media credit as plain text for some media attachment.
 	 *
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @param int|object $post  Optional post ID or object of attachment. Default is global $post object.
+	 * @param boolean    $fancy Fancy output (<user> <separator> <organization>) for local user credits. Optional. Default false.
 	 * @return string The media credit.
 	 */
-	public static function get_media_credit( $post = null ) {
+	public static function get_media_credit( $post = null, $fancy = false ) {
 
 		$post = get_post( $post );
 		$credit_meta = self::get_freeform_media_credit( $post );
 		$credit_wp_author = self::get_wpuser_media_credit( $post );
 
-		return ( '' !== $credit_meta ) ? $credit_meta : $credit_wp_author;
+		if ( '' !== $credit_meta ) {
+			return $credit_meta;
+		} elseif ( $fancy ) {
+			$options = get_option( self::OPTION );
+			return $credit_wp_author . $options['separator'] . $options['organization'];
+ 		} else {
+			return $credit_wp_author;
+		}
 	}
 
 	/**
