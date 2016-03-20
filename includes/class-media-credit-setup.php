@@ -57,19 +57,9 @@ class Media_Credit_Setup implements Media_Credit_Base {
 	 */
 	protected $version;
 
-	/**
-	 * The default organization name (if no custom name is set).
-	 *
-	 * @since    3.0.0
-	 * @access   protected
-	 * @var      string    $default_organization    The default organization name for "local" credits.
-	 */
-	protected $default_organization;
-
 	function __construct( $slug, $version ) {
 		$this->plugin_name = $slug;
 		$this->plugin_version = $version;
-		$this->default_organization = get_bloginfo( 'name', 'display' );
 	}
 
 	/**
@@ -96,7 +86,7 @@ class Media_Credit_Setup implements Media_Credit_Base {
 			'version'               => $this->version,
 			'install_date'          => date( 'Y-m-d' ),
 			'separator'             => self::DEFAULT_SEPARATOR,
-			'organization'          => $this->default_organization,
+			'organization'          => get_bloginfo( 'name', 'display' ),
 			'credit_at_end'         => false,
 			'no_default_credit'     => false,
 			'post_thumbnail_credit' => false,
