@@ -1,9 +1,9 @@
 === Media Credit ===
 Contributors: pputzer, sbressler
 Tags: media, image, images, credit, byline, author, user
-Requires at least: 4.2
-Tested up to: 4.4.2
-Stable tag: 3.0.1
+Requires at least: 4.5
+Tested up to: 4.5
+Stable tag: 3.0.2
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
