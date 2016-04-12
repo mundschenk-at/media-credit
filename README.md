@@ -97,8 +97,8 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 ## Changelog ##
 
-### 3.0.2 (Apr. XX, 2016) ###
-* Updated visual editor plugin for WordPress 4.5
+### 3.0.2 (Apr. 12, 2016) ###
+* Updated visual editor plugin for WordPress 4.5 (minimum WordPress version is now 4.5, as well).
 
 ### 3.0.1 (Mar. 20, 2016) ###
 * Fixed run_wptexturize filter breakage caused by calling get_bloginfo too early.
