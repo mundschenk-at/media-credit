@@ -2,8 +2,8 @@
 Contributors: pputzer, sbressler
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.5
-Tested up to: 4.5
-Stable tag: 3.0.2
+Tested up to: 4.6
+Stable tag: 3.0.3
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -90,6 +90,10 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 
 == Changelog ==
+
+= 3.0.3 (Jul. 13, 2016) =
+* Updating credits via the Visual Editor works again. Props siricar, timausk, jellylegs.
+* Consolidated UI in "Edit Image" dialog.
 
 = 3.0.2 (Apr. 12, 2016) =
 * Updated visual editor plugin for WordPress 4.5 (minimum WordPress version is now 4.5, as well).
