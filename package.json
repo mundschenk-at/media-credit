@@ -1,8 +1,8 @@
 {
   "name": "media-credit",
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-cli": "^0.1.13",
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jshint": "^1.0.0",
@@ -11,8 +11,8 @@
     "grunt-phpunit": "^0.3.6",
     "grunt-wp-deploy": "^1.1.0",
     "grunt-wp-i18n": "^0.5.4",
-    "grunt-wp-readme-to-markdown": "^1.0.0",
-    "load-grunt-tasks": "^3.4.1"
+    "grunt-wp-readme-to-markdown": "^2.0.0",
+    "load-grunt-tasks": "^3.5.0"
   },
   "repository": {
     "type": "git",
