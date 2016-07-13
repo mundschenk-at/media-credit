@@ -73,7 +73,18 @@ module.exports = function(grunt) {
                     document: true
                 }
             }
-        },    
+        },
+        
+	    phpcs: {
+	        plugin: {
+	            src: ['includes/**/*.php', 'admin/**/*.php', 'public/**/*.php']
+	        },
+	        options: {
+	        	bin: 'phpcs -p -s -v -n ',
+	            standard: './codesniffer.ruleset.xml'
+	        }
+	    },
+        
         sass: {
             dist: {
                 options: {
