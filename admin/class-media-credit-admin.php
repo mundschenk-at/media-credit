@@ -368,7 +368,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	}
 
 	/**
-	 * Enqueue scripts for displaying media credits in the rich-text editor.
+	 * Enqueue scripts & styles for displaying media credits in the rich-text editor.
 	 *
 	 * @param array $options
 	 */
@@ -381,6 +381,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 			wp_enqueue_script( 'media-credit-image-properties', $this->ressource_url . 'js/tinymce4/media-credit-image-properties.js', array( 'jquery' ), $this->version, true );
 			wp_enqueue_script( 'media-credit-tinymce-switch',   $this->ressource_url . 'js/tinymce4/media-credit-tinymce-switch.js',   array( 'jquery' ), $this->version, true );
+
+			wp_enqueue_style( 'media-credit-image-properties-style', $this->ressource_url . 'css/tinymce4/media-credit-image-properties.css', array(), $this->version, 'screen' );
 		}
 	}
 
