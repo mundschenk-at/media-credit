@@ -1,5 +1,5 @@
 /**
- * Adapted from http://core.svn.wordpress.org/trunk/wp-includes/js/tinymce/plugins/wpeditimage/plugin.js
+ * Adapted from https://core.trac.wordpress.org/browser/trunk/src/wp-includes/js/tinymce/plugins/wpeditimage/plugin.js
  */
 
 /* global tinymce */
@@ -793,7 +793,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				}
 			}
 			
-	        srcset = $imageNode.attr( 'srcset' ); 
+			$imageNode = editor.$( imageNode );
+			srcset = $imageNode.attr( 'srcset' ); 
 	        src = $imageNode.attr( 'src' ); 
 	 
 	        // Remove srcset and sizes if the image file was edited or the image was replaced. 
