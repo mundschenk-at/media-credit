@@ -285,7 +285,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			wp_send_json_error( '-1' ); // Standard response for permissions.
 		}
 
-		$authors = $this->get_editable_authors_by_name( wp_get_current_user()->ID, $term,  $limit );
+		$authors = $this->get_editable_authors_by_name( $term,  $limit );
 		if ( empty( $authors ) ) {
 			wp_send_json_error( '0' ); // Standard response for failure.
 		}
@@ -293,7 +293,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$results = array();
 		foreach ( $authors as $author ) {
 			$results[] = (object) array(
-				'id'    => $author->ID,
+				'id'    => $author->id,
 				'label' => $author->display_name,
 				'value' => $author->display_name,
 			);
@@ -303,42 +303,57 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	}
 
 	/**
-	 * Returns the users that are editable by $user_id (normally the current user) and that contain $name within their
-	 * display name. Important to use this function rather than just selected all users for WPMU bloggers.
+	 * Returns the users from the current blog that are valid post authors and that contain $name within their
+	 * display name.
 	 *
-	 * Basis for this function is proudly stolen from wp-{admin/}includes/user.php :)
-	 *
-	 * @todo fix docs (currently returns all authors)
-	 *
-	 * @param number $user_id The user whose permissions we check.
 	 * @param string $name    The name we are looking for.
 	 * @param number $limit   Limit of results to fetch.
-	 * @return An array of Row objects.
+	 * @return An array of users.
 	 */
-	private function get_editable_authors_by_name( $user_id, $name, $limit ) {
+	private function get_editable_authors_by_name( $name, $limit ) {
 		global $wpdb;
 
-		// The function get_editable_user_ids was deprecated in WordPress 3.1, so let's
-		// use a similar call that's used in post_author_meta_box() to get a list of eligible users.
-		$editable_ids = get_users( array(
-			'who'              => 'authors',
-			'fields'           => 'id',
-			'include_selected' => true,
-		) );
-		if ( ! $editable_ids ) {
-			return false;
+		$cache_key = "authors_by_name_{$name}_for_limit_{$limit}";
+
+		if ( ! $authors = wp_cache_get( $cache_key, 'media_credit' ) ) {
+			// Allow display_name search in WP_User_Query.
+			add_filter( 'user_search_columns', array( $this, 'add_display_name_to_search_columns' ), 10, 3 );
+
+			// Get possible author names.
+			$authors = get_users( array(
+				'who'                => 'authors',
+				'fields'             => array( 'id', 'display_name' ),
+				'search'		     => '*' . $name . '*',
+				'search_columns'     => array( 'display_name' ),
+				'number'             => $limit,
+				'media_credit_query' => 'authors_by_name', // Marker for our user_search_columns filter.
+			) );
+
+			// Reset filters to status quo ante.
+			remove_filter( 'user_search_columns', array( $this, 'add_display_name_to_search_columns' ), 10 );
+
+			// Cache result.
+			wp_cache_set( $cache_key, $authors, 'media_credit', MINUTE_IN_SECONDS );
 		}
-		$editable_ids = join( ',', $editable_ids );
 
-		// Prepare autocomplete term for query: add wildcard after, and replace all spaces with wildcards
-		// 'Scott Bressler' becomes 'Scott%Bressler%', and literal _ and %'s are escaped.
-		$name = str_replace( ' ', '%', $wpdb->esc_like( $name ) ) . '%';
-		$authors = $wpdb->get_results( $wpdb->prepare( "SELECT ID, display_name FROM {$wpdb->users}
-														WHERE ID IN ({$editable_ids}) AND upper(display_name) LIKE %s
-														ORDER BY display_name LIMIT 0, %d",	strtoupper( $name ), $limit ) );
-
-		// TODO: filter doc
+		// TODO: filter doc.
 		return apply_filters( 'get_editable_authors_by_name', $authors, $name );
+	}
+
+	/**
+	 * Change search_columns to 'display_name' for 'authors_by_name' query.
+	 *
+	 * @param array         $search_columns An array of column names.
+	 * @param int|string    $search         The search term.
+	 * @param WP_User_Query $query          The query object.
+	 * @return array                        Array of column names.
+	 */
+	public function add_display_name_to_search_columns( $search_columns, $search, $query ) {
+		if ( isset( $query->query_vars['media_credit_query'] ) && 'authors_by_name' === $query->query_vars['media_credit_query'] ) {
+			return array( 'display_name' );
+		} else {
+			return $search_columns;
+		}
 	}
 
 	/**
@@ -416,20 +431,20 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$credit = Media_Credit_Template_Tags::get_media_credit($post);
 		$html = "<input id='attachments[$post->ID][media-credit]' class='media-credit-input' size='30' value='$credit' name='attachments[$post->ID][media-credit]'  />";
 		$fields['media-credit'] = array(
-			'label' => __('Credit:', 'media-credit'),
-			'input' => 'html',
-			'html' => $html,
-			'show_in_edit' => true,
+			'label'         => __( 'Credit:', 'media-credit' ),
+			'input'         => 'html',
+			'html'          => $html,
+			'show_in_edit'  => true,
 			'show_in_modal' => true,
 		);
 
 		$url = Media_Credit_Template_Tags::get_media_credit_url($post);
 		$html = "<input id='attachments[$post->ID][media-credit-url]' class='media-credit-input' type='url' size='30' value='$url' name='attachments[$post->ID][media-credit-url]' />";
 		$fields['media-credit-url'] = array(
-			'label' => __('Credit URL:', 'media-credit'),
-			'input' => 'html',
-			'html' => $html, //FIXME
-			'show_in_edit' => true,
+			'label'         => __( 'Credit URL:', 'media-credit' ),
+			'input'         => 'html',
+			'html'          => $html, //FIXME
+			'show_in_edit'  => true,
 			'show_in_modal' => true,
 		);
 
@@ -439,10 +454,10 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$nonce = wp_create_nonce( 'media_credit_author_names' );
 		$html_hidden = "<input name='attachments[$post->ID][media-credit-hidden]' id='attachments[$post->ID][media-credit-hidden]' type='hidden' value='$author' class='media-credit-hidden' data-author='$author_for_script' data-post-id='$post->ID' data-author-display='$author_display' data-nonce='$nonce' />";
 		$fields["media-credit-hidden"] = array(
-			'label' => '', /* necessary for HTML type fields */
-			'input' => 'html',
-			'html' => $html_hidden,
-			'show_in_edit' => true,
+			'label'         => '', // necessary for HTML type fields.
+			'input'         => 'html',
+			'html'          => $html_hidden,
+			'show_in_edit'  => true,
 			'show_in_modal' => true,
 		);
 
