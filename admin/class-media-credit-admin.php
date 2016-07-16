@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of Media Credit.
  *
@@ -70,8 +69,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    3.0.0
-	 * @param      string    $plugin_name       The name of this plugin.
-	 * @param      string    $version    The version of this plugin.
+	 * @param string $plugin_name The name of this plugin.
+	 * @param string $version     The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
 
@@ -98,9 +97,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
-		//wp_enqueue_style( $this->plugin_name, $this->ressource_url . 'css/media-credit-admin.css', array(), $this->version, 'all' );
-
+		/* wp_enqueue_style( $this->plugin_name, $this->ressource_url . 'css/media-credit-admin.css', array(), $this->version, 'all' ); */
 	}
 
 	/**
@@ -121,9 +118,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
-		//wp_enqueue_script( $this->plugin_name, $this->ressource_url . 'js/media-credit-admin.js', array( 'jquery' ), $this->version, false );
-
+		/* wp_enqueue_script( $this->plugin_name, $this->ressource_url . 'js/media-credit-admin.js', array( 'jquery' ), $this->version, false ); */
 	}
 
 	/**
@@ -152,6 +147,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * The plugins depend on the global variable echoed in admin_head().
 	 *
 	 * @param array $plugins An array of plugins to load.
+	 *
 	 * @return array The array of plugins to load.
 	 */
 	public function tinymce_external_plugins( $plugins ) {
@@ -161,30 +157,26 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		return $plugins;
 	}
 
-
 	/**
 	 * Add our global variable for the TinyMCE plugin.
-	 *
-	 * @param array $plugins An array of plugins to load.
-	 * @return array The array of plugins to load.
 	 */
 	public function admin_head() {
 		$options = get_option( self::OPTION );
-		$authors = get_users( array( 'who' => 'authors' ) ); //get_media_credit_authors_for_post();
 
-		$json_separator = json_encode($options['separator']);
-		$json_organization = json_encode($options['organization']);
+		$authors = array();
+		foreach ( get_users( array( 'who' => 'authors' ) ) as $author ) {
+			$authors[ $author->ID ] = $author->display_name;
+		}
+
+		$media_credit = array(
+			'separator'    => $options['separator'],
+			'organization' => $options['organization'],
+			'id'           => $authors,
+		);
+
 		?>
 		<script type='text/javascript'>
-			var $mediaCredit = {
-				'separator': <?php echo $json_separator; ?>,
-				'organization': <?php echo $json_organization; ?>,
-				'id': {	<?php
-					foreach ($authors as $author) {
-						echo "'{$author->ID}': " . json_encode($author->display_name) . ", ";
-					}
-				?>}
-			};
+			var $mediaCredit = <?php echo wp_json_encode( $media_credit ) ?>;
 		</script>
 		<?php
 	}
@@ -193,6 +185,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * Add styling for media credits in the rich editor.
 	 *
 	 * @param string $css A comma separated list of CSS files.
+	 *
 	 * @return string A comma separated list of CSS files.
 	 */
 	public function tinymce_css( $css ) {
@@ -205,15 +198,15 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	public function admin_init() {
 		register_setting( 'media', $this->plugin_name, array( $this, 'sanitize_option_values' ) );
 
-		if ( $this->is_media_settings_page( ) ) {
-			wp_enqueue_script( 'media-credit-preview', $this->ressource_url . 'js/media-credit-preview.js', array( 'jquery' ), $this->version, true);
+		if ( $this->is_media_settings_page() ) {
+			wp_enqueue_script( 'media-credit-preview', $this->ressource_url . 'js/media-credit-preview.js', array( 'jquery' ), $this->version, true );
 		}
 
-		if ( $this->is_media_edit_page( ) ) {
+		if ( $this->is_media_edit_page() ) {
 			$this->enqueue_media_credit_scripts();
 		}
 
-		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages
+		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages.
 		if ( ( current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) && user_can_richedit() ) {
 			add_action( 'admin_head',           array( $this, 'admin_head' ) );
 			add_filter( 'mce_external_plugins', array( $this, 'tinymce_external_plugins' ) );
@@ -241,9 +234,20 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	private function is_media_edit_page() {
 		global $pagenow;
 
-		$media_edit_pages = array('post-new.php', 'post.php', 'page.php', 'page-new.php', 'media-upload.php', 'media.php', 'media-new.php', 'ajax-actions.php', 'upload.php', 'customize.php');
+		$media_edit_pages = array(
+			'post-new.php',
+			'post.php',
+			'page.php',
+			'page-new.php',
+			'media-upload.php',
+			'media.php',
+			'media-new.php',
+			'ajax-actions.php',
+			'upload.php',
+			'customize.php',
+		);
 
-		return in_array( $pagenow, $media_edit_pages );
+		return in_array( $pagenow, $media_edit_pages, true );
 	}
 
 	/**
@@ -257,29 +261,42 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		return ( 'options-media.php' === $pagenow );
 	}
 
-	// hit ajaxurl with action=media_credit_author_names and term= your search.
 	/**
 	 * AJAX hook for autocompleting author names.
 	 *
 	 * Use `action=media_credit_author_names` and `term=<your search>` in the AJAX call.
 	 */
 	public function ajax_author_names() {
-		if ( ! isset( $_POST['term'] ) ) {
-			wp_send_json_error( '0' ); // standard response for failure
+		check_ajax_referer( 'media_credit_author_names', 'nonce', true );
+
+		if ( ! empty( $_POST['term'] ) ) {                        // Input var okay.
+			$term = sanitize_key( wp_unslash( $_POST['term'] ) ); // Input var okay.
+		} else {
+			wp_send_json_error( '0' ); // Standard response for failure.
+		}
+
+		if ( ! empty( $_POST['limit'] ) ) {                   // Input var okay.
+			$limit = absint( wp_unslash( $_POST['limit'] ) ); // Input var okay.
+		} else {
+			$limit = 10;
 		}
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( '-1' ); // standard response for permissions
+			wp_send_json_error( '-1' ); // Standard response for permissions.
 		}
 
-		$authors = $this->get_editable_authors_by_name( wp_get_current_user()->ID, $_POST['term'], $_POST['limit'] );
+		$authors = $this->get_editable_authors_by_name( wp_get_current_user()->ID, $term,  $limit );
 		if ( empty( $authors ) ) {
-			wp_send_json_error( '0' ); // standard response for failure
+			wp_send_json_error( '0' ); // Standard response for failure.
 		}
 
 		$results = array();
 		foreach ( $authors as $author ) {
-			$results[] = (object) array("id"=>$author->ID, "label"=>$author->display_name, "value"=>$author->display_name);
+			$results[] = (object) array(
+				'id'    => $author->ID,
+				'label' => $author->display_name,
+				'value' => $author->display_name,
+			);
 		}
 
 		wp_send_json_success( $results );
@@ -293,24 +310,26 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 *
 	 * @todo fix docs (currently returns all authors)
 	 *
-	 * @param number $user_id
+	 * @param number $user_id The user whose permissions we check.
 	 * @param string $name    The name we are looking for.
-	 * @param number $limit
-	 * @return
+	 * @param number $limit   Limit of results to fetch.
+	 * @return An array of Row objects.
 	 */
 	private function get_editable_authors_by_name( $user_id, $name, $limit ) {
 		global $wpdb;
 
-		// get_editable_user_ids was deprecated in WordPress 3.1, so let's
-		// use a similar call that's used in post_author_meta_box() to get a list of eligible users
-		$editable_ids = get_users( array( 'who'              => 'authors',
-										  'fields'           => 'id',
-										  'include_selected' => true ) );
+		// The function get_editable_user_ids was deprecated in WordPress 3.1, so let's
+		// use a similar call that's used in post_author_meta_box() to get a list of eligible users.
+		$editable_ids = get_users( array(
+			'who'              => 'authors',
+			'fields'           => 'id',
+			'include_selected' => true,
+		) );
 		if ( ! $editable_ids ) {
 			return false;
 		}
-
 		$editable_ids = join( ',', $editable_ids );
+
 		// Prepare autocomplete term for query: add wildcard after, and replace all spaces with wildcards
 		// 'Scott Bressler' becomes 'Scott%Bressler%', and literal _ and %'s are escaped.
 		$name = str_replace( ' ', '%', $wpdb->esc_like( $name ) ) . '%';
@@ -417,7 +436,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$author = ( Media_Credit_Template_Tags::get_freeform_media_credit($post) == '' ) ? $post->post_author : '';
 		$author_display = Media_Credit_Template_Tags::get_media_credit($post);
 		$author_for_script = ($author == '') ? -1 : $author;
-		$html_hidden = "<input name='attachments[$post->ID][media-credit-hidden]' id='attachments[$post->ID][media-credit-hidden]' type='hidden' value='$author' class='media-credit-hidden' data-author='$author_for_script' data-post-id='$post->ID' data-author-display='$author_display' />";
+		$nonce = wp_create_nonce( 'media_credit_author_names' );
+		$html_hidden = "<input name='attachments[$post->ID][media-credit-hidden]' id='attachments[$post->ID][media-credit-hidden]' type='hidden' value='$author' class='media-credit-hidden' data-author='$author_for_script' data-post-id='$post->ID' data-author-display='$author_display' data-nonce='$nonce' />";
 		$fields["media-credit-hidden"] = array(
 			'label' => '', /* necessary for HTML type fields */
 			'input' => 'html',

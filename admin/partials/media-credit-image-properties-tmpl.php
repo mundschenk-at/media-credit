@@ -16,7 +16,7 @@
 		<label class="setting media-credit-text">
 			<span><?php esc_html_e( 'Credit', 'media-credit' ); ?></span>
 			<input id="attachments[shortcode][media-credit]" type="text" data-setting="mediaCreditName" class="media-credit-input" value="{{ data.mediaCreditName }}" />
-			<input id="attachments[shortcode][media-credit-hidden]" type="hidden" data-setting="mediaCreditID" data-post-id="shortcode" data-author="{{ data.mediaCreditID }}" data-author-display="{{ data.mediaCreditName }}" class="media-credit-hidden" value="{{ data.mediaCreditID }}" />
+			<input id="attachments[shortcode][media-credit-hidden]" type="hidden" data-setting="mediaCreditID" data-post-id="shortcode" data-author="{{ data.mediaCreditID }}" data-author-display="{{ data.mediaCreditName }}" data-nonce="<?php echo wp_create_nonce( 'media_credit_author_names' ); ?>" class="media-credit-hidden" value="{{ data.mediaCreditID }}" />
 		</label>
 		<label class="setting media-credit-link">
 			<span><?php esc_html_e( 'Credit URL', 'media-credit' ); ?></span>

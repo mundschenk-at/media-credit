@@ -1,5 +1,5 @@
 jQuery( document ).ready( function() {
-	function mediaCreditAutocomplete( inputField, hiddenField, currAuthorId, currAuthor ) {
+	function mediaCreditAutocomplete( inputField, hiddenField, currAuthorId, currAuthor, nonce ) {
 		
 		jQuery( inputField ).click( function() {
 			this.select();
@@ -20,6 +20,7 @@ jQuery( document ).ready( function() {
 					data : {
 						'term' : request.term,
 						'limit' : 100,
+						'nonce' : nonce,
 					},
 					success : function( data ) {
 						response( data );
@@ -56,6 +57,6 @@ jQuery( document ).ready( function() {
 			inputField  = '#attachments\\[' + myData.postId + '\\]\\[media-credit\\]',
 			hiddenField = '#attachments\\[' + myData.postId + '\\]\\[media-credit-hidden\\]';
 
-		mediaCreditAutocomplete( inputField, hiddenField, myData.author, myData.authorDisplay );
+		mediaCreditAutocomplete( inputField, hiddenField, myData.author, myData.authorDisplay, myData.nonce );
 	} );
 } );
