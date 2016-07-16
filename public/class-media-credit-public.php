@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of Media Credit.
  *
@@ -61,8 +60,9 @@ class Media_Credit_Public implements Media_Credit_Base {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    3.0.0
-	 * @param      string    $plugin_name       The name of the plugin.
-	 * @param      string    $version    The version of this plugin.
+	 *
+	 * @param string $plugin_name The name of the plugin.
+	 * @param string $version     The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
 
@@ -91,7 +91,8 @@ class Media_Credit_Public implements Media_Credit_Base {
 		 */
 
 		$options = get_option( self::OPTION );
-		if ( ! empty( $options['credit_at_end'] ) ) { // Do not display inline media credit if media credit is displayed at end of posts.
+		if ( ! empty( $options['credit_at_end'] ) ) {
+			// Do not display inline media credit if media credit is displayed at end of posts.
 			wp_enqueue_style( 'media-credit-end', plugin_dir_url( __FILE__ ) . 'css/media-credit-end.css', array(), $this->version, 'all' );
 		} else {
 			wp_enqueue_style( 'media-credit', plugin_dir_url( __FILE__ ) . 'css/media-credit.css', array(), $this->version, 'all' );
@@ -118,8 +119,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 		 * class.
 		 */
 
-		//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/media-credit-public.js', array( 'jquery' ), $this->version, false );
-
+		/* wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/media-credit-public.js', array( 'jquery' ), $this->version, false ); */
 	}
 
 
@@ -130,7 +130,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 	 * Fixes the new style caption shortcode parsing and then calls the stock
 	 * shortcode function.
 	 *
-	 * @param array $attr Attributes attributed to the shortcode.
+	 * @param array  $attr    Attributes attributed to the shortcode.
 	 * @param string $content Optional. Shortcode content.
 	 * @return string
 	 */
@@ -141,7 +141,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 				$content = $matches[1];
 				$attr['caption'] = trim( $matches[2] );
 
-				// Add attribute "standalone=0" to [media-credit] shortcode if present
+				// Add attribute "standalone=0" to [media-credit] shortcode if present.
 				$content = preg_replace( '#\[media-credit([^]]+)\]#', '[media-credit standalone=0$1]', $content );
 			}
 		}
@@ -151,20 +151,23 @@ class Media_Credit_Public implements Media_Credit_Base {
 
 	/**
 	 * New way (in core consideration) to fix the caption shortcode parsing. Proof of concept at this point.
+	 * add_filter('img_caption_shortcode_content', array( $this, 'img_caption_shortcode_content' ), 10, 3);
 	 *
-	 * @param array $matches
-	 * @param string $content
-	 * @param string $regex
+	 * @param array  $matches An array of regex matches.
+	 * @param string $content The matched content.
+	 * @param string $regex   The regex.
+	 *
+	 * @return array
 	 */
-// 	function img_caption_shortcode_content($matches, $content, $regex) {
-// 		$result = array();
+	function img_caption_shortcode_content( $matches, $content, $regex ) {
+		$result = array();
 
-// 		if ( preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#is', $content, $result ) )
-// 			return $result;
-// 			else
-// 				return $matches;
-// 	}
-	//add_filter('img_caption_shortcode_content', array( $this, 'img_caption_shortcode_content' ), 10, 3);
+		if ( preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#is', $content, $result ) ) {
+			return $result;
+		} else {
+			return $matches;
+		}
+	}
 
 	/**
 	 * Add shortcode for media credit. Allows for credit to be specified for media attached to a post
@@ -172,12 +175,17 @@ class Media_Credit_Public implements Media_Credit_Base {
 	 * If an ID is present, it will take precedence over a name.
 	 *
 	 * Usage: [media-credit id=1 align="aligncenter" width="300"] or [media-credit name="Another User" align="aligncenter" width="300"]
+	 *
+	 * @param array  $atts    Shortcode attributes.
+	 * @param string $content Content enclosed by the shortcode. Optional. Default null.
+	 *
+	 * @return string
 	 */
 	function media_credit_shortcode( $atts, $content = null ) {
 		// Allow plugins/themes to override the default media credit template.
-		// TODO: documentation
+		// TODO: documentation.
 		$output = apply_filters( 'media_credit_shortcode', '', $atts, $content );
-		if ( $output != '' ) {
+		if ( '' !== $output ) {
 			return $output;
 		}
 
@@ -187,12 +195,14 @@ class Media_Credit_Public implements Media_Credit_Base {
 			return do_shortcode( $content );
 		}
 
-		$atts = shortcode_atts(	array( 'id'         => -1,
-				   					   'name'       => '',
-									   'link'       => '',
-									   'standalone' => 'true',
-									   'align'      => 'alignnone',
-									   'width'      => '' ),	$atts, 'media-credit' );
+		$atts = shortcode_atts(	array(
+			'id'         => -1,
+			'name'       => '',
+			'link'       => '',
+			'standalone' => 'true',
+			'align'      => 'alignnone',
+			'width'      => '',
+		),	$atts, 'media-credit' );
 
 		$atts['standalone'] = filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
 
@@ -235,10 +245,10 @@ class Media_Credit_Public implements Media_Credit_Base {
 			$style = ' style="width: ' . (int) $credit_width . 'px"';
 		}
 
-		$output =  '<div class="media-credit-container ' . esc_attr( $atts['align'] ) . '"' . $style . '>' .
+		$output = '<div class="media-credit-container ' . esc_attr( $atts['align'] ) . '"' . $style . '>' .
 			     do_shortcode( $content ) . '<span class="media-credit">' . $author_link . '</span></div>';
 
-		// Wrap output in <figure> if HTML5 is supported & the shortcode is a standalone one
+		// Wrap output in <figure> if HTML5 is supported & the shortcode is a standalone one.
 		if ( ! empty( $atts['standalone'] ) && $html5_enabled ) {
 			$output = '<figure class="wp-caption ' . esc_attr( $atts['align'] ) . '"' . $style . '>' . $output . '</figure>';
 		}
@@ -250,18 +260,19 @@ class Media_Credit_Public implements Media_Credit_Base {
 	 * Adds image credits to the end of a post.
 	 *
 	 * @param string $content The post content.
+	 *
 	 * @return string The filtered post content.
 	 */
 	public function add_media_credits_to_end( $content ) {
-		// Find the attachment_IDs of all media used in $content
+		// Find the attachment_IDs of all media used in $content.
 		preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $matches );
 		$images = $matches[1];
 
 		if ( 0 === count( $images ) ) {
-			return $content; // no images found
+			return $content; // no images found.
 		}
 
-		// Look at "no default credits" option
+		// Look at "no default credits" option.
 		$options = get_option( self::OPTION );
 		$include_default_credit = empty( $options['no_default_credit'] );
 
@@ -275,20 +286,25 @@ class Media_Credit_Public implements Media_Credit_Base {
 		}
 		$credit_unique = array_unique( $credit_unique );
 
-		// If no images are left, don't display credit line
+		// If no images are left, don't display credit line.
 		if ( 0 === count( $credit_unique ) ) {
 			return $content;
 		}
 
-		$image_credit = _nx( 'Image courtesy of %1$s', 'Images courtesy of %2$s and %1$s', count( $credit_unique ),
-			'%1$s is always the position of the last credit, %2$s of the concatenated other credits', 'media-credit' );
+		$image_credit = _nx(
+			'Image courtesy of %2$s%1$s', // %2$s will be empty
+			'Images courtesy of %2$s and %1$s',
+			count( $credit_unique ),
+			'%1$s is always the position of the last credit, %2$s of the concatenated other credits. The latter will be empty in the singular case.',
+			'media-credit'
+		);
 
 		$last_credit = array_pop( $credit_unique );
-		$other_credits = implode( _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit'), $credit_unique );
+		$other_credits = implode( _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' ), $credit_unique );
 
 		$image_credit = sprintf( $image_credit, $last_credit, $other_credits );
 
-		// restore credit array for filter
+		// Restore credit array for filter.
 		$credit_unique[] = $last_credit;
 
 		/**
@@ -312,11 +328,11 @@ class Media_Credit_Public implements Media_Credit_Base {
 	 */
 	public function add_media_credit_to_post_thumbnail( $html, $post_id, $post_thumbnail_id, $size, $attr ) {
 		if ( ! in_the_loop() ) {
-			return $html; // abort
+			return $html; // abort.
 		}
 
 		// Allow plugins/themes to override the default media credit template.
-		// TODO: documentation
+		// TODO: documentation.
 		/**
 		 * Provide a shortcut filter for post thumbnail media credits.
 		 */
@@ -336,6 +352,6 @@ class Media_Credit_Public implements Media_Credit_Base {
 			$style = ' style="width: ' . (int) $credit_width . 'px"';
 		}
 
-		return $html . '<span class="media-credit"' . $style . '>' . $credit. '</span>';
+		return $html . '<span class="media-credit"' . $style . '>' . $credit . '</span>';
 	}
 }
