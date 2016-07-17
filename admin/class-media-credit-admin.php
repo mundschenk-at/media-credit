@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2015 Peter Putzer.
+ * Copyright 2013-2016 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -341,62 +341,67 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * AJAX hook for filtering post content after editing media files
 	 */
 	public function ajax_filter_content() {
-		if ( ! isset( $_POST['post_content'] ) ||
-			 ! isset( $_POST['image_id'] )     ||
-		 	 ! isset( $_POST['author_id'] )    ||
-			 ! isset( $_POST['freeform'] )     ||
-			 ! isset( $_POST['url'] )          ||
-			 ! current_user_can( 'edit_posts' ) ) {
-
+		if ( ! isset( $_REQUEST['image_id'] ) || ! $image_id = absint( $_REQUEST['image_id'] ) ) { // Input var okay.
 			wp_send_json_error();
 		}
 
-		// unescape single & double quotes
-		$results = preg_replace( array( '/\\\"/', "/\\\'/" ), array( '"', "'" ), $_POST['post_content'] );
+		check_ajax_referer( 'update-post_' . $image_id, 'nonce', true );
 
-		if ( $_POST['image_id'] > 0 ) {
-			$results = $this->filter_post_content( $results, $_POST['image_id'], $_POST['author_id'], $_POST['freeform'], $_POST['url'] );
+		if ( ! isset( $_REQUEST['post_content'] ) || ! ( $old_content = filter_var( wp_unslash( $_REQUEST['post_content'] ) ) )      || // Input var okay. Only uses for comparison.
+			 ! isset( $_REQUEST['author_id'] )    || ! ( $author_id   = absint( $_REQUEST['author_id'] ) )                           || // Input var okay.
+			 ! isset( $_REQUEST['freeform'] )     || ! ( $freeform    = sanitize_text_field( wp_unslash( $_REQUEST['freeform'] ) ) ) || // Input var okay.
+			 ! isset( $_REQUEST['url'] )          || ! ( $url         = esc_url_raw( wp_unslash( $_REQUEST['url'] ) ) ) ) {             // Input var okay.
+			wp_send_json_error();
 		}
 
-		wp_send_json_success( $results );
+		wp_send_json_success( $this->filter_post_content( $old_content, $image_id, $author_id, $freeform, $url ) );
 	}
 
 	/**
 	 * Display settings for plugin on the built-in Media options page.
 	 */
 	public function display_settings() {
-		add_settings_section( $this->plugin_name, __( 'Media Credit', 'media-credit' ),
-							  array( $this, 'print_settings_section' ), 'media' );
+		$options = get_option( self::OPTION );
 
-		add_settings_field( 'preview', sprintf('<em>%s</em>', __( 'Preview', 'media-credit' ) ),
-							array( $this, 'print_preview_field' ), 'media', $this->plugin_name );
+		add_settings_section( $this->plugin_name, __( 'Media Credit', 'media-credit' ),
+							  array( $this, 'print_settings_section' ), 'media',
+							  array( 'options' => $options ) );
+
+		add_settings_field( 'preview', sprintf( '<em>%s</em>', __( 'Preview', 'media-credit' ) ),
+							array( $this, 'print_preview_field' ), 'media', $this->plugin_name,
+							array( 'options' => $options ) );
 		add_settings_field( 'separator', __( 'Separator', 'media-credit' ),
-							array( $this, 'print_separator_field' ), 'media', $this->plugin_name );
+							array( $this, 'print_separator_field' ), 'media', $this->plugin_name,
+							array( 'options' => $options ) );
 		add_settings_field( 'organization', __( 'Organization', 'media-credit' ),
-							array( $this, 'print_organization_field' ), 'media', $this->plugin_name );
+							array( $this, 'print_organization_field' ), 'media', $this->plugin_name,
+							array( 'options' => $options ) );
 		add_settings_field( 'credit_at_end', __( 'Display credit after posts', 'media-credit' ),
-							array( $this, 'print_end_of_post_field' ), 'media', $this->plugin_name );
+							array( $this, 'print_end_of_post_field' ), 'media', $this->plugin_name,
+							array( 'options' => $options ) );
 		add_settings_field( 'no_default_credit', __( 'Do not display default credit', 'media-credit' ),
-							array( $this, 'print_no_default_credit_field' ), 'media', $this->plugin_name );
+							array( $this, 'print_no_default_credit_field' ), 'media', $this->plugin_name,
+							array( 'options' => $options ) );
 		add_settings_field( 'post_thumbnail_credit', __( 'Display credit for featured images', 'media-credit' ),
-							array( $this, 'print_post_thumbnail_credit_field' ), 'media', $this->plugin_name );
+							array( $this, 'print_post_thumbnail_credit_field' ), 'media', $this->plugin_name,
+							array( 'options' => $options ) );
 	}
 
 	/**
 	 * Enqueue scripts & styles for displaying media credits in the rich-text editor.
 	 *
-	 * @param array $options
+	 * @param array $options An array of options. Used ot check if TinyMCE is enabled.
 	 */
 	public function enqueue_editor( $options ) {
 		if ( $options['tinymce'] ) {
 			// Note: An additional dependency "media-views" is not listed below
 			// because in some cases such as /wp-admin/press-this.php the media
 			// library isn't enqueued and shouldn't be. The script includes
-			// safeguards to avoid errors in this situation
-
+			// safeguards to avoid errors in this situation.
 			wp_enqueue_script( 'media-credit-image-properties', $this->ressource_url . 'js/tinymce4/media-credit-image-properties.js', array( 'jquery' ), $this->version, true );
 			wp_enqueue_script( 'media-credit-tinymce-switch',   $this->ressource_url . 'js/tinymce4/media-credit-tinymce-switch.js',   array( 'jquery' ), $this->version, true );
 
+			// Edit in style.
 			wp_enqueue_style( 'media-credit-image-properties-style', $this->ressource_url . 'css/tinymce4/media-credit-image-properties.css', array(), $this->version, 'screen' );
 		}
 	}
@@ -404,12 +409,12 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	/**
 	 * Add custom media credit fields to Edit Media screens.
 	 *
-	 * @param array $fields
-	 * @param unknown $post
-	 * @return array The list of fields.
+	 * @param array       $fields The custom fields.
+	 * @param int|WP_Post $post   Post object or ID.
+	 * @return array              The list of fields.
 	 */
 	public function add_media_credit_fields( $fields, $post ) {
-		$credit = Media_Credit_Template_Tags::get_media_credit($post);
+		$credit = Media_Credit_Template_Tags::get_media_credit( $post );
 		$html = "<input id='attachments[$post->ID][media-credit]' class='media-credit-input' size='30' value='$credit' name='attachments[$post->ID][media-credit]'  />";
 		$fields['media-credit'] = array(
 			'label'         => __( 'Credit:', 'media-credit' ),
@@ -419,22 +424,22 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			'show_in_modal' => true,
 		);
 
-		$url = Media_Credit_Template_Tags::get_media_credit_url($post);
+		$url = Media_Credit_Template_Tags::get_media_credit_url( $post );
 		$html = "<input id='attachments[$post->ID][media-credit-url]' class='media-credit-input' type='url' size='30' value='$url' name='attachments[$post->ID][media-credit-url]' />";
 		$fields['media-credit-url'] = array(
 			'label'         => __( 'Credit URL:', 'media-credit' ),
 			'input'         => 'html',
-			'html'          => $html, //FIXME
+			'html'          => $html, // @todo: Find another way?
 			'show_in_edit'  => true,
 			'show_in_modal' => true,
 		);
 
-		$author = ( Media_Credit_Template_Tags::get_freeform_media_credit($post) == '' ) ? $post->post_author : '';
-		$author_display = Media_Credit_Template_Tags::get_media_credit($post);
-		$author_for_script = ($author == '') ? -1 : $author;
+		$author = '' === Media_Credit_Template_Tags::get_freeform_media_credit( $post ) ? $post->post_author : '';
+		$author_display = Media_Credit_Template_Tags::get_media_credit( $post );
+		$author_for_script = '' === $author ? -1 : $author;
 		$nonce = wp_create_nonce( 'media_credit_author_names' );
 		$html_hidden = "<input name='attachments[$post->ID][media-credit-hidden]' id='attachments[$post->ID][media-credit-hidden]' type='hidden' value='$author' class='media-credit-hidden' data-author='$author_for_script' data-post-id='$post->ID' data-author-display='$author_display' data-nonce='$nonce' />";
-		$fields["media-credit-hidden"] = array(
+		$fields['media-credit-hidden'] = array(
 			'label'         => '', // necessary for HTML type fields.
 			'input'         => 'html',
 			'html'          => $html_hidden,
@@ -456,23 +461,21 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$freeform_name = $attachment['media-credit'];
 		$url           = $attachment['media-credit-url'];
 
-		// we need to update the credit URL in any case
-		update_post_meta( $post['ID'], self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field
+		// We need to update the credit URL in any case.
+		update_post_meta( $post['ID'], self::URL_POSTMETA_KEY, $url ); // unsert '_media_credit_url' metadata field.
 
-		if ( isset( $wp_user_id ) && $wp_user_id != '' &&
-			$freeform_name === get_the_author_meta( 'display_name', $wp_user_id ) ) {
-			// a valid WP user was selected, and the display name matches the free-form
+		if ( ! empty( $wp_user_id ) && get_the_author_meta( 'display_name', $wp_user_id ) === $freeform_name ) {
+			// A valid WP user was selected, and the display name matches the free-form
 			// the final conditional is necessary for the case when a valid user is selected, filling in the hidden
-			// field, then free-form text is entered after that. if so, the free-form text is what should be used
-			$post['post_author'] = $wp_user_id; // update post_author with the chosen user
-			delete_post_meta( $post['ID'], self::POSTMETA_KEY ); // delete any residual metadata from a free-form
-			// field (as inserted below)
+			// field, then free-form text is entered after that. if so, the free-form text is what should be used.
+			$post['post_author'] = $wp_user_id; // update post_author with the chosen user.
+			delete_post_meta( $post['ID'], self::POSTMETA_KEY ); // delete any residual metadata from a free-form field (as inserted below).
 			$this->update_media_credit_in_post( $post, true, '', $url );
-		} else { // free-form text was entered, insert postmeta with credit.
+		} else {
+			// Free-form text was entered, insert postmeta with credit.
 			// if free-form text is blank, insert a single space in postmeta.
 			$freeform = empty( $freeform_name ) ? self::EMPTY_META_STRING : $freeform_name;
-			update_post_meta( $post['ID'], self::POSTMETA_KEY, $freeform ); // insert '_media_credit' metadata field
-			// for image with free-form text
+			update_post_meta( $post['ID'], self::POSTMETA_KEY, $freeform ); // insert '_media_credit' metadata field for image with free-form text.
 			$this->update_media_credit_in_post( $post, false, $freeform, $url );
 		}
 
@@ -482,20 +485,15 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	/**
 	 * If the given media is attached to a post, edit the media-credit info in the attached (parent) post.
 	 *
-	 * @param object $post Object of attachment containing all fields from get_post().
-	 * @param bool $wp_user True if attachment should be credited to a user of this blog, false otherwise.
+	 * @param object $post     Object of attachment containing all fields from get_post().
+	 * @param bool   $wp_user  True if attachment should be credited to a user of this blog, false otherwise.
 	 * @param string $freeform Credit for attachment with freeform string. Empty if attachment should be credited to a user of this blog, as indicated by $wp_user above.
-	 * @param string $url Credit URL for linking. Empty means default link for user of this blog, no link for freeform credit.
+	 * @param string $url      Credit URL for linking. Empty means default link for user of this blog, no link for freeform credit.
 	 */
 	private function update_media_credit_in_post( $post, $wp_user, $freeform = '', $url = '' ) {
 		if ( ! empty( $post['post_parent'] ) ) {
 			$parent = get_post( $post['post_parent'], ARRAY_A );
-			$parent['post_content'] =
-				$this->filter_post_content( $parent['post_content'],
-										 				 $post['ID'],
-														 $post['post_author'],
-														 $freeform,
-														 $url );
+			$parent['post_content'] = $this->filter_post_content( $parent['post_content'], $post['ID'], $post['post_author'], $freeform, $url );
 
 			wp_update_post( $parent );
 		}
@@ -504,36 +502,33 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	/**
 	 * Add media credit information to media using shortcode notation before sending to editor.
 	 *
-	 * @param unknown $html
-	 * @param unknown $attachment_id
-	 * @param unknown $caption
-	 * @param unknown $title
-	 * @param unknown $align
-	 * @param unknown $url
-	 * @param unknown $size
-	 * @param string $alt
+	 * @param string       $html          The image HTML markup to send.
+	 * @param int          $attachment_id The attachment id.
+	 * @param string       $caption       The image caption.
+	 * @param string       $title         The image title.
+	 * @param string       $align         The image alignment.
+	 * @param string       $url           The image source URL.
+	 * @param string|array $size          Size of image. Image size or array of width and height values (in that order). Default 'medium'.
+	 * @param string       $alt           The image alternative, or alt, text.
 	 *
-	 * @return unknown
+	 * @return string
 	 */
 	public function image_send_to_editor( $html, $attachment_id, $caption, $title, $align, $url, $size, $alt = '' ) {
-		$post        = get_post( $attachment_id );
-		$credit_meta = Media_Credit_Template_Tags::get_freeform_media_credit( $post );
-		$credit_url  = Media_Credit_Template_Tags::get_media_credit_url( $post );
+		$attachment  = get_post( $attachment_id );
+		$credit_meta = Media_Credit_Template_Tags::get_freeform_media_credit( $attachment );
+		$credit_url  = Media_Credit_Template_Tags::get_media_credit_url( $attachment );
 		$options     = get_option( self::OPTION );
 
-		if ( $credit_meta == self::EMPTY_META_STRING ) {
+		if ( self::EMPTY_META_STRING === $credit_meta ) {
 			return $html;
+		} elseif ( ! empty( $credit_meta ) ) {
+			$credit = 'name="' . $credit_meta . '"';
+		} elseif ( empty( $options['no_default_credit'] ) ) {
+			$credit = 'id=' . $attachment->post_author;
 		} else {
-			if ( $credit_meta != '' ) {
-				$credit = 'name="' . $credit_meta . '"';
-			} else {
-				if ( empty( $options['no_default_credit'] ) ) {
-					$credit = 'id=' . $post->post_author;
-				} else {
-					return $html;
-				}
-			}
+			return $html;
 		}
+
 		if ( ! empty( $credit_url ) ) {
 			$credit .= ' link="' . $credit_url . '"';
 		}
@@ -556,26 +551,24 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	/**
 	 * Filter post content for changed media credits.
 	 *
-	 * @param string $content
-	 * @param number $image_id
-	 * @param number $author_id
-	 * @param string $freeform
-	 * @param string $url
+	 * @param string $content   The current post content.
+	 * @param int    $image_id  The attachment ID.
+	 * @param int    $author_id The author ID.
+	 * @param string $freeform  The freeform credit.
+	 * @param string $url       The credit URL. Optional. Default ''.
 	 *
-	 * @return string The filtered post content.
+	 * @return string           The filtered post content.
 	 */
-	private function filter_post_content($content, $image_id, $author_id, $freeform, $url = '') {
+	private function filter_post_content( $content, $image_id, $author_id, $freeform, $url = '' ) {
 		preg_match_all( '/' . get_shortcode_regex() . '/s', $content, $matches, PREG_SET_ORDER );
 
 		if ( ! empty( $matches ) ) {
 			foreach ( $matches as $shortcode ) {
 				if ( 'media-credit' === $shortcode[2] ) {
-					$attr = shortcode_parse_atts( $shortcode[3] );
-					$img = $shortcode[5];
-
-					$image_filename = wp_get_attachment_image_src( $image_id );
-					$image_filename = $this->get_image_filename_from_full_url( $image_filename[0] );
-
+					$attr             = shortcode_parse_atts( $shortcode[3] );
+					$img              = $shortcode[5];
+					$image_attributes = wp_get_attachment_image_src( $image_id );
+					$image_filename   = $this->get_image_filename_from_full_url( $image_attributes[0] );
 
 					if ( preg_match( '/src=".*' . $image_filename . '/', $img ) &&
 						 preg_match( '/wp-image-' . $image_id . '/', $img ) ) {
@@ -609,7 +602,6 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 						$content = str_replace( $shortcode[0], $new_shortcode, $content );
 					}
-
 				} elseif ( ! empty( $shortcode[5] ) && has_shortcode( $shortcode[5], 'media-credit' ) ) {
 					$content = str_replace( $shortcode[5], $this->filter_post_content( $shortcode[5], $image_id, $author_id, $freeform, $url ), $content );
 				}
@@ -617,27 +609,6 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		}
 
 		return $content;
-	}
-
-	/*
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
-	 */
-	// FIXME: not used since practically forever... should probably be removed.
-	function get_media_credit_authors_for_post($post = null) {
-		global $post;
-
-		// Find the user IDs of all media used in post_content credited to WP users
-		preg_match_all( '/\[media-credit id=(\d+)/', $post->post_content, $matches );
-		$users = array_unique( $matches[1] );
-
-		if ( empty($users) )
-			return array();
-
-		$users_data = array();
-		foreach ($users as $user)
-			$users_data[] = get_userdata($user);
-
-		return $users_data;
 	}
 
 	/**
@@ -655,93 +626,93 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 	/**
 	 * Print HTML for settings section.
+	 *
+	 * @param array $args The argument array.
 	 */
-	public function print_settings_section() {
-		echo '<a name="media-credit"></a>';
-		echo '<p>' . __('Choose how to display media credit on your blog:', 'media-credit') . '</p>';
+	public function print_settings_section( $args ) {
+		?><a name="media-credit"></a><?php
+		?><p><?php esc_html_e( 'Choose how to display media credit on your blog:', 'media-credit' ) ?></p><?php
 	}
 
 	/**
 	 * Print HTML for "separator" input field.
+	 *
+	 * @param array $args The argument array.
 	 */
-	public function print_separator_field() {
-		$options = get_option( self::OPTION );
-		$explanation = __("Text used to separate author names from organization when crediting media to users of this blog", 'media-credit');
-		echo "<input type='text' id='media-credit[separator]' name='media-credit[separator]' value='{$options['separator']}' autocomplete='off' />";
-		echo "<label for='media-credit[separator]' style='margin-left:5px'>$explanation</label>";
+	public function print_separator_field( $args ) {
+		?><input type='text' id='media-credit[separator]' name='media-credit[separator]' value='<?php echo esc_attr( $args['options']['separator'] ) ?>' autocomplete='off' /><?php
+		?><label for='media-credit[separator]' style='margin-left:5px'><?php esc_html_e( 'Text used to separate author names from organization when crediting media to users of this blog', 'media-credit' ) ?></label><?php
 	}
 
 	/**
 	 * Print HTML for "organization" input field.
+	 *
+	 * @param array $args The argument array.
 	 */
-	public function print_organization_field() {
-		$options = get_option( self::OPTION );
-		$explanation = __("Organization used when crediting media to users of this blog", 'media-credit');
-		echo "<input type='text' name='media-credit[organization]' value='{$options['organization']}' autocomplete='off' />";
-		echo "<label for='media-credit[separator]' style='margin-left:5px'>$explanation</label>";
+	public function print_organization_field( $args ) {
+		?><input type='text' name='media-credit[organization]' value='<?php echo esc_attr( $args['options']['organization'] ) ?>' autocomplete='off' /><?php
+		?><label for='media-credit[separator]' style='margin-left:5px'><?php esc_html_e( 'Organization used when crediting media to users of this blog', 'media-credit' ) ?></label><?php
 	}
 
 	/**
 	 * Print HTML for preview area.
+	 *
+	 * @param array $args The argument array.
 	 */
-	public function print_preview_field() {
-		$curr_user = wp_get_current_user();
-		$options = get_option( self::OPTION );
-		echo "<span id='preview'><a href='" . get_author_posts_url($curr_user->ID) . "'>$curr_user->display_name</a>${options['separator']}${options['organization']}</span>";
+	public function print_preview_field( $args ) {
+		$current_user = wp_get_current_user();
+		?><span id='preview'><a href='<?php echo esc_url_raw( get_author_posts_url( $current_user->ID ) ) ?>'><?php echo esc_html( $current_user->display_name ) ?></a><?php echo esc_html( $args['options']['separator'] . $args['options']['organization'] ) ?></span><?php
 	}
 
 	/**
 	 * Print HTML for "display credit at end of post" input field.
+	 *
+	 * @param array $args The argument array.
 	 */
-	public function print_end_of_post_field() {
-		$options = get_option( self::OPTION );
-		$credit_at_end = array_key_exists( 'credit_at_end', $options ) ? $options['credit_at_end'] : false;
-		$explanation = __("Display media credit for all the images attached to a post after the post content. Style with CSS class 'media-credit-end'", 'media-credit');
-		echo "<input type='checkbox' id='media-credit[credit_at_end]' name='media-credit[credit_at_end]' value='1' " . checked(1, $credit_at_end, false) . " />";
-		echo "<label for='media-credit[credit_at_end]' style='margin-left:5px'>$explanation</label>";
+	public function print_end_of_post_field( $args ) {
+		?><input type='checkbox' id='media-credit[credit_at_end]' name='media-credit[credit_at_end]' value='1' <?php checked( 1, ! empty( $args['options']['credit_at_end'] ), true ) ?> /><?php
+		?><label for='media-credit[credit_at_end]' style='margin-left:5px'><?php esc_html_e( "Display media credit for all the images attached to a post after the post content. Style with CSS class 'media-credit-end'", 'media-credit' ) ?></label><?php
 
 		$curr_user = wp_get_current_user();
-		$preview = _nx( 'Image courtesy of %1$s', 'Images courtesy of %2$s and %1$s', 2,
-			'%1$s is always the position of the last credit, %2$s of the concatenated other credits', 'media-credit' );
-		$preview = sprintf( $preview, _x('John Smith', 'Example name for preview', 'media-credit'),
-			"<span id='preview'><a href='" . get_author_posts_url($curr_user->ID) . "'>$curr_user->display_name</a>${options['separator']}${options['organization']}</span>"
+		$preview = _nx( 'Image courtesy of %2$s%1$s', 'Images courtesy of %2$s and %1$s', 2,
+			'%1$s is always the position of the last credit, %2$s of the concatenated other credits (empty in singular)', 'media-credit' );
+		$preview = sprintf( $preview, _x( 'John Smith', 'Example name for preview', 'media-credit' ),
+			"<span id='preview'><a href='" . get_author_posts_url( $curr_user->ID ) . "'>{$curr_user->display_name}</a>{$args['options']['separator']}{$args['options']['organization']}</span>"
 			. _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' )
 			. _x( 'Jane Doe', 'Example name for preview', 'media-credit' ) );
 
-		echo "<br /><em>" . __('Preview', 'media-credit') . '</em>: ' . $preview;
-		echo "<br /><strong>" . __('Warning', 'media-credit') . "</strong>: " . __('This will cause credit for all images in all posts to display at the bottom of every post on this blog', 'media-credit');
+		?><br /><em><?php esc_html_e( 'Preview', 'media-credit' ) ?></em>: <?php echo esc_html( $preview );
+		?><br /><strong><?php esc_html_e( 'Warning', 'media-credit' ) ?></strong>: <?php esc_html_e( 'This will cause credit for all images in all posts to display at the bottom of every post on this blog', 'media-credit' );
 	}
 
 	/**
 	 * Print HTML for "no default credit" input field.
+	 *
+	 * @param array $args The argument array.
 	 */
-	public function print_no_default_credit_field() {
-		$options = get_option( self::OPTION );
-		$no_default_credit = array_key_exists( 'no_default_credit', $options ) ? $options['no_default_credit'] : false;
-		$explanation = __("Do not display the attachment author as default credit if it has not been set explicitly (= freeform credits only).", 'media-credit');
-		echo "<input type='checkbox' id='media-credit[no_default_credit]' name='media-credit[no_default_credit]' value='1' " . checked(1, $no_default_credit, false) . " />";
-		echo "<label for='media-credit[no_default_credit]' style='margin-left:5px'>$explanation</label>";
+	public function print_no_default_credit_field( $args ) {
+		?><input type='checkbox' id='media-credit[no_default_credit]' name='media-credit[no_default_credit]' value='1' " . checked( 1, ! empty( $args['options']['no_default_credit'] ), true ) ?> /><?php
+		?><label for='media-credit[no_default_credit]' style='margin-left:5px'><?php esc_html_e( 'Do not display the attachment author as default credit if it has not been set explicitly (= freeform credits only).', 'media-credit' ) ?></label><?php
 	}
 
 	/**
 	 * Print HTML for "post thumbnail credit" input field.
+	 *
+	 * @param array $args The argument array.
 	 */
-	public function print_post_thumbnail_credit_field() {
-		$options = get_option( self::OPTION );
-		$post_thumbnail_credit = array_key_exists( 'post_thumbnail_credit', $options ) ? $options['post_thumbnail_credit'] : false;
-		$explanation = __("Try to add media credit to featured images (depends on theme support).", 'media-credit');
-		echo "<input type='checkbox' id='media-credit[post_thumbnail_credit]' name='media-credit[post_thumbnail_credit]' value='1' " . checked(1, $post_thumbnail_credit, false) . " />";
-		echo "<label for='media-credit[post_thumbnail_credit]' style='margin-left:5px'>$explanation</label>";
+	public function print_post_thumbnail_credit_field( $args ) {
+		?><input type='checkbox' id='media-credit[post_thumbnail_credit]' name='media-credit[post_thumbnail_credit]' value='1' <?php checked( 1, ! empty( $args['options']['post_thumbnail_credit'] ), true ) ?> /><?php
+		?><label for='media-credit[post_thumbnail_credit]' style='margin-left:5px'><?php esc_html_e( 'Try to add media credit to featured images (depends on theme support).', 'media-credit' ) ?></label><?php
 	}
 
 	/**
 	 * Sanitize our option values.
 	 *
-	 * @param array $input An array of ( $key => $value )
-	 * @return array The sanitized array.
+	 * @param  array $input An array of ( $key => $value ).
+	 * @return array        The sanitized array.
 	 */
 	public function sanitize_option_values( $input ) {
-		foreach ($input as $key => $value) {
+		foreach ( $input as $key => $value ) {
 			$input[ $key ] = htmlspecialchars( $value, ENT_QUOTES );
 		}
 
@@ -755,13 +726,13 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-thumb.jpg, return ParksTrip2010_100706_1487-thumb
 	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-1.jpg, return ParksTrip2010_100706_1487-1
 	 *
-	 * @param string $image Full URL to an image.
-	 * @return string The filename of the image excluding any size or extension, as given in the example above.
+	 * @param  string $image Full URL to an image.
+	 * @return string        The filename of the image excluding any size or extension, as given in the example above.
 	 */
 	private function get_image_filename_from_full_url( $image ) {
 		$last_slash_pos = strrpos( $image, '/' );
-		$image_filename = substr( $image, $last_slash_pos + 1, strrpos( $image, '.') - $last_slash_pos - 1 );
-		$image_filename = preg_replace( '/(.*)-\d+x\d+/', '$1', $image_filename ); // drop "-{$width}x{$height}"
+		$image_filename = substr( $image, $last_slash_pos + 1, strrpos( $image, '.' ) - $last_slash_pos - 1 );
+		$image_filename = preg_replace( '/(.*)-\d+x\d+/', '$1', $image_filename ); // drop "-{$width}x{$height}".
 
 		return $image_filename;
 	}
