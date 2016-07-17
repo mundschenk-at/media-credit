@@ -106,19 +106,16 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @since    3.0.0
 	 */
 	public function enqueue_scripts() {
+		// Preview script for the settings page.
+		if ( $this->is_media_settings_page() ) {
+			wp_enqueue_script( 'media-credit-preview', $this->ressource_url . 'js/media-credit-preview.js', array( 'jquery' ), $this->version, true );
+		}
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Media_Credit_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Media_Credit_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-		/* wp_enqueue_script( $this->plugin_name, $this->ressource_url . 'js/media-credit-admin.js', array( 'jquery' ), $this->version, false ); */
+		// Autocomplete when editing media.
+		if ( $this->is_media_edit_page() ) {
+			wp_enqueue_script( 'media-credit-autocomplete',   $this->ressource_url . 'js/media-credit-autocomplete.js',   array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
+			wp_enqueue_script( 'media-credit-media-handling', $this->ressource_url . 'js/media-credit-media-handling.js', array( 'jquery' ),                           $this->version, true );
+		}
 	}
 
 	/**
@@ -198,14 +195,6 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	public function admin_init() {
 		register_setting( 'media', $this->plugin_name, array( $this, 'sanitize_option_values' ) );
 
-		if ( $this->is_media_settings_page() ) {
-			wp_enqueue_script( 'media-credit-preview', $this->ressource_url . 'js/media-credit-preview.js', array( 'jquery' ), $this->version, true );
-		}
-
-		if ( $this->is_media_edit_page() ) {
-			$this->enqueue_media_credit_scripts();
-		}
-
 		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages.
 		if ( ( current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) && user_can_richedit() ) {
 			add_action( 'admin_head',           array( $this, 'admin_head' ) );
@@ -216,14 +205,6 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
 		add_filter( 'the_author', 'Media_Credit_Template_Tags::get_media_credit' );
-	}
-
-	/**
-	 * Load the necessary scripts for editing the media credits.
-	 */
-	public function enqueue_media_credit_scripts() {
-		wp_enqueue_script( 'media-credit-autocomplete',   $this->ressource_url . 'js/media-credit-autocomplete.js',   array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
-		wp_enqueue_script( 'media-credit-media-handling', $this->ressource_url . 'js/media-credit-media-handling.js', array( 'jquery' ),                           $this->version, true );
 	}
 
 	/**
