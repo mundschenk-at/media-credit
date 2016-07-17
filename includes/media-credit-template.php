@@ -1,9 +1,8 @@
 <?php
-
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2015 Peter Putzer.
+ * Copyright 2013-2016 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -45,7 +44,7 @@ if ( ! function_exists( 'the_media_credit' ) ) {
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function the_media_credit( $post = null ) {
-		echo get_media_credit( $post );
+		echo esc_html( get_media_credit( $post ) );
 	}
 }
 
@@ -67,7 +66,7 @@ if ( ! function_exists( 'the_media_credit_url' ) ) {
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function the_media_credit_url( $post = null ) {
-		echo get_media_credit_url( $post );
+		echo esc_url_raw( get_media_credit_url( $post ) );
 	}
 }
 
@@ -75,8 +74,8 @@ if ( ! function_exists( 'get_media_credit_html' ) ) {
 	/**
 	 * Template tag to return the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
-	 * @param boolean $include_default_credit Optional flag to decide if default credits (owner) should be returned as well. Default is true.
+	 * @param int|object $post                   Optional post ID or object of attachment. Default is global $post object.
+	 * @param boolean    $include_default_credit Optional flag to decide if default credits (owner) should be returned as well. Default is true.
 	 */
 	function get_media_credit_html( $post = null, $include_default_credit = true ) {
 		return Media_Credit_Template_Tags::get_media_credit_html( $post, $include_default_credit );
@@ -90,7 +89,7 @@ if ( ! function_exists( 'the_media_credit_html' ) ) {
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function the_media_credit_html( $post = null ) {
-		echo get_media_credit_html( $post );
+		echo get_media_credit_html( $post ); // XSS OK.
 	}
 }
 
@@ -105,19 +104,6 @@ if ( ! function_exists( 'get_media_credit_html_by_user_id' ) ) {
 	}
 }
 
-if ( ! function_exists( 'get_media_credit_html_by_user_ID' ) ) {
-	/**
-	 * An alias for get_media_credit_html_by_user_id.
-	 *
-	 * @deprecated since 3.0.0
-	 *
-	 * @param int $id User ID of a WordPress user.
-	 */
-	function get_media_credit_html_by_user_ID( $id ) {
-		return get_media_credit_html_by_user_id( $id );
-	}
-}
-
 if ( ! function_exists( 'the_media_credit_html_by_user_id' ) ) {
 	/**
 	 * Template tag to print the media credit as HTML with a link to the author page if one exists for a WordPress user.
@@ -125,20 +111,7 @@ if ( ! function_exists( 'the_media_credit_html_by_user_id' ) ) {
 	 * @param int $id User ID of a WordPress user.
 	 */
 	function the_media_credit_html_by_user_id( $id ) {
-		echo get_media_credit_html_by_user_id( $id );
-	}
-}
-
-if ( ! function_exists( 'the_media_credit_html_by_user_ID' ) ) {
-	/**
-	 * An alias for the_media_credit_html_by_user_id.
-	 *
-	 * @deprecated since 3.0.0
-	 *
-	 * @param int $id User ID of a WordPress user.
-	 */
-	function the_media_credit_html_by_user_ID( $id ) {
-		return the_media_credit_html_by_user_id( $id );
+		echo get_media_credit_html_by_user_id( $id ); // XSS OK.
 	}
 }
 
@@ -180,12 +153,12 @@ if ( ! function_exists( 'display_author_media' ) ) {
 	/**
 	 * Template tag to display the recently added media attachments for given author.
 	 *
-	 * @param number  $author_id
-	 * @param boolean $sidebar Display as sidebar or inline. Optional. Default true.
-	 * @param number  $limit Optional. Default 10.
+	 * @param int     $author_id           The user ID of the author.
+	 * @param boolean $sidebar             Display as sidebar or inline. Optional. Default true.
+	 * @param int     $limit               Optional. Default 10.
 	 * @param boolean $link_without_parent Optional. Default false.
-	 * @param string  $header HTML-formatted heading. Optional. Default <h3>Recent Media</h3> (translated).
-	 * @param boolean $exclude_unattached Optional. Default true.
+	 * @param string  $header              HTML-formatted heading. Optional. Default <h3>Recent Media</h3> (translated).
+	 * @param boolean $exclude_unattached  Optional. Default true.
 	 */
 	function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = null, $exclude_unattached = true ) {
 		Media_Credit_Template_tags::display_author_media( $author_id, $sidebar, $limit, $link_without_parent, $header, $exclude_unattached );
@@ -196,9 +169,9 @@ if ( ! function_exists( 'author_media_and_posts' ) ) {
 	/**
 	 * Template tag to return the recently added media attachments and posts for a given author.
 	 *
-	 * @param number  $author_id
-	 * @param boolean $include_posts Optional. Default true.
-	 * @param number  $limit Optional. Default 0.
+	 * @param int     $author_id          The user ID of the author.
+	 * @param boolean $include_posts      Optional. Default true.
+	 * @param int     $limit              Optional. Default 0.
 	 * @param boolean $exclude_unattached Optional. Default true.
 	 */
 	function author_media_and_posts( $author_id, $include_posts = true, $limit = 0, $exclude_unattached = true ) {
@@ -210,8 +183,8 @@ if ( ! function_exists( 'author_media' ) ) {
 	/**
 	 * Template tag to return the recently added media attachments for a given author.
 	 *
-	 * @param number  $author_id
-	 * @param number  $limit Optional. Default 0.
+	 * @param int     $author_id          The user ID of the author.
+	 * @param int     $limit              Optional. Default 0.
 	 * @param boolean $exclude_unattached Optional. Default true.
 	 */
 	function author_media( $author_id, $limit = 0, $exclude_unattached = true ) {

@@ -1,9 +1,8 @@
 <?php
-
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2015 Peter Putzer.
+ * Copyright 2013-2016 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -88,13 +87,17 @@ class Media_Credit implements Media_Credit_Base {
 	 * the public-facing side of the site.
 	 *
 	 * @since    3.0.0
+	 *
+	 * @param string $slug     The plugin slug.
+	 * @param string $version  The plugin version string.
+	 * @param string $basename The plugin basename.
 	 */
 	public function __construct( $slug, $version, $basename ) {
 
-		$this->plugin_name = $slug;
+		$this->plugin_name     = $slug;
 		$this->plugin_basename = $basename;
-		$this->version = $version;
-		$this->loader = new Media_Credit_Loader();
+		$this->version         = $version;
+		$this->loader          = new Media_Credit_Loader();
 
 		$this->set_locale();
 		$this->define_admin_hooks();
@@ -170,7 +173,7 @@ class Media_Credit implements Media_Credit_Base {
 			$this->loader->add_filter( 'the_content', $plugin_public, 'add_media_credits_to_end', 10, 1 );
 		}
 
-		// post thumbnail credits
+		// Post thumbnail credits.
 		if ( ! empty( $options['post_thumbnail_credit'] ) ) {
 			$this->loader->add_filter( 'post_thumbnail_html', $plugin_public, 'add_media_credit_to_post_thumbnail', 10, 5 );
 		}
@@ -215,5 +218,4 @@ class Media_Credit implements Media_Credit_Base {
 	public function get_version() {
 		return $this->version;
 	}
-
 }

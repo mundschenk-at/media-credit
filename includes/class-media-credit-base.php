@@ -1,9 +1,8 @@
 <?php
-
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2015 Peter Putzer.
+ * Copyright 2013-2016 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or

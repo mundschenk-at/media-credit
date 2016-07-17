@@ -1,9 +1,8 @@
 <?php
-
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2015 Peter Putzer.
+ * Copyright 2013-2016 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -67,10 +66,9 @@ class Media_Credit_i18n {
 	 * Set the domain equal to that of the specified domain.
 	 *
 	 * @since    3.0.0
-	 * @param    string    $domain    The domain that represents the locale of this plugin.
+	 * @param    string $domain    The domain that represents the locale of this plugin.
 	 */
 	public function set_domain( $domain ) {
 		$this->domain = $domain;
 	}
-
 }
