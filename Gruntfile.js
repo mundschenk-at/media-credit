@@ -78,7 +78,7 @@ module.exports = function(grunt) {
         
         jscs: {
             src: [
-                'admin/js/*.js',
+                'admin/js/**/*.js',
                 'public/js/**/*.js'
             ],
             options: {
