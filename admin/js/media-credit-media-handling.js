@@ -52,7 +52,7 @@
 			var previous_content = jQuery( '#content' ).val();
 			
 			if ( previous_content ) {
-				var options = {
+				var ajax_options = {
 					type : 'POST',
 					data : {
 						'author_id'    : author_id,
@@ -79,7 +79,7 @@
 					}
 				};
 				
-				wp.media.ajax( 'media_credit_filter_content', options );
+				wp.media.ajax( 'media_credit_filter_content', ajax_options );
 			}
 			
 			return result;
