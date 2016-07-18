@@ -1,5 +1,6 @@
 jQuery( document ).ready( function( $ ) {
 
+	/*jshint unused: vars */
 	$( 'input[name^=\'media-credit\']' ).keyup( function( event ) {
 
 		var author = $( 'span#preview a' ).clone().wrap( '<p>' ).parent().html();

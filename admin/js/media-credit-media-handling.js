@@ -1,6 +1,9 @@
 /*
  ** Properly handle editing credits in the media modal.
  */
+
+/* globals tinymce: false */
+
 ( function( $ ) {
 	/**
 	 * MediaCreditAttachmentModel
@@ -19,10 +22,10 @@
 		 * @returns {Promise}
 		 */
 		saveCompat: function( data, options ) {
-			var authorId, freeform, imageId, url, nonce, result, ajaxOptions, previousContent, rx, res;
+			var authorId, freeform, imageId, url, result, ajaxOptions, previousContent, rx, res;
 
 			// Save fields.
-			result = this.constructor.__super__.saveCompat.apply( this, [ data, options ] );
+			result = this.constructor.__super__.saveCompat.apply( this, [ data, options ] );
 
 			// Retrieve variables.
 			_.each( data, function( value, key ) {
@@ -47,7 +50,7 @@
 			} );
 
 			// Update content.
-			previousContent = jQuery( '#content' ).val();
+			previousContent = $( '#content' ).val();
 
 			if ( previousContent ) {
 				ajaxOptions = {
@@ -68,7 +71,7 @@
 						}
 
 						editor = tinymce.get( 'content' );
-						if ( editor && editor instanceof tinymce.Editor && jQuery( '#wp-content-wrap' ).hasClass( 'tmce-active' ) ) {
+						if ( editor && editor instanceof tinymce.Editor && $( '#wp-content-wrap' ).hasClass( 'tmce-active' ) ) {
 							editor.setContent( newContent );
 							editor.save( { no_events: true } );
 						} else {
