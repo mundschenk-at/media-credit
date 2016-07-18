@@ -59,7 +59,8 @@ module.exports = function(grunt) {
 	            },
 	        }
 	    },
-        jshint: {
+
+	    jshint: {
             files: [
                 'admin/js/*.js',
                 'public/js/**/*.js'
@@ -72,6 +73,15 @@ module.exports = function(grunt) {
                     module: true,
                     document: true
                 }
+            }
+        },
+        
+        jscs: {
+            src: [
+                'admin/js/*.js',
+                'public/js/**/*.js'
+            ],
+            options: {
             }
         },
         
