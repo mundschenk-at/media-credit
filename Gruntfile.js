@@ -50,10 +50,10 @@ module.exports = function(grunt) {
 			}
 		},
 	    wp_deploy: {
-	        deploy: { 
+	        deploy: {
 	            options: {
 	                plugin_slug: 'media-credit',
-//	                svn_user: 'your-wp-repo-username',  
+//	                svn_user: 'your-wp-repo-username',
 	                build_dir: 'build', //relative path to your build directory
 	                assets_dir: 'wp-assets' //relative path to your assets directory (optional).
 	            },
@@ -62,7 +62,7 @@ module.exports = function(grunt) {
 
 	    jshint: {
             files: [
-                'admin/js/*.js',
+                'admin/js/**/*.js',
                 'public/js/**/*.js'
             ],
             options: {
@@ -75,7 +75,7 @@ module.exports = function(grunt) {
                 }
             }
         },
-        
+
         jscs: {
             src: [
                 'admin/js/**/*.js',
@@ -84,7 +84,7 @@ module.exports = function(grunt) {
             options: {
             }
         },
-        
+
 	    phpcs: {
 	        plugin: {
 	            src: ['includes/**/*.php', 'admin/**/*.php', 'public/**/*.php']
@@ -94,7 +94,7 @@ module.exports = function(grunt) {
 	            standard: './codesniffer.ruleset.xml'
 	        }
 	    },
-        
+
         sass: {
             dist: {
                 options: {
