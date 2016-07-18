@@ -677,11 +677,11 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$preview = _nx( 'Image courtesy of %2$s%1$s', 'Images courtesy of %2$s and %1$s', 2,
 			'%1$s is always the position of the last credit, %2$s of the concatenated other credits (empty in singular)', 'media-credit' );
 		$preview = sprintf( $preview, _x( 'John Smith', 'Example name for preview', 'media-credit' ),
-			"<span id='preview'><a href='" . get_author_posts_url( $curr_user->ID ) . "'>{$curr_user->display_name}</a>{$args['options']['separator']}{$args['options']['organization']}</span>"
-			. _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' )
-			. _x( 'Jane Doe', 'Example name for preview', 'media-credit' ) );
+			"<span id='preview'><a href='" . esc_url_raw( get_author_posts_url( $curr_user->ID ) ) . "'>{$curr_user->display_name}</a>{$args['options']['separator']}{$args['options']['organization']}</span>"
+			. esc_html_x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' )
+			. esc_html_x( 'Jane Doe', 'Example name for preview', 'media-credit' ) );
 
-		?><br /><em><?php esc_html_e( 'Preview', 'media-credit' ) ?></em>: <?php echo esc_html( $preview );
+		?><br /><em><?php esc_html_e( 'Preview', 'media-credit' ) ?></em>: <?php echo $preview; // XSS ok.
 		?><br /><strong><?php esc_html_e( 'Warning', 'media-credit' ) ?></strong>: <?php esc_html_e( 'This will cause credit for all images in all posts to display at the bottom of every post on this blog', 'media-credit' );
 	}
 
@@ -691,7 +691,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @param array $args The argument array.
 	 */
 	public function print_no_default_credit_field( $args ) {
-		?><input type='checkbox' id='media-credit[no_default_credit]' name='media-credit[no_default_credit]' value='1' " . checked( 1, ! empty( $args['options']['no_default_credit'] ), true ) ?> /><?php
+		?><input type='checkbox' id='media-credit[no_default_credit]' name='media-credit[no_default_credit]' value='1' <?php checked( 1, ! empty( $args['options']['no_default_credit'] ), true ) ?> /><?php
 		?><label for='media-credit[no_default_credit]' style='margin-left:5px'><?php esc_html_e( 'Do not display the attachment author as default credit if it has not been set explicitly (= freeform credits only).', 'media-credit' ) ?></label><?php
 	}
 
