@@ -5,10 +5,10 @@
  *
  */
 
-(function ( $ ) {
+( function ( $ ) {
     "use strict";
 
-    $(function () {
+    $( function() {
 
 		window.wp.editor.removep = window.switchEditors._wp_Nop = function( html ) {
 			var blocklist = 'blockquote|ul|ol|li|dl|dt|dd|table|thead|tbody|tfoot|tr|th|td|h[1-6]|fieldset',
@@ -124,5 +124,5 @@
 
 			return html;
 		};
-    });
-}(jQuery));
+    } );
+}( jQuery ) );
