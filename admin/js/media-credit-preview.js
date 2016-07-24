@@ -1,5 +1,5 @@
 jQuery( document ).ready( function( $ ) {
-	/*jshint unused: vars */
+	/* jshint unused: vars */ /* globals mediaCreditPreviewData */
 
 	function renderCreditExample() {
 		var author       = $( '#media-credit-preview a' ).clone().wrap( '<p>' ).parent().html();
