@@ -49,15 +49,32 @@ module.exports = function(grunt) {
 				],
 			}
 		},
+
 	    wp_deploy: {
-	        deploy: {
-	            options: {
-	                plugin_slug: 'media-credit',
-//	                svn_user: 'your-wp-repo-username',
-	                build_dir: 'build', //relative path to your build directory
-	                assets_dir: 'wp-assets' //relative path to your assets directory (optional).
-	            },
-	        }
+            options: {
+                plugin_slug: 'media-credit',
+                // svn_user: 'your-wp-repo-username',
+                build_dir: 'build', //relative path to your build directory
+                assets_dir: 'wp-assets', //relative path to your assets directory (optional).
+                max_buffer: 1024 * 1024
+            },
+            release: {
+            	// nothing
+	        },
+	        trunk: {
+	        	options: {
+	            	deploy_trunk: true,
+	            	deploy_assets: true,
+	            	deploy_release: false,
+	        	}
+            },
+            assets: {
+            	options: {
+            		deploy_assets: true,
+            		deploy_trunk: false,
+            		deploy_release: false,
+            	}
+            }
 	    },
 
 	    jshint: {
@@ -173,12 +190,25 @@ module.exports = function(grunt) {
 		'uglify:dist'
   	]);
 
-  	grunt.registerTask('deploy' ,[
-  		'wp_readme_to_markdown',
+  	grunt.registerTask('deploy', [
+ 	    'phpunit:default',
+ 	    'phpcs',
+ 	    'jscs',
+		'build',
+  		'wp_deploy:release'
+  	]);
+  	grunt.registerTask('trunk', [
+ 		'wp_readme_to_markdown',
+ 	    //'phpunit:default',
+    	'phpcs',
+ 	    'jscs',
+    	'build',
+  		'wp_deploy:trunk'
+  	]);
+  	grunt.registerTask('assets', [
 		'clean:build',
   		'copy',
-		'sass:dist',
-		'uglify:dist',
-  		'wp_deploy'
-  	]);
+  		'wp_deploy:assets'
+	]);
+
 };

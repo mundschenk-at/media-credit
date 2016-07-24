@@ -1,5 +1,5 @@
 # Media Credit #
-**Contributors:** [pputzer](https://profiles.wordpress.org/pputzer), [sbressler](https://profiles.wordpress.org/sbressler)  
+**Contributors:** [pputzer](https://profiles.wordpress.org/pputzer)  
 **Tags:** media, image, images, credit, byline, author, user  
 **Requires at least:** 4.5  
 **Tested up to:** 4.6  
