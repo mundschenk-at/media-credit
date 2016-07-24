@@ -182,8 +182,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 
 			// Exclude attachments from before the install date of the Media Credit plugin.
 			$options = get_option( self::OPTION );
-			$start_date = $options['install_date'];
-			if ( $start_date ) {
+			if ( isset( $options['install_date'] ) && $start_date = $options['install_date'] ) {
 				$date_query = ' AND post_date >= %s';
 				$query_vars[] = $start_date; // second parameter.
 			}
