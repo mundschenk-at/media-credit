@@ -2,7 +2,7 @@
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: Media Credit 3.0.3\n"
+"Project-Id-Version: Media Credit 3.1.0-alpha\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/media-credit\n"
 "POT-Creation-Date: 2016-03-06 10:04:42+00:00\n"
 "MIME-Version: 1.0\n"
@@ -17,81 +17,92 @@ msgstr ""
 msgid "Media Credit"
 msgstr ""
 
-#: admin/class-media-credit-admin.php:356
-#: admin/class-media-credit-admin.php:693
+#: admin/class-media-credit-admin.php:373
 msgid "Preview"
 msgstr ""
 
-#: admin/class-media-credit-admin.php:358
+#: admin/class-media-credit-admin.php:377
+msgid "This is what media credits will look like with your current settings."
+msgstr ""
+
+#: admin/class-media-credit-admin.php:383
 msgid "Separator"
 msgstr ""
 
-#: admin/class-media-credit-admin.php:360
+#: admin/class-media-credit-admin.php:387
+msgid ""
+"Text used to separate author names from organization when crediting media "
+"to users of this blog."
+msgstr ""
+
+#: admin/class-media-credit-admin.php:392
 msgid "Organization"
 msgstr ""
 
-#: admin/class-media-credit-admin.php:362
-msgid "Display credit after posts"
+#: admin/class-media-credit-admin.php:396
+msgid "Organization used when crediting media to users of this blog."
 msgstr ""
 
-#: admin/class-media-credit-admin.php:364
-msgid "Do not display default credit"
+#: admin/class-media-credit-admin.php:401
+msgid "Credit position"
 msgstr ""
 
-#: admin/class-media-credit-admin.php:366
-msgid "Display credit for featured images"
+#: admin/class-media-credit-admin.php:406
+msgid "Display credit after posts."
 msgstr ""
 
-#: admin/class-media-credit-admin.php:398
-msgid "Credit:"
-msgstr ""
-
-#: admin/class-media-credit-admin.php:408
-msgid "Credit URL:"
-msgstr ""
-
-#: admin/class-media-credit-admin.php:632
-msgid "Settings"
-msgstr ""
-
-#: admin/class-media-credit-admin.php:643
-msgid "Choose how to display media credit on your blog:"
-msgstr ""
-
-#: admin/class-media-credit-admin.php:651
-msgid ""
-"Text used to separate author names from organization when crediting media "
-"to users of this blog"
-msgstr ""
-
-#: admin/class-media-credit-admin.php:661
-msgid "Organization used when crediting media to users of this blog"
-msgstr ""
-
-#: admin/class-media-credit-admin.php:681
+#: admin/class-media-credit-admin.php:410
 msgid ""
 "Display media credit for all the images attached to a post after the post "
-"content. Style with CSS class 'media-credit-end'"
+"content. Style with CSS class 'media-credit-end'."
 msgstr ""
 
-#: admin/class-media-credit-admin.php:694
+#: admin/class-media-credit-admin.php:411
 msgid "Warning"
 msgstr ""
 
-#: admin/class-media-credit-admin.php:694
+#: admin/class-media-credit-admin.php:411
 msgid ""
 "This will cause credit for all images in all posts to display at the bottom "
 "of every post on this blog"
 msgstr ""
 
-#: admin/class-media-credit-admin.php:703
+#: admin/class-media-credit-admin.php:415
+msgid "Display credit for featured images."
+msgstr ""
+
+#: admin/class-media-credit-admin.php:419
+msgid "Try to add media credit to featured images (depends on theme support)."
+msgstr ""
+
+#: admin/class-media-credit-admin.php:426
+msgid "Default credit"
+msgstr ""
+
+#: admin/class-media-credit-admin.php:427
+msgid "Do not display default credit."
+msgstr ""
+
+#: admin/class-media-credit-admin.php:432
 msgid ""
 "Do not display the attachment author as default credit if it has not been "
 "set explicitly (= freeform credits only)."
 msgstr ""
 
-#: admin/class-media-credit-admin.php:714
-msgid "Try to add media credit to featured images (depends on theme support)."
+#: admin/class-media-credit-admin.php:651
+msgid "Credit:"
+msgstr ""
+
+#: admin/class-media-credit-admin.php:661
+msgid "Credit URL:"
+msgstr ""
+
+#: admin/class-media-credit-admin.php:852
+msgid "Settings"
+msgstr ""
+
+#: admin/class-media-credit-admin.php:865
+msgid "Choose how to display media credit on your blog:"
 msgstr ""
 
 #: admin/partials/media-credit-image-properties-tmpl.php:17
@@ -102,7 +113,7 @@ msgstr ""
 msgid "Credit URL"
 msgstr ""
 
-#: includes/class-media-credit-template-tags.php:216
+#: includes/class-media-credit-template-tags.php:235
 msgid "Recent Media"
 msgstr ""
 
@@ -124,28 +135,39 @@ msgstr ""
 msgid "https://mundschenk.at/"
 msgstr ""
 
-#: admin/class-media-credit-admin.php:686
-#: public/class-media-credit-public.php:283
+#: admin/class-media-credit-admin.php:105
+#: admin/class-media-credit-admin.php:600
 msgctxt ""
 "%1$s is always the position of the last credit, %2$s of the concatenated "
-"other credits"
-msgid "Image courtesy of %1$s"
+"other credits (empty in singular)"
+msgid "Image courtesy of %2$s%1$s"
 msgid_plural "Images courtesy of %2$s and %1$s"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/class-media-credit-admin.php:688
+#: admin/class-media-credit-admin.php:107
+msgctxt "Male example name for preview"
+msgid "John Smith"
+msgstr ""
+
+#: admin/class-media-credit-admin.php:108
+msgctxt "Female example name for preview"
+msgid "Jane Doe"
+msgstr ""
+
+#: admin/class-media-credit-admin.php:109
+#: admin/class-media-credit-admin.php:605
+#: public/class-media-credit-public.php:290
+msgctxt "String used to join multiple image credits for \"Display credit after post\""
+msgid ", "
+msgstr ""
+
+#: admin/class-media-credit-admin.php:603
 msgctxt "Example name for preview"
 msgid "John Smith"
 msgstr ""
 
-#: admin/class-media-credit-admin.php:691
+#: admin/class-media-credit-admin.php:606
 msgctxt "Example name for preview"
 msgid "Jane Doe"
-msgstr ""
-
-#: admin/class-media-credit-admin.php:690
-#: public/class-media-credit-public.php:287
-msgctxt "String used to join multiple image credits for \"Display credit after post\""
-msgid ", "
 msgstr ""
