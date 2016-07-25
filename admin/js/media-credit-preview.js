@@ -1,6 +1,9 @@
 jQuery( document ).ready( function( $ ) {
 	/* jshint unused: vars */ /* globals mediaCreditPreviewData */
 
+	/**
+	 * Render HTML for standard media credit preview.
+	 */
 	function renderCreditExample() {
 		var author       = $( '#media-credit-preview a' ).clone().wrap( '<p>' ).parent().html();
 		var separator    = $( 'input[name=\'media-credit[separator]\']' ).val();
@@ -9,6 +12,9 @@ jQuery( document ).ready( function( $ ) {
 		$( '#media-credit-preview' ).html( author + separator + organization );
 	}
 
+	/**
+	 * Render HTML for the combined credits at the end a post.
+	 */
 	function renderCreditAtEndExample() {
 	    var author         = $( '#media-credit-preview a' ).clone().wrap( '<p>' ).parent().html();
 	    var separator      = $( 'input[name=\'media-credit[separator]\']' ).val();
