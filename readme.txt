@@ -91,6 +91,13 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
+= 3.1.0 (unreleased) =
+* Several security & as well as a general code clean-up have been applied due to automatic enforcement of WordPress coding standards.
+* Settings have been updated & streamlined.
+* Updated TinyMCE components.
+* Caching for backend queries added.
+* 
+
 = 3.0.3 (Jul. 13, 2016) =
 * Updating credits via the Visual Editor works again. Props siricar, timausk, jellylegs.
 * Consolidated UI in "Edit Image" dialog.
