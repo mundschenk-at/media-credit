@@ -131,23 +131,23 @@ class Media_Credit implements Media_Credit_Base {
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
-
 		$plugin_admin = new Media_Credit_Admin( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		$this->loader->add_action( 'wp_enqueue_editor',     $plugin_admin, 'enqueue_editor', 10, 1 );
 		$this->loader->add_action( 'print_media_templates', $plugin_admin, 'image_properties_template' );
+		$this->loader->add_action( 'print_media_templates', $plugin_admin, 'attachment_details_template' );
 		$this->loader->add_action( 'admin_menu',            $plugin_admin, 'display_settings' );
 		$this->loader->add_action( 'admin_init',            $plugin_admin, 'admin_init' );
-		$this->loader->add_action( 'wp_ajax_media_credit_author_names',   $plugin_admin, 'ajax_author_names' );
-		$this->loader->add_action( 'wp_ajax_media_credit_filter_content', $plugin_admin, 'ajax_filter_content' );
-		$this->loader->add_action( 'customize_controls_enqueue_scripts',  $plugin_admin, 'enqueue_media_credit_scripts' );
+		$this->loader->add_action( 'wp_ajax_media_credit_author_names',    $plugin_admin, 'ajax_author_names' );
+		$this->loader->add_action( 'wp_ajax_update-media-credit-in-post-content',  $plugin_admin, 'ajax_filter_content' );
+		$this->loader->add_action( 'wp_ajax_save-attachment-media-credit', $plugin_admin, 'ajax_save_attachment_media_credit' );
+		$this->loader->add_action( 'customize_controls_enqueue_scripts',   $plugin_admin, 'enqueue_media_credit_scripts' );
 
-		$this->loader->add_filter( 'attachment_fields_to_edit', $plugin_admin, 'add_media_credit_fields',  10, 2 );
-		$this->loader->add_filter( 'attachment_fields_to_save', $plugin_admin, 'save_media_credit_fields', 10, 2 );
-		$this->loader->add_filter( 'image_send_to_editor',      $plugin_admin, 'image_send_to_editor',     10, 8 );
-		$this->loader->add_filter( 'plugin_action_links_' . $this->plugin_basename, $plugin_admin, 'add_action_links', 10, 1 );
+		$this->loader->add_filter( 'wp_prepare_attachment_for_js',                  $plugin_admin, 'prepare_attachment_media_credit_for_js', 10, 3 );
+		$this->loader->add_filter( 'image_send_to_editor',                          $plugin_admin, 'image_send_to_editor',                   10, 8 );
+		$this->loader->add_filter( 'plugin_action_links_' . $this->plugin_basename, $plugin_admin, 'add_action_links',                       10, 1 );
 	}
 
 	/**
