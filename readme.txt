@@ -92,10 +92,11 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 == Changelog ==
 
 = 3.1.0 (unreleased) =
-* Several security & as well as a general code clean-up have been applied due to automatic enforcement of WordPress coding standards.
+* Switched to the new Media API based on Backbone.js introduced in WordPress 3.5 for a snappier and more consistent user experience.  
+* Several security fixes and a general code clean-up have been applied due to automatic enforcement of WordPress coding standards.
 * Settings have been updated & streamlined.
+* Added caching for backend queries.
 * Updated TinyMCE components.
-* Caching for backend queries added.
 * 
 
 = 3.0.3 (Jul. 13, 2016) =
