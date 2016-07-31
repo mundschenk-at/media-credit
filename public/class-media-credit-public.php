@@ -282,7 +282,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 			'Image courtesy of %2$s%1$s', // %2$s will be empty
 			'Images courtesy of %2$s and %1$s',
 			count( $credit_unique ),
-			'%1$s is always the position of the last credit, %2$s of the concatenated other credits. The latter will be empty in the singular case.',
+			'%1$s is always the position of the last credit, %2$s of the concatenated other credits (empty in singular)',
 			'media-credit'
 		);
 
