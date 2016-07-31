@@ -251,80 +251,6 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	}
 
 	/**
-	 * AJAX hook for autocompleting author names.
-	 *
-	 * Use `action=media_credit_author_names` and `term=<your search>` in the AJAX call.
-	 */
-	public function ajax_author_names() {
-		check_ajax_referer( 'media_credit_author_names', 'nonce', true );
-
-		if ( ! empty( $_POST['term'] ) ) {                        // Input var okay.
-			$term = sanitize_key( wp_unslash( $_POST['term'] ) ); // Input var okay.
-		} else {
-			wp_send_json_error( '0' ); // Standard response for failure.
-		}
-
-		if ( ! empty( $_POST['limit'] ) ) {                   // Input var okay.
-			$limit = absint( wp_unslash( $_POST['limit'] ) ); // Input var okay.
-		} else {
-			$limit = 10;
-		}
-
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( '-1' ); // Standard response for permissions.
-		}
-
-		$results = array();
-		foreach ( $this->get_editable_authors_by_name( $term,  $limit ) as $author ) {
-			$results[] = (object) array(
-				'id'    => $author->id,
-				'label' => $author->display_name,
-				'value' => $author->display_name,
-			);
-		}
-
-		wp_send_json_success( $results );
-	}
-
-	/**
-	 * Returns the users from the current blog that are valid post authors and that contain $name within their
-	 * display name.
-	 *
-	 * @param string $name    The name we are looking for.
-	 * @param number $limit   Limit of results to fetch.
-	 * @return An array of users.
-	 */
-	private function get_editable_authors_by_name( $name, $limit ) {
-		global $wpdb;
-
-		$cache_key = "authors_by_name_{$name}_for_limit_{$limit}";
-
-		if ( ! $authors = wp_cache_get( $cache_key, 'media_credit' ) ) {
-			// Allow display_name search in WP_User_Query.
-			add_filter( 'user_search_columns', array( $this, 'add_display_name_to_search_columns' ), 10, 3 );
-
-			// Get possible author names.
-			$authors = get_users( array(
-				'who'                => 'authors',
-				'fields'             => array( 'id', 'display_name' ),
-				'search'		     => "*{$name}*",
-				'search_columns'     => array( 'display_name' ),
-				'number'             => $limit,
-				'media_credit_query' => 'authors_by_name', // Marker for our user_search_columns filter.
-			) );
-
-			// Reset filters to status quo ante.
-			remove_filter( 'user_search_columns', array( $this, 'add_display_name_to_search_columns' ), 10 );
-
-			// Cache result.
-			wp_cache_set( $cache_key, $authors, 'media_credit', MINUTE_IN_SECONDS );
-		}
-
-		// TODO: filter doc.
-		return apply_filters( 'get_editable_authors_by_name', $authors, $name );
-	}
-
-	/**
 	 * Change search_columns to 'display_name' for 'authors_by_name' query.
 	 *
 	 * @param array         $search_columns An array of column names.
@@ -732,7 +658,6 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$response['mediaCreditLink']                  = $url;
 		$response['mediaCreditAuthorID']              = $author_id;
 		$response['mediaCreditAuthorDisplay']         = $author_id ? $credit : '';
-		$response['nonces']['mediaCredit']['names']  = wp_create_nonce( 'media_credit_author_names' );
 		$response['nonces']['mediaCredit']['update']  = wp_create_nonce( "save-attachment-{$response['id']}-media-credit" );
 		$response['nonces']['mediaCredit']['content'] = wp_create_nonce( "update-attachment-{$response['id']}-media-credit-in-editor" );
 
