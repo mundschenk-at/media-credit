@@ -114,8 +114,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 		// Autocomplete when editing media.
 		if ( $this->is_media_edit_page() ) {
-			wp_enqueue_script( 'media-credit-autocomplete',   $this->ressource_url . 'js/media-credit-autocomplete.js',   array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
-			wp_enqueue_script( 'media-credit-media-handling', $this->ressource_url . 'js/media-credit-media-handling.js', array( 'jquery' ),                           $this->version, true );
+			wp_enqueue_script( 'media-credit-attachment-details', $this->ressource_url . 'js/media-credit-attachment-details.js', array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
 		}
 	}
 
@@ -125,6 +124,14 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	public function image_properties_template() {
 		include( dirname( __FILE__ ) . '/partials/media-credit-image-properties-tmpl.php' );
 	}
+
+	/**
+	 * Template for setting Media Credit in attachment details.
+	 */
+	public function attachment_details_template() {
+		include( dirname( __FILE__ ) . '/partials/media-credit-attachment-details-tmpl.php' );
+	}
+
 
 	/**
 	 * Removes the default wpeditimage plugin.
@@ -244,85 +251,6 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	}
 
 	/**
-	 * AJAX hook for autocompleting author names.
-	 *
-	 * Use `action=media_credit_author_names` and `term=<your search>` in the AJAX call.
-	 */
-	public function ajax_author_names() {
-		check_ajax_referer( 'media_credit_author_names', 'nonce', true );
-
-		if ( ! empty( $_POST['term'] ) ) {                        // Input var okay.
-			$term = sanitize_key( wp_unslash( $_POST['term'] ) ); // Input var okay.
-		} else {
-			wp_send_json_error( '0' ); // Standard response for failure.
-		}
-
-		if ( ! empty( $_POST['limit'] ) ) {                   // Input var okay.
-			$limit = absint( wp_unslash( $_POST['limit'] ) ); // Input var okay.
-		} else {
-			$limit = 10;
-		}
-
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( '-1' ); // Standard response for permissions.
-		}
-
-		$authors = $this->get_editable_authors_by_name( $term,  $limit );
-		if ( empty( $authors ) ) {
-			wp_send_json_error( '0' ); // Standard response for failure.
-		}
-
-		$results = array();
-		foreach ( $authors as $author ) {
-			$results[] = (object) array(
-				'id'    => $author->id,
-				'label' => $author->display_name,
-				'value' => $author->display_name,
-			);
-		}
-
-		wp_send_json_success( $results );
-	}
-
-	/**
-	 * Returns the users from the current blog that are valid post authors and that contain $name within their
-	 * display name.
-	 *
-	 * @param string $name    The name we are looking for.
-	 * @param number $limit   Limit of results to fetch.
-	 * @return An array of users.
-	 */
-	private function get_editable_authors_by_name( $name, $limit ) {
-		global $wpdb;
-
-		$cache_key = "authors_by_name_{$name}_for_limit_{$limit}";
-
-		if ( ! $authors = wp_cache_get( $cache_key, 'media_credit' ) ) {
-			// Allow display_name search in WP_User_Query.
-			add_filter( 'user_search_columns', array( $this, 'add_display_name_to_search_columns' ), 10, 3 );
-
-			// Get possible author names.
-			$authors = get_users( array(
-				'who'                => 'authors',
-				'fields'             => array( 'id', 'display_name' ),
-				'search'		     => "*{$name}*",
-				'search_columns'     => array( 'display_name' ),
-				'number'             => $limit,
-				'media_credit_query' => 'authors_by_name', // Marker for our user_search_columns filter.
-			) );
-
-			// Reset filters to status quo ante.
-			remove_filter( 'user_search_columns', array( $this, 'add_display_name_to_search_columns' ), 10 );
-
-			// Cache result.
-			wp_cache_set( $cache_key, $authors, 'media_credit', MINUTE_IN_SECONDS );
-		}
-
-		// TODO: filter doc.
-		return apply_filters( 'get_editable_authors_by_name', $authors, $name );
-	}
-
-	/**
 	 * Change search_columns to 'display_name' for 'authors_by_name' query.
 	 *
 	 * @param array         $search_columns An array of column names.
@@ -342,20 +270,24 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * AJAX hook for filtering post content after editing media files
 	 */
 	public function ajax_filter_content() {
-		if ( ! isset( $_REQUEST['image_id'] ) || ! $image_id = absint( $_REQUEST['image_id'] ) ) { // Input var okay.
+		if ( ! isset( $_REQUEST['id'] ) || ! $attachment_id = absint( $_REQUEST['id'] ) ) { // Input var okay.
 			wp_send_json_error();
 		}
 
-		check_ajax_referer( 'update-post_' . $image_id, 'nonce', true );
+		check_ajax_referer( "update-attachment-{$attachment_id}-media-credit-in-editor", 'nonce' );
 
-		if ( ! isset( $_REQUEST['post_content'] ) || ! ( $old_content = filter_var( wp_unslash( $_REQUEST['post_content'] ) ) )      || // Input var okay. Only uses for comparison.
-			 ! isset( $_REQUEST['author_id'] )    || ! ( $author_id   = absint( $_REQUEST['author_id'] ) )                           || // Input var okay.
-			 ! isset( $_REQUEST['freeform'] )     || ! ( $freeform    = sanitize_text_field( wp_unslash( $_REQUEST['freeform'] ) ) ) || // Input var okay.
-			 ! isset( $_REQUEST['url'] )          || ! ( $url         = esc_url_raw( wp_unslash( $_REQUEST['url'] ) ) ) ) {             // Input var okay.
+		if ( ! isset( $_REQUEST['mediaCredit'] ) ) {
 			wp_send_json_error();
 		}
 
-		wp_send_json_success( $this->filter_post_content( $old_content, $image_id, $author_id, $freeform, $url ) );
+		if ( ! isset( $_REQUEST['mediaCredit']['content'] ) || ! ( $content   = filter_var( wp_unslash( $_REQUEST['mediaCredit']['content'] ) ) )       || // Input var okay. Only uses for comparison.
+			 ! isset( $_REQUEST['mediaCredit']['id'] )      || ! ( $author_id = absint( $_REQUEST['mediaCredit']['id'] ) )                              || // Input var okay.
+			 ! isset( $_REQUEST['mediaCredit']['text'] )    || ! ( $freeform  = sanitize_text_field( wp_unslash( $_REQUEST['mediaCredit']['text'] ) ) ) || // Input var okay.
+			 ! isset( $_REQUEST['mediaCredit']['link'] )    || ! ( $url       = esc_url_raw( wp_unslash( $_REQUEST['mediaCredit']['link'] ) ) ) ) {        // Input var okay.
+			wp_send_json_error();
+		}
+
+		wp_send_json_success( $this->filter_post_content( $content, $attachment_id, $author_id, $freeform, $url ) );
 	}
 
 	/**
@@ -629,7 +561,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			// because in some cases such as /wp-admin/press-this.php the media
 			// library isn't enqueued and shouldn't be. The script includes
 			// safeguards to avoid errors in this situation.
-			wp_enqueue_script( 'media-credit-image-properties', $this->ressource_url . 'js/tinymce4/media-credit-image-properties.js', array( 'jquery' ), $this->version, true );
+			wp_enqueue_script( 'media-credit-image-properties', $this->ressource_url . 'js/tinymce4/media-credit-image-properties.js', array( 'jquery', 'media-credit-attachment-details' ), $this->version, true );
 			wp_enqueue_script( 'media-credit-tinymce-switch',   $this->ressource_url . 'js/tinymce4/media-credit-tinymce-switch.js',   array( 'jquery' ), $this->version, true );
 
 			// Edit in style.
@@ -638,90 +570,113 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	}
 
 	/**
-	 * Add custom media credit fields to Edit Media screens.
-	 *
-	 * @param array       $fields The custom fields.
-	 * @param int|WP_Post $post   Post object or ID.
-	 * @return array              The list of fields.
+	 * Handle saving requests from the Attachment Details dialogs.
 	 */
-	public function add_media_credit_fields( $fields, $post ) {
-		$credit = Media_Credit_Template_Tags::get_media_credit( $post );
-		$html = "<input id='attachments[$post->ID][media-credit]' class='media-credit-input' size='30' value='$credit' name='attachments[$post->ID][media-credit]'  />";
-		$fields['media-credit'] = array(
-			'label'         => __( 'Credit:', 'media-credit' ),
-			'input'         => 'html',
-			'html'          => $html,
-			'show_in_edit'  => true,
-			'show_in_modal' => true,
-		);
+	function ajax_save_attachment_media_credit() {
+		if ( ! isset( $_REQUEST['id'] ) || ! $attachment_id = absint( $_REQUEST['id'] ) ) { // Input var okay.
+			wp_send_json_error(); // Standard response for failure.
+		}
 
-		$url = Media_Credit_Template_Tags::get_media_credit_url( $post );
-		$html = "<input id='attachments[$post->ID][media-credit-url]' class='media-credit-input' type='url' size='30' value='$url' name='attachments[$post->ID][media-credit-url]' />";
-		$fields['media-credit-url'] = array(
-			'label'         => __( 'Credit URL:', 'media-credit' ),
-			'input'         => 'html',
-			'html'          => $html, // @todo: Find another way?
-			'show_in_edit'  => true,
-			'show_in_modal' => true,
-		);
+		check_ajax_referer( "save-attachment-{$attachment_id}-media-credit", 'nonce' );
 
-		$author = '' === Media_Credit_Template_Tags::get_freeform_media_credit( $post ) ? $post->post_author : '';
-		$author_display = Media_Credit_Template_Tags::get_media_credit( $post );
-		$author_for_script = '' === $author ? -1 : $author;
-		$nonce = wp_create_nonce( 'media_credit_author_names' );
-		$html_hidden = "<input name='attachments[$post->ID][media-credit-hidden]' id='attachments[$post->ID][media-credit-hidden]' type='hidden' value='$author' class='media-credit-hidden' data-author='$author_for_script' data-post-id='$post->ID' data-author-display='$author_display' data-nonce='$nonce' />";
-		$fields['media-credit-hidden'] = array(
-			'label'         => '', // necessary for HTML type fields.
-			'input'         => 'html',
-			'html'          => $html_hidden,
-			'show_in_edit'  => true,
-			'show_in_modal' => true,
-		);
+		if ( ! isset( $_REQUEST['changes'] ) || ! $changes = wp_unslash( $_REQUEST['changes'] ) ) { // Input var okay. WPCS: sanitization ok.
+			wp_send_json_error(); // Standard response for failure.
+		}
 
-		return $fields;
+		if ( ! isset( $_REQUEST['mediaCredit'] ) || ! $media_credit = wp_unslash( $_REQUEST['mediaCredit'] ) ) { // Input var okay. WPCS: sanitization ok.
+			wp_send_json_error(); // Standard response for failure.
+		}
+
+		if ( isset( $changes['mediaCreditText'] ) ) {
+			$freeform = wp_kses( $changes['mediaCreditText'], array( 'a' => array( 'href', 'rel' ) ) );
+		} elseif ( isset( $media_credit ) ) {
+			$freeform = wp_kses( $media_credit['text'], array( 'a' => array( 'href', 'rel' ) ) );
+		} else {
+			wp_send_json_error( 'freeform credit not found' );
+		}
+
+		if ( isset( $changes['mediaCreditLink'] ) ) {
+			$url = sanitize_text_field( $changes['mediaCreditLink'] );
+		} elseif ( isset( $media_credit ) ) {
+			$url = sanitize_text_field( $media_credit['link'] );
+		} else {
+			wp_send_json_error( 'link not found' );
+		}
+
+		if ( isset( $changes['mediaCreditAuthorID'] ) ) {
+			$wp_user_id = intval( $changes['mediaCreditAuthorID'] );
+		} elseif ( isset( $media_credit ) ) {
+			$wp_user_id = intval( $media_credit['id'] );
+		} else {
+			wp_send_json_error( 'author_id not found' );
+		}
+
+		if ( isset( $changes['mediaCreditLink'] ) ) {
+	 		// We need to update the credit URL.
+			update_post_meta( $attachment_id, self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
+		}
+
+		if ( isset( $changes['mediaCreditText'] ) || isset( $changes['mediaCreditAuthorID'] ) ) {
+			if ( ! empty( $wp_user_id ) && get_the_author_meta( 'display_name', $wp_user_id ) === $freeform ) {
+				// A valid WP user was selected, and the display name matches the free-form
+				// the final conditional is necessary for the case when a valid user is selected, filling in the hidden
+				// field, then free-form text is entered after that. if so, the free-form text is what should be used.
+				if ( ! wp_update_post( array( 'ID' => $attachment_id, 'post_author' => $wp_user_id ) ) ) { // update post_author with the chosen user.
+					wp_send_json_error( 'Failed to update post author' );
+				}
+
+				delete_post_meta( $attachment_id, self::POSTMETA_KEY ); // delete any residual metadata from a free-form field (as inserted below).
+				$this->update_media_credit_in_post( $attachment_id, true, '', $url );
+			} elseif ( isset( $freeform ) ) {
+				// Free-form text was entered, insert postmeta with credit.
+				// if free-form text is blank, insert a single space in postmeta.
+				$freeform = empty( $freeform ) ? self::EMPTY_META_STRING : $freeform;
+				update_post_meta( $attachment_id, self::POSTMETA_KEY, $freeform ); // insert '_media_credit' metadata field for image with free-form text.
+				$this->update_media_credit_in_post( $attachment_id, false, $freeform, $url );
+			}
+		}
+
+		wp_send_json_success();
 	}
 
 	/**
-	 * Change the post_author to the entered media credit from add_media_credit() above.
+	 * Add media credit information to wp.media.model.Attachment.
 	 *
-	 * @param object $post Object of attachment containing all fields from get_post().
-	 * @param object $attachment Object of attachment containing few fields, unused in this method.
+	 * @param array      $response   Array of prepared attachment data.
+	 * @param int|object $attachment Attachment ID or object.
+	 * @param array      $meta       Array of attachment meta data.
+	 *
+	 * @return array Array of prepared attachment data.
 	 */
-	function save_media_credit_fields( $post, $attachment ) {
-		$wp_user_id    = $attachment['media-credit-hidden'];
-		$freeform_name = $attachment['media-credit'];
-		$url           = $attachment['media-credit-url'];
+	function prepare_attachment_media_credit_for_js( $response, $attachment, $meta ) {
 
-		// We need to update the credit URL in any case.
-		update_post_meta( $post['ID'], self::URL_POSTMETA_KEY, $url ); // unsert '_media_credit_url' metadata field.
+		$credit    = Media_Credit_Template_Tags::get_media_credit( $attachment );
+		$url       = Media_Credit_Template_Tags::get_media_credit_url( $attachment );
+		$author_id = '' === Media_Credit_Template_Tags::get_freeform_media_credit( $attachment ) ? $attachment->post_author : '';
 
-		if ( ! empty( $wp_user_id ) && get_the_author_meta( 'display_name', $wp_user_id ) === $freeform_name ) {
-			// A valid WP user was selected, and the display name matches the free-form
-			// the final conditional is necessary for the case when a valid user is selected, filling in the hidden
-			// field, then free-form text is entered after that. if so, the free-form text is what should be used.
-			$post['post_author'] = $wp_user_id; // update post_author with the chosen user.
-			delete_post_meta( $post['ID'], self::POSTMETA_KEY ); // delete any residual metadata from a free-form field (as inserted below).
-			$this->update_media_credit_in_post( $post, true, '', $url );
-		} else {
-			// Free-form text was entered, insert postmeta with credit.
-			// if free-form text is blank, insert a single space in postmeta.
-			$freeform = empty( $freeform_name ) ? self::EMPTY_META_STRING : $freeform_name;
-			update_post_meta( $post['ID'], self::POSTMETA_KEY, $freeform ); // insert '_media_credit' metadata field for image with free-form text.
-			$this->update_media_credit_in_post( $post, false, $freeform, $url );
-		}
+		$response['mediaCreditText']                  = $credit;
+		$response['mediaCreditLink']                  = $url;
+		$response['mediaCreditAuthorID']              = $author_id;
+		$response['mediaCreditAuthorDisplay']         = $author_id ? $credit : '';
+		$response['nonces']['mediaCredit']['update']  = wp_create_nonce( "save-attachment-{$response['id']}-media-credit" );
+		$response['nonces']['mediaCredit']['content'] = wp_create_nonce( "update-attachment-{$response['id']}-media-credit-in-editor" );
 
-		return $post;
+		return $response;
 	}
 
 	/**
 	 * If the given media is attached to a post, edit the media-credit info in the attached (parent) post.
 	 *
-	 * @param object $post     Object of attachment containing all fields from get_post().
-	 * @param bool   $wp_user  True if attachment should be credited to a user of this blog, false otherwise.
-	 * @param string $freeform Credit for attachment with freeform string. Empty if attachment should be credited to a user of this blog, as indicated by $wp_user above.
-	 * @param string $url      Credit URL for linking. Empty means default link for user of this blog, no link for freeform credit.
+	 * @param int|WP_Post $post     Object of attachment containing all fields from get_post().
+	 * @param boolean     $wp_user  True if attachment should be credited to a user of this blog, false otherwise.
+	 * @param string      $freeform Credit for attachment with freeform string. Empty if attachment should be credited to a user of this blog, as indicated by $wp_user above.
+	 * @param string      $url      Credit URL for linking. Empty means default link for user of this blog, no link for freeform credit.
 	 */
 	private function update_media_credit_in_post( $post, $wp_user, $freeform = '', $url = '' ) {
+		if ( is_int( $post ) ) {
+			$post = get_post( $post, ARRAY_A );
+		}
+
 		if ( ! empty( $post['post_parent'] ) ) {
 			$parent = get_post( $post['post_parent'], ARRAY_A );
 			$parent['post_content'] = $this->filter_post_content( $parent['post_content'], $post['ID'], $post['post_author'], $freeform, $url );

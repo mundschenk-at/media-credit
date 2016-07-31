@@ -276,8 +276,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				content: credit,
 				attrs: {
 					'class': 'mceMediaCreditTemp mceNonEditable',
-					'data-media-credit-id': id,
-					'data-media-credit-name': _.escape(name),
+					'data-media-credit-author-id': id,
+					'data-media-credit-text': _.escape(name),
 					'data-media-credit-align': align,
 					'data-media-credit-link' : _.escape(link)
 				}
@@ -400,9 +400,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			w = b.match( /width="([0-9]*)"/ );
 			w = ( w && w[1] ) ? w[1] : '';
 
-			id = parseAttribute( c, 'data-media-credit-id', '[0-9]+', true );
+			id = parseAttribute( c, 'data-media-credit-author-id', '[0-9]+', true );
 			align = parseAttribute( c, 'data-media-credit-align', '[^\'"]*', false );
-			name = _.unescape(parseAttribute( c, 'data-media-credit-name', '[^"]*', false ));
+			name = _.unescape(parseAttribute( c, 'data-media-credit-text', '[^"]*', false ));
 			link = _.unescape(parseAttribute( c, 'data-media-credit-link', '[^"]*', false ));
 
 			if ( ! w || ! (name || id) ) {
@@ -482,8 +482,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			linkTargetBlank: false,
 			linkRel: '',
 			title: '',
-			mediaCreditName: '',
-			mediaCreditID: '',
+			mediaCreditText: '',
+			mediaCreditAuthorID: '',
 			mediaCreditLink: '',
 		};
 
@@ -566,9 +566,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 		if (mediaCreditBlock) {
 			metadata.align = (metadata.align && metadata.align != 'none' ) ? metadata.align : dom.getAttrib(mediaCreditBlock, 'data-media-credit-align', '').replace( 'align', '' );
-			metadata.mediaCreditName =  dom.getAttrib(mediaCreditBlock, 'data-media-credit-name', '');
-			metadata.mediaCreditID =  dom.getAttrib(mediaCreditBlock, 'data-media-credit-id', '');
-			metadata.mediaCreditLink =  dom.getAttrib(mediaCreditBlock, 'data-media-credit-link', '');
+			metadata.mediaCreditText     = dom.getAttrib(mediaCreditBlock, 'data-media-credit-text', '');
+			metadata.mediaCreditAuthorID = dom.getAttrib(mediaCreditBlock, 'data-media-credit-author-id', '');
+			metadata.mediaCreditLink     = dom.getAttrib(mediaCreditBlock, 'data-media-credit-link', '');
 		}
 
 		return metadata;
@@ -749,7 +749,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			}
 		} else {
 			// no caption, so we might need to remove the credit name
-			removeCreditNode = ! imageData.mediaCreditName && ! imageData.mediaCreditID;
+			removeCreditNode = ! imageData.mediaCreditText && ! imageData.mediaCreditAuthorID;
 
 			if ( captionNode ) {
 				// Remove the caption wrapper and place the image in new media-credit wrapper or a new paragraph
