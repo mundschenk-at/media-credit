@@ -1,0 +1,7 @@
+@import "compass/css3/user-interface";
+
+label[data-setting="mediaCreditText"] input[type="text"] {
+ @include input-placeholder {
+    opacity: 0.3;
+  }
+}

@@ -29,8 +29,8 @@
 			}
 		};
 
-		// Target the input element.
-		view.$el.find( input )
+		// Target the input element (& return it after for chaining).
+		return view.$el.find( input )
 
 		// Add autocomplete.
 		.autocomplete( {
@@ -84,15 +84,31 @@
 
 		// Prevent tab while still loading suggestion.
 		.change( function( event ) {
-			var credit = $( this ).val();
+			var $input = $( this ),
+				credit = $input.val(),
+				noDefaultCredit = view.model.get( 'mediaCreditOptions' ).noDefaultCredit;
 
-			if ( credit !== view.model.get( 'mediaCreditAuthorDisplay' ) ) {
+			if ( noDefaultCredit && '' === credit && '' === view.model.get( 'mediaCreditAuthorID' ) ) {
+				view.model.set( {
+					mediaCreditAuthorID:      view.model.get( 'author' ),
+					mediaCreditAuthorDisplay: view.model.get( 'authorName' ),
+					mediaCreditText:          view.model.get( 'authorName' )
+				} );
+
+				if ( saveModel ) {
+					view.model.save();
+				}
+
+				// Re-set placeholder.
+				$input.val( '' ).attr( 'placeholder', view.model.get( 'mediaCreditAuthorDisplay' ) );
+
+				event.stopImmediatePropagation();
+				event.preventDefault();
+			} else if ( credit !== view.model.get( 'mediaCreditAuthorDisplay' ) ) {
 				updateFreeformCredit( credit );
 
 				event.stopImmediatePropagation();
 				event.preventDefault();
-
-				return false;
 			}
 		} );
 	};
@@ -112,8 +128,23 @@
 			},
 
 			render: function() {
+				var $input, noDefaultCredit = false;
+
 				wp.media.view.Attachment.prototype.render.apply( this, [] );
-				mediaCredit.autoComplete( this, 'label[data-setting="mediaCreditText"] input[type="text"]', true );
+
+				$input = mediaCredit.autoComplete( this, 'label[data-setting="mediaCreditText"] input[type="text"]', true );
+				noDefaultCredit = this.model.get( 'mediaCreditOptions' ).noDefaultCredit;
+
+				if ( noDefaultCredit ) {
+					$input.autocomplete( 'disable' );
+
+					// Re-set placeholder.
+					if ( '' !== this.model.get( 'mediaCreditAuthorID' ) ) {
+						$input.val( '' ).attr( 'placeholder', this.model.get( 'mediaCreditAuthorDisplay' ) );
+					}
+				} else {
+					$input.autocomplete( 'enable' );
+				}
 			}
 		} );
 
@@ -184,6 +215,11 @@
 						if ( model.hasChanged() ) {
 							options.data.changes     = {};
 							options.data.mediaCredit = {};
+
+							// Handle placeholders gracefully.
+							if ( model.get( 'mediaCreditOptions' ).noDefaultCredit && '' === model.changed.mediaCreditText && '' !== model.get( 'mediaCreditAuthorID' ) ) {
+								delete model.changed.mediaCreditText;
+							}
 
 							// Gather our changes.
 							_.each( model.changed, function( value, key ) {
