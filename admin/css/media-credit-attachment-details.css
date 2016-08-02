@@ -1,0 +1,13 @@
+@charset "UTF-8";
+label[data-setting="mediaCreditText"] input[type="text"]:-moz-placeholder {
+      opacity: 0.3;
+}
+label[data-setting="mediaCreditText"] input[type="text"]::-moz-placeholder {
+      opacity: 0.3;
+}
+label[data-setting="mediaCreditText"] input[type="text"]:-ms-input-placeholder {
+      opacity: 0.3;
+}
+label[data-setting="mediaCreditText"] input[type="text"]::-webkit-input-placeholder {
+      opacity: 0.3;
+}

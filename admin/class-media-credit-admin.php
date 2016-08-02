@@ -89,6 +89,11 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		if ( $this->is_media_settings_page() ) {
 			wp_enqueue_style( 'media-credit-preview-style', $this->ressource_url . 'css/media-credit-preview.css', array(), $this->version, 'screen' );
 		}
+
+		// Style placeholders when editing media.
+		if ( $this->is_media_edit_page() ) {
+			wp_enqueue_style( 'media-credit-attachment-details-style', $this->ressource_url . 'css/media-credit-attachment-details.css', array(), $this->version, 'screen' );
+		}
 	}
 
 	/**
@@ -653,13 +658,22 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$credit    = Media_Credit_Template_Tags::get_media_credit( $attachment );
 		$url       = Media_Credit_Template_Tags::get_media_credit_url( $attachment );
 		$author_id = '' === Media_Credit_Template_Tags::get_freeform_media_credit( $attachment ) ? $attachment->post_author : '';
+		$options   = get_option( self::OPTION );
 
+		// Set up Media Credit model data (not as an array because data-settings code in View can't deal with it.
 		$response['mediaCreditText']                  = $credit;
 		$response['mediaCreditLink']                  = $url;
 		$response['mediaCreditAuthorID']              = $author_id;
 		$response['mediaCreditAuthorDisplay']         = $author_id ? $credit : '';
+
+		// Add some nonces.
 		$response['nonces']['mediaCredit']['update']  = wp_create_nonce( "save-attachment-{$response['id']}-media-credit" );
 		$response['nonces']['mediaCredit']['content'] = wp_create_nonce( "update-attachment-{$response['id']}-media-credit-in-editor" );
+
+		// And the Media Credit options.
+		$response['mediaCreditOptions']['noDefaultCredit']     = $options['no_default_credit'];
+		$response['mediaCreditOptions']['creditAtEnd']         = $options['credit_at_end'];
+		$response['mediaCreditOptions']['postThumbnailCredit'] = $options['post_thumbnail_credit'];
 
 		return $response;
 	}
