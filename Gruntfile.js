@@ -116,7 +116,8 @@ module.exports = function(grunt) {
             dist: {
                 options: {
                     style: 'compressed',
-                    sourcemap: 'none'
+                    sourcemap: 'none',
+                    compass: true
                 },
                 files: [ { expand: true,
 		                   cwd: 'admin/scss',
@@ -132,7 +133,8 @@ module.exports = function(grunt) {
             dev: {
                 options: {
                     style: 'expanded',
-                    sourcemap: 'none'
+                    sourcemap: 'none',
+                    compass: true
                 },
                 files: [ { expand: true,
 		                   cwd: 'admin/scss',
