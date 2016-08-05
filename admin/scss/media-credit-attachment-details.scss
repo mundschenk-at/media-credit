@@ -5,3 +5,15 @@ label[data-setting="mediaCreditText"] input[type="text"] {
     opacity: 0.3;
   }
 }
+
+#poststuff table.compat-attachment-fields {
+	width: 100%;
+	
+	td.field {
+		width: 80%;
+	
+		input.media-credit-input {
+			width: 100%;
+		}
+	}
+}

@@ -11,3 +11,13 @@ label[data-setting="mediaCreditText"] input[type="text"]:-ms-input-placeholder {
 label[data-setting="mediaCreditText"] input[type="text"]::-webkit-input-placeholder {
       opacity: 0.3;
 }
+
+#poststuff table.compat-attachment-fields {
+  width: 100%;
+}
+#poststuff table.compat-attachment-fields td.field {
+  width: 80%;
+}
+#poststuff table.compat-attachment-fields td.field input.media-credit-input {
+  width: 100%;
+}

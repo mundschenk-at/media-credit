@@ -91,7 +91,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		}
 
 		// Style placeholders when editing media.
-		if ( $this->is_media_edit_page() ) {
+		if ( $this->is_legacy_media_edit_page() || did_action( 'wp_enqueue_media' ) ) {
 			wp_enqueue_style( 'media-credit-attachment-details-style', $this->ressource_url . 'css/media-credit-attachment-details.css', array(), $this->version, 'screen' );
 		}
 	}
@@ -117,8 +117,13 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			wp_localize_script( 'media-credit-preview', 'mediaCreditPreviewData', $preview_data );
 		}
 
-		// Autocomplete when editing media.
-		if ( $this->is_media_edit_page() ) {
+		// Autocomplete when editing media via the legacy form...
+		if ( $this->is_legacy_media_edit_page() ) {
+			wp_enqueue_script( 'media-credit-autocomplete', $this->ressource_url . 'js/media-credit-autocomplete.js', array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
+		}
+
+		// ... and for when the new JavaScript Media API is used.
+		if ( did_action( 'wp_enqueue_media' ) ) {
 			wp_enqueue_script( 'media-credit-attachment-details', $this->ressource_url . 'js/media-credit-attachment-details.js', array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
 		}
 	}
@@ -179,9 +184,10 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		}
 
 		$media_credit = array(
-			'separator'    => $options['separator'],
-			'organization' => $options['organization'],
-			'id'           => $authors,
+			'separator'       => $options['separator'],
+			'organization'    => $options['organization'],
+			'noDefaultCredit' => $options['no_default_credit'],
+			'id'              => $authors,
 		);
 
 		?>
@@ -221,27 +227,15 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	}
 
 	/**
-	 * Is the current page one where media attachments can be edited?
+	 * Is the current page one where media attachments can be edited using the legacy API?
 	 *
+	 * @since 3.1.0
 	 * @access private
 	 */
-	private function is_media_edit_page() {
-		global $pagenow;
+	private function is_legacy_media_edit_page() {
+		$screen = get_current_screen();
 
-		$media_edit_pages = array(
-			'post-new.php',
-			'post.php',
-			'page.php',
-			'page-new.php',
-			'media-upload.php',
-			'media.php',
-			'media-new.php',
-			'ajax-actions.php',
-			'upload.php',
-			'customize.php',
-		);
-
-		return in_array( $pagenow, $media_edit_pages, true );
+		return ! empty( $screen ) && 'post' === $screen->base && 'attachment' === $screen->id;
 	}
 
 	/**
@@ -677,6 +671,106 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 		return $response;
 	}
+
+	/**
+	 * Add custom media credit fields to Edit Media screens.
+	 *
+	 * @param array       $fields The custom fields.
+	 * @param int|WP_Post $post   Post object or ID.
+	 * @return array              The list of fields.
+	 */
+	public function add_media_credit_fields( $fields, $post ) {
+		$options   = get_option( self::OPTION );
+		$credit    = Media_Credit_Template_Tags::get_media_credit( $post );
+		$value     = 'value';
+		$author_id = '' === Media_Credit_Template_Tags::get_freeform_media_credit( $post ) ? $post->post_author : '';
+
+		// Use placeholders instead of value if no freeform credit is set with `no_default_credit` enabled.
+		if ( ! empty( $options['no_default_credit'] ) && ! empty( $author_id ) ) {
+			$value = 'placeholder';
+		}
+
+		// Set up credit input field.
+		$fields['media-credit'] = array(
+			'label'         => __( 'Credit', 'media-credit' ),
+			'input'         => 'html',
+			'html'          => "<input id='attachments[$post->ID][media-credit]' class='media-credit-input' size='30' $value='$credit' name='attachments[$post->ID][media-credit]' />",
+			'show_in_edit'  => true,
+			'show_in_modal' => false,
+		);
+
+		// Set up credit URL field.
+		$url = Media_Credit_Template_Tags::get_media_credit_url( $post );
+		$fields['media-credit-url'] = array(
+			'label'         => __( 'Credit URL', 'media-credit' ),
+			'input'         => 'html',
+			'html'          => "<input id='attachments[$post->ID][media-credit-url]' class='media-credit-input' type='url' size='30' value='$url' name='attachments[$post->ID][media-credit-url]' />",
+			'show_in_edit'  => true,
+			'show_in_modal' => false,
+		);
+
+		// Set up hidden field as a container for additional data.
+		$author_display = Media_Credit_Template_Tags::get_media_credit( $post );
+		$nonce          = wp_create_nonce( 'media_credit_author_names' );
+		$fields['media-credit-hidden'] = array(
+			'label'         => '', // necessary for HTML type fields.
+			'input'         => 'html',
+			'html'          => "<input name='attachments[$post->ID][media-credit-hidden]' id='attachments[$post->ID][media-credit-hidden]' type='hidden' value='$author_id' class='media-credit-hidden' data-author-id='{$post->post_author}' data-post-id='$post->ID' data-author-display='$author_display' data-nonce='$nonce' />",
+			'show_in_edit'  => true,
+			'show_in_modal' => false,
+		);
+
+		return $fields;
+	}
+
+	/**
+	 * Change the post_author to the entered media credit from add_media_credit() above.
+	 *
+	 * @param object $post Object of attachment containing all fields from get_post().
+	 * @param object $attachment Object of attachment containing few fields, unused in this method.
+	 */
+	function save_media_credit_fields( $post, $attachment ) {
+		$wp_user_id    = $attachment['media-credit-hidden'];
+		$freeform_name = $attachment['media-credit'];
+		$url           = $attachment['media-credit-url'];
+		$options       = get_option( self::OPTION );
+
+		// We need to update the credit URL in any case.
+		update_post_meta( $post['ID'], self::URL_POSTMETA_KEY, $url ); // unsert '_media_credit_url' metadata field.
+
+		/**
+		 * A valid WP user was selected, and the display name matches the free-form. The final conditional is
+		 * necessary for the case when a valid user is selected, filling in the hidden field, then free-form
+		 * text is entered after that. if so, the free-form text is what should be used.
+		 *
+		 * @internal 3.1.0 Also check for `no_default_credit` option to prevent unnecessary `EMPTY_META_STRING` uses.
+		 */
+		if ( ! empty( $wp_user_id ) && ( $options['no_default_credit'] || get_the_author_meta( 'display_name', $wp_user_id ) === $freeform_name ) ) {
+			// Update post_author with the chosen user.
+			$post['post_author'] = $wp_user_id;
+
+			// Delete any residual metadata from a free-form field.
+			delete_post_meta( $post['ID'], self::POSTMETA_KEY );
+
+			// Update media credit shortcodes in the current post.
+			$this->update_media_credit_in_post( $post, true, '', $url );
+		} else {
+			/**
+			 * Free-form text was entered, insert postmeta with credit. If free-form text is blank, insert
+			 * a single space in postmeta.
+			 */
+			$freeform = empty( $freeform_name ) ? self::EMPTY_META_STRING : $freeform_name;
+
+			// Insert '_media_credit' metadata field for image with free-form text.
+			update_post_meta( $post['ID'], self::POSTMETA_KEY, $freeform );
+
+			// Update media credit shortcodes in the current post.
+			$this->update_media_credit_in_post( $post, false, $freeform, $url );
+		}
+
+		return $post;
+	}
+
 
 	/**
 	 * If the given media is attached to a post, edit the media-credit info in the attached (parent) post.
