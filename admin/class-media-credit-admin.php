@@ -119,7 +119,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 		// Autocomplete when editing media via the legacy form...
 		if ( $this->is_legacy_media_edit_page() ) {
-			wp_enqueue_script( 'media-credit-autocomplete', $this->ressource_url . 'js/media-credit-autocomplete.js', array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
+			wp_enqueue_script( 'media-credit-legacy-autocomplete', $this->ressource_url . 'js/media-credit-legacy-autocomplete.js', array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
 		}
 
 		// ... and for when the new JavaScript Media API is used.
