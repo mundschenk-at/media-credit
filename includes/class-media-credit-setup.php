@@ -95,6 +95,7 @@ class Media_Credit_Setup implements Media_Credit_Base {
 			'credit_at_end'         => false,
 			'no_default_credit'     => false,
 			'post_thumbnail_credit' => false,
+			'schema_org_markup'     => false,
 		);
 
 		$installed_options = get_option( self::OPTION );
@@ -103,7 +104,7 @@ class Media_Credit_Setup implements Media_Credit_Base {
 			add_option( $this->plugin_name, $default_options );
 			$installed_options = $default_options;
 		} elseif ( ! isset( $installed_options['version'] ) ) { // Upgrade plugin to 1.0 (0.5.5 didn't have a version number).
-			$installed_options['version'] = '1.0';
+			$installed_options['version']      = '1.0';
 			$installed_options['install_date'] = $default_options['install_date'];
 			update_option( $this->plugin_name, $installed_options );
 		}
@@ -120,15 +121,22 @@ class Media_Credit_Setup implements Media_Credit_Base {
 
 		// Upgrade plugin to 2.2.0.
 		if ( version_compare( $installed_options['version'], '2.2.0', '<' ) ) {
-			$installed_options['version'] = '2.2.0';
+			$installed_options['version']           = '2.2.0';
 			$installed_options['no_default_credit'] = $default_options['no_default_credit'];
 			update_option( $this->plugin_name, $installed_options );
 		}
 
 		// Upgrade plugin to 3.0.0.
 		if ( version_compare( $installed_options['version'], '3.0.0', '<' ) ) {
-			$installed_options['version'] = '3.0.0';
+			$installed_options['version']               = '3.0.0';
 			$installed_options['post_thumbnail_credit'] = $default_options['post_thumbnail_credit'];
+			update_option( $this->plugin_name, $installed_options );
+		}
+
+		// Upgrade plugin to 3.1.0.
+		if ( version_compare( $installed_options['version'], '3.1.0', '<' ) ) {
+			$installed_options['version']           = '3.1.0';
+			$installed_options['schema_org_markup'] = $default_options['schema_org_markup'];
 			update_option( $this->plugin_name, $installed_options );
 		}
 	}
