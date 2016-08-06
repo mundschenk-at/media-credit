@@ -206,9 +206,11 @@ class Media_Credit_Public implements Media_Credit_Base {
 			'standalone' => 'true',
 			'align'      => 'alignnone',
 			'width'      => '',
+			'nofollow'   => '',
 		),	$atts, 'media-credit' );
 
 		$atts['standalone'] = filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
+		$atts['nofollow']   = filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
 
 		if ( -1 !== $atts['id'] ) {
 			$url              = empty( $link ) ? get_author_posts_url( $atts['id'] ) : $atts['link'];
@@ -216,7 +218,8 @@ class Media_Credit_Public implements Media_Credit_Base {
 			$author_link      = '<a href="' . esc_url( $url ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 		} else {
 			if ( ! empty( $atts['link'] ) ) {
-				$author_link = '<a href="' . esc_attr( $atts['link'] ) . '">' . $atts['name'] . '</a>';
+				$nofollow = ! empty( $atts['nofollow'] ) ? ' rel="nofollow"' : '';
+				$author_link = '<a href="' . esc_attr( $atts['link'] ) . '"' . $nofollow . '>' . $atts['name'] . '</a>';
 			} else {
 				$author_link = $atts['name'];
 			}
