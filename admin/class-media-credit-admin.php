@@ -386,7 +386,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			'value'       => ! empty( $options['schema_org_markup'] ),
 			'with_label'  => false,
 			'css_class'   => '',
-			'description' => __( 'Microdata is only added to the credit itself (and the surrounding <code>figure</code> for standalone credits without a caption).', 'media-credit' ),
+			'description' => __( 'Microdata is added to the credit itself and the surrounding <code>figure</code> and <code>img</code> (if they don\'t already have other microdata set). The setting has no effect if credits are displayed after posts.', 'media-credit' ),
 		) );
 	}
 
