@@ -20,4 +20,10 @@
 		<span><?php esc_html_e( 'Credit URL', 'media-credit' ); ?></span>
 		<input type="url" data-setting="mediaCreditLink" value="{{ data.mediaCreditLink }}" />
 	</label>
+	<div class="setting media-credit-nofollow">
+		<label>
+			<input type="checkbox" data-setting="mediaCreditNoFollow" value="{{ data.mediaCreditNoFollow }}" <# if ( data.mediaCreditNoFollow ) { #>checked="checked"<# } #> />
+			<?php echo wp_kses( __( 'Add <code>rel="nofollow"</code> to credit link.', 'media-credit' ), array( 'code' => array() ) ); ?>
+		</label>
+	</div>
 </script><?php

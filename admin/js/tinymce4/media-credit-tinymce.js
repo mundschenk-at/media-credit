@@ -229,6 +229,11 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				b = b.replace( link[0], '' );
 			}
 
+			nofollow = b.match( /nofollow=['"]([^'"]*)['"] ?/ );
+			if ( nofollow ) {
+				b = b.replace( nofollow[0], '' );
+			}
+
 			/* Name matching is more complicated to allow both ' and " inside each other */
 			name = b.match(/name=[']([^']*)['] ?/i);
 			if ( !name ) {
@@ -277,9 +282,10 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				attrs: {
 					'class': 'mceMediaCreditTemp mceNonEditable',
 					'data-media-credit-author-id': id,
-					'data-media-credit-text': _.escape(name),
-					'data-media-credit-align': align,
-					'data-media-credit-link' : _.escape(link)
+					'data-media-credit-text':      _.escape( name ),
+					'data-media-credit-align':     align,
+					'data-media-credit-link':      _.escape( link ),
+					'data-media-credit-nofollow':  _.escape( nofollow )
 				}
 			});
 
@@ -400,10 +406,11 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			w = b.match( /width="([0-9]*)"/ );
 			w = ( w && w[1] ) ? w[1] : '';
 
-			id = parseAttribute( c, 'data-media-credit-author-id', '[0-9]+', true );
-			align = parseAttribute( c, 'data-media-credit-align', '[^\'"]*', false );
-			name = _.unescape(parseAttribute( c, 'data-media-credit-text', '[^"]*', false ));
-			link = _.unescape(parseAttribute( c, 'data-media-credit-link', '[^"]*', false ));
+			id       = parseAttribute( c, 'data-media-credit-author-id', '[0-9]+', true );
+			align    = parseAttribute( c, 'data-media-credit-align', '[^\'"]*', false );
+			name     = _.unescape( parseAttribute( c, 'data-media-credit-text', '[^"]*', false ) );
+			link     = _.unescape( parseAttribute( c, 'data-media-credit-link', '[^"]*', false ) );
+			nofollow = _.unescape( parseAttribute( c, 'data-media-credit-nofollow', '[^"]*', false ) );
 
 			if ( ! w || ! (name || id) ) {
 				return b;
@@ -419,6 +426,10 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 			if ( link ) {
 				credit += ' link="' + link + '"';
+			}
+
+			if ( nofollow && 'true' === nofollow ) {
+				credit += ' nofollow="true"';
 			}
 
 			out = '[media-credit ' + credit + ' align="' + align +'" width="' + w + '"]'+ b +'[/media-credit]';
@@ -485,6 +496,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			mediaCreditText: '',
 			mediaCreditAuthorID: '',
 			mediaCreditLink: '',
+			mediaCreditNoFollow: '',
 		};
 
 		metadata.url = dom.getAttrib( imageNode, 'src' );
@@ -569,6 +581,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			metadata.mediaCreditText     = dom.getAttrib(mediaCreditBlock, 'data-media-credit-text', '');
 			metadata.mediaCreditAuthorID = dom.getAttrib(mediaCreditBlock, 'data-media-credit-author-id', '');
 			metadata.mediaCreditLink     = dom.getAttrib(mediaCreditBlock, 'data-media-credit-link', '');
+			metadata.mediaCreditNoFollow = dom.getAttrib(mediaCreditBlock, 'data-media-credit-nofollow', '');
 		}
 
 		return metadata;
