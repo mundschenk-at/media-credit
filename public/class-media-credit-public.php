@@ -133,7 +133,24 @@ class Media_Credit_Public implements Media_Credit_Base {
 			}
 		}
 
-		return img_caption_shortcode( $attr, $content );
+		// Get caption markup.
+		$caption = img_caption_shortcode( $attr, $content );
+
+		// Optionally add schema.org markup.
+		$options = get_option( self::OPTION );
+		if ( ! empty( $options['schema_org_markup'] ) && empty( $options['credit_at_end'] ) ) {
+			// Inject schema.org markup for figure.
+			if ( ! preg_match( '/<figure[^>]*\bitemscope\b/', $caption ) ) {
+				$caption = preg_replace( '/<figure\b/', '<figure itemscope itemtype="http://schema.org/ImageObject"', $caption );
+			}
+
+			// Inject schema.org markup for figcaption.
+			if ( ! preg_match( '/<figcaption[^>]*\bitemprop\s*=\b/', $caption ) ) {
+				$caption = preg_replace( '/<figcaption\b/', '<figcaption itemprop="caption"', $caption );
+			}
+		}
+
+		return $caption;
 	}
 
 	/**
@@ -194,11 +211,9 @@ class Media_Credit_Public implements Media_Credit_Base {
 		$atts['standalone'] = filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
 
 		if ( -1 !== $atts['id'] ) {
-			$url = empty( $link ) ? get_author_posts_url( $atts['id'] ) : $atts['link'];
+			$url              = empty( $link ) ? get_author_posts_url( $atts['id'] ) : $atts['link'];
 			$credit_wp_author = get_the_author_meta( 'display_name', $atts['id'] );
-			$options = get_option( self::OPTION );
-			$author_link = '<a href="' . esc_url( $url ) . '">' . $credit_wp_author . '</a>' . $options['separator'] .
-			$options['organization'];
+			$author_link      = '<a href="' . esc_url( $url ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 		} else {
 			if ( ! empty( $atts['link'] ) ) {
 				$author_link = '<a href="' . esc_attr( $atts['link'] ) . '">' . $atts['name'] . '</a>';
@@ -208,7 +223,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 		}
 
 		$html5_enabled = current_theme_supports( 'html5', 'caption' );
-		$credit_width = (int) $atts['width'] + ( $html5_enabled ? 0 : 10 );
+		$credit_width  = (int) $atts['width'] + ( $html5_enabled ? 0 : 10 );
 
 		/**
 		 * Filter the width of an image's credit/caption.
@@ -227,17 +242,36 @@ class Media_Credit_Public implements Media_Credit_Base {
 		 */
 		$credit_width = apply_filters( 'img_caption_shortcode_width', $credit_width, $atts, $content );
 
+		// Apply credit width via style attribute.
 		$style = '';
 		if ( $credit_width ) {
 			$style = ' style="width: ' . (int) $credit_width . 'px"';
 		}
 
+		// Prepare media content.
+		$content = do_shortcode( $content );
+
+		// Optional schema.org markup.
+		$schema_org        = '';
+		$figure_schema_org = '';
+		if ( ! empty( $options['schema_org_markup'] ) && empty( $options['credit_at_end'] ) ) {
+			$schema_org        = ' itemprop="copyrightHolder"';
+			$figure_schema_org = ' itemscope itemtype="http://schema.org/ImageObject"';
+
+			if ( ! preg_match( '/\bitemprop\s*=/', $content ) ) {
+				$content = preg_replace( '/<img\b/', '<img itemprop="contentUrl"', $content );
+			}
+		}
+
 		$output = '<div class="media-credit-container ' . esc_attr( $atts['align'] ) . '"' . $style . '>' .
-			     do_shortcode( $content ) . '<span class="media-credit">' . $author_link . '</span></div>';
+				      $content . '<span class="media-credit"' . $schema_org . '>' . $author_link . '</span>' .
+				  '</div>';
 
 		// Wrap output in <figure> if HTML5 is supported & the shortcode is a standalone one.
 		if ( ! empty( $atts['standalone'] ) && $html5_enabled ) {
-			$output = '<figure class="wp-caption ' . esc_attr( $atts['align'] ) . '"' . $style . '>' . $output . '</figure>';
+			$output = '<figure class="wp-caption ' . esc_attr( $atts['align'] ) . '"' . $style . $figure_schema_org . '>' .
+					      $output .
+					  '</figure>';
 		}
 
 		return $output;
