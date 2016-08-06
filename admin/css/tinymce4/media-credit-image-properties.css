@@ -1,4 +1,11 @@
-.image-details .setting.media-credit-link input {
+.image-details .advanced-media-credit {
+  margin-top: 24px;
+}
+.image-details .advanced-media-credit .setting.media-credit-nofollow {
+  margin-left: 27%;
+  width: 70%;
+}
+.image-details .advanced-media-credit .setting.media-credit-link input {
   width: 70%;
   margin: 1px 0;
 }

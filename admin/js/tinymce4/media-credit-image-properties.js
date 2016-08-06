@@ -38,7 +38,7 @@
 	 * @augments wp.Backbone.View
 	 */
 	MediaCreditImagePropertiesView = wp.Backbone.View.extend( {
-		className: 'media-credit-image-properties',
+		className: 'advanced-media-credit',
 		template: wp.media.template( 'media-credit-image-properties' ),
 
 		initialize: function() {
@@ -46,10 +46,7 @@
 		},
 
 		prepare: function() {
-			var data = this.model.toJSON();
-			console.log( 'Properties model: ' );
-			console.log( this.model );
-			return data;
+			return this.model.toJSON();
 		},
 
 		render: function() {
@@ -67,7 +64,7 @@
 			var mediaCreditView = new MediaCreditImagePropertiesView( { model: view.model } );
 
 			view.on( 'post-render', function() {
-				view.views.insert( view.$el.find( '.advanced-image' ), mediaCreditView.render().el );
+				view.views.insert( view.$el.find( '.advanced-settings' ), mediaCreditView.render().el, { at: 1 } );
 				$mediaCredit.autoComplete( mediaCreditView, 'input[data-setting="mediaCreditText"]', false );
 			} );
 		} );
