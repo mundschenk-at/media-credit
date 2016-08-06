@@ -66,6 +66,19 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	private $ressource_url;
 
 	/**
+	 * The allowed HTML tags passed to wp_kses.
+	 *
+	 * @since    3.1.0
+	 * @access   private
+	 * @var      array   $kses_tags The allowed HTML tags.
+	 */
+	private $kses_tags = array(
+		'strong' => array(),
+		'br'     => array(),
+		'code'   => array(),
+	);
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    3.0.0
@@ -74,8 +87,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 */
 	public function __construct( $plugin_name, $version ) {
 
-		$this->plugin_name = $plugin_name;
-		$this->version = $version;
+		$this->plugin_name   = $plugin_name;
+		$this->version       = $version;
 		$this->ressource_url = plugin_dir_url( __FILE__ );
 	}
 
@@ -137,6 +150,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 	/**
 	 * Template for setting Media Credit in attachment details.
+	 *
+	 * @since 3.1.0
 	 */
 	public function attachment_details_template() {
 		include( dirname( __FILE__ ) . '/partials/media-credit-attachment-details-tmpl.php' );
@@ -229,7 +244,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	/**
 	 * Is the current page one where media attachments can be edited using the legacy API?
 	 *
-	 * @since 3.1.0
+	 * @internal 3.1.0
 	 * @access private
 	 */
 	private function is_legacy_media_edit_page() {
@@ -362,11 +377,24 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			'css_class'   => '',
 			'description' => __( 'Do not display the attachment author as default credit if it has not been set explicitly (= freeform credits only).', 'media-credit' ),
 		) );
+
+		$this->add_settings_field( array(
+			'id'          => 'schema_org_markup',
+			'label'       => __( 'Structured data', 'media-credit' ),
+			'check_label' => __( 'Include schema.org structured data in HTML5 microdata markup.', 'media-credit' ),
+			'input_type'  => 'checkbox',
+			'value'       => ! empty( $options['schema_org_markup'] ),
+			'with_label'  => false,
+			'css_class'   => '',
+			'description' => __( 'Microdata is only added to the credit itself (and the surrounding <code>figure</code> for standalone credits without a caption).', 'media-credit' ),
+		) );
 	}
 
 	// @codingStandardsIgnoreStart
 	/**
 	 * Add a settings field.
+	 *
+	 * @since 3.1.0
 	 *
 	 * @param array $args foo {
 	 *		Arguments array.
@@ -435,6 +463,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	/**
 	 * Print HTML for multiple input fields.
 	 *
+	 * @since 3.1.0
+	 *
 	 * @param array $args An array of arrays suitable for `print_input_field` and `print_checkbox_field`.
 	 */
 	public function print_multiple_fields( array $args ) {
@@ -459,6 +489,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	/**
 	 * Print HTML for input field.
 	 *
+	 * @since 3.1.0
+	 *
 	 * @param array $args Arguments array.
 	 */
 	public function print_input_field( array $args ) {
@@ -477,12 +509,14 @@ class Media_Credit_Admin implements Media_Credit_Base {
 					?> autocomplete="off" /><?php
 
 		if ( ! empty( $args['description'] ) ) {
-			?><p id="<?php echo esc_attr( $field_name )?>-description" class="description"><?php echo wp_kses( $args['description'], array( 'strong' => array(), 'br' => array() ) ) ?></p><?php
+			?><p id="<?php echo esc_attr( $field_name )?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ) ?></p><?php
 		}
 	}
 
 	/**
 	 * Print HTML for checkbox field.
+	 *
+	 * @since 3.1.0
 	 *
 	 * @param array $args Arguments array.
 	 */
@@ -508,12 +542,14 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		}
 
 		if ( ! empty( $args['description'] ) ) {
-			?><p id="<?php echo esc_attr( $field_name )?>-description" class="description"><?php echo wp_kses( $args['description'], array( 'strong' => array(), 'br' => array() ) ) ?></p><?php
+			?><p id="<?php echo esc_attr( $field_name )?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ) ?></p><?php
 		}
 	}
 
 	/**
 	 * Print HTML for preview area.
+	 *
+	 * @since 3.1.0
 	 *
 	 * @param array $args The argument array.
 	 */
@@ -545,7 +581,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		?>><?php echo wp_kses( $credit_html, array( 'a' => array( 'href' ) ) ) ?></p><?php
 
 		if ( ! empty( $args['description'] ) ) {
-			?><p id="<?php echo esc_attr( $field_name )?>-description" class="description"><?php echo wp_kses( $args['description'], array( 'strong' => array(), 'br' => array() ) ) ?></p><?php
+			?><p id="<?php echo esc_attr( $field_name )?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ) ?></p><?php
 		}
 	}
 
@@ -570,6 +606,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 	/**
 	 * Handle saving requests from the Attachment Details dialogs.
+	 *
+	 * @since 3.1.0
 	 */
 	function ajax_save_attachment_media_credit() {
 		if ( ! isset( $_REQUEST['id'] ) || ! $attachment_id = absint( $_REQUEST['id'] ) ) { // Input var okay.
@@ -640,6 +678,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 	/**
 	 * Add media credit information to wp.media.model.Attachment.
+	 *
+	 * @since 3.1.0
 	 *
 	 * @param array      $response   Array of prepared attachment data.
 	 * @param int|object $attachment Attachment ID or object.
@@ -770,7 +810,6 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 		return $post;
 	}
-
 
 	/**
 	 * If the given media is attached to a post, edit the media-credit info in the attached (parent) post.
@@ -930,6 +969,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 	/**
 	 * Sanitize our option values.
+	 *
+	 * @since 3.1.0
 	 *
 	 * @param  array $input An array of ( $key => $value ).
 	 * @return array        The sanitized array.
