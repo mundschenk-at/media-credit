@@ -145,6 +145,17 @@
 				} else {
 					$input.autocomplete( 'enable' );
 				}
+			},
+
+			updateSetting: function( event ) {
+				var $input   = $( event.target );
+
+				// Handle checkboxes.
+				if ( $input.is( 'input[type="checkbox"]' ) ) {
+					event.target.value = $input.prop( 'checked' );
+				}
+
+				wp.media.view.Attachment.prototype.updateSetting.apply( this, [ event ] );
 			}
 		} );
 
@@ -169,6 +180,12 @@
 				$( wp.media.template( 'media-credit-attachment-details' )( view ) ).insertAfter( templateHtml.find( '.attachment-compat' ).prevAll( '*[data-setting]' )[0] );
 
 				return templateHtml;
+			},
+
+			updateSetting: function( event ) {
+
+				// If we don't override this here, the superclass updateSetting will never be called.
+				wp.media.view.Attachment.Details.prototype.updateSetting.apply( this, [ event ] );
 			}
 		} );
 
@@ -230,9 +247,10 @@
 							}, this );
 
 							// Set up media credit attributes.
-							options.data.mediaCredit.text = model.get( 'mediaCreditText' );
-							options.data.mediaCredit.link = model.get( 'mediaCreditLink' );
-							options.data.mediaCredit.id   = model.get( 'mediaCreditAuthorID' );
+							options.data.mediaCredit.text     = model.get( 'mediaCreditText' );
+							options.data.mediaCredit.link     = model.get( 'mediaCreditLink' );
+							options.data.mediaCredit.id       = model.get( 'mediaCreditAuthorID' );
+							options.data.mediaCredit.nofollow = model.get( 'mediaCreditNoFollow' );
 						}
 
 						// Don't trigger AJAX call if we have no media-credit changes.

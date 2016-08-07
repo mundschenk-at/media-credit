@@ -12,12 +12,40 @@ label[data-setting="mediaCreditText"] input[type="text"]::-webkit-input-placehol
       opacity: 0.3;
 }
 
+label[data-setting="mediaCreditNoFollow"].setting {
+  width: 65%;
+  float: right;
+}
+
+@media only screen and (max-width: 900px) {
+  label[data-setting="mediaCreditNoFollow"].setting {
+    width: 100%;
+    float: none;
+    margin-top: 5px;
+  }
+  label[data-setting="mediaCreditNoFollow"].setting input[type="checkbox"] {
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+    margin: 0;
+  }
+}
+.attachment-details label[data-setting="mediaCreditNoFollow"].setting {
+  margin-top: 4px;
+}
+.attachment-details label[data-setting="mediaCreditNoFollow"].setting input[type="checkbox"] {
+  margin: 0 3px 0 0;
+  vertical-align: middle;
+  position: relative;
+  bottom: 1px;
+}
+
 #poststuff table.compat-attachment-fields {
   width: 100%;
 }
 #poststuff table.compat-attachment-fields td.field {
   width: 80%;
 }
-#poststuff table.compat-attachment-fields td.field input.media-credit-input {
+#poststuff table.compat-attachment-fields td.field input.media-credit-input:not([type="checkbox"]) {
   width: 100%;
 }
