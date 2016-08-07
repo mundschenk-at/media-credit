@@ -648,9 +648,22 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			wp_send_json_error( 'author_id not found' );
 		}
 
+		if ( isset( $changes['mediaCreditNoFollow'] ) ) {
+			$nofollow = filter_var( $changes['mediaCreditNoFollow'], FILTER_VALIDATE_BOOLEAN );
+		} elseif ( isset( $media_credit ) ) {
+			$nofollow = filter_var( $media_credit['nofollow'], FILTER_VALIDATE_BOOLEAN );
+		} else {
+			wp_send_json_error( 'nofollow not found' );
+		}
+
 		if ( isset( $changes['mediaCreditLink'] ) ) {
 	 		// We need to update the credit URL.
 			update_post_meta( $attachment_id, self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
+		}
+
+		if ( isset( $changes['mediaCreditNoFollow'] ) ) {
+			$data = wp_parse_args( array( 'nofollow' => $nofollow ), Media_Credit_Template_Tags::get_media_credit_data( $attachment_id ) );
+			update_post_meta( $attachment_id, self::DATA_POSTMETA_KEY, $data ); // insert '_media_credit_data' metadata field.
 		}
 
 		if ( isset( $changes['mediaCreditText'] ) || isset( $changes['mediaCreditAuthorID'] ) ) {
@@ -691,14 +704,16 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 		$credit    = Media_Credit_Template_Tags::get_media_credit( $attachment );
 		$url       = Media_Credit_Template_Tags::get_media_credit_url( $attachment );
+		$data      = Media_Credit_Template_Tags::get_media_credit_data( $attachment );
 		$author_id = '' === Media_Credit_Template_Tags::get_freeform_media_credit( $attachment ) ? $attachment->post_author : '';
 		$options   = get_option( self::OPTION );
 
 		// Set up Media Credit model data (not as an array because data-settings code in View can't deal with it.
-		$response['mediaCreditText']                  = $credit;
-		$response['mediaCreditLink']                  = $url;
-		$response['mediaCreditAuthorID']              = $author_id;
-		$response['mediaCreditAuthorDisplay']         = $author_id ? $credit : '';
+		$response['mediaCreditText']          = $credit;
+		$response['mediaCreditLink']          = $url;
+		$response['mediaCreditAuthorID']      = $author_id;
+		$response['mediaCreditAuthorDisplay'] = $author_id ? $credit : '';
+		$response['mediaCreditNoFollow']      = ! empty( $data['nofollow'] );
 
 		// Add some nonces.
 		$response['nonces']['mediaCredit']['update']  = wp_create_nonce( "save-attachment-{$response['id']}-media-credit" );
@@ -749,6 +764,17 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			'show_in_modal' => false,
 		);
 
+		// Set up nofollow checkbox.
+		$data = Media_Credit_Template_Tags::get_media_credit_data( $post );
+		$html = "<label><input id='attachments[$post->ID][media-credit-nofollow]' class='media-credit-input' type='checkbox' value='1' name='attachments[$post->ID][media-credit-nofollow]' " . checked( ! empty( $data['nofollow'] ), true, false ) . '/>' . __( 'Add <code>rel="nofollow"</code>.', 'media-credit' ) . '</label>';
+		$fields['media-credit-data'] = array(
+			'label'         => '', // necessary for HTML type fields.
+			'input'         => 'html',
+			'html'          => $html,
+			'show_in_edit'  => true,
+			'show_in_modal' => false,
+		);
+
 		// Set up hidden field as a container for additional data.
 		$author_display = Media_Credit_Template_Tags::get_media_credit( $post );
 		$nonce          = wp_create_nonce( 'media_credit_author_names' );
@@ -773,10 +799,14 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$wp_user_id    = $attachment['media-credit-hidden'];
 		$freeform_name = $attachment['media-credit'];
 		$url           = $attachment['media-credit-url'];
+		$nofollow      = $attachment['media-credit-nofollow'];
 		$options       = get_option( self::OPTION );
 
 		// We need to update the credit URL in any case.
-		update_post_meta( $post['ID'], self::URL_POSTMETA_KEY, $url ); // unsert '_media_credit_url' metadata field.
+		update_post_meta( $post['ID'], self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
+
+		// Update optional data array with nofollow.
+		update_post_meta( $post['ID'], self::DATA_POSTMETA_KEY, wp_parse_args( array( 'nofollow' => $nofollow ), Media_Credit_Template_Tags::get_media_credit_data( $post ) ) );
 
 		/**
 		 * A valid WP user was selected, and the display name matches the free-form. The final conditional is

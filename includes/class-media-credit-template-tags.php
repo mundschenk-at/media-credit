@@ -71,6 +71,27 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 		$post = get_post( $post );
 
 		return get_post_meta( $post->ID, self::URL_POSTMETA_KEY, true );
+
+	}
+
+	/**
+	 * Returns the optional media credit data array for some media attachment.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @return array            The optional data array.
+	 */
+	public static function get_media_credit_data( $post = null ) {
+
+		$post   = get_post( $post );
+		$result = get_post_meta( $post->ID, self::DATA_POSTMETA_KEY, true );
+
+		if ( empty( $result ) ) {
+			$result = array();
+		}
+
+		return $result;
 	}
 
 	/**

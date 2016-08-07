@@ -6,13 +6,46 @@ label[data-setting="mediaCreditText"] input[type="text"] {
   }
 }
 
+label[data-setting="mediaCreditNoFollow"].setting {
+	width: 65%;
+	float: right;
+}
+
+@media only screen and (max-width: 900px) {
+	label[data-setting="mediaCreditNoFollow"].setting {
+		width: 100%;
+		float: none;
+		margin-top: 5px;
+		
+		input[type="checkbox"] {
+			vertical-align: middle;
+    		position: relative;
+    		bottom: 1px;
+    		margin: 0;
+		}
+	}
+}
+
+.attachment-details {
+	label[data-setting="mediaCreditNoFollow"].setting {
+		margin-top: 4px;
+		
+		input[type="checkbox"] {
+			margin: 0 3px 0 0;
+			vertical-align: middle;
+    		position: relative;
+    		bottom: 1px;
+		}
+	}
+}
+
 #poststuff table.compat-attachment-fields {
 	width: 100%;
 	
 	td.field {
 		width: 80%;
 	
-		input.media-credit-input {
+		input.media-credit-input:not([type="checkbox"]) {
 			width: 100%;
 		}
 	}

@@ -65,6 +65,13 @@ interface Media_Credit_Base {
 	const URL_POSTMETA_KEY = '_media_credit_url';
 
 	/**
+	 * The key used for storing optional media credit data in postmeta.
+	 *
+	 * @var string DATA_POSTMETA_KEY
+	 */
+	const DATA_POSTMETA_KEY = '_media_credit_data';
+
+	/**
 	 * The string used to separate the username and the organization
 	 * for crediting local WordPress users.
 	 *
