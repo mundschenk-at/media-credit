@@ -880,8 +880,10 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$attachment  = get_post( $attachment_id );
 		$credit_meta = Media_Credit_Template_Tags::get_freeform_media_credit( $attachment );
 		$credit_url  = Media_Credit_Template_Tags::get_media_credit_url( $attachment );
+		$credit_data = Media_Credit_Template_Tags::get_media_credit_data( $attachment );
 		$options     = get_option( self::OPTION );
 
+		// Set freeform or blog user credit.
 		if ( self::EMPTY_META_STRING === $credit_meta ) {
 			return $html;
 		} elseif ( ! empty( $credit_meta ) ) {
@@ -892,22 +894,32 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			return $html;
 		}
 
+		// Add link URL.
 		if ( ! empty( $credit_url ) ) {
 			$credit .= ' link="' . $credit_url . '"';
+
+			// Optionally add nofollow parameter.
+			if ( ! empty( $credit_data['nofollow'] ) ) {
+				$credit .= ' nofollow=' . $credit_data['nofollow'] . '';
+			}
 		}
 
-		if ( ! preg_match( '/width="([0-9]+)/', $html, $matches ) ) {
+		// Extract image width.
+		if ( ! preg_match( '/width="([0-9]+)/', $html, $width ) ) {
 			return $html;
 		}
+		$width = $width[1];
 
-		$width = $matches[1];
-
+		// Extract alignment.
 		$html = preg_replace( '/(class=["\'][^\'"]*)align(none|left|right|center)\s?/', '$1', $html );
 		if ( empty( $align ) ) {
 			$align = 'none';
 		}
 
+		// Put it all together.
 		$shcode = '[media-credit ' . $credit . ' align="align' . $align . '" width="' . $width . '"]' . $html . '[/media-credit]';
+
+		// @todo Document filter.
 		return apply_filters( 'media_add_credit_shortcode', $shcode, $html );
 	}
 
