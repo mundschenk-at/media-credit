@@ -9,15 +9,15 @@ Adds a "Credit" field when uploading media to posts and displays it under the im
 
 ## Description ##
 
-Feel free to get in touch with us about anything you'd like me to add to this plugin or any feedback. We love hearing from our users! [Start a thread on the plugin forum](https://wordpress.org/tags/media-credit#postform) and we'll get back to you shortly!
+Feel free to get in touch with us about anything you'd like me to add to this plugin or any feedback. We love hearing from our users! [Start a thread on the plugin forum](https://wordpress.org/support/plugin/media-credit/#postform) and we'll get back to you shortly!
 
 This plugin adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
 When adding media through the Media Uploader tool or editing media already in the Media Library, this plugin adds a new field to the media form that allows users to assign credit for given media to a user of your blog (assisted with autocomplete) or to any freeform text (e.g. courtesy photos, etc.).
 
-When this media is then inserted into a post, a new shortcode, [media-credit], surrounds the media, inside of any caption, with the provided media credit information. Media credit inside this shortcode is then displayed on your blog under your media with the class .media-credit, which has some default styling but which you can customize to your heart's content.
+When this media is then inserted into a post, a new shortcode, `[media-credit]`, surrounds the media, inside of any caption, with the provided media credit information. Media credit inside this shortcode is then displayed on your blog under your media with the class `.media-credit`, which has some default styling but which you can customize to your heart's content.
 
-You can also display all the media by an author on the author's page. See more in the [FAQ](http://wordpress.org/extend/plugins/media-credit/faq/).
+You can also display all the media by an author on the author's page. See more in the [FAQ](https://wordpress.org/plugins/media-credit/faq/).
 
 ## Installation ##
 
@@ -46,13 +46,13 @@ if ( !array_key_exists( 'media-credit', $shortcode_tags ) )
 	add_shortcode('media-credit', 'ignore_media_credit_shortcode' );
 ?>`
 
-Also, I'd really appreciate it if you gave us [some feedback](https://wordpress.org/tags/media-credit#postform) as to why you disabled the plugin and how it could have better suited your needs.
+Also, I'd really appreciate it if you gave us [some feedback](https://wordpress.org/support/plugin/media-credit/#postform) as to why you disabled the plugin and how it could have better suited your needs.
 
 ### Can I display all or recent media credited to a given author? ###
 
-Indeed, just call the template tag `<?php display_author_media($author_id); ?>` in your theme's author.php (or elsewhere, if you want). The template tag has optional parameters if you want to customize the CSS or text. The default options will display thumbnails of the 10 most recent media items credited to the given user floated to the right with a width of 150px and a header of `<h3>Recent Media</h3>`.
+Indeed, just call the template tag `<?php display_author_media($author_id); ?>` in your theme's author.php (or elsewhere, if you want). The template tag has optional parameters if you want to customize the CSS or text. The default options will display thumbnails of the 10 most recent media items credited to the given user floated to the right with a width of `150px` and a header of `<h3>Recent Media</h3>`.
 
-These options can be changed with a more verbose call to the function: `<?php display_author_media($author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = "<h3>Recent Media</h3>", $exclude_unattached = true); ?>`. This will make only the 10 most recent media items that are attached to a post display with the given header taking up the maximum width it's afforded. Each image will link to the post in which it appears, or the attachment page if it has no parent post (unless $link_without_parent is set to false). If you don't care about whether the media is attached to a post, change $exclude_unattached to false. This function as a whole will only display media uploaded and credited to a user after this plugin was installed.
+These options can be changed with a more verbose call to the function: `<?php display_author_media($author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = "<h3>Recent Media</h3>", $exclude_unattached = true); ?>`. This will make only the 10 most recent media items that are attached to a post display with the given header taking up the maximum width it's afforded. Each image will link to the post in which it appears, or the attachment page if it has no parent post (unless `$link_without_parent` is set to `false`). If you don't care about whether the media is attached to a post, change `$exclude_unattached` to `false√. This function as a whole will only display media uploaded and credited to a user after this plugin was installed.
 
 ### More generally, can I insert media credit information into my themes with a template tag, for instance on category pages? ###
 
@@ -72,15 +72,15 @@ change it to:
 
 `[media-credit name="Artist" link="http://www.artistwebsite.com/" align="alignleft" width="300"]<img src="http://www.mysite.com/files/2010/09/image.jpg" width="300" height="450" class="size-300 wp-image-2" />[/media-credit]`
 
-Note the link to www.artistwebsite.com above.
+Note the link to `www.artistwebsite.com` above.
 
 ### Why do I get unparsed [media-credit] shortcodes in my Facebook/Twitter/... previews with JetPack Publicize? ###
 
-Unfortunately, this is a known bug in JetPack that can only be fixed by Automattic. As a workaround, use a different plugin for posting to social networks. Alternativel, if you make sure that you haven't got any images with credits within the first 55 words of your article, you should be fine, too.
+Unfortunately, this is a known bug in JetPack that can only be fixed by Automattic. As a workaround, use a different plugin for posting to social networks. Alternatively, if you make sure that you haven't got any images with credits within the first 55 words of your article, you should be fine, too.
 
 ### Your question was not answered in the FAQ? ###
 
-Feel free to get in touch with us about anything you'd like us to add to this list by <strong>leaving a message in the Wordpress.org [support forums here](https://wordpress.org/tags/media-credit#postform).</strong>
+Feel free to get in touch with us about anything you'd like us to add to this list by <strong>leaving a message in the Wordpress.org [support forums here](https://wordpress.org/support/plugin/media-credit/#postform).</strong>
 
 ## Screenshots ##
 
@@ -90,8 +90,8 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 ### 2. Media credit is nicely displayed underneath photos appearing on your blog ###
 ![Media credit is nicely displayed underneath photos appearing on your blog](wp-assets/screenshot-2.png)
 
-### 3. Recent media items attributed to an author can be displayed nicely on the author's page using a very simple template tag (see the [FAQ](http://wordpress.org/extend/plugins/media-credit/faq/) for more information) ###
-![Recent media items attributed to an author can be displayed nicely on the author's page using a very simple template tag (see the [FAQ](http://wordpress.org/extend/plugins/media-credit/faq/) for more information)](wp-assets/screenshot-3.png)
+### 3. Recent media items attributed to an author can be displayed nicely on the author's page using a very simple template tag (see the [FAQ](https://wordpress.org/plugins/media-credit/faq/) for more information) ###
+![Recent media items attributed to an author can be displayed nicely on the author's page using a very simple template tag (see the [FAQ](https://wordpress.org/plugins/media-credit/faq/) for more information)](wp-assets/screenshot-3.png)
 
 
 
@@ -116,12 +116,12 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 * Updated visual editor plugin for WordPress 4.5 (minimum WordPress version is now 4.5, as well).
 
 ### 3.0.1 (Mar. 20, 2016) ###
-* Fixed run_wptexturize filter breakage caused by calling get_bloginfo too early.
+* Fixed `run_wptexturize` filter breakage caused by calling `get_bloginfo` too early.
 
 ### 3.0.0 (Mar. 6, 2016) ###
 * Refactored plugin for a more future-proof architecture.
 * Moved all non-'template tag' functions out of the global namespace. This might break themes that relied on these (undocumented) functions. Please test before updating if you are running a highly customized installation of Media Credit.
-* Wrap standalone media credits in <figure> if HTML5 support for captions is enabled.
+* Wrap standalone media credits in `<figure>` if HTML5 support for captions is enabled.
 * Uses WordPress language packs for translations.
 * Fixed previously broken use case when both caption and credit are removed from an image in the visual editor.
 * Added check whether parent is already published when displaying "attached" media.
@@ -135,14 +135,14 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 * Fixed a bug in Preview script.
 
 ### 2.7.4 (Oct. 19, 2015) ###
-* Fixed empty credit array for media_credit_at_end filter when there is only one (unique) credit. Props David Higgins.
+* Fixed empty `$credit` array for `media_credit_at_end` filter when there is only one (unique) credit. Props David Higgins.
 
 ### 2.7.3 (Sep. 30, 2015) ###
 * Somewhere, the caption ID attribute got lost. Sorry.
 
 ### 2.7.2 (Sep. 25, 2015) ###
-* Fixed silent error message regarding unset no_default_credit option
-* Fixed wpautop handling. Probably.
+* Fixed silent error message regarding unset `no_default_credit` option
+* Fixed `wpautop` handling. Probably.
 
 ### 2.7.1 (Sep. 16, 2015) ###
 * Missed a few strings
@@ -153,7 +153,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 * Added translation functions to user visible strings
 * Added German translation
 * Fixed responsive image breakage on some themes
-* Fixed autocomplete in customizer
+* Fixed autocomplete in Customizer
 
 ### 2.6.2 (Aug. 29, 2015) ###
 * Updated JS for switching between Visual and HTML editors
@@ -166,7 +166,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 * limit selectable users to authors (no subscribers)
 * URL can be set from Media Library, not just in the post editor
 * Credit URL can override the automatic author link
-* Added media_credit_at_end filter hook
+* Added `media_credit_at_end` filter hook
 
 ### 2.5.1 (Aug. 2, 2015) ###
 * Forgot to remove some debug output
@@ -180,7 +180,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 ### 2.4.0 (Dec. 17, 2014) ###
 * Replaced some deprecated calls
-* Fixed bug that didn't add shortcode when editing a "plain" image tag.
+* Fixed bug that didn't add shortcode when editing a "plain" `img` tag.
 * Updated UI for Wordpress 4.1
 
 ### 2.3.3 (Oct. 26, 2014) ###
@@ -190,8 +190,8 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 * Fixed editing of image classes in the visual editor
 
 ### 2.3.1 (Oct. 9, 2014) ###
-* Fixed deletion of [media-credit] shortcodes without [caption] in the visual editor
-* Fixed bug that added \ to apostrophes/single quotes in certain circumstances
+* Fixed deletion of `[media-credit]` shortcodes without `[caption]` in the visual editor
+* Fixed bug that added `\` to apostrophes/single quotes in certain circumstances
 
 ### 2.3.0 (Sep. 18, 2014) ###
 * Code clean-up
@@ -246,18 +246,18 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 * Updating media credit in the Media Library will now correctly and safely update it in an attached post, regardless of whether it's a WP user or not
 
 ### 1.0.2 (May 3, 2010) ###
-* Added filter on the_author so that media credit is properly displayed in Media Library (not yet for unattached media, though - will be added in WP 3.1 hopefully)
-* Made $post parameter actually optional in template tags (used global $post if not given)
+* Added filter on `the_author` so that media credit is properly displayed in Media Library (not yet for unattached media, though - will be added in WP 3.1 hopefully)
+* Made `$post` parameter actually optional in template tags (used global `$post` if not given)
 
 ### 1.0.1 (Apr. 26, 2010) ###
-* Changed post meta field from media-credit to _media_credit so that it doesn't appear in custom fields section on Post edit page normally. Upgrade script will handle changing the key for all existing metadata.
+* Changed post meta field from `media-credit` to `_media_credit` so that it doesn't appear in custom fields section on Post edit page normally. Upgrade script will handle changing the key for all existing metadata.
 
 ### 1.0 (Apr. 26, 2010) ###
-* Added author media rendering methods (see [FAQ](http://wordpress.org/extend/plugins/media-credit/faq/))
+* Added author media rendering methods (see [FAQ](https://wordpress.org/plugins/media-credit/faq/))
 * If media credit is edited in the Media Library, the media credit in the post to which media is attached to will now update as well!
 * Only load JS and CSS in admin on pages that need it
 * Blank credit can now be assigned to media
-* Switched rendering of media-credit shortcode credit info to div instead of span for more readable RSS feed
+* Switched rendering of media-credit shortcode credit info to `div` instead of `span` for more readable RSS feed
 
 ### 0.5.5 (Mar. 9, 2010) ###
 * Switched autocomplete to an older, more stable version - should be working great now for all blogs!
