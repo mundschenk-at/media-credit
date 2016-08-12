@@ -98,12 +98,15 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 ## Changelog ##
 
 ### 3.1.0 (unreleased) ###
-* Switched to the new Media API based on Backbone.js introduced in WordPress 3.5 for a snappier and more consistent user experience.  
-* Several security fixes and a general code clean-up have been applied due to automatic enforcement of WordPress coding standards.
+* Optional no-follow attribute added.
+* Optional schema.org markup added.
+* Use HTML5 placeholders instead of default text when "no default credits" is set.
 * Settings have been updated & streamlined.
 * Added caching for backend queries.
 * Updated TinyMCE components.
-* 
+* Switched to the new Media API based on Backbone.js introduced in WordPress 3.5 for a snappier and more consistent user experience.  
+* Several security fixes and a general code clean-up have been applied due to automatic enforcement of WordPress coding standards.
+* Fixed conflict between "no default credits" and featured image credits.
 
 ### 3.0.3 (Jul. 13, 2016) ###
 * Updating credits via the Visual Editor works again. Props siricar, timausk, jellylegs.
@@ -270,38 +273,6 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 ### 0.5 (Mar. 4, 2010) ###
 * Initial release.
-
-## Upgrade Notice ##
-
-### 2.7.5 ###
-In the near future, version 3.0 of Media Credit will be released. In preparation, please ensure that your theme uses only the public functions documented in the [Media Credit API](https://code.mundschenk.at/media-credit/template-tags/).
-
-### 2.2.0 ###
-Updating plugin to maintain full-functionality in WordPress 4.0, with some minor bug fixes
-
-### 1.1.2 ###
-Updating plugin to maintain full-functionality in WordPress 3.1, with some minor bug fixes
-
-### 1.1.1 ###
-Updating media credit in the Media Library really does update the credit within posts correctly now!
-
-### 1.1 ###
-Media credit looks good with TinyMCE and updating media credit in the Media Library will now correctly and safely update it in an attached post, regardless of whether it's a WP user or not.
-
-### 1.0.2 ###
-Filtering the author in Media Library and $post parameter in media credit template tags truly optional.
-
-### 1.0.1 ###
-Changed postmeta key from media-credit to _media_credit. Upgrade script will handle changing the key for all existing metadata.
-
-### 1.0 ###
-Finalized version 1.0 with added simple author media template tags, and ensuring that changes to media credit now reflected in parent post
-
-### 0.5.5 ###
-Fixed autocomplete and losing control of AJAX functionality in WordPress admin, and settings are sanitized better
-
-### 0.5.1 ###
-Autocomplete list of users is filtered better, particularly for WordPress MU users.
 
 ## Other Notes ##
 **Options**
