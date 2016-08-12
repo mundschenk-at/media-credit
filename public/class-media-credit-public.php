@@ -267,8 +267,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 		}
 
 		$output = '<div class="media-credit-container ' . esc_attr( $atts['align'] ) . '"' . $style . '>' .
-				      $content . '<span class="media-credit"' . $schema_org . '>' . $author_link . '</span>' .
-				  '</div>';
+				      $content . '<span class="media-credit"' . $schema_org . '>' . $author_link . '</span></div>';
 
 		// Wrap output in <figure> if HTML5 is supported & the shortcode is a standalone one.
 		if ( ! empty( $atts['standalone'] ) && $html5_enabled ) {
