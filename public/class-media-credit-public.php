@@ -364,6 +364,12 @@ class Media_Credit_Public implements Media_Credit_Base {
 			return $output;
 		}
 
+		// Look at "no default credits" option.
+		$options = get_option( self::OPTION );
+		if ( ( $credit = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, empty( $options['no_default_credit'] ) ) ) && empty( $credit ) ) {
+			return $html; // Don't print the default credit.
+		}
+
 		// Extract image width.
 		if ( preg_match( "/<img[^>]+width=([\"'])([0-9]+)\\1/", $html, $match ) ) {
 			$credit_width = $match[2];
@@ -376,6 +382,6 @@ class Media_Credit_Public implements Media_Credit_Base {
 		}
 
 		// Return styled credit mark-up.
-		return $html . '<span class="media-credit"' . $style . '>' . Media_Credit_Template_Tags::get_media_credit( $post_thumbnail_id, true ) . '</span>';
+		return $html . '<span class="media-credit"' . $style . '>' . $credit . '</span>';
 	}
 }
