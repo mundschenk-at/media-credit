@@ -33,7 +33,7 @@ If the automatic process above fails, follow these simple steps to do a manual i
 
 == Frequently Asked Questions ==
 
-= I disabled the plugin and now unparsed `[media-credit]` shortcodes are appearing all over my site. Help! =
+= I disabled the plugin and now unparsed [media-credit] shortcodes are appearing all over my site. Help! =
 
 Add this to your theme's `functions.php` file to get rid of those pesky `[media-credit]` shortcodes:
 
