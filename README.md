@@ -3,7 +3,7 @@
 **Tags:** media, image, images, credit, byline, author, user  
 **Requires at least:** 4.5  
 **Tested up to:** 4.6  
-**Stable tag:** 3.0.3  
+**Stable tag:** 3.1.0  
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -33,9 +33,9 @@ If the automatic process above fails, follow these simple steps to do a manual i
 
 ## Frequently Asked Questions ##
 
-### I disabled the plugin and now unparsed [media-credit] shortcodes are appearing all over my site. Help! ###
+### I disabled the plugin and now unparsed `[media-credit]` shortcodes are appearing all over my site. Help! ###
 
-Add this to your theme's functions.php file to get rid of those pesky media-credit shortcodes:
+Add this to your theme's `functions.php` file to get rid of those pesky `[media-credit]` shortcodes:
 
 `<?php
 function ignore_media_credit_shortcode( $atts, $content = null ) {
@@ -56,7 +56,7 @@ These options can be changed with a more verbose call to the function: `<?php di
 
 ### More generally, can I insert media credit information into my themes with a template tag, for instance on category pages? ###
 
-I'm so glad you asked; you certainly can! Just call `<?php get_media_credit_html($post); ?>` with an attachment_id (int) or post object for an attachment to get the media credit, including a link to the author page. To echo the results, call `<?php the_media_credit_html($post); ?>`.
+I'm so glad you asked; you certainly can! Just call `<?php get_media_credit_html($post); ?>` with an attachment id (`int`) or `WP_Post` object for an attachment to get the media credit, including a link to the author page. To echo the results, call `<?php the_media_credit_html($post); ?>`.
 
 ### Is there a template tag that just gives plain text rather than a link to the author page for users of my blog? ###
 
@@ -97,7 +97,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 ## Changelog ##
 
-### 3.1.0 (unreleased) ###
+### 3.1.0 (Aug. 13, 2016) ###
 * Optional no-follow attribute added.
 * Optional schema.org markup added.
 * Use HTML5 placeholders instead of default text when "no default credits" is set.
