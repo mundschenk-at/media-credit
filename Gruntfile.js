@@ -193,14 +193,14 @@ module.exports = function(grunt) {
   	]);
 
   	grunt.registerTask('deploy', [
- 	    'phpunit:default',
+ 	    //'phpunit:default',
  	    'phpcs',
  	    'jscs',
 		'build',
   		'wp_deploy:release'
   	]);
   	grunt.registerTask('trunk', [
- 		'wp_readme_to_markdown',
+ 		//'wp_readme_to_markdown',
  	    //'phpunit:default',
     	'phpcs',
  	    'jscs',
