@@ -3,7 +3,7 @@ Contributors: pputzer
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.5
 Tested up to: 4.6
-Stable tag: 3.1.0
+Stable tag: 3.1.1
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -91,7 +91,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
-= 3.1.1 (unreleased) =
+= 3.1.1 (Aug. 15, 2016) =
 * Fixed JavaScript error in media uploaded directly from Edit Post (`wp_prepare_attachmnet_for_js` only gets called after the upload finishes in 4.5.x).
 
 = 3.1.0 (Aug. 13, 2016) =
