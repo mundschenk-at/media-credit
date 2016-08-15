@@ -91,6 +91,9 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
+= 3.1.1 (unreleased) =
+* Fixed JavaScript error in media uploaded directly from Edit Post (`wp_prepare_attachmnet_for_js` only gets called after the upload finishes in 4.5.x).
+
 = 3.1.0 (Aug. 13, 2016) =
 * Optional no-follow attribute added.
 * Optional schema.org markup added.
