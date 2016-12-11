@@ -1,9 +1,9 @@
 === Media Credit ===
 Contributors: pputzer
 Tags: media, image, images, credit, byline, author, user
-Requires at least: 4.5
-Tested up to: 4.6
-Stable tag: 3.1.1
+Requires at least: 4.7
+Tested up to: 4.7
+Stable tag: 3.1.2
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -91,6 +91,10 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
+= 3.1.2 (Dec. 11, 2016) =
+* Fixed conflict between WPBakery Visual Composer 4.x and Media Credit.
+* Updated TinyMCE components.
+
 = 3.1.1 (Aug. 15, 2016) =
 * Fixed JavaScript error in media uploaded directly from Edit Post (`wp_prepare_attachment_for_js` only gets called after the upload finishes in 4.5.x).
 
@@ -101,7 +105,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 * Settings have been updated & streamlined.
 * Added caching for backend queries.
 * Updated TinyMCE components.
-* Switched to the new Media API based on Backbone.js introduced in WordPress 3.5 for a snappier and more consistent user experience.  
+* Switched to the new Media API based on Backbone.js introduced in WordPress 3.5 for a snappier and more consistent user experience.
 * Several security fixes and a general code clean-up have been applied due to automatic enforcement of WordPress coding standards.
 * Fixed conflict between "no default credits" and featured image credits.
 
