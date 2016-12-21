@@ -86,7 +86,7 @@
 		.change( function( event ) {
 			var $input = $( this ),
 				credit = $input.val(),
-				noDefaultCredit = $mediaCredit.noDefaultCredit || false;
+				noDefaultCredit = $mediaCredit.noDefaultCredit || false;
 
 			if ( noDefaultCredit && '' === credit && '' === view.model.get( 'mediaCreditAuthorID' ) ) {
 				view.model.set( {
@@ -129,7 +129,7 @@
 
 			render: function() {
 				var $input,
-					noDefaultCredit = $mediaCredit.noDefaultCredit || false;
+					noDefaultCredit = $mediaCredit.noDefaultCredit || false;
 
 				wp.media.view.Attachment.prototype.render.apply( this, [] );
 
