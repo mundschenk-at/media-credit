@@ -91,7 +91,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
-* 3.1.3 (Dec. 21, 2016)
+= 3.1.3 (Dec. 21, 2016) =
 * Removed non-existent customizer callback (props @rboulet).
 
 = 3.1.2 (Dec. 11, 2016) =
