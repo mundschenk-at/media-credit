@@ -141,7 +141,6 @@ class Media_Credit implements Media_Credit_Base {
 		$this->loader->add_action( 'print_media_templates', $plugin_admin, 'attachment_details_template' );
 		$this->loader->add_action( 'admin_menu',            $plugin_admin, 'display_settings' );
 		$this->loader->add_action( 'admin_init',            $plugin_admin, 'admin_init' );
-		$this->loader->add_action( 'customize_controls_enqueue_scripts', $plugin_admin, 'enqueue_media_credit_scripts' );
 
 		// AJAX actions.
 		$this->loader->add_action( 'wp_ajax_update-media-credit-in-post-content', $plugin_admin, 'ajax_filter_content' );

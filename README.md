@@ -1,9 +1,9 @@
 # Media Credit #
 **Contributors:** [pputzer](https://profiles.wordpress.org/pputzer)  
 **Tags:** media, image, images, credit, byline, author, user  
-**Requires at least:** 4.5  
-**Tested up to:** 4.6  
-**Stable tag:** 3.1.0  
+**Requires at least:** 4.7  
+**Tested up to:** 4.7  
+**Stable tag:** 3.1.3  
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -33,7 +33,7 @@ If the automatic process above fails, follow these simple steps to do a manual i
 
 ## Frequently Asked Questions ##
 
-### I disabled the plugin and now unparsed `[media-credit]` shortcodes are appearing all over my site. Help! ###
+### I disabled the plugin and now unparsed [media-credit] shortcodes are appearing all over my site. Help! ###
 
 Add this to your theme's `functions.php` file to get rid of those pesky `[media-credit]` shortcodes:
 
@@ -97,6 +97,16 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 ## Changelog ##
 
+* 3.1.3 (Dec. 21, 2016)
+* Removed non-existent customizer callback (props @rboulet).
+
+### 3.1.2 (Dec. 11, 2016) ###
+* Fixed conflict between WPBakery Visual Composer 4.x and Media Credit.
+* Updated TinyMCE components.
+
+### 3.1.1 (Aug. 15, 2016) ###
+* Fixed JavaScript error in media uploaded directly from Edit Post (`wp_prepare_attachment_for_js` only gets called after the upload finishes in 4.5.x).
+
 ### 3.1.0 (Aug. 13, 2016) ###
 * Optional no-follow attribute added.
 * Optional schema.org markup added.
@@ -104,7 +114,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 * Settings have been updated & streamlined.
 * Added caching for backend queries.
 * Updated TinyMCE components.
-* Switched to the new Media API based on Backbone.js introduced in WordPress 3.5 for a snappier and more consistent user experience.  
+* Switched to the new Media API based on Backbone.js introduced in WordPress 3.5 for a snappier and more consistent user experience.
 * Several security fixes and a general code clean-up have been applied due to automatic enforcement of WordPress coding standards.
 * Fixed conflict between "no default credits" and featured image credits.
 

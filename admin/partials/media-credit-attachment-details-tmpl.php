@@ -26,7 +26,11 @@
 		<input type="url" value="{{ data.mediaCreditLink }}" />
 	</label>
 	<label class="setting" data-setting="mediaCreditNoFollow">
-		<input type="checkbox" value="{{ data.mediaCreditNoFollow }}" value="1" <# if ( data.mediaCreditNoFollow ) { #>checked="checked"<# } #> />
+		<input type="checkbox" value="{{ data.mediaCreditNoFollow }}"
+			<# if ( '1' === data.mediaCreditNoFollow ) { #>
+				checked="checked"
+			<# } #>
+		/>
 		<?php echo wp_kses( __( 'Add <code>rel="nofollow"</code>.', 'media-credit' ), array( 'code' => array() ) ); ?>
 	</label>
 </script><?php

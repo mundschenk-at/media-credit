@@ -86,7 +86,7 @@
 		.change( function( event ) {
 			var $input = $( this ),
 				credit = $input.val(),
-				noDefaultCredit = view.model.get( 'mediaCreditOptions' ).noDefaultCredit;
+				noDefaultCredit = $mediaCredit.noDefaultCredit || false;
 
 			if ( noDefaultCredit && '' === credit && '' === view.model.get( 'mediaCreditAuthorID' ) ) {
 				view.model.set( {
@@ -128,12 +128,12 @@
 			},
 
 			render: function() {
-				var $input, noDefaultCredit = false;
+				var $input,
+					noDefaultCredit = $mediaCredit.noDefaultCredit || false;
 
 				wp.media.view.Attachment.prototype.render.apply( this, [] );
 
 				$input = mediaCredit.autoComplete( this, 'label[data-setting="mediaCreditText"] input[type="text"]', true );
-				noDefaultCredit = this.model.get( 'mediaCreditOptions' ).noDefaultCredit;
 
 				if ( noDefaultCredit ) {
 					$input.autocomplete( 'disable' );
@@ -234,7 +234,7 @@
 							options.data.mediaCredit = {};
 
 							// Handle placeholders gracefully.
-							if ( model.get( 'mediaCreditOptions' ).noDefaultCredit && '' === model.changed.mediaCreditText && '' !== model.get( 'mediaCreditAuthorID' ) ) {
+							if ( $mediaCredit.noDefaultCredit && '' === model.changed.mediaCreditText && '' !== model.get( 'mediaCreditAuthorID' ) ) {
 								delete model.changed.mediaCreditText;
 							}
 
