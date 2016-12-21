@@ -3,7 +3,7 @@ Contributors: pputzer
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.7
 Tested up to: 4.7
-Stable tag: 3.1.2
+Stable tag: 3.1.3
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
