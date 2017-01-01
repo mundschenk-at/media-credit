@@ -3,7 +3,7 @@ Contributors: pputzer
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.7
 Tested up to: 4.7
-Stable tag: 3.1.3
+Stable tag: 3.1.4
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -91,7 +91,10 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
-* 3.1.3 (Dec. 21, 2016)
+= 3.1.4 (Jan. 1, 2017) =
+* Properly sync models when editing image details.
+
+= 3.1.3 (Dec. 21, 2016) =
 * Removed non-existent customizer callback (props @rboulet).
 
 = 3.1.2 (Dec. 11, 2016) =

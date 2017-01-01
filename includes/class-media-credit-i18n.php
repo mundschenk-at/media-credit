@@ -37,7 +37,7 @@
  * @subpackage Media_Credit/includes
  * @author     Peter Putzer <github@mundschenk.at>
  */
-class Media_Credit_i18n {
+class Media_Credit_I18n {
 
 	/**
 	 * The domain specified for this plugin.
