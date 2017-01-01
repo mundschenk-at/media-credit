@@ -270,7 +270,7 @@
 				}
 
 				// Don't trigger AJAX call if there is nothing left to do.
-				if ( model.hasChanged() ) {
+				if ( 'update' !== method || model.hasChanged() ) {
 					return this.constructor.__super__.sync.apply( this, [ method, model, options ] );
 				} else if ( result ) {
 					return result;
