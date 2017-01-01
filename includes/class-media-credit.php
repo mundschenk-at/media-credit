@@ -108,7 +108,7 @@ class Media_Credit implements Media_Credit_Base {
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
-	 * Uses the Media_Credit_i18n class in order to set the domain and to register the hook
+	 * Uses the Media_Credit_I18n class in order to set the domain and to register the hook
 	 * with WordPress.
 	 *
 	 * @since    3.0.0
@@ -116,7 +116,7 @@ class Media_Credit implements Media_Credit_Base {
 	 */
 	private function set_locale() {
 
-		$plugin_i18n = new Media_Credit_i18n();
+		$plugin_i18n = new Media_Credit_I18n();
 		$plugin_i18n->set_domain( $this->get_plugin_name() );
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
