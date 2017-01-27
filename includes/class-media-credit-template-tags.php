@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2016 Peter Putzer.
+ * Copyright 2013-2017 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -183,10 +183,15 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	 */
 	public static function author_media_and_posts( $author_id, $include_posts = true, $limit = 0, $exclude_unattached = true ) {
 		$cache_key = "author_media_and_posts_{$author_id}_i" . ( $include_posts ? '1' : '0') . "_l{$limit}_e" . ( $exclude_unattached ? '1' : '0' );
+		$results   = wp_cache_get( $cache_key, 'media-credit' );
 
-		if ( false === $results = wp_cache_get( $cache_key, 'media-credit' ) ) {
+		if ( false === $results ) {
 			global $wpdb;
-			$posts_query = $attached = $date_query = $limit_query = '';
+
+			$posts_query = '';
+			$attached    = '';
+			$date_query  = '';
+			$limit_query = '';
 			$query_vars  = array( $author_id ); // always the first parameter.
 
 			// Optionally include published posts as well.
@@ -203,9 +208,13 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 
 			// Exclude attachments from before the install date of the Media Credit plugin.
 			$options = get_option( self::OPTION );
-			if ( isset( $options['install_date'] ) && $start_date = $options['install_date'] ) {
-				$date_query = ' AND post_date >= %s';
-				$query_vars[] = $start_date; // second parameter.
+			if ( isset( $options['install_date'] ) ) {
+				$start_date = $options['install_date'];
+
+				if ( $start_date ) {
+					$date_query = ' AND post_date >= %s';
+					$query_vars[] = $start_date; // second parameter.
+				}
 			}
 
 			// We always need to include the meta key in our query.

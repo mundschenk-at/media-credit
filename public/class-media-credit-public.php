@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2016 Peter Putzer.
+ * Copyright 2013-2017 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -313,11 +313,11 @@ class Media_Credit_Public implements Media_Credit_Base {
 		}
 
 		// Prepare credit line string.
-		$image_credit = _nx(
+		/* translators: 1: last credit 2: concatenated other credits (empty in singular) */
+		$image_credit = _n(
 			'Image courtesy of %2$s%1$s', // %2$s will be empty
 			'Images courtesy of %2$s and %1$s',
 			count( $credit_unique ),
-			'%1$s is always the position of the last credit, %2$s of the concatenated other credits (empty in singular)',
 			'media-credit'
 		);
 
@@ -365,7 +365,8 @@ class Media_Credit_Public implements Media_Credit_Base {
 
 		// Look at "no default credits" option.
 		$options = get_option( self::OPTION );
-		if ( ( $credit = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, empty( $options['no_default_credit'] ) ) ) && empty( $credit ) ) {
+		$credit  = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, empty( $options['no_default_credit'] ) );
+		if ( empty( $credit ) ) {
 			return $html; // Don't print the default credit.
 		}
 
