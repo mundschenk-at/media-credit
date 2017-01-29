@@ -160,7 +160,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	}
 
 	/**
-	 * Returns the freeform emdia credit for a given post/attachment.
+	 * Returns the freeform media credit for a given post/attachment.
 	 *
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 *
