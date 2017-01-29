@@ -292,21 +292,31 @@ class Media_Credit_Public implements Media_Credit_Base {
 	/**
 	 * Adds image credits to the end of a post.
 	 *
+	 * @since 3.1.5 The function checks if it's in the main loop in a single post page.
+	 *              If credits for featured images are enabled, they will also show up here.
+	 *
 	 * @param string $content The post content.
 	 *
-	 * @return string The filtered post content.
+	 * @return string The post content with the credit line added.
 	 */
 	public function add_media_credits_to_end( $content ) {
+
+		// Check if we're inside the main loop in a single post page.
+		if ( ! is_single() || ! in_the_loop() || ! is_main_query() ) {
+			return $content; // abort.
+		}
+
+		// Look at the plugin options.
+		$options                = get_option( self::OPTION );
+		$include_default_credit = empty( $options['no_default_credit'] );
+		$include_post_thumbnail = ! empty( $options['post_thumbnail_credit'] );
+
 		// Find the attachment_IDs of all media used in $content.
-		if ( ! preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $images ) ) {
+		if ( ! preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $images ) && ! $include_post_thumbnail ) {
 			return $content; // no images found.
 		}
 
-		// Look at "no default credits" option.
-		$options = get_option( self::OPTION );
-		$include_default_credit = empty( $options['no_default_credit'] );
-
-		// Get a list of unique credits for the page.
+		// Get a list of credits for the page.
 		$credit_unique = array();
 		foreach ( $images[1] as $image_id ) {
 			$credit = Media_Credit_Template_Tags::get_media_credit_html( $image_id, $include_default_credit );
@@ -315,6 +325,21 @@ class Media_Credit_Public implements Media_Credit_Base {
 				$credit_unique[] = $credit;
 			}
 		}
+
+		// Optionally include post thumbnail credit.
+		if ( $include_post_thumbnail ) {
+			$post_thumbnail_id = get_post_thumbnail_id();
+
+			if ( '' != $post_thumbnail_id ) {
+				$credit = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, $include_default_credit );
+
+				if ( ! empty( $credit ) ) {
+					array_unshift( $credit_unique, $credit );
+				}
+			}
+		}
+
+		// Make credit list unique.
 		$credit_unique = array_unique( $credit_unique );
 
 		// If no images are left, don't display credit line.
@@ -378,8 +403,13 @@ class Media_Credit_Public implements Media_Credit_Base {
 			return $output;
 		}
 
-		// Look at "no default credits" option.
+		// Look at our options.
 		$options = get_option( self::OPTION );
+
+		// Return early if credits are displayed at end.
+		if ( ! empty( $options['credit_at_end'] ) ) {
+			return $html; // abort.
+		}
 
 		/**
 		 * Filters whether link tags should be included in the post thumbnail credit. By default, both custom
