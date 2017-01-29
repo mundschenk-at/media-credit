@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2016 Peter Putzer.
+ * Copyright 2013-2017 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -109,17 +109,16 @@ class Media_Credit_Public implements Media_Credit_Base {
 		/* wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/media-credit-public.js', array( 'jquery' ), $this->version, false ); */
 	}
 
-
-
 	/**
-	 * Modified caption shortcode.
+	 * Allows `[media-credit]` shortcodes inside `[caption]`.
 	 *
 	 * Fixes the new style caption shortcode parsing and then calls the stock
-	 * shortcode function.
+	 * shortcode function. Optionally adds schema.org microdata.
 	 *
-	 * @param array  $attr    Attributes attributed to the shortcode.
-	 * @param string $content Optional. Shortcode content.
-	 * @return string
+	 * @param array  $attr    The `[caption]` shortcode attributes.
+	 * @param string $content Optional. Shortcode content. Default null.
+	 *
+	 * @return string The enriched caption markup.
 	 */
 	public function caption_shortcode( $attr, $content = null ) {
 		// New-style shortcode with the caption inside the shortcode with the link and image tags.
@@ -174,7 +173,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 	}
 
 	/**
-	 * Add shortcode for media credit. Allows for credit to be specified for media attached to a post
+	 * Adds shortcode for media credit. Allows for credit to be specified for media attached to a post
 	 * by either specifying the ID of a WordPress user or with a raw string for the name assigned credit.
 	 * If an ID is present, it will take precedence over a name.
 	 *
@@ -186,8 +185,19 @@ class Media_Credit_Public implements Media_Credit_Base {
 	 * @return string
 	 */
 	function media_credit_shortcode( $atts, $content = null ) {
+
 		// Allow plugins/themes to override the default media credit template.
-		// TODO: documentation.
+		/**
+		 * Replaces the `[media-credit]` shortcode with custom markup.
+		 *
+		 * If the returned string is non-empty, it will be used as the markup for
+		 * the media credit.
+		 *
+		 * @param string $markup  The media credit markup. Default ''.
+		 * @param array  $atts    The `[media-credit]` shortcode attributes.
+		 * @param string $content The image element, possibly wrapped in a hyperlink.
+		 *                        Should be integrated into the returned `$markup`.
+		 */
 		$output = apply_filters( 'media_credit_shortcode', '', $atts, $content );
 		if ( '' !== $output ) {
 			return $output;
@@ -229,7 +239,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 		$credit_width  = (int) $atts['width'] + ( $html5_enabled ? 0 : 10 );
 
 		/**
-		 * Filter the width of an image's credit/caption.
+		 * Filters the width of an image's credit/caption.
 		 * We could use a media-credit specific filter, but we don't to be more compatible
 		 * with existing themes.
 		 *
@@ -282,21 +292,31 @@ class Media_Credit_Public implements Media_Credit_Base {
 	/**
 	 * Adds image credits to the end of a post.
 	 *
+	 * @since 3.1.5 The function checks if it's in the main loop in a single post page.
+	 *              If credits for featured images are enabled, they will also show up here.
+	 *
 	 * @param string $content The post content.
 	 *
-	 * @return string The filtered post content.
+	 * @return string The post content with the credit line added.
 	 */
 	public function add_media_credits_to_end( $content ) {
+
+		// Check if we're inside the main loop in a single post page.
+		if ( ! is_single() || ! in_the_loop() || ! is_main_query() ) {
+			return $content; // abort.
+		}
+
+		// Look at the plugin options.
+		$options                = get_option( self::OPTION );
+		$include_default_credit = empty( $options['no_default_credit'] );
+		$include_post_thumbnail = ! empty( $options['post_thumbnail_credit'] );
+
 		// Find the attachment_IDs of all media used in $content.
-		if ( ! preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $images ) ) {
+		if ( ! preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $images ) && ! $include_post_thumbnail ) {
 			return $content; // no images found.
 		}
 
-		// Look at "no default credits" option.
-		$options = get_option( self::OPTION );
-		$include_default_credit = empty( $options['no_default_credit'] );
-
-		// Get a list of unique credits for the page.
+		// Get a list of credits for the page.
 		$credit_unique = array();
 		foreach ( $images[1] as $image_id ) {
 			$credit = Media_Credit_Template_Tags::get_media_credit_html( $image_id, $include_default_credit );
@@ -305,6 +325,21 @@ class Media_Credit_Public implements Media_Credit_Base {
 				$credit_unique[] = $credit;
 			}
 		}
+
+		// Optionally include post thumbnail credit.
+		if ( $include_post_thumbnail ) {
+			$post_thumbnail_id = get_post_thumbnail_id();
+
+			if ( '' != $post_thumbnail_id ) {
+				$credit = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, $include_default_credit );
+
+				if ( ! empty( $credit ) ) {
+					array_unshift( $credit_unique, $credit );
+				}
+			}
+		}
+
+		// Make credit list unique.
 		$credit_unique = array_unique( $credit_unique );
 
 		// If no images are left, don't display credit line.
@@ -313,11 +348,11 @@ class Media_Credit_Public implements Media_Credit_Base {
 		}
 
 		// Prepare credit line string.
-		$image_credit = _nx(
+		/* translators: 1: last credit 2: concatenated other credits (empty in singular) */
+		$image_credit = _n(
 			'Image courtesy of %2$s%1$s', // %2$s will be empty
 			'Images courtesy of %2$s and %1$s',
 			count( $credit_unique ),
-			'%1$s is always the position of the last credit, %2$s of the concatenated other credits (empty in singular)',
 			'media-credit'
 		);
 
@@ -330,17 +365,17 @@ class Media_Credit_Public implements Media_Credit_Base {
 		$credit_unique[] = $last_credit;
 
 		/**
-		 * Filter hook to modify the end credits.
+		 * Filters the credits at the end of a post.
 		 *
-		 * @param $value - default end credit mark-up
-		 * @param $content - the original content
-		 * @param $credit_unique - a unique array of media credits for the post.
+		 * @param string $markup        The generated end credit mark-up.
+		 * @param string $content       The original content before the end credits were added.
+		 * @param arrray $credit_unique An array of unique media credits contained in the current post.
 		 */
 		return apply_filters( 'media_credit_at_end', $content . '<div class="media-credit-end">' . $image_credit . '</div>', $content, $credit_unique );
 	}
 
 	/**
-	 * Add media credit to post thumbnails (in the loop).
+	 * Adds media credit to post thumbnails (in the loop).
 	 *
 	 * @param string       $html              The post thumbnail HTML.
 	 * @param int          $post_id           The post ID.
@@ -354,19 +389,47 @@ class Media_Credit_Public implements Media_Credit_Base {
 		}
 
 		// Allow plugins/themes to override the default media credit template.
-		// TODO: documentation.
 		/**
-		 * Provide a shortcut filter for post thumbnail media credits.
+		 * Replaces the post thumbnail media credits with custom markup. If the returned
+		 * string is non-empty, it will be used as the post thumbnail markup.
+		 *
+		 * @param string $content           The generated markup. Default ''.
+		 * @param string $html              The post thumbnail `<img>` markup. Should be integrated in the returned `$content`.
+		 * @param int    $post_id           The current post ID.
+		 * @param int    $post_thumbnail_id The attachment ID of the post thumbnail.
 		 */
 		$output = apply_filters( 'media_credit_post_thumbnail', '', $html, $post_id, $post_thumbnail_id );
 		if ( '' !== $output ) {
 			return $output;
 		}
 
-		// Look at "no default credits" option.
+		// Look at our options.
 		$options = get_option( self::OPTION );
-		if ( ( $credit = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, empty( $options['no_default_credit'] ) ) ) && empty( $credit ) ) {
-			return $html; // Don't print the default credit.
+
+		// Return early if credits are displayed at end.
+		if ( ! empty( $options['credit_at_end'] ) ) {
+			return $html; // abort.
+		}
+
+		/**
+		 * Filters whether link tags should be included in the post thumbnail credit. By default, both custom
+		 * and default links are disabled because post thumbnails are often wrapped in `<a></a>`.
+		 *
+		 * @since 3.1.5
+		 *
+		 * @param bool $include_links     Default false.
+		 * @param int  $post_id           The post ID.
+		 * @param int  $post_thumbnail_id The post thumbnail's attachment ID.
+		 */
+		if ( apply_filters( 'media_credit_post_thumbnail_include_links', false, $post_id, $post_thumbnail_id ) ) {
+			$credit  = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, empty( $options['no_default_credit'] ) );
+		} else {
+			$credit  = Media_Credit_Template_Tags::get_media_credit( $post_thumbnail_id, empty( $options['no_default_credit'] ) );
+		}
+
+		// Don't print the default credit.
+		if ( empty( $credit ) ) {
+			return $html;
 		}
 
 		// Extract image width.

@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2016 Peter Putzer.
+ * Copyright 2013-2017 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -79,6 +79,22 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	);
 
 	/**
+	 * Some strings for displaying the preview.
+	 *
+	 * @since  3.1.5
+	 * @access private
+	 * @var    array   $preview_data {
+	 *         Strings used for generating the preview.
+	 *
+	 *         @type string $pattern The pattern string for credits with two names.
+	 *         @type string $name1   A male example name.
+	 *         @type string $name2   A female example name.
+	 *         @type string $joiner  The string used to join multiple image credits.
+	 * }
+	 */
+	private $preview_data = array();
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    3.0.0
@@ -118,16 +134,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		// Preview script for the settings page.
 		if ( $this->is_media_settings_page() ) {
 			wp_enqueue_script( 'media-credit-preview', $this->ressource_url . 'js/media-credit-preview.js', array( 'jquery' ), $this->version, true );
-
-			$preview_data = array(
-				'pattern' => _nx( 'Image courtesy of %2$s%1$s', 'Images courtesy of %2$s and %1$s',  2,
-							 	  '%1$s is always the position of the last credit, %2$s of the concatenated other credits (empty in singular)', 'media-credit' ),
-				'name1'   => _x( 'John Smith', 'Male example name for preview', 'media-credit' ),
-				'name2'   => _x( 'Jane Doe', 'Female example name for preview', 'media-credit' ),
-				'joiner'  => _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' ),
-			);
-
-			wp_localize_script( 'media-credit-preview', 'mediaCreditPreviewData', $preview_data );
+			wp_localize_script( 'media-credit-preview', 'mediaCreditPreviewData', $this->preview_data );
 		}
 
 		// Autocomplete when editing media via the legacy form...
@@ -165,7 +172,9 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @return array The array of plugins to load.
 	 */
 	public function tinymce_internal_plugins( $plugins ) {
-		if ( false !== ( $key = array_search( 'wpeditimage', $plugins ) ) ) {
+		$key = array_search( 'wpeditimage', $plugins );
+
+		if ( false !== $key ) {
 			unset( $plugins[ $key ] );
 		}
 
@@ -227,6 +236,15 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * Initialize settings.
 	 */
 	public function admin_init() {
+		// Initialize preview strings with translations.
+		$this->preview_data = array(
+				/* translators: 1: last credit 2: concatenated other credits (empty in singular) */
+				'pattern' => _n( 'Image courtesy of %2$s%1$s', 'Images courtesy of %2$s and %1$s', 3, 'media-credit' ),
+				'name1'   => _x( 'John Smith', 'Male example name for preview', 'media-credit' ),
+				'name2'   => _x( 'Jane Doe', 'Female example name for preview', 'media-credit' ),
+				'joiner'  => _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' ),
+		);
+
 		register_setting( 'media', self::OPTION, array( $this, 'sanitize_option_values' ) );
 
 		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages.
@@ -284,7 +302,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * AJAX hook for filtering post content after editing media files
 	 */
 	public function ajax_filter_content() {
-		if ( ! isset( $_REQUEST['id'] ) || ! $attachment_id = absint( $_REQUEST['id'] ) ) { // Input var okay.
+		if ( ! isset( $_REQUEST['id'] ) || ! $attachment_id = absint( $_REQUEST['id'] ) ) { // Input var okay. // @codingStandardsIgnoreLine
 			wp_send_json_error();
 		}
 
@@ -294,10 +312,10 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			wp_send_json_error();
 		}
 
-		if ( ! isset( $_REQUEST['mediaCredit']['content'] ) || ! ( $content   = filter_var( wp_unslash( $_REQUEST['mediaCredit']['content'] ) ) )       || // Input var okay. Only uses for comparison.
-			 ! isset( $_REQUEST['mediaCredit']['id'] )      || ! ( $author_id = absint( $_REQUEST['mediaCredit']['id'] ) )                              || // Input var okay.
-			 ! isset( $_REQUEST['mediaCredit']['text'] )    || ! ( $freeform  = sanitize_text_field( wp_unslash( $_REQUEST['mediaCredit']['text'] ) ) ) || // Input var okay.
-			 ! isset( $_REQUEST['mediaCredit']['link'] )    || ! ( $url       = esc_url_raw( wp_unslash( $_REQUEST['mediaCredit']['link'] ) ) ) ) {        // Input var okay.
+		if ( ! isset( $_REQUEST['mediaCredit']['content'] ) || ! ( $content   = filter_var( wp_unslash( $_REQUEST['mediaCredit']['content'] ) ) )       || // Input var okay. Only uses for comparison. // @codingStandardsIgnoreLine
+			 ! isset( $_REQUEST['mediaCredit']['id'] )      || ! ( $author_id = absint( $_REQUEST['mediaCredit']['id'] ) )                              || // Input var okay. // @codingStandardsIgnoreLine
+			 ! isset( $_REQUEST['mediaCredit']['text'] )    || ! ( $freeform  = sanitize_text_field( wp_unslash( $_REQUEST['mediaCredit']['text'] ) ) ) || // Input var okay. // @codingStandardsIgnoreLine
+			 ! isset( $_REQUEST['mediaCredit']['link'] )    || ! ( $url       = esc_url_raw( wp_unslash( $_REQUEST['mediaCredit']['link'] ) ) ) ) {        // Input var okay. // @codingStandardsIgnoreLine
 			wp_send_json_error();
 		}
 
@@ -563,14 +581,9 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$user_credit = '<a href="' . esc_url_raw( get_author_posts_url( $current_user->ID ) ) . '">' . esc_html( $current_user->display_name ) . '</a>' . esc_html( $args['options']['separator'] . $args['options']['organization'] );
 
 		if ( ! empty( $args['options']['credit_at_end'] ) ) {
-			$credit_html = sprintf(
-				_nx( 'Image courtesy of %2$s%1$s',
-					 'Images courtesy of %2$s and %1$s',  2,
-					 '%1$s is always the position of the last credit, %2$s of the concatenated other credits (empty in singular)', 'media-credit' ),
-				_x( 'John Smith', 'Example name for preview', 'media-credit' ),
-				$user_credit
-				. esc_html_x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' )
-				. esc_html_x( 'Jane Doe', 'Example name for preview', 'media-credit' )
+			$credit_html = sprintf( $this->preview_data['pattern'],
+									$this->preview_data['name1'],
+									$user_credit . $this->preview_data['joiner'] . $this->preview_data['name2']
 			);
 		} else {
 			$credit_html = $user_credit;
@@ -610,17 +623,17 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @since 3.1.0
 	 */
 	function ajax_save_attachment_media_credit() {
-		if ( ! isset( $_REQUEST['id'] ) || ! $attachment_id = absint( $_REQUEST['id'] ) ) { // Input var okay.
+		if ( ! isset( $_REQUEST['id'] ) || ! $attachment_id = absint( $_REQUEST['id'] ) ) { // Input var okay. // @codingStandardsIgnoreLine
 			wp_send_json_error(); // Standard response for failure.
 		}
 
 		check_ajax_referer( "save-attachment-{$attachment_id}-media-credit", 'nonce' );
 
-		if ( ! isset( $_REQUEST['changes'] ) || ! $changes = wp_unslash( $_REQUEST['changes'] ) ) { // Input var okay. WPCS: sanitization ok.
+		if ( ! isset( $_REQUEST['changes'] ) || ! $changes = wp_unslash( $_REQUEST['changes'] ) ) { // Input var okay. WPCS: sanitization ok. // @codingStandardsIgnoreLine
 			wp_send_json_error(); // Standard response for failure.
 		}
 
-		if ( ! isset( $_REQUEST['mediaCredit'] ) || ! $media_credit = wp_unslash( $_REQUEST['mediaCredit'] ) ) { // Input var okay. WPCS: sanitization ok.
+		if ( ! isset( $_REQUEST['mediaCredit'] ) || ! $media_credit = wp_unslash( $_REQUEST['mediaCredit'] ) ) { // Input var okay. WPCS: sanitization ok. // @codingStandardsIgnoreLine
 			wp_send_json_error(); // Standard response for failure.
 		}
 

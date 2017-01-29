@@ -97,6 +97,12 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 ## Changelog ##
 
+### 3.1.5 (Jan. 29, 2017) ###
+* Prevent invalid link nesting in featured image credits. This means that by default, no `<a>` tags are printed for featured image credits.
+  The old behaviour can be restored by including `add_filter( 'media_credit_post_thumbnail_include_links', __return_true );` in the theme's `functions.php`.
+* "Display credit after posts" is now restricted to the proper single post view (and not every usage of `the_content` hook).
+* "Display credit after posts" is honored when used together with "Display credit for featured images".
+
 ### 3.1.4 (Jan. 1, 2017) ###
 * Properly sync models when editing image details.
 
