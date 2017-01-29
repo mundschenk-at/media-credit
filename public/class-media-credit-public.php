@@ -365,9 +365,26 @@ class Media_Credit_Public implements Media_Credit_Base {
 
 		// Look at "no default credits" option.
 		$options = get_option( self::OPTION );
-		$credit  = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, empty( $options['no_default_credit'] ) );
+
+		/**
+		 * Filters whether link tags should be included in the post thumbnail credit. By default, both custom
+		 * and default links are disabled because post thumbnails are often wrapped in `<a></a>`.
+		 *
+		 * @since 3.1.5
+		 *
+		 * @param bool $include_links     Default false.
+		 * @param int  $post_id           The post ID.
+		 * @param int  $post_thumbnail_id The post thumbnail's attachment ID.
+		 */
+		if ( apply_filters( 'media_credit_post_thumbnail_include_links', false, $post_id, $post_thumbnail_id ) ) {
+			$credit  = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, empty( $options['no_default_credit'] ) );
+		} else {
+			$credit  = Media_Credit_Template_Tags::get_media_credit( $post_thumbnail_id, empty( $options['no_default_credit'] ) );
+		}
+
+		// Don't print the default credit.
 		if ( empty( $credit ) ) {
-			return $html; // Don't print the default credit.
+			return $html;
 		}
 
 		// Extract image width.
