@@ -109,17 +109,16 @@ class Media_Credit_Public implements Media_Credit_Base {
 		/* wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/media-credit-public.js', array( 'jquery' ), $this->version, false ); */
 	}
 
-
-
 	/**
-	 * Modified caption shortcode.
+	 * Allows `[media-credit]` shortcodes inside `[caption]`.
 	 *
 	 * Fixes the new style caption shortcode parsing and then calls the stock
-	 * shortcode function.
+	 * shortcode function. Optionally adds schema.org microdata.
 	 *
-	 * @param array  $attr    Attributes attributed to the shortcode.
-	 * @param string $content Optional. Shortcode content.
-	 * @return string
+	 * @param array  $attr    The `[caption]` shortcode attributes.
+	 * @param string $content Optional. Shortcode content. Default null.
+	 *
+	 * @return string The enriched caption markup.
 	 */
 	public function caption_shortcode( $attr, $content = null ) {
 		// New-style shortcode with the caption inside the shortcode with the link and image tags.
@@ -174,7 +173,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 	}
 
 	/**
-	 * Add shortcode for media credit. Allows for credit to be specified for media attached to a post
+	 * Adds shortcode for media credit. Allows for credit to be specified for media attached to a post
 	 * by either specifying the ID of a WordPress user or with a raw string for the name assigned credit.
 	 * If an ID is present, it will take precedence over a name.
 	 *
@@ -186,8 +185,19 @@ class Media_Credit_Public implements Media_Credit_Base {
 	 * @return string
 	 */
 	function media_credit_shortcode( $atts, $content = null ) {
+
 		// Allow plugins/themes to override the default media credit template.
-		// TODO: documentation.
+		/**
+		 * Replaces the `[media-credit]` shortcode with custom markup.
+		 *
+		 * If the returned string is non-empty, it will be used as the markup for
+		 * the media credit.
+		 *
+		 * @param string $markup  The media credit markup. Default ''.
+		 * @param array  $atts    The `[media-credit]` shortcode attributes.
+		 * @param string $content The image element, possibly wrapped in a hyperlink.
+		 *                        Should be integrated into the returned `$markup`.
+		 */
 		$output = apply_filters( 'media_credit_shortcode', '', $atts, $content );
 		if ( '' !== $output ) {
 			return $output;
@@ -229,7 +239,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 		$credit_width  = (int) $atts['width'] + ( $html5_enabled ? 0 : 10 );
 
 		/**
-		 * Filter the width of an image's credit/caption.
+		 * Filters the width of an image's credit/caption.
 		 * We could use a media-credit specific filter, but we don't to be more compatible
 		 * with existing themes.
 		 *
@@ -330,17 +340,17 @@ class Media_Credit_Public implements Media_Credit_Base {
 		$credit_unique[] = $last_credit;
 
 		/**
-		 * Filter hook to modify the end credits.
+		 * Filters the credits at the end of a post.
 		 *
-		 * @param $value - default end credit mark-up
-		 * @param $content - the original content
-		 * @param $credit_unique - a unique array of media credits for the post.
+		 * @param string $markup        The generated end credit mark-up.
+		 * @param string $content       The original content before the end credits were added.
+		 * @param arrray $credit_unique An array of unique media credits contained in the current post.
 		 */
 		return apply_filters( 'media_credit_at_end', $content . '<div class="media-credit-end">' . $image_credit . '</div>', $content, $credit_unique );
 	}
 
 	/**
-	 * Add media credit to post thumbnails (in the loop).
+	 * Adds media credit to post thumbnails (in the loop).
 	 *
 	 * @param string       $html              The post thumbnail HTML.
 	 * @param int          $post_id           The post ID.
@@ -354,9 +364,14 @@ class Media_Credit_Public implements Media_Credit_Base {
 		}
 
 		// Allow plugins/themes to override the default media credit template.
-		// TODO: documentation.
 		/**
-		 * Provide a shortcut filter for post thumbnail media credits.
+		 * Replaces the post thumbnail media credits with custom markup. If the returned
+		 * string is non-empty, it will be used as the post thumbnail markup.
+		 *
+		 * @param string $content           The generated markup. Default ''.
+		 * @param string $html              The post thumbnail `<img>` markup. Should be integrated in the returned `$content`.
+		 * @param int    $post_id           The current post ID.
+		 * @param int    $post_thumbnail_id The attachment ID of the post thumbnail.
 		 */
 		$output = apply_filters( 'media_credit_post_thumbnail', '', $html, $post_id, $post_thumbnail_id );
 		if ( '' !== $output ) {
