@@ -54,14 +54,14 @@ module.exports = function( grunt ) {
 				options: {
 					deploy_trunk: true,
 					deploy_assets: true,
-					deploy_release: false,
+					deploy_tag: false,
 				}
 			},
 			assets: {
 				options: {
 					deploy_assets: true,
 					deploy_trunk: false,
-					deploy_release: false,
+					deploy_tag: false,
 				}
 			}
 		},
@@ -69,7 +69,8 @@ module.exports = function( grunt ) {
 		jshint: {
 			files: [
 				'admin/js/**/*.js',
-				'public/js/**/*.js'
+				'public/js/**/*.js',
+				'!**/*.min.js'
 			],
 			options: {
 				expr: true,
@@ -78,14 +79,15 @@ module.exports = function( grunt ) {
 					console: true,
 					module: true,
 					document: true
-				}
+				},
 			}
 		},
 
 		jscs: {
 			src: [
 				'admin/js/**/*.js',
-				'public/js/**/*.js'
+				'public/js/**/*.js',
+				'!**/*.min.js'
 			],
 			options: {
 			}
@@ -192,6 +194,27 @@ module.exports = function( grunt ) {
 	grunt.registerTask( 'delegate', function() {
 		grunt.task.run( this.args.join( ':' ) );
 	} );
+
+	// dynamically generate uglify targets
+	grunt.registerMultiTask('minify', function () {
+		this.files.forEach(function (file) {
+			var path = file.src[0],
+			target = path.match(/([^.]*)\.js/)[1];
+
+			// store some information about this file in config
+			grunt.config('ugtargets.' + target, {
+				path: path,
+				filename: path.split('/').pop()
+			});
+
+			// create and run an uglify target for this file
+			grunt.config('uglify.' + target + '.files', [{
+				src: [path],
+				dest: path.replace(/^(.*)\.js$/, '$1.min.js')
+			}]);
+			grunt.task.run('uglify:' + target);
+		});
+	});
 
 	grunt.registerTask('deploy', [
 			'phpcs',

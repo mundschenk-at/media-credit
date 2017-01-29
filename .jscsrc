@@ -3,9 +3,9 @@
     "fileExtensions": [ ".js" ],
     "excludeFiles": [
     	"**/js/**.min.js",
-	"**/js/tinymce4/media-credit-tinymce-switch.js",
-	"**/js/tinymce4/media-credit-tinymce.js",
-	"**/js/tinymce4/tinymce-noneditable.js",
+		"**/js/tinymce4/media-credit-tinymce-switch.js",
+		"**/js/tinymce4/media-credit-tinymce.js",
+		"**/js/tinymce4/tinymce-noneditable.js",
     	"Gruntfile.js"
     ]
 }
