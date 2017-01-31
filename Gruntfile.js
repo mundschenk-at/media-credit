@@ -49,6 +49,8 @@ module.exports = function( grunt ) {
 			},
 			release: {
 				// nothing
+				deploy_trunk: true,
+				deploy_tag: true,
 			},
 			trunk: {
 				options: {
@@ -185,7 +187,7 @@ module.exports = function( grunt ) {
 	grunt.registerTask( 'build', [
 			'wp_readme_to_markdown',
 			'clean:build',
-			'newer:delegate:sass:build',
+			'newer:delegate:sass:dist',
 			'newer:minify',
 			'copy:build'
 	] );
