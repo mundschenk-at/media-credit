@@ -109,8 +109,8 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 		}
 
 		$credit_meta = self::get_freeform_media_credit( $post );
-		$credit_url = self::get_media_credit_url( $post );
-		$credit = '';
+		$credit_url  = self::get_media_credit_url( $post );
+		$credit      = '';
 
 		if ( '' !== $credit_meta ) {
 			if ( ! empty( $credit_url ) ) {
@@ -119,12 +119,9 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 				$credit = $credit_meta;
 			}
 		} elseif ( $include_default_credit ) {
-			$credit_wp_author = self::get_wpuser_media_credit( $post );
-
 			$options = get_option( self::OPTION );
-			$url = ! empty( $credit_url ) ? $credit_url : get_author_posts_url( $post->post_author );
-
-			$credit = '<a href="' . esc_url( $url ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
+			$url     = ! empty( $credit_url ) ? $credit_url : get_author_posts_url( $post->post_author );
+			$credit  = '<a href="' . esc_url( $url ) . '">' . self::get_wpuser_media_credit( $post ) . '</a>' . $options['separator'] . $options['organization'];
 		}
 
 		return $credit;
@@ -168,9 +165,14 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	 */
 	public static function get_freeform_media_credit( $post = null ) {
 
-		$post = get_post( $post );
+		$post   = get_post( $post );
+		$credit = get_post_meta( $post->ID, self::POSTMETA_KEY, true );
 
-		return get_post_meta( $post->ID, self::POSTMETA_KEY, true );
+		if ( self::EMPTY_META_STRING === $credit ) {
+			$credit = '';
+		}
+
+		return $credit;
 	}
 
 	/**
