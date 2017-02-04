@@ -3,7 +3,7 @@ Contributors: pputzer
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.7
 Tested up to: 4.7
-Stable tag: 3.1.5
+Stable tag: 3.1.6
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -90,6 +90,10 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 
 == Changelog ==
+
+= 3.1.6 (Feb. 4, 2017) =
+* Return `''` (the empty string) when retrieving empty freeform credits.
+* Honor "Do not display default credit" for featured images.
 
 = 3.1.5 (Jan. 29, 2017) =
 * Prevent invalid link nesting in featured image credits. This means that by default, no `<a>` tags are printed for featured image credits.

@@ -404,7 +404,8 @@ class Media_Credit_Public implements Media_Credit_Base {
 		}
 
 		// Look at our options.
-		$options = get_option( self::OPTION );
+		$options                 = get_option( self::OPTION );
+		$include_default_credits = empty( $options['no_default_credit'] );
 
 		// Return early if credits are displayed at end.
 		if ( ! empty( $options['credit_at_end'] ) ) {
@@ -422,9 +423,11 @@ class Media_Credit_Public implements Media_Credit_Base {
 		 * @param int  $post_thumbnail_id The post thumbnail's attachment ID.
 		 */
 		if ( apply_filters( 'media_credit_post_thumbnail_include_links', false, $post_id, $post_thumbnail_id ) ) {
-			$credit  = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, empty( $options['no_default_credit'] ) );
+			$credit = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, $include_default_credits );
+		} elseif ( $include_default_credits ) {
+			$credit = Media_Credit_Template_Tags::get_media_credit( $post_thumbnail_id, true );
 		} else {
-			$credit  = Media_Credit_Template_Tags::get_media_credit( $post_thumbnail_id, empty( $options['no_default_credit'] ) );
+			$credit = Media_Credit_Template_Tags::get_freeform_media_credit( $post_thumbnail_id );
 		}
 
 		// Don't print the default credit.
