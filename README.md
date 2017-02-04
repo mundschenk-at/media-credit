@@ -97,6 +97,10 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 ## Changelog ##
 
+### 3.1.6 (Feb. 4, 2017) ###
+* Return `''` (the empty string) when retrieving empty freeform credits.
+* Honor "Do not display default credit" for featured images.
+
 ### 3.1.5 (Jan. 29, 2017) ###
 * Prevent invalid link nesting in featured image credits. This means that by default, no `<a>` tags are printed for featured image credits.
   The old behaviour can be restored by including `add_filter( 'media_credit_post_thumbnail_include_links', __return_true );` in the theme's `functions.php`.
