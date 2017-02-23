@@ -248,11 +248,14 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		register_setting( 'media', self::OPTION, array( $this, 'sanitize_option_values' ) );
 
 		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages.
-		if ( ( current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) && user_can_richedit() ) {
-			add_action( 'admin_head',           array( $this, 'admin_head' ) );
-			add_filter( 'mce_external_plugins', array( $this, 'tinymce_external_plugins' ) );
-			add_filter( 'tiny_mce_plugins',     array( $this, 'tinymce_internal_plugins' ) );
-			add_filter( 'mce_css',              array( $this, 'tinymce_css' ) );
+		if ( ( current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) ) {
+			add_action( 'admin_head', array( $this, 'admin_head' ) );
+
+			if ( user_can_richedit() ) {
+				add_filter( 'mce_external_plugins', array( $this, 'tinymce_external_plugins' ) );
+				add_filter( 'tiny_mce_plugins',     array( $this, 'tinymce_internal_plugins' ) );
+				add_filter( 'mce_css',              array( $this, 'tinymce_css' ) );
+			}
 		}
 
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
