@@ -1,7 +1,6 @@
-@import "compass/css3/user-interface";
 
 label[data-setting="mediaCreditText"] input[type="text"] {
- @include input-placeholder {
+	&::placeholder {
     opacity: 0.3;
   }
 }
@@ -16,7 +15,7 @@ label[data-setting="mediaCreditNoFollow"].setting {
 		width: 100%;
 		float: none;
 		margin-top: 5px;
-		
+
 		input[type="checkbox"] {
 			vertical-align: middle;
     		position: relative;
@@ -29,7 +28,7 @@ label[data-setting="mediaCreditNoFollow"].setting {
 .attachment-details {
 	label[data-setting="mediaCreditNoFollow"].setting {
 		margin-top: 4px;
-		
+
 		input[type="checkbox"] {
 			margin: 0 3px 0 0;
 			vertical-align: middle;
@@ -41,10 +40,10 @@ label[data-setting="mediaCreditNoFollow"].setting {
 
 #poststuff table.compat-attachment-fields {
 	width: 100%;
-	
+
 	td.field {
 		width: 80%;
-	
+
 		input.media-credit-input:not([type="checkbox"]) {
 			width: 100%;
 		}

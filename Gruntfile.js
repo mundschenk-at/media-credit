@@ -101,7 +101,7 @@ module.exports = function( grunt ) {
 			},
 			options: {
 				bin: 'phpcs -p -s -v -n ',
-				standard: './codesniffer.ruleset.xml'
+				standard: './phpcs.xml'
 			}
 		},
 
@@ -115,9 +115,9 @@ module.exports = function( grunt ) {
 		sass: {
 			dist: {
 				options: {
-					style: 'compressed',
+					outputStyle: 'compressed',
+					sourceComments: false,
 					sourcemap: 'none',
-					compass: true
 				},
 				files: [ {
 					expand: true,
@@ -136,9 +136,9 @@ module.exports = function( grunt ) {
 			},
 			dev: {
 				options: {
-					style: 'expanded',
-					sourcemap: 'none',
-					compass: true
+					outputStyle: 'expanded',
+					sourceComments: false,
+					sourceMapEmbed: true,
 				},
 				files: [ {
 					expand: true,
@@ -151,6 +151,32 @@ module.exports = function( grunt ) {
 					expand: true,
 					cwd: 'public/scss',
 					src: [ '**/*.scss' ],
+					dest: 'public/css',
+					ext: '.css'
+				} ]
+			}
+		},
+
+		postcss: {
+			options: {
+				map: true, // inline sourcemaps.
+				processors: [
+					require('pixrem')(), // add fallbacks for rem units
+					require('autoprefixer')( { browsers: [ '>1%', 'last 2 versions', 'IE 9', 'IE 10' ] } ) // add vendor prefixes
+				]
+			},
+			dist: {
+				files: [ {
+					expand: true,
+					cwd: 'admin/css',
+					src: [ '**/*.css' ],
+					dest: 'admin/css',
+					ext: '.css'
+				},
+				{
+					expand: true,
+					cwd: 'public/css',
+					src: [ '**/*.css' ],
 					dest: 'public/css',
 					ext: '.css'
 				} ]
@@ -181,13 +207,15 @@ module.exports = function( grunt ) {
 			'newer:jscs',
 			'newer:jshint',
 			'newer:phpcs',
-			'newer:delegate:sass:dev'
+			'newer:delegate:sass:dev',
+			'newer:postcss'
 	] );
 
 	grunt.registerTask( 'build', [
 			'wp_readme_to_markdown',
 			'clean:build',
 			'newer:delegate:sass:dist',
+			'newer:postcss',
 			'newer:minify',
 			'copy:build'
 	] );
