@@ -165,7 +165,7 @@ module.exports = function( grunt ) {
 					require('autoprefixer')( { browsers: [ '>1%', 'last 2 versions', 'IE 9', 'IE 10' ] } ) // add vendor prefixes
 				]
 			},
-			dist: {
+			dev: {
 				files: [ {
 					expand: true,
 					cwd: 'admin/css',
@@ -178,6 +178,22 @@ module.exports = function( grunt ) {
 					cwd: 'public/css',
 					src: [ '**/*.css' ],
 					dest: 'public/css',
+					ext: '.css'
+				} ]
+			},
+			dist: {
+				files: [ {
+					expand: true,
+					cwd: 'build/admin/css',
+					src: [ '**/*.css' ],
+					dest: 'build/admin/css',
+					ext: '.css'
+				},
+				{
+					expand: true,
+					cwd: 'build/public/css',
+					src: [ '**/*.css' ],
+					dest: 'build/public/css',
 					ext: '.css'
 				} ]
 			}
@@ -193,9 +209,11 @@ module.exports = function( grunt ) {
 
 		minify: {
 			dist: {
-				files: grunt.file.expandMapping( [ 'admin/js/**/*.js', '!admin/js/**/*min.js', 'public/js/**/*.js', '!public/js/**/*min.js' ], '', {
+				expand: true,
+				//dest: 'build/',
+				files: grunt.file.expandMapping( [ 'admin/js/**/*.js', '!admin/js/**/*min.js', 'public/js/**/*.js', '!public/js/**/*min.js' ], 'build/', {
 					rename: function(destBase, destPath) {
-						return destBase+destPath.replace('.js', '.min.js');
+						return destBase + destPath.replace('.js', '.min.js');
 					}
 				})
 			},
@@ -208,14 +226,14 @@ module.exports = function( grunt ) {
 			'newer:jshint',
 			'newer:phpcs',
 			'newer:delegate:sass:dev',
-			'newer:postcss'
+			'newer:postcss:dev'
 	] );
 
 	grunt.registerTask( 'build', [
 			'wp_readme_to_markdown',
 			'clean:build',
 			'newer:delegate:sass:dist',
-			'newer:postcss',
+			'newer:postcss:dist',
 			'newer:minify',
 			'copy:build'
 	] );
@@ -240,7 +258,7 @@ module.exports = function( grunt ) {
 			// create and run an uglify target for this file
 			grunt.config('uglify.' + target + '.files', [{
 				src: [path],
-				dest: path.replace(/^(.*)\.js$/, '$1.min.js')
+				dest: path.replace(/^(.*)\.js$/, 'build/$1.min.js')
 			}]);
 			grunt.task.run('uglify:' + target);
 		});
