@@ -1,4 +1,4 @@
-jQuery( document ).ready( function( $ ) {
+jQuery( function( $ ) {
 	/* jshint unused: vars */ /* globals mediaCreditPreviewData */
 
 	/**
@@ -19,8 +19,16 @@ jQuery( document ).ready( function( $ ) {
 	    var author         = $( '#media-credit-preview a' ).clone().wrap( '<p>' ).parent().html();
 	    var separator      = $( 'input[name=\'media-credit[separator]\']' ).val();
 	    var organization   = $( 'input[name=\'media-credit[organization]\']' ).val();
+			var previewData    = window.mediaCreditPreviewData || {
 
-		$( '#media-credit-preview' ).html( mediaCreditPreviewData.pattern.replace( '%2$s', author + separator + organization + mediaCreditPreviewData.joiner + mediaCreditPreviewData.name2 ).replace( '%1$s', mediaCreditPreviewData.name1 ) );
+				// Default object if translated version is missing.
+				pattern: 'Images courtesy of %2$s and %1$s',
+				name1:   'Joe Smith',
+				name2:   'Jane Doe',
+				joiner:  ', '
+			};
+
+		$( '#media-credit-preview' ).html( previewData.pattern.replace( '%2$s', author + separator + organization + previewData.joiner + previewData.name2 ).replace( '%1$s', previewData.name1 ) );
 	}
 
 	/**

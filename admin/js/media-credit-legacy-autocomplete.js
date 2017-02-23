@@ -4,9 +4,9 @@
 
 /* globals $mediaCredit: false */
 
-( function( $ ) {
+jQuery( function( $ ) {
 
-	var mediaCredit = {};
+	var mediaCredit = window.$mediaCredit || {};
 
 	/**
      * Install autoselect on the given input fields.
@@ -30,7 +30,7 @@
 			autoFocus: true,
 			minLength: 2,
 
-			source: $mediaCredit.names || ( $mediaCredit.names = _.map( $mediaCredit.id, function( value, key ) {
+			source: mediaCredit.names || ( mediaCredit.names = _.map( mediaCredit.id, function( value, key ) {
 				return { id: key, value: value, label: value };
 			} ) ),
 
@@ -73,9 +73,9 @@
 			var credit = $input.val(),
 				authorID = $hidden.attr( 'data-author-id' );
 
-			if ( $mediaCredit.noDefaultCredit && '' === credit && '' === $hidden.val() ) {
+			if ( mediaCredit.noDefaultCredit && '' === credit && '' === $hidden.val() ) {
 				$hidden.val( authorID );
-				$hidden.attr( 'data-author-display', $mediaCredit.id[ authorID ] );
+				$hidden.attr( 'data-author-display', mediaCredit.id[ authorID ] );
 
 				// Re-set placeholder.
 				$input.val( '' ).attr( 'placeholder', $hidden.attr( 'data-author-display' ) );
@@ -96,4 +96,4 @@
 	mediaCredit.hidden = $( '#attachments\\[' + mediaCredit.data.postId + '\\]\\[media-credit-hidden\\]' );
 	mediaCredit.autoCompleteLegacy( mediaCredit.input, mediaCredit.hidden );
 
-} )( jQuery );
+} );
