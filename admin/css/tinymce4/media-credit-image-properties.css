@@ -1,11 +1,14 @@
 .image-details .advanced-media-credit {
   margin-top: 24px;
 }
+
 .image-details .advanced-media-credit .setting.media-credit-nofollow {
   margin-left: 27%;
   width: 70%;
 }
+
 .image-details .advanced-media-credit .setting.media-credit-link input {
-  width: 70%;
   margin: 1px 0;
+  width: 70%;
 }
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFkbWluL3Njc3MvdGlueW1jZTQvbWVkaWEtY3JlZGl0LWltYWdlLXByb3BlcnRpZXMuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUVJLGlCQUFnQjtDQWFqQjs7QUFmSDtFQU1RLGlCQUFnQjtFQUNoQixXQUFVO0NBQ1g7O0FBUlA7RUFXUSxjQUFhO0VBQ2IsV0FBVTtDQUNYIiwiZmlsZSI6Im1lZGlhLWNyZWRpdC1pbWFnZS1wcm9wZXJ0aWVzLmNzcyJ9 */

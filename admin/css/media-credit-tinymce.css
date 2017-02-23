@@ -1,21 +1,22 @@
 .mceMediaCreditTemp {
-  font-size: 11px;
-  font-family: Helvetica, Tahoma, Verdana, Arial, sans-serif;
-  position: absolute;
-  left: 0;
-  bottom: 0;
   background: rgba(255, 255, 255, 0.8);
-  width: 100%;
-  padding: 0;
-  margin: 0;
+  bottom: 0;
+  font-family: Helvetica, Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
   font-weight: normal;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  position: absolute;
   text-align: center;
+  width: 100%;
 }
+
 .mceMediaCreditTemp a {
   color: blue;
-  font-weight: inherit;
-  font-size: inherit;
   font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
 }
 
 .wp-caption-dt,
@@ -28,14 +29,16 @@
   margin-bottom: 6px;
   text-align: center;
 }
+
 .mceMediaCreditOuterTemp a,
 .mceMediaCreditOuterTemp img {
   border: 0 none;
-  padding: 0;
   float: none;
   margin: 0;
+  padding: 0;
 }
+
 .mceMediaCreditOuterTemp.aligncenter img {
-  margin: auto;
-  margin-bottom: 6px;
+  margin: auto auto 6px;
 }
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFkbWluL3Njc3MvbWVkaWEtY3JlZGl0LXRpbnltY2Uuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLHFDQUFvQztFQUNwQyxVQUFTO0VBQ1QsMkRBQTBEO0VBQzFELGdCQUFlO0VBQ2Ysb0JBQW1CO0VBQ25CLFFBQU87RUFDUCxVQUFTO0VBQ1QsV0FBVTtFQUNWLG1CQUFrQjtFQUNsQixtQkFBa0I7RUFDbEIsWUFBVztDQVFaOztBQW5CRDtFQWNJLFlBQVc7RUFDWCxxQkFBb0I7RUFDcEIsbUJBQWtCO0VBQ2xCLHFCQUFvQjtDQUNyQjs7QUFHSDs7RUFFRSxtQkFBa0I7Q0FDbkI7O0FBRUQ7RUFDRSx3Q0FBdUM7RUFDdkMsbUJBQWtCO0VBQ2xCLG1CQUFrQjtDQWFuQjs7QUFoQkQ7O0VBT0ksZUFBYztFQUNkLFlBQVc7RUFDWCxVQUFTO0VBQ1QsV0FBVTtDQUNYOztBQVhIO0VBY0ksc0JBQXFCO0NBQ3RCIiwiZmlsZSI6Im1lZGlhLWNyZWRpdC10aW55bWNlLmNzcyJ9 */

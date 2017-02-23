@@ -1,51 +1,51 @@
 
 label[data-setting="mediaCreditText"] input[type="text"] {
-	&::placeholder {
-    opacity: 0.3;
+  &::placeholder {
+    opacity: 0.3;
   }
 }
 
 label[data-setting="mediaCreditNoFollow"].setting {
-	width: 65%;
-	float: right;
+  float: right;
+  width: 65%;
 }
 
 @media only screen and (max-width: 900px) {
-	label[data-setting="mediaCreditNoFollow"].setting {
-		width: 100%;
-		float: none;
-		margin-top: 5px;
+  label[data-setting="mediaCreditNoFollow"].setting {
+    float: none;
+    margin-top: 5px;
+    width: 100%;
 
-		input[type="checkbox"] {
-			vertical-align: middle;
-    		position: relative;
-    		bottom: 1px;
-    		margin: 0;
+    input[type="checkbox"] {
+      bottom: 1px;
+      margin: 0;
+      position: relative;
+      vertical-align: middle;
 		}
 	}
 }
 
 .attachment-details {
-	label[data-setting="mediaCreditNoFollow"].setting {
-		margin-top: 4px;
+  label[data-setting="mediaCreditNoFollow"].setting {
+    margin-top: 4px;
 
-		input[type="checkbox"] {
-			margin: 0 3px 0 0;
-			vertical-align: middle;
-    		position: relative;
-    		bottom: 1px;
+    input[type="checkbox"] {
+      bottom: 1px;
+      margin: 0 3px 0 0;
+      position: relative;
+      vertical-align: middle;
 		}
 	}
 }
 
 #poststuff table.compat-attachment-fields {
-	width: 100%;
+  width: 100%;
 
-	td.field {
-		width: 80%;
+  td.field {
+    width: 80%;
 
-		input.media-credit-input:not([type="checkbox"]) {
-			width: 100%;
+    input.media-credit-input:not([type="checkbox"]) {
+      width: 100%;
 		}
 	}
 }
