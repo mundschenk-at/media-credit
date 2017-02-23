@@ -172,7 +172,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @return array The array of plugins to load.
 	 */
 	public function tinymce_internal_plugins( $plugins ) {
-		$key = array_search( 'wpeditimage', $plugins );
+		$key = array_search( 'wpeditimage', $plugins, true );
 
 		if ( false !== $key ) {
 			unset( $plugins[ $key ] );
@@ -308,7 +308,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 		check_ajax_referer( "update-attachment-{$attachment_id}-media-credit-in-editor", 'nonce' );
 
-		if ( ! isset( $_REQUEST['mediaCredit'] ) ) {
+		if ( ! isset( $_REQUEST['mediaCredit'] ) ) { // Input var okay. // @codingStandardsIgnoreLine
 			wp_send_json_error();
 		}
 
