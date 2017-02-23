@@ -2,11 +2,9 @@
  ** Properly handle editing credits in the media modal.
  */
 
-/* globals $mediaCredit: false */
-
 jQuery( function( $ ) {
 
-	var mediaCredit = window.$mediaCredit || {};
+	var mediaCredit = window.$mediaCredit || {};
 
 	/**
      * Install autoselect on the given input fields.

@@ -2,8 +2,6 @@
  ** Properly handle editing credits in the media modal.
  */
 
-/* globals $mediaCredit: false */
-
 jQuery( function( $ ) {
 
 	var mediaCredit = window.$mediaCredit || {};

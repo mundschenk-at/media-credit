@@ -1,5 +1,5 @@
 jQuery( function( $ ) {
-	/* jshint unused: vars */ /* globals mediaCreditPreviewData */
+	/* jshint unused: vars */
 
 	/**
 	 * Render HTML for standard media credit preview.
@@ -19,7 +19,7 @@ jQuery( function( $ ) {
 	    var author         = $( '#media-credit-preview a' ).clone().wrap( '<p>' ).parent().html();
 	    var separator      = $( 'input[name=\'media-credit[separator]\']' ).val();
 	    var organization   = $( 'input[name=\'media-credit[organization]\']' ).val();
-			var previewData    = window.mediaCreditPreviewData || {
+			var previewData    = window.mediaCreditPreviewData || {
 
 				// Default object if translated version is missing.
 				pattern: 'Images courtesy of %2$s and %1$s',
