@@ -3,7 +3,7 @@
 **Tags:** media, image, images, credit, byline, author, user  
 **Requires at least:** 4.7  
 **Tested up to:** 4.7  
-**Stable tag:** 3.1.6  
+**Stable tag:** 3.1.7  
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -96,6 +96,10 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 
 ## Changelog ##
+
+### 3.1.7 (Feb. 24, 2017) ###
+* JavaScript components should be slightly more fault tolerant now.
+* The plugin does not depend on the visual editor being enabled anymore. Props karinamendonca29.
 
 ### 3.1.6 (Feb. 4, 2017) ###
 * Return `''` (the empty string) when retrieving empty freeform credits.
