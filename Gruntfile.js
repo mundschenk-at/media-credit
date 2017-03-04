@@ -105,13 +105,6 @@ module.exports = function( grunt ) {
 			}
 		},
 
-		delegate: {
-			sass: {
-				src: [ '<%= sass.dev.files.src %>**/*.scss' ],
-				dest: '<%= sass.dev.files.dest %>'
-			}
-		},
-
 		sass: {
 			dist: {
 				options: {
@@ -221,27 +214,22 @@ module.exports = function( grunt ) {
 	});
 
 	grunt.registerTask( 'default', [
-			'wp_readme_to_markdown',
+			'newer:wp_readme_to_markdown',
 			'newer:jscs',
 			'newer:jshint',
 			'newer:phpcs',
-			'newer:delegate:sass:dev',
+			'newer:sass:dev',
 			'newer:postcss:dev'
 	] );
 
 	grunt.registerTask( 'build', [
-			'wp_readme_to_markdown',
+			'newer:wp_readme_to_markdown',
 			'clean:build',
-			'newer:delegate:sass:dist',
+			'newer:sass:dist',
 			'newer:postcss:dist',
 			'newer:minify',
 			'copy:build'
 	] );
-
-	// delegate stuff
-	grunt.registerTask( 'delegate', function() {
-		grunt.task.run( this.args.join( ':' ) );
-	} );
 
 	// dynamically generate uglify targets
 	grunt.registerMultiTask('minify', function () {
