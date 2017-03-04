@@ -2,11 +2,9 @@
  ** Properly handle editing credits in the media modal.
  */
 
-/* globals $mediaCredit: false */
+jQuery( function( $ ) {
 
-( function( $ ) {
-
-	var mediaCredit = $mediaCredit || {};
+	var mediaCredit = window.$mediaCredit || {};
 
 	/**
      * Install autoselect on given view.
@@ -37,7 +35,7 @@
 			autoFocus: true,
 			minLength: 2,
 
-			source: $mediaCredit.names || ( $mediaCredit.names = _.map( $mediaCredit.id, function( value, key ) {
+			source: mediaCredit.names || ( mediaCredit.names = _.map( mediaCredit.id, function( value, key ) {
 				return { id: key, value: value, label: value };
 			} ) ),
 
@@ -86,7 +84,7 @@
 		.change( function( event ) {
 			var $input = $( this ),
 				credit = $input.val(),
-				noDefaultCredit = $mediaCredit.noDefaultCredit || false;
+				noDefaultCredit = mediaCredit.noDefaultCredit || false;
 
 			if ( noDefaultCredit && '' === credit && '' === view.model.get( 'mediaCreditAuthorID' ) ) {
 				view.model.set( {
@@ -129,7 +127,7 @@
 
 			render: function() {
 				var $input,
-					noDefaultCredit = $mediaCredit.noDefaultCredit || false;
+					noDefaultCredit = mediaCredit.noDefaultCredit || false;
 
 				wp.media.view.Attachment.prototype.render.apply( this, [] );
 
@@ -234,7 +232,7 @@
 							options.data.mediaCredit = {};
 
 							// Handle placeholders gracefully.
-							if ( $mediaCredit.noDefaultCredit && '' === model.changed.mediaCreditText && '' !== model.get( 'mediaCreditAuthorID' ) ) {
+							if ( mediaCredit.noDefaultCredit && '' === model.changed.mediaCreditText && '' !== model.get( 'mediaCreditAuthorID' ) ) {
 								delete model.changed.mediaCreditText;
 							}
 
@@ -320,4 +318,4 @@
 		wp.media.model.Attachment.prototype = mediaCredit.AttachmentModel.prototype;
 	}
 
-} )( jQuery );
+} );

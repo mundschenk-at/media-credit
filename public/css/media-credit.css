@@ -1,11 +1,12 @@
 .media-credit {
+  color: #909090;
+  display: block;
   font-size: 0.9em;
   line-height: 1.2em;
-  text-align: right;
   margin: 3px 5px;
-  display: block;
-  color: #909090;
+  text-align: right;
 }
+
 .media-credit a {
   font-weight: normal;
 }
@@ -15,25 +16,26 @@
 }
 
 .media-credit-container {
-  text-align: center;
   max-width: 100%;
+  text-align: center;
 }
 
 #recent-media-sidebar {
-  float: right;
-  text-align: center;
-  width: 150px;
-  margin-top: 10px;
-  padding: 10px 0;
   border-top: 4px double #999;
   border-bottom: 4px double #999;
+  float: right;
+  margin-top: 10px;
+  padding: 10px 0;
+  text-align: center;
+  width: 150px;
 }
+
 #recent-media-sidebar .author-media {
   margin-bottom: 10px;
 }
 
 #recent-media-inline .author-media {
   float: left;
-  margin-right: 5px;
-  margin-bottom: 5px;
+  margin: 0 5px 5px 0;
 }
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInB1YmxpYy9zY3NzL21lZGlhLWNyZWRpdC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsZUFBYztFQUNkLGVBQWM7RUFDZCxpQkFBZ0I7RUFDaEIsbUJBQWtCO0VBQ2xCLGdCQUFlO0VBQ2Ysa0JBQWlCO0NBS2xCOztBQVhEO0VBU0ksb0JBQW1CO0NBQ3BCOztBQUdIO0VBQ0UsZUFBYztDQUNmOztBQUVEO0VBQ0MsZ0JBQWU7RUFDZCxtQkFBa0I7Q0FDbkI7O0FBRUQ7RUFDRSw0QkFBMkI7RUFDM0IsK0JBQThCO0VBQzlCLGFBQVk7RUFDWixpQkFBZ0I7RUFDaEIsZ0JBQWU7RUFDZixtQkFBa0I7RUFDbEIsYUFBWTtDQUtiOztBQVpEO0VBVUksb0JBQW1CO0NBQ3BCOztBQUdIO0VBQ0UsWUFBVztFQUNYLG9CQUFtQjtDQUNwQiIsImZpbGUiOiJtZWRpYS1jcmVkaXQuY3NzIn0= */

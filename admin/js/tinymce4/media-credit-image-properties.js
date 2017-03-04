@@ -24,7 +24,8 @@
  * @subpackage Media_Credit/admin
  */
 ( function( $, wp, _ ) {
-	var MediaCreditImagePropertiesView, frame;
+	var MediaCreditImagePropertiesView, frame,
+		  mediaCredit = window.$mediaCredit || {};
 
 	// Sanity check.
 	if ( ! wp.media.events ) {
@@ -65,7 +66,7 @@
 
 			view.on( 'post-render', function() {
 				view.views.insert( view.$el.find( '.advanced-settings' ), mediaCreditView.render().el, { at: 1 } );
-				$mediaCredit.autoComplete( mediaCreditView, 'input[data-setting="mediaCreditText"]', false );
+				mediaCredit.autoComplete( mediaCreditView, 'input[data-setting="mediaCreditText"]', false );
 			} );
 		} );
 	} );
@@ -75,7 +76,7 @@
 	 */
 	wp.media.events.on( 'editor:image-edit', function( options ) {
 		if (  '' === options.metadata.mediaCreditText && '' !== options.metadata.mediaCreditAuthorID ) {
-			options.metadata.mediaCreditText = $mediaCredit.id[ options.metadata.mediaCreditAuthorID ];
+			options.metadata.mediaCreditText = mediaCredit.id[ options.metadata.mediaCreditAuthorID ];
 		}
 	} );
 
@@ -104,11 +105,11 @@
 			mediaCreditBlock = dom.getNext( image, '.mceMediaCreditTemp' );;
 		}
 
-		if ( $mediaCredit.id[ mediaCreditAuthorID ] !== mediaCreditText ) {
+		if ( mediaCredit.id[ mediaCreditAuthorID ] !== mediaCreditText ) {
 			mediaCreditAuthorID = '';
 		}
 
-		credit = mediaCreditAuthorID ? ( $mediaCredit.id[ mediaCreditAuthorID ] + $mediaCredit.separator + $mediaCredit.organization ) : mediaCreditText;
+		credit = mediaCreditAuthorID ? ( mediaCredit.id[ mediaCreditAuthorID ] + mediaCredit.separator + mediaCredit.organization ) : mediaCreditText;
 		credit = credit.replace( /<[^>]+>(.*)<\/[^>]+>/g, '$1' ); // Basic sanitation.
 		align = 'align' + ( align || 'none' );
 
