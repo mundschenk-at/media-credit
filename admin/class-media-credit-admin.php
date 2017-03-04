@@ -203,7 +203,9 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$options = get_option( self::OPTION );
 
 		$authors = array();
-		foreach ( get_users( array( 'who' => 'authors' ) ) as $author ) {
+		foreach ( get_users( array(
+			'who' => 'authors',
+		) ) as $author ) {
 			$authors[ $author->ID ] = $author->display_name;
 		}
 
@@ -332,8 +334,9 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$options = get_option( self::OPTION );
 
 		add_settings_section( $this->plugin_name, __( 'Media Credit', 'media-credit' ),
-							  array( $this, 'print_settings_section' ), 'media',
-							  array( 'options' => $options ) );
+							  array( $this, 'print_settings_section' ), 'media', array(
+								  'options' => $options,
+							  ) );
 
 		$this->add_settings_field( array(
 			'id'          => 'media-credit-preview',
@@ -594,7 +597,9 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 		?><p id="<?php echo esc_attr( $args['id'] ) ?>" class="notice notice-info" <?php
 			if ( ! empty( $args['description'] ) ) : ?>aria-describedby="<?php echo esc_attr( $field_name ); ?>-description" <?php endif;
-		?>><?php echo wp_kses( $credit_html, array( 'a' => array( 'href' ) ) ) ?></p><?php
+		?>><?php echo wp_kses( $credit_html, array(
+			'a' => array( 'href' ),
+		) ) ?></p><?php
 
 		if ( ! empty( $args['description'] ) ) {
 			?><p id="<?php echo esc_attr( $field_name )?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ) ?></p><?php
@@ -641,9 +646,13 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		}
 
 		if ( isset( $changes['mediaCreditText'] ) ) {
-			$freeform = wp_kses( $changes['mediaCreditText'], array( 'a' => array( 'href', 'rel' ) ) );
+			$freeform = wp_kses( $changes['mediaCreditText'], array(
+				'a' => array( 'href', 'rel' ),
+			) );
 		} elseif ( isset( $media_credit ) ) {
-			$freeform = wp_kses( $media_credit['text'], array( 'a' => array( 'href', 'rel' ) ) );
+			$freeform = wp_kses( $media_credit['text'], array(
+				'a' => array( 'href', 'rel' ),
+			) );
 		} else {
 			wp_send_json_error( 'freeform credit not found' );
 		}
@@ -678,7 +687,9 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		}
 
 		if ( isset( $changes['mediaCreditNoFollow'] ) ) {
-			$data = wp_parse_args( array( 'nofollow' => $nofollow ), Media_Credit_Template_Tags::get_media_credit_data( $attachment_id ) );
+			$data = wp_parse_args( array(
+				'nofollow' => $nofollow,
+			), Media_Credit_Template_Tags::get_media_credit_data( $attachment_id ) );
 			update_post_meta( $attachment_id, self::DATA_POSTMETA_KEY, $data ); // insert '_media_credit_data' metadata field.
 		}
 
@@ -687,7 +698,10 @@ class Media_Credit_Admin implements Media_Credit_Base {
 				// A valid WP user was selected, and the display name matches the free-form
 				// the final conditional is necessary for the case when a valid user is selected, filling in the hidden
 				// field, then free-form text is entered after that. if so, the free-form text is what should be used.
-				if ( ! wp_update_post( array( 'ID' => $attachment_id, 'post_author' => $wp_user_id ) ) ) { // update post_author with the chosen user.
+				if ( ! wp_update_post( array(
+					'ID'          => $attachment_id,
+					'post_author' => $wp_user_id,
+				) ) ) { // update post_author with the chosen user.
 					wp_send_json_error( 'Failed to update post author' );
 				}
 
@@ -822,7 +836,9 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		update_post_meta( $post['ID'], self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
 
 		// Update optional data array with nofollow.
-		update_post_meta( $post['ID'], self::DATA_POSTMETA_KEY, wp_parse_args( array( 'nofollow' => $nofollow ), Media_Credit_Template_Tags::get_media_credit_data( $post ) ) );
+		update_post_meta( $post['ID'], self::DATA_POSTMETA_KEY, wp_parse_args( array(
+			'nofollow' => $nofollow,
+		), Media_Credit_Template_Tags::get_media_credit_data( $post ) ) );
 
 		/**
 		 * A valid WP user was selected, and the display name matches the free-form. The final conditional is
