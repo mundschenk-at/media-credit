@@ -80,21 +80,27 @@ require_once( plugin_dir_path( __FILE__ ) . 'includes/media-credit-template.php'
  * @since    3.0.0
  */
 function run_media_credit() {
+	// Set up autoloader.
 	spl_autoload_register( 'media_credit_autoloader' );
 
+	// Define plugin slug.
+	$slug = 'media-credit';
+
+	// Load version from plugin data.
 	if ( ! function_exists( 'get_plugin_data' ) ) {
 		include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 	}
 	$plugin_data = get_plugin_data( __FILE__, false, false );
+	$version     = $plugin_data['Version'];
 
-	$slug = 'media-credit';
-	$version = $plugin_data['Version'];
+	// Create the plugin instance.
+	$plugin = new Media_Credit( $slug, $version, plugin_basename( __FILE__ ) );
 
+	// Register activation & deactivation hooks.
 	$setup = new Media_Credit_Setup( $slug, $version );
 	$setup->register( __FILE__ );
 
-	$plugin = new Media_Credit( $slug, $version, plugin_basename( __FILE__ ) );
+	// Start the plugin for real.
 	$plugin->run();
-
 }
 run_media_credit();
