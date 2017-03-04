@@ -15,7 +15,6 @@
     "grunt-postcss": "^0.8.0",
     "grunt-sass": "^2.0.0",
     "grunt-wp-deploy": "^1.2.1",
-    "grunt-wp-i18n": "^1.0.0",
     "grunt-wp-readme-to-markdown": "^2.0.1",
     "load-grunt-tasks": "^3.5.2",
     "pixrem": "^3.0.2"
