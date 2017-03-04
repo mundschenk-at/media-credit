@@ -79,11 +79,14 @@ class Media_Credit_Public implements Media_Credit_Base {
 	public function enqueue_styles() {
 		$options = get_option( self::OPTION );
 
+	 	// Set up file suffix.
+	 	$suffix = SCRIPT_DEBUG ? '' : '.min';
+
 		// Do not display inline media credit if media credit is displayed at end of posts.
 		if ( ! empty( $options['credit_at_end'] ) ) {
-			wp_enqueue_style( 'media-credit-end', plugin_dir_url( __FILE__ ) . 'css/media-credit-end.css', array(), $this->version, 'all' );
+			wp_enqueue_style( 'media-credit-end', plugin_dir_url( __FILE__ ) . "css/media-credit-end$suffix.css", array(), $this->version, 'all' );
 		} else {
-			wp_enqueue_style( 'media-credit', plugin_dir_url( __FILE__ ) . 'css/media-credit.css', array(), $this->version, 'all' );
+			wp_enqueue_style( 'media-credit', plugin_dir_url( __FILE__ ) . "css/media-credit$suffix.css", array(), $this->version, 'all' );
 		}
 	}
 

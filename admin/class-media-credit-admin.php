@@ -61,9 +61,18 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 *
 	 * @since    3.0.0
 	 * @access   private
-	 * @var      string    $ressource_url    The base URL for admin ressources.
+	 * @var      string    $resource_url    The base URL for admin ressources.
 	 */
-	private $ressource_url;
+	private $resource_url;
+
+	/**
+	 * The file suffix for loading ressources.
+	 *
+	 * @since    3.2.0
+	 * @access   private
+	 * @var      string    $resource_suffix    Empty string or '.min'.
+	 */
+	private $resource_suffix;
 
 	/**
 	 * The allowed HTML tags passed to wp_kses.
@@ -105,7 +114,10 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 		$this->plugin_name   = $plugin_name;
 		$this->version       = $version;
-		$this->ressource_url = plugin_dir_url( __FILE__ );
+		$this->resource_url = plugin_dir_url( __FILE__ );
+
+		// Set up resource file suffix.
+		$this->resource_suffix = SCRIPT_DEBUG ? '' : '.min';
 	}
 
 	/**
@@ -116,12 +128,12 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	public function enqueue_styles() {
 		// Style the preview area for the settings page.
 		if ( $this->is_media_settings_page() ) {
-			wp_enqueue_style( 'media-credit-preview-style', $this->ressource_url . 'css/media-credit-preview.css', array(), $this->version, 'screen' );
+			wp_enqueue_style( 'media-credit-preview-style', $this->resource_url . "css/media-credit-preview$sufix.css", array(), $this->version, 'screen' );
 		}
 
 		// Style placeholders when editing media.
 		if ( $this->is_legacy_media_edit_page() || did_action( 'wp_enqueue_media' ) ) {
-			wp_enqueue_style( 'media-credit-attachment-details-style', $this->ressource_url . 'css/media-credit-attachment-details.css', array(), $this->version, 'screen' );
+			wp_enqueue_style( 'media-credit-attachment-details-style', $this->resource_url . "css/media-credit-attachment-details{$this->resource_suffix}.css", array(), $this->version, 'screen' );
 		}
 	}
 
@@ -131,20 +143,21 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @since    3.0.0
 	 */
 	public function enqueue_scripts() {
+
 		// Preview script for the settings page.
 		if ( $this->is_media_settings_page() ) {
-			wp_enqueue_script( 'media-credit-preview', $this->ressource_url . 'js/media-credit-preview.js', array( 'jquery' ), $this->version, true );
+			wp_enqueue_script( 'media-credit-preview', $this->resource_url . "js/media-credit-preview{$this->resource_suffix}.js", array( 'jquery' ), $this->version, true );
 			wp_localize_script( 'media-credit-preview', 'mediaCreditPreviewData', $this->preview_data );
 		}
 
 		// Autocomplete when editing media via the legacy form...
 		if ( $this->is_legacy_media_edit_page() ) {
-			wp_enqueue_script( 'media-credit-legacy-autocomplete', $this->ressource_url . 'js/media-credit-legacy-autocomplete.js', array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
+			wp_enqueue_script( 'media-credit-legacy-autocomplete', $this->resource_url . "js/media-credit-legacy-autocomplete{$this->resource_suffix}.js", array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
 		}
 
 		// ... and for when the new JavaScript Media API is used.
 		if ( did_action( 'wp_enqueue_media' ) ) {
-			wp_enqueue_script( 'media-credit-attachment-details', $this->ressource_url . 'js/media-credit-attachment-details.js', array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
+			wp_enqueue_script( 'media-credit-attachment-details', $this->resource_url . "js/media-credit-attachment-details{$this->resource_suffix}.js", array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
 		}
 	}
 
@@ -190,8 +203,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @return array The array of plugins to load.
 	 */
 	public function tinymce_external_plugins( $plugins ) {
-		$plugins['mediacredit'] = $this->ressource_url . 'js/tinymce4/media-credit-tinymce.js';
-		$plugins['noneditable'] = $this->ressource_url . 'js/tinymce4/tinymce-noneditable.js';
+		$plugins['mediacredit'] = $this->resource_url . "js/tinymce4/media-credit-tinymce{$this->resource_suffix}.js";
+		$plugins['noneditable'] = $this->resource_url . "js/tinymce4/tinymce-noneditable{$this->resource_suffix}.js";
 
 		return $plugins;
 	}
@@ -231,7 +244,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @return string A comma separated list of CSS files.
 	 */
 	public function tinymce_css( $css ) {
-		return $css . ( ! empty( $css ) ? ',' : '' ) . $this->ressource_url . 'css/media-credit-tinymce.css';
+		return $css . ( ! empty( $css ) ? ',' : '' ) . $this->resource_url . "css/media-credit-tinymce{$this->resource_suffix}.css";
 	}
 
 	/**
@@ -617,11 +630,11 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			// because in some cases such as /wp-admin/press-this.php the media
 			// library isn't enqueued and shouldn't be. The script includes
 			// safeguards to avoid errors in this situation.
-			wp_enqueue_script( 'media-credit-image-properties', $this->ressource_url . 'js/tinymce4/media-credit-image-properties.js', array( 'jquery', 'media-credit-attachment-details' ), $this->version, true );
-			wp_enqueue_script( 'media-credit-tinymce-switch',   $this->ressource_url . 'js/tinymce4/media-credit-tinymce-switch.js',   array( 'jquery' ), $this->version, true );
+			wp_enqueue_script( 'media-credit-image-properties', $this->resource_url . "js/tinymce4/media-credit-image-properties{$this->resource_suffix}.js", array( 'jquery', 'media-credit-attachment-details' ), $this->version, true );
+			wp_enqueue_script( 'media-credit-tinymce-switch',   $this->resource_url . "js/tinymce4/media-credit-tinymce-switch{$this->resource_suffix}.js",   array( 'jquery' ), $this->version, true );
 
 			// Edit in style.
-			wp_enqueue_style( 'media-credit-image-properties-style', $this->ressource_url . 'css/tinymce4/media-credit-image-properties.css', array(), $this->version, 'screen' );
+			wp_enqueue_style( 'media-credit-image-properties-style', $this->resource_url . "css/tinymce4/media-credit-image-properties{$this->resource_suffix}.css", array(), $this->version, 'screen' );
 		}
 	}
 
