@@ -100,7 +100,7 @@ module.exports = function( grunt ) {
 				src: ['includes/**/*.php', 'admin/**/*.php', 'public/**/*.php']
 			},
 			options: {
-				bin: 'phpcs -p -s -v -n ',
+				bin: '/usr/local/opt/php-code-sniffer@2.9/bin/phpcs -p -s -v -n ',
 				standard: './phpcs.xml'
 			}
 		},
