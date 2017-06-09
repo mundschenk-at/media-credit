@@ -79,8 +79,8 @@ class Media_Credit_Public implements Media_Credit_Base {
 	public function enqueue_styles() {
 		$options = get_option( self::OPTION );
 
-	 	// Set up file suffix.
-	 	$suffix = SCRIPT_DEBUG ? '' : '.min';
+		// Set up file suffix.
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		// Do not display inline media credit if media credit is displayed at end of posts.
 		if ( ! empty( $options['credit_at_end'] ) ) {
@@ -212,7 +212,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 			return do_shortcode( $content );
 		}
 
-		$atts = shortcode_atts(	array(
+		$atts = shortcode_atts( array(
 			'id'         => -1,
 			'name'       => '',
 			'link'       => '',
@@ -220,7 +220,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 			'align'      => 'alignnone',
 			'width'      => '',
 			'nofollow'   => '',
-		),	$atts, 'media-credit' );
+		), $atts, 'media-credit' );
 
 		$atts['standalone'] = filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
 		$atts['nofollow']   = filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
@@ -280,12 +280,12 @@ class Media_Credit_Public implements Media_Credit_Base {
 		}
 
 		$output = '<div class="media-credit-container ' . esc_attr( $atts['align'] ) . '"' . $style . '>' .
-				      $content . '<span class="media-credit"' . $schema_org . '>' . $author_link . '</span></div>';
+						$content . '<span class="media-credit"' . $schema_org . '>' . $author_link . '</span></div>';
 
 		// Wrap output in <figure> if HTML5 is supported & the shortcode is a standalone one.
 		if ( ! empty( $atts['standalone'] ) && $html5_enabled ) {
 			$output = '<figure class="wp-caption ' . esc_attr( $atts['align'] ) . '"' . $style . $figure_schema_org . '>' .
-					      $output .
+							$output .
 					  '</figure>';
 		}
 
@@ -382,7 +382,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 	 *
 	 * @param string       $html              The post thumbnail HTML.
 	 * @param int          $post_id           The post ID.
-	 * @param string 	   $post_thumbnail_id The post thumbnail ID.
+	 * @param string       $post_thumbnail_id The post thumbnail ID.
 	 * @param string|array $size              The post thumbnail size. Image size or array of width and height values (in that order). Default 'post-thumbnail'.
 	 * @param string|array $attr              Query string or array of attributes. Default ''.
 	 */

@@ -253,11 +253,11 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	public function admin_init() {
 		// Initialize preview strings with translations.
 		$this->preview_data = array(
-				/* translators: 1: last credit 2: concatenated other credits (empty in singular) */
-				'pattern' => _n( 'Image courtesy of %2$s%1$s', 'Images courtesy of %2$s and %1$s', 3, 'media-credit' ),
-				'name1'   => _x( 'John Smith', 'Male example name for preview', 'media-credit' ),
-				'name2'   => _x( 'Jane Doe', 'Female example name for preview', 'media-credit' ),
-				'joiner'  => _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' ),
+			/* translators: 1: last credit 2: concatenated other credits (empty in singular) */
+			'pattern' => _n( 'Image courtesy of %2$s%1$s', 'Images courtesy of %2$s and %1$s', 3, 'media-credit' ),
+			'name1'   => _x( 'John Smith', 'Male example name for preview', 'media-credit' ),
+			'name2'   => _x( 'Jane Doe', 'Female example name for preview', 'media-credit' ),
+			'joiner'  => _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' ),
 		);
 
 		register_setting( 'media', self::OPTION, array( $this, 'sanitize_option_values' ) );
@@ -695,7 +695,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		}
 
 		if ( isset( $changes['mediaCreditLink'] ) ) {
-	 		// We need to update the credit URL.
+			// We need to update the credit URL.
 			update_post_meta( $attachment_id, self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
 		}
 
