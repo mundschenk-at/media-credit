@@ -33,7 +33,7 @@ module.exports = function( grunt ) {
 		copy: {
 			build: {
 				files: [
-					{ expand: true, nonull: true, src: ['readme.txt','*.php'], dest: 'build/' },
+					{ expand: true, nonull: true, src: ['readme.txt', 'CHANGELOG.md','*.php'], dest: 'build/' },
 					{ expand: true, nonull: true, src: ['admin/**','public/**','includes/**', '!**/scss/**'], dest: 'build/' },
 				],
 			}
