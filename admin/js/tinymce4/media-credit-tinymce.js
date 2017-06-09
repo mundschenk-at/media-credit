@@ -650,12 +650,15 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			src: imageData.url,
 			width: width || null,
 			height: height || null,
-			alt: imageData.alt,
 			title: imageData.title || null,
 			'class': classes.join( ' ' ) || null
 		};
 
 		dom.setAttribs( imageNode, attrs );
+
+		// Preserve empty alt attributes.
+		editor.$( imageNode ).attr( 'alt', imageData.alt || '' );
+
 
 		linkAttrs = {
 			href: imageData.linkUrl,
