@@ -759,9 +759,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 					node.append(mediaCreditNode);
 				}
 			}
-		} else {
+		} else {
 			// no caption, so we might need to remove the credit name
-			removeCreditNode = ! imageData.mediaCreditText && ! imageData.mediaCreditAuthorID;
+			removeCreditNode = ! imageData.mediaCreditText && ! imageData.mediaCreditAuthorID;
 
 			if ( captionNode ) {
 				// Remove the caption wrapper and place the image in new media-credit wrapper or a new paragraph
@@ -1217,7 +1217,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 		if ( cmd === 'mceInsertContent' || cmd === 'Indent' || cmd === 'Outdent' ) {
 			node = editor.selection.getNode();
-			captionParent = dom.getParent( node, 'div.mceTemp' ) || dom.getParent( node, 'div.mceMediaCreditOuterTemp' );
+			captionParent = dom.getParent( node, 'div.mceTemp' ) || dom.getParent( node, 'div.mceMediaCreditOuterTemp' );
 
 			if ( captionParent ) {
 				if ( cmd === 'mceInsertContent' ) {
