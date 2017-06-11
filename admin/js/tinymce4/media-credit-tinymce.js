@@ -258,6 +258,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			align = ( align && align[1] ) ? align[1] : 'alignnone';
 			link = ( link && link[1] ) ? link[1] : '';
 			name = ( name && name[1] ) ? name[1] : '';
+			nofollow = ( nofollow && nofollow[1] ) ? nofollow[1] : '';
 
 			if ( ! w && img ) {
 				w = img.match( /width=['"]([0-9]*)['"]/ );

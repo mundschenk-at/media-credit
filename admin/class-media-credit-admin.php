@@ -756,7 +756,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$response['mediaCreditLink']          = $url;
 		$response['mediaCreditAuthorID']      = $author_id;
 		$response['mediaCreditAuthorDisplay'] = $author_id ? $credit : '';
-		$response['mediaCreditNoFollow']      = empty( $data['nofollow'] ) ? '1' : '0';
+		$response['mediaCreditNoFollow']      = ! empty( $data['nofollow'] ) ? '1' : '0';
 
 		// Add some nonces.
 		$response['nonces']['mediaCredit']['update']  = wp_create_nonce( "save-attachment-{$response['id']}-media-credit" );
