@@ -59,7 +59,7 @@
 
 			// Remove paragraph tags.
 			html = html.replace( /\s*<p>/gi, '' );
-			html = html.replace( /\s*<\/p>\s*/gi, '\n\n'
+			html = html.replace( /\s*<\/p>\s*/gi, '\n\n' );
 
 			// Normalize white space chars and remove multiple line breaks.
 			html = html.replace( /\n[\s\u00a0]+\n/g, '\n\n' );
