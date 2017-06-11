@@ -25,7 +25,7 @@
  */
 ( function( $, wp, _ ) {
 	var MediaCreditImagePropertiesView, frame,
-		  mediaCredit = window.$mediaCredit || {};
+		  mediaCredit = window.$mediaCredit || {};
 
 	// Sanity check.
 	if ( ! wp.media.events ) {
@@ -114,7 +114,7 @@
 		align = 'align' + ( align || 'none' );
 
 		// No current media credit block.
-		if ( null === mediaCreditBlock && ( mediaCreditText || mediaCreditAuthorID ) ) {
+		if ( null === mediaCreditBlock && ( mediaCreditText || mediaCreditAuthorID ) ) {
 
 			// Create new representation for media-credit.
 			mediaCreditBlock = dom.create( 'span', {
