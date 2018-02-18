@@ -156,26 +156,6 @@ class Media_Credit_Public implements Media_Credit_Base {
 	}
 
 	/**
-	 * New way (in core consideration) to fix the caption shortcode parsing. Proof of concept at this point.
-	 * add_filter('img_caption_shortcode_content', array( $this, 'img_caption_shortcode_content' ), 10, 3);
-	 *
-	 * @param array  $matches An array of regex matches.
-	 * @param string $content The matched content.
-	 * @param string $regex   The regex.
-	 *
-	 * @return array
-	 */
-	public function img_caption_shortcode_content( $matches, $content, $regex ) {
-		$result = array();
-
-		if ( preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#is', $content, $result ) ) {
-			return $result;
-		} else {
-			return $matches;
-		}
-	}
-
-	/**
 	 * Adds shortcode for media credit. Allows for credit to be specified for media attached to a post
 	 * by either specifying the ID of a WordPress user or with a raw string for the name assigned credit.
 	 * If an ID is present, it will take precedence over a name.
