@@ -1,5 +1,5 @@
 jQuery( function( $ ) {
-	/* jshint unused: vars */
+	'use strict';
 
 	/**
 	 * Render HTML for standard media credit preview.
@@ -34,7 +34,7 @@ jQuery( function( $ ) {
 	/**
 	 * Handle changes to the text fields.
 	 */
-	$( 'input[name^=\'media-credit\']' ).keyup( function( event ) {
+	$( 'input[name^=\'media-credit\']' ).keyup( function() {
 		if ( ! $( 'input[name=\'media-credit[credit_at_end]\']' ).prop( 'checked' ) ) {
 			renderCreditExample();
 		} else {
@@ -45,7 +45,7 @@ jQuery( function( $ ) {
 	/**
 	 * Handle changes to 'Display credits at the end' checkbox.
 	 */
-	$( 'input[name=\'media-credit[credit_at_end]\']' ).change( function( event ) {
+	$( 'input[name=\'media-credit[credit_at_end]\']' ).change( function() {
 		if ( this.checked ) {
 			renderCreditAtEndExample();
 		} else {

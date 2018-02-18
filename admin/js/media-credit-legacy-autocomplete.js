@@ -3,15 +3,16 @@
  */
 
 jQuery( function( $ ) {
+	'use strict';
 
 	var mediaCredit = window.$mediaCredit || {};
 
 	/**
-     * Install autoselect on the given input fields.
-     *
-     * @param $input  A jQuery object for the input field.
-     * @param $hidden A jQuery object for the hidden field.
-     */
+   * Install autoselect on the given input fields.
+   *
+   * @param $input  A jQuery object for the input field.
+   * @param $hidden A jQuery object for the hidden field.
+   */
 	mediaCredit.autoCompleteLegacy = function( $input, $hidden ) {
 
 		var updateFreeformCredit = function( credit ) {
@@ -49,8 +50,6 @@ jQuery( function( $ ) {
 					if ( credit !== $hidden.attr( 'data-display-author' ) ) {
 						updateFreeformCredit( credit );
 					}
-
-					return false;
 				}
 			},
 

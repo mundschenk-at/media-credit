@@ -5,8 +5,11 @@
  *
  */
 
-( function ( $ ) {
-  "use strict";
+ // jscs:disable requirePaddingNewLinesBeforeLineComments
+ // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+
+( function( $ ) {
+  'use strict';
 
   $( function() {
 		window.wp.editor.removep = window.switchEditors._wp_Nop = function( html ) {
@@ -85,13 +88,13 @@
 			// Also handle media-credit shortcode
 			html = html.replace( /\s*\[media-credit([^\[]+)\[\/media-credit\]\s*/gi, '\n\n[media-credit$1[/media-credit]\n\n' );
 
-			html = html.replace( /\[\/media-credit\]\n\n([^\[]*)\[\/caption\]/gi, '[/media-credit] $1[/caption]' ); // remove extra newlines for nested media-credit.
+			html = html.replace( /\[\/media-credit\]\n\n([^\[]*)\[\/caption\]/gi, '[/media-credit] $1[/caption]' ); // Remove extra newlines for nested media-credit.
 			html = html.replace( /\s*\[caption([^\[]+)\[media-credit([^\[]+)\[\/media-credit\]([^\[]*)\[\/caption\]\s*/gi, '\n\n[caption$1[media-credit$2[/media-credit]$3[/caption]\n\n' );
 			// END MODIFICATION
 
 			// Pad block elements tags with a line break.
-			html = html.replace( new RegExp('\\s*<((?:' + blocklist2 + ')(?: [^>]*)?)\\s*>', 'g' ), '\n<$1>' );
-			html = html.replace( new RegExp('\\s*</(' + blocklist2 + ')>\\s*', 'g' ), '</$1>\n' );
+			html = html.replace( new RegExp( '\\s*<((?:' + blocklist2 + ')(?: [^>]*)?)\\s*>', 'g' ), '\n<$1>' );
+			html = html.replace( new RegExp( '\\s*</(' + blocklist2 + ')>\\s*', 'g' ), '</$1>\n' );
 
 			// Indent <li>, <dt> and <dd> tags.
 			html = html.replace( /<((li|dt|dd)[^>]*)>/g, ' \t<$1>' );
