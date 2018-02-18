@@ -301,22 +301,6 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	}
 
 	/**
-	 * Change search_columns to 'display_name' for 'authors_by_name' query.
-	 *
-	 * @param array         $search_columns An array of column names.
-	 * @param int|string    $search         The search term.
-	 * @param WP_User_Query $query          The query object.
-	 * @return array                        Array of column names.
-	 */
-	public function add_display_name_to_search_columns( $search_columns, $search, $query ) {
-		if ( isset( $query->query_vars['media_credit_query'] ) && 'authors_by_name' === $query->query_vars['media_credit_query'] ) {
-			return array( 'display_name' );
-		} else {
-			return $search_columns;
-		}
-	}
-
-	/**
 	 * AJAX hook for filtering post content after editing media files
 	 */
 	public function ajax_filter_content() {
