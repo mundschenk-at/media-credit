@@ -360,13 +360,11 @@ class Media_Credit_Public implements Media_Credit_Base {
 	/**
 	 * Adds media credit to post thumbnails (in the loop).
 	 *
-	 * @param string       $html              The post thumbnail HTML.
-	 * @param int          $post_id           The post ID.
-	 * @param string       $post_thumbnail_id The post thumbnail ID.
-	 * @param string|array $size              The post thumbnail size. Image size or array of width and height values (in that order). Default 'post-thumbnail'.
-	 * @param string|array $attr              Query string or array of attributes. Default ''.
+	 * @param string $html              The post thumbnail HTML.
+	 * @param int    $post_id           The post ID.
+	 * @param string $post_thumbnail_id The post thumbnail ID.
 	 */
-	public function add_media_credit_to_post_thumbnail( $html, $post_id, $post_thumbnail_id, $size, $attr ) {
+	public function add_media_credit_to_post_thumbnail( $html, $post_id, $post_thumbnail_id ) {
 		if ( ! in_the_loop() ) {
 			return $html; // abort.
 		}

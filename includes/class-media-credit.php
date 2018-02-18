@@ -179,7 +179,7 @@ class Media_Credit implements Media_Credit_Base {
 
 		// Post thumbnail credits.
 		if ( ! empty( $options['post_thumbnail_credit'] ) ) {
-			$this->loader->add_filter( 'post_thumbnail_html', $plugin_public, 'add_media_credit_to_post_thumbnail', 10, 5 );
+			$this->loader->add_filter( 'post_thumbnail_html', $plugin_public, 'add_media_credit_to_post_thumbnail', 10, 3 );
 		}
 	}
 
