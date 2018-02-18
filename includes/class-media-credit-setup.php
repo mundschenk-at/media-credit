@@ -62,7 +62,7 @@ class Media_Credit_Setup implements Media_Credit_Base {
 	 * @param string $slug    The plugin slug.
 	 * @param string $version The version string.
 	 */
-	function __construct( $slug, $version ) {
+	 public function __construct( $slug, $version ) {
 		$this->plugin_name = $slug;
 		$this->plugin_version = $version;
 	}
@@ -161,7 +161,7 @@ class Media_Credit_Setup implements Media_Credit_Base {
 	 *
 	 * @since    3.0.0
 	 */
-	static function uninstall() {
+	public static function uninstall() {
 		delete_option( self::OPTION );
 	}
 }

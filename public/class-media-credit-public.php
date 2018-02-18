@@ -165,7 +165,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 	 *
 	 * @return array
 	 */
-	function img_caption_shortcode_content( $matches, $content, $regex ) {
+	public function img_caption_shortcode_content( $matches, $content, $regex ) {
 		$result = array();
 
 		if ( preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#is', $content, $result ) ) {
@@ -187,7 +187,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 	 *
 	 * @return string
 	 */
-	function media_credit_shortcode( $atts, $content = null ) {
+	public function media_credit_shortcode( $atts, $content = null ) {
 
 		// Allow plugins/themes to override the default media credit template.
 		/**

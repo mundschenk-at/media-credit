@@ -627,7 +627,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 *
 	 * @since 3.1.0
 	 */
-	function ajax_save_attachment_media_credit() {
+	public function ajax_save_attachment_media_credit() {
 		if ( ! isset( $_REQUEST['id'] ) || ! $attachment_id = absint( $_REQUEST['id'] ) ) { // Input var okay. // @codingStandardsIgnoreLine
 			wp_send_json_error(); // Standard response for failure.
 		}
@@ -727,7 +727,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 *
 	 * @return array Array of prepared attachment data.
 	 */
-	function prepare_attachment_media_credit_for_js( $response, $attachment, $meta ) {
+	public function prepare_attachment_media_credit_for_js( $response, $attachment, $meta ) {
 
 		$credit    = Media_Credit_Template_Tags::get_media_credit( $attachment );
 		$url       = Media_Credit_Template_Tags::get_media_credit_url( $attachment );
@@ -822,7 +822,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @param object $post Object of attachment containing all fields from get_post().
 	 * @param object $attachment Object of attachment containing few fields, unused in this method.
 	 */
-	function save_media_credit_fields( $post, $attachment ) {
+	public function save_media_credit_fields( $post, $attachment ) {
 		$wp_user_id    = $attachment['media-credit-hidden'];
 		$freeform_name = $attachment['media-credit'];
 		$url           = $attachment['media-credit-url'];
