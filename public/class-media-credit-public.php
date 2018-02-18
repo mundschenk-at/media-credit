@@ -333,7 +333,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 		if ( $include_post_thumbnail ) {
 			$post_thumbnail_id = get_post_thumbnail_id();
 
-			if ( '' != $post_thumbnail_id ) {
+			if ( '' !== $post_thumbnail_id ) {
 				$credit = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, $include_default_credit );
 
 				if ( ! empty( $credit ) ) {
