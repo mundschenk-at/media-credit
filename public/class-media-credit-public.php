@@ -206,7 +206,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 		$atts['nofollow']   = filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
 
 		if ( -1 !== $atts['id'] ) {
-			$url              = empty( $link ) ? get_author_posts_url( $atts['id'] ) : $atts['link'];
+			$url              = empty( $atts['link'] ) ? get_author_posts_url( $atts['id'] ) : $atts['link'];
 			$credit_wp_author = get_the_author_meta( 'display_name', $atts['id'] );
 			$author_link      = '<a href="' . esc_url( $url ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 		} else {
