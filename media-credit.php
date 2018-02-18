@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2017 Peter Putzer.
+ * Copyright 2013-2018 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -63,14 +63,14 @@ function media_credit_autoloader( $class_name ) {
 	if ( is_file( $class_file_path = $classes_dir['default'] . $class_file ) || // @codingStandardsIgnoreStart
 	     is_file( $class_file_path = $classes_dir['admin']   . $class_file ) ||
 	     is_file( $class_file_path = $classes_dir['public']  . $class_file ) ) { // @codingStandardsIgnoreEnd
-		require_once( $class_file_path );
+		require_once $class_file_path;
 	}
 }
 
 /**
  * Load legacy template tags.
  */
-require_once( plugin_dir_path( __FILE__ ) . 'includes/media-credit-template.php' );
+require_once plugin_dir_path( __FILE__ ) . 'includes/media-credit-template.php';
 
 /**
  * Begins execution of the plugin.
@@ -91,7 +91,7 @@ function run_media_credit() {
 
 	// Load version from plugin data.
 	if ( ! function_exists( 'get_plugin_data' ) ) {
-		include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+		include_once ABSPATH . 'wp-admin/includes/plugin.php';
 	}
 	$plugin_data = get_plugin_data( __FILE__, false, false );
 	$version     = $plugin_data['Version'];

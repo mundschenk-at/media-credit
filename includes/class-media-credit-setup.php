@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2017 Peter Putzer.
+ * Copyright 2013-2018 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -62,7 +62,7 @@ class Media_Credit_Setup implements Media_Credit_Base {
 	 * @param string $slug    The plugin slug.
 	 * @param string $version The version string.
 	 */
-	 public function __construct( $slug, $version ) {
+	public function __construct( $slug, $version ) {
 		$this->plugin_name = $slug;
 		$this->version     = $version;
 	}
@@ -117,7 +117,7 @@ class Media_Credit_Setup implements Media_Credit_Base {
 				'meta_key' => self::POSTMETA_KEY,
 			), array(
 				'meta_key' => 'media-credit',
-			) ); // WPSC: cache ok, tax_query ok.
+			) ); // WPSC: db call ok, cache ok, slow query ok.
 
 			$installed_options['version'] = '1.0.1';
 			update_option( $this->plugin_name, $installed_options );

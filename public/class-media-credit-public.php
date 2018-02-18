@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2017 Peter Putzer.
+ * Copyright 2013-2018 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -127,7 +127,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 		// New-style shortcode with the caption inside the shortcode with the link and image tags.
 		if ( ! isset( $attr['caption'] ) ) {
 			if ( preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#is', $content, $matches ) ) {
-				$content = $matches[1];
+				$content         = $matches[1];
 				$attr['caption'] = trim( $matches[2] );
 
 				// Add attribute "standalone=0" to [media-credit] shortcode if present.
@@ -211,7 +211,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 			$author_link      = '<a href="' . esc_url( $url ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 		} else {
 			if ( ! empty( $atts['link'] ) ) {
-				$nofollow = ! empty( $atts['nofollow'] ) ? ' rel="nofollow"' : '';
+				$nofollow    = ! empty( $atts['nofollow'] ) ? ' rel="nofollow"' : '';
 				$author_link = '<a href="' . esc_attr( $atts['link'] ) . '"' . $nofollow . '>' . $atts['name'] . '</a>';
 			} else {
 				$author_link = $atts['name'];
@@ -264,9 +264,10 @@ class Media_Credit_Public implements Media_Credit_Base {
 
 		// Wrap output in <figure> if HTML5 is supported & the shortcode is a standalone one.
 		if ( ! empty( $atts['standalone'] ) && $html5_enabled ) {
-			$output = '<figure class="wp-caption ' . esc_attr( $atts['align'] ) . '"' . $style . $figure_schema_org . '>' .
-							$output .
-					  '</figure>';
+			$output =
+				'<figure class="wp-caption ' . esc_attr( $atts['align'] ) . '"' . $style . $figure_schema_org . '>' .
+					$output .
+				'</figure>';
 		}
 
 		return $output;
@@ -314,7 +315,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 			$post_thumbnail_id = get_post_thumbnail_id();
 
 			if ( '' !== $post_thumbnail_id ) {
-				$credit = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, $include_default_credit );
+				$credit = Media_Credit_Template_Tags::get_media_credit_html( (int) $post_thumbnail_id, $include_default_credit );
 
 				if ( ! empty( $credit ) ) {
 					array_unshift( $credit_unique, $credit );
@@ -362,7 +363,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 	 *
 	 * @param string $html              The post thumbnail HTML.
 	 * @param int    $post_id           The post ID.
-	 * @param string $post_thumbnail_id The post thumbnail ID.
+	 * @param int    $post_thumbnail_id The post thumbnail ID.
 	 */
 	public function add_media_credit_to_post_thumbnail( $html, $post_id, $post_thumbnail_id ) {
 		if ( ! in_the_loop() ) {
