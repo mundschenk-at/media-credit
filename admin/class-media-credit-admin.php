@@ -111,9 +111,8 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @param string $version     The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
-
-		$this->plugin_name   = $plugin_name;
-		$this->version       = $version;
+		$this->plugin_name  = $plugin_name;
+		$this->version      = $version;
 		$this->resource_url = plugin_dir_url( __FILE__ );
 
 		// Set up resource file suffix.
@@ -165,7 +164,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * Template for setting Media Credit in image properties.
 	 */
 	public function image_properties_template() {
-		include( dirname( __FILE__ ) . '/partials/media-credit-image-properties-tmpl.php' );
+		include dirname( __FILE__ ) . '/partials/media-credit-image-properties-tmpl.php';
 	}
 
 	/**
@@ -174,7 +173,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @since 3.1.0
 	 */
 	public function attachment_details_template() {
-		include( dirname( __FILE__ ) . '/partials/media-credit-attachment-details-tmpl.php' );
+		include dirname( __FILE__ ) . '/partials/media-credit-attachment-details-tmpl.php';
 	}
 
 
@@ -231,7 +230,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 		?>
 		<script type='text/javascript'>
-			var $mediaCredit = <?php echo wp_json_encode( $media_credit ) ?>;
+			var $mediaCredit = <?php echo /* @scrutinizer ignore-type */ wp_json_encode( $media_credit ); ?>;
 		</script>
 		<?php
 	}
@@ -330,10 +329,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	public function display_settings() {
 		$options = get_option( self::OPTION );
 
-		add_settings_section( $this->plugin_name, __( 'Media Credit', 'media-credit' ),
-							  array( $this, 'print_settings_section' ), 'media', array(
-								  'options' => $options,
-							  ) );
+		add_settings_section( $this->plugin_name, __( 'Media Credit', 'media-credit' ), array( $this, 'print_settings_section' ), 'media' );
 
 		$this->add_settings_field( array(
 			'id'          => 'media-credit-preview',
@@ -417,7 +413,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 *
 	 * @since 3.1.0
 	 *
-	 * @param array $args foo {
+	 * @param array $args {
 	 *		Arguments array.
 	 *
 	 *		@type string $id          Field ID.
@@ -442,7 +438,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		) );
 
 		// Set up standard callback.
-		$callback = array( $this, 'print_input_field' );
+		$callback      = array( $this, 'print_input_field' );
 		$callback_args = array(
 			'label_for'   => ! empty( $args['with_label'] ) ? "media-credit[{$args['id']}]" : '',
 			'id'          => $args['id'],
@@ -460,7 +456,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 			case 'multi':
 				if ( isset( $args['fields'] ) && is_array( $args['fields'] ) ) {
-					$callback = array( $this, 'print_multiple_fields' );
+					$callback      = array( $this, 'print_multiple_fields' );
 					$callback_args = $args['fields'];
 				} else {
 					return; // invalid parameters, abort.
@@ -468,7 +464,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 				break;
 
 			case 'preview':
-				$callback = array( $this, 'print_preview_field' );
+				$callback      = array( $this, 'print_preview_field' );
 				$callback_args = array(
 					'id'          => $args['id'],
 					'class'       => 'media-credit-preview-row',
@@ -489,22 +485,27 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @param array $args An array of arrays suitable for `print_input_field` and `print_checkbox_field`.
 	 */
 	public function print_multiple_fields( array $args ) {
-		?><fieldset><?php
-		foreach ( $args as $field ) {
-			if ( isset( $field['input_type'] ) ) {
-				switch ( $field['input_type'] ) {
-					case 'checkbox':
-						$this->print_checkbox_field( $field );
-						break;
+		?>
+		<fieldset>
+			<?php
+			foreach ( $args as $field ) {
+				if ( isset( $field['input_type'] ) ) {
+					switch ( $field['input_type'] ) {
+						case 'checkbox':
+							$this->print_checkbox_field( $field );
+							break;
 
-					default:
-						$this->print_input_field( $field );
+						default:
+							$this->print_input_field( $field );
+					}
+					?>
+					<br>
+					<?php
 				}
-
-				?><br><?php
 			}
-		}
-		?></fieldset><?php
+			?>
+		</fieldset>
+		<?php
 	}
 
 	/**
@@ -523,15 +524,23 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		) );
 
 		$field_name = "media-credit[{$args['id']}]";
-
-		?><input type="<?php echo esc_attr( $args['type'] ) ?>" id="<?php echo esc_attr( $field_name )?>" name="<?php echo esc_attr( $field_name )?>" <?php
-					if ( ! empty( $args['description'] ) ) : ?>aria-describedby="<?php echo esc_attr( $field_name )?>-description" <?php endif;
-					if ( ! empty( $args['class'] ) ) : ?>class="<?php echo esc_attr( $args['class'] ) ?>" value="<?php echo esc_attr( $args['value'] ) ?>" <?php endif;
-					?> autocomplete="off" /><?php
-
-		if ( ! empty( $args['description'] ) ) {
-			?><p id="<?php echo esc_attr( $field_name )?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ) ?></p><?php
-		}
+		?>
+			<input
+				type="<?php echo esc_attr( $args['type'] ); ?>"
+				id="<?php echo esc_attr( $field_name ); ?>"
+				name="<?php echo esc_attr( $field_name ); ?>"
+			<?php if ( ! empty( $args['description'] ) ) : ?>
+				aria-describedby="<?php echo esc_attr( $field_name ); ?>-description"
+			<?php endif; ?>
+			<?php if ( ! empty( $args['class'] ) ) : ?>
+				class="<?php echo esc_attr( $args['class'] ); ?>"
+				value="<?php echo esc_attr( $args['value'] ); ?>"
+			<?php endif; ?>
+				autocomplete="off" />
+			<?php if ( ! empty( $args['description'] ) ) : ?>
+				<p id="<?php echo esc_attr( $field_name ); ?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ); ?></p>
+			<?php endif; ?>
+		<?php
 	}
 
 	/**
@@ -549,22 +558,32 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 		$field_name = "media-credit[{$args['id']}]";
 
-		if ( ! empty( $args['check_label'] ) ) {
-			?><label for="<?php echo esc_attr( $field_name )?>"><?php
-		}
+		?>
+		<?php if ( ! empty( $args['check_label'] ) ) : ?>
+		<label for="<?php echo esc_attr( $field_name ); ?>">
+		<?php endif; ?>
+			<input
+				type="checkbox"
+				id="<?php echo esc_attr( $field_name ); ?>"
+				name="<?php echo esc_attr( $field_name ); ?>"
+			<?php if ( ! empty( $args['description'] ) ) : ?>
+				aria-describedby="<?php echo esc_attr( $field_name ); ?>-description"
+			<?php endif; ?>
+			<?php if ( ! empty( $args['class'] ) ) : ?>
+				class="<?php echo esc_attr( $args['class'] ); ?>"
+				value="<?php echo esc_attr( $args['value'] ); ?>"
+			<?php endif; ?>
+				<?php checked( 1, $args['value'], true ); ?>
+				autocomplete="off" />
+		<?php if ( ! empty( $args['check_label'] ) ) : ?>
+			<?php echo esc_html( $args['check_label'] ); ?>
+		</label>
+		<?php endif; ?>
 
-		?><input type="checkbox" id="<?php echo esc_attr( $field_name )?>" name="<?php echo esc_attr( $field_name )?>" <?php
-					if ( ! empty( $args['description'] ) ) : ?>aria-describedby="<?php echo esc_attr( $field_name )?>-description" <?php endif;
-					if ( ! empty( $args['class'] ) ) : ?>class="<?php echo esc_attr( $args['class'] ) ?>" value="<?php echo esc_attr( $args['value'] ) ?>" <?php endif;
-					checked( 1, $args['value'], true ) ?> autocomplete="off" /> <?php
-
-		if ( ! empty( $args['check_label'] ) ) {
-			echo esc_html( $args['check_label'] ) ?></label><?php
-		}
-
-		if ( ! empty( $args['description'] ) ) {
-			?><p id="<?php echo esc_attr( $field_name )?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ) ?></p><?php
-		}
+		<?php if ( ! empty( $args['description'] ) ) : ?>
+			<p id="<?php echo esc_attr( $field_name ); ?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ); ?></p>
+		<?php endif; ?>
+		<?php
 	}
 
 	/**
@@ -579,9 +598,9 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			'id'    => 'preview',
 		) );
 
-		$field_name = $args['id'];
+		$field_name   = $args['id'];
 		$current_user = wp_get_current_user();
-		$user_credit = '<a href="' . esc_url_raw( get_author_posts_url( $current_user->ID ) ) . '">' . esc_html( $current_user->display_name ) . '</a>' . esc_html( $args['options']['separator'] . $args['options']['organization'] );
+		$user_credit  = '<a href="' . esc_url_raw( get_author_posts_url( $current_user->ID ) ) . '">' . esc_html( $current_user->display_name ) . '</a>' . esc_html( $args['options']['separator'] . $args['options']['organization'] );
 
 		if ( ! empty( $args['options']['credit_at_end'] ) ) {
 			$credit_html = sprintf( $this->preview_data['pattern'],
@@ -592,15 +611,19 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			$credit_html = $user_credit;
 		}
 
-		?><p id="<?php echo esc_attr( $args['id'] ) ?>" class="notice notice-info" <?php
-			if ( ! empty( $args['description'] ) ) : ?>aria-describedby="<?php echo esc_attr( $field_name ); ?>-description" <?php endif;
-		?>><?php echo wp_kses( $credit_html, array(
-			'a' => array( 'href' ),
-		) ) ?></p><?php
-
-		if ( ! empty( $args['description'] ) ) {
-			?><p id="<?php echo esc_attr( $field_name )?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ) ?></p><?php
-		}
+		?>
+		<p
+			id="<?php echo esc_attr( $args['id'] ); ?>"
+			class="notice notice-info"
+		<?php if ( ! empty( $args['description'] ) ) : ?>
+			aria-describedby="<?php echo esc_attr( $field_name ); ?>-description"
+		<?php endif; ?>>
+			<?php echo wp_kses( $credit_html, array( 'a' => array( 'href' ) ) ); ?>
+		</p>
+		<?php if ( ! empty( $args['description'] ) ) : ?>
+			<p id="<?php echo esc_attr( $field_name ); ?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ); ?></p>
+		<?php endif; ?>
+		<?php
 	}
 
 	/**
@@ -783,6 +806,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 
 		// Set up credit URL field.
 		$url = Media_Credit_Template_Tags::get_media_credit_url( $post );
+
 		$fields['media-credit-url'] = array(
 			'label'         => __( 'Credit URL', 'media-credit' ),
 			'input'         => 'html',
@@ -794,6 +818,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		// Set up nofollow checkbox.
 		$data = Media_Credit_Template_Tags::get_media_credit_data( $post );
 		$html = "<label><input id='attachments[$post->ID][media-credit-nofollow]' class='media-credit-input' type='checkbox' value='1' name='attachments[$post->ID][media-credit-nofollow]' " . checked( ! empty( $data['nofollow'] ), true, false ) . '/>' . __( 'Add <code>rel="nofollow"</code>.', 'media-credit' ) . '</label>';
+
 		$fields['media-credit-data'] = array(
 			'label'         => '', // necessary for HTML type fields.
 			'input'         => 'html',
@@ -805,6 +830,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		// Set up hidden field as a container for additional data.
 		$author_display = Media_Credit_Template_Tags::get_media_credit( $post );
 		$nonce          = wp_create_nonce( 'media_credit_author_names' );
+
 		$fields['media-credit-hidden'] = array(
 			'label'         => '', // necessary for HTML type fields.
 			'input'         => 'html',
@@ -885,7 +911,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		}
 
 		if ( ! empty( $post['post_parent'] ) ) {
-			$parent = get_post( $post['post_parent'], ARRAY_A );
+			$parent                 = get_post( $post['post_parent'], ARRAY_A );
 			$parent['post_content'] = $this->filter_post_content( $parent['post_content'], $post['ID'], $post['post_author'], $freeform, $url );
 
 			wp_update_post( $parent );
@@ -972,9 +998,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 					$image_attributes = wp_get_attachment_image_src( $image_id );
 					$image_filename   = $this->get_image_filename_from_full_url( $image_attributes[0] );
 
-					if ( preg_match( '/src=".*' . $image_filename . '/', $img ) &&
-						 preg_match( '/wp-image-' . $image_id . '/', $img ) ) {
-
+					if ( preg_match( '/src=".*' . $image_filename . '/', $img ) && preg_match( '/wp-image-' . $image_id . '/', $img ) ) {
 						if ( $author_id > 0 ) {
 							$attr['id'] = $author_id;
 							unset( $attr['name'] );
@@ -1032,8 +1056,11 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @param array $args The argument array.
 	 */
 	public function print_settings_section( $args ) {
-		?><a id="media-credit"></a><?php
-		?><p><?php esc_html_e( 'Choose how to display media credit on your blog:', 'media-credit' ) ?></p><?php
+		?>
+		<a id="media-credit"></a><p>
+			<?php esc_html_e( 'Choose how to display media credit on your blog:', 'media-credit' ); ?>
+		</p>
+		<?php
 	}
 
 	/**
