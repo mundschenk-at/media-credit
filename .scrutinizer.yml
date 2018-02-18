@@ -5,6 +5,9 @@ filter:
         - 'public/*'
         - 'media-credit.php'
 
+    dependency_paths:
+        - wordpress/
+
     excluded_paths:
         - 'js/*.min.js'
 
@@ -32,8 +35,11 @@ build:
         analysis:
             project_setup:
                 override: true
+            dependencies:
+                before:
+                    - composer require --dev johnpbloch/wordpress
             tests:
-                override: [php-scrutinizer-run --disable-security-analysis]
+                override: [php-scrutinizer-run]
 tools:
     php_code_sniffer: false
     php_cs_fixer: false
