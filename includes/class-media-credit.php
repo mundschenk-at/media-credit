@@ -99,27 +99,8 @@ class Media_Credit implements Media_Credit_Base {
 		$this->version         = $version;
 		$this->loader          = new Media_Credit_Loader();
 
-		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-
-	}
-
-	/**
-	 * Define the locale for this plugin for internationalization.
-	 *
-	 * Uses the Media_Credit_I18n class in order to set the domain and to register the hook
-	 * with WordPress.
-	 *
-	 * @since    3.0.0
-	 * @access   private
-	 */
-	private function set_locale() {
-
-		$plugin_i18n = new Media_Credit_I18n();
-		$plugin_i18n->set_domain( $this->get_plugin_name() );
-
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 
 	}
 
