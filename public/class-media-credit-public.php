@@ -108,8 +108,6 @@ class Media_Credit_Public implements Media_Credit_Base {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
-		/* wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/media-credit-public.js', array( 'jquery' ), $this->version, false ); */
 	}
 
 	/**
