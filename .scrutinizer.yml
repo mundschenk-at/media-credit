@@ -28,7 +28,12 @@ build:
     tests:
         override:
             - phpcs-run -p media-credit.php includes/ admin/ public/ --extensions=php
-
+    nodes:
+        analysis:
+            project_setup:
+                override: true
+            tests:
+                override: [php-scrutinizer-run --disable-security-analysis]
 tools:
     php_code_sniffer: false
     php_cs_fixer: false
