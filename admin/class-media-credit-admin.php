@@ -703,13 +703,13 @@ class Media_Credit_Admin implements Media_Credit_Base {
 				}
 
 				delete_post_meta( $attachment_id, self::POSTMETA_KEY ); // delete any residual metadata from a free-form field (as inserted below).
-				$this->update_media_credit_in_post( $attachment_id, true, '', $url );
+				$this->update_media_credit_in_post( $attachment_id, '', $url );
 			} elseif ( isset( $freeform ) ) {
 				// Free-form text was entered, insert postmeta with credit.
 				// if free-form text is blank, insert a single space in postmeta.
 				$freeform = empty( $freeform ) ? self::EMPTY_META_STRING : $freeform;
 				update_post_meta( $attachment_id, self::POSTMETA_KEY, $freeform ); // insert '_media_credit' metadata field for image with free-form text.
-				$this->update_media_credit_in_post( $attachment_id, false, $freeform, $url );
+				$this->update_media_credit_in_post( $attachment_id, $freeform, $url );
 			}
 		}
 
@@ -852,7 +852,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			delete_post_meta( $post['ID'], self::POSTMETA_KEY );
 
 			// Update media credit shortcodes in the current post.
-			$this->update_media_credit_in_post( $post, true, '', $url );
+			$this->update_media_credit_in_post( $post, '', $url );
 		} else {
 			/**
 			 * Free-form text was entered, insert postmeta with credit. If free-form text is blank, insert
@@ -864,7 +864,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 			update_post_meta( $post['ID'], self::POSTMETA_KEY, $freeform );
 
 			// Update media credit shortcodes in the current post.
-			$this->update_media_credit_in_post( $post, false, $freeform, $url );
+			$this->update_media_credit_in_post( $post, $freeform, $url );
 		}
 
 		return $post;
@@ -873,12 +873,13 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	/**
 	 * If the given media is attached to a post, edit the media-credit info in the attached (parent) post.
 	 *
+	 * @since 3.2.0 Unused parameter $wp_user removed.
+	 *
 	 * @param int|WP_Post $post     Object of attachment containing all fields from get_post().
-	 * @param boolean     $wp_user  True if attachment should be credited to a user of this blog, false otherwise.
 	 * @param string      $freeform Credit for attachment with freeform string. Empty if attachment should be credited to a user of this blog, as indicated by $wp_user above.
 	 * @param string      $url      Credit URL for linking. Empty means default link for user of this blog, no link for freeform credit.
 	 */
-	private function update_media_credit_in_post( $post, $wp_user, $freeform = '', $url = '' ) {
+	private function update_media_credit_in_post( $post, $freeform = '', $url = '' ) {
 		if ( is_int( $post ) ) {
 			$post = get_post( $post, ARRAY_A );
 		}
