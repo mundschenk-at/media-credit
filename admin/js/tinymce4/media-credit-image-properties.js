@@ -143,7 +143,7 @@
 				// Standalone [media-credit].
 				mediaCreditWrapper = dom.create( 'div', {
 					'class': 'mceMediaCreditOuterTemp ' + align,
-					'style': 'width: ' + ( parseInt( width ) + 10 ) + 'px'
+					'style': 'width: ' + ( parseInt( width, 10 ) + 10 ) + 'px'
 				} );
 
 				// Swap existing parent with our new wrapper.

@@ -205,7 +205,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 	function parseMediaCreditShortcode( content, standalone ) {
 		var pattern;
-		standalone = ( typeof standalone == 'undefined' ? false : standalone );
+		standalone = ( typeof standalone === 'undefined' ? false : standalone );
 
 		if ( standalone ) {
 			pattern = /(?:<p>)?\[media-credit([^\]]+)\]([\s\S]+?)\[\/media-credit\](?:<\/p>)?/g;
@@ -215,7 +215,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 		return content.replace( pattern, function( a, b, c ) {
 
-			var id, align, w, img, width, out, link, name, credit,
+			var id, align, w, img, width, out, link, name, credit, nofollow,
 				trim = tinymce.trim;
 
 			id = b.match( /id=['"]?([0-9]+)['"]? ?/ );
@@ -401,8 +401,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		}
 
 		return content.replace( pattern, function( a, b, c, d ) {
-			var out = '', id, name, w, align, link, quotedName,
-				trim = tinymce.trim;
+			var out = '', id, name, w, align, link, nofollow, quotedName, credit;
 
 			if ( b.indexOf( '<img ' ) === -1 ) {
 
@@ -462,8 +461,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	 * unquoted - whether quotes are necessary (default)
 	 */
 	function parseAttribute( content, attr, pattern, unquoted ) {
-		var result = null;
-		unquoted = ( typeof unquoted == 'undefined' ? false : unquoted );
+		var result = null, searchPattern;
+		unquoted = ( typeof unquoted === 'undefined' ? false : unquoted );
 
 		if ( unquoted ) {
 			searchPattern = new RegExp( attr + '=(' + pattern + ') ?' );
@@ -588,7 +587,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		}
 
 		if ( mediaCreditBlock ) {
-			metadata.align = ( metadata.align && metadata.align != 'none' ) ? metadata.align : dom.getAttrib( mediaCreditBlock, 'data-media-credit-align', '' ).replace( 'align', '' );
+			metadata.align = ( metadata.align && metadata.align !== 'none' ) ? metadata.align : dom.getAttrib( mediaCreditBlock, 'data-media-credit-align', '' ).replace( 'align', '' );
 			metadata.mediaCreditText     = dom.getAttrib( mediaCreditBlock, 'data-media-credit-text', '' );
 			metadata.mediaCreditAuthorID = dom.getAttrib( mediaCreditBlock, 'data-media-credit-author-id', '' );
 			metadata.mediaCreditLink     = dom.getAttrib( mediaCreditBlock, 'data-media-credit-link', '' );
@@ -618,7 +617,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	function updateImage( imageNode, imageData ) {
 		var classes, className, node, html, parent, wrap, linkNode,
 			captionNode, dd, dl, id, attrs, linkAttrs, width, height, align,
-			mediaCreditNode, mediaCreditWrapper,
+			mediaCreditNode, mediaCreditWrapper, removeCreditNode,
 			$imageNode, srcset, src,
 			dom = editor.dom;
 
@@ -849,7 +848,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	}
 
 	function editImage( img ) {
-		var frame, callback;
+		var frame, callback, metadata;
 
 		if ( typeof wp === 'undefined' || ! wp.media ) {
 			editor.execCommand( 'mceImage' );
@@ -941,7 +940,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	});
 
 	editor.on( 'ObjectResized', function( event ) {
-		var node = event.target, mediaCreditNode;
+		var node = event.target;
 
 		if ( node.nodeName === 'IMG' ) {
 				editor.undoManager.transact( function() {
@@ -1100,7 +1099,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		var node, wrap, P, spacer,
 			selection = editor.selection,
 			keyCode = event.keyCode,
-			dom = editor.dom;
+			dom = editor.dom,
 			VK = tinymce.util.VK;
 
 		if ( keyCode === VK.ENTER ) {
