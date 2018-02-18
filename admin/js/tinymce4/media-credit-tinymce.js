@@ -22,7 +22,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	} );
 
 	editor.addButton( 'wp_img_edit', {
-		tooltip: 'Edit ', // trailing space is needed, used for context
+		tooltip: 'Edit|button', // '|button' is not displayed, only used for context
 		icon: 'dashicon dashicons-edit',
 		onclick: function() {
 			editImage( editor.selection.getNode() );
