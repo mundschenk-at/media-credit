@@ -1,7 +1,7 @@
 === Media Credit ===
 Contributors: pputzer
 Tags: media, image, images, credit, byline, author, user
-Requires at least: 4.8
+Requires at least: 4.9
 Tested up to: 4.8
 Stable tag: 3.1.7
 
