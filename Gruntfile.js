@@ -75,6 +75,7 @@ module.exports = function( grunt ) {
 				'!**/*.min.js'
 			],
 			options: {
+				reporter: require('jshint-stylish'),
 				expr: true,
 				globals: {
 					jQuery: true,
