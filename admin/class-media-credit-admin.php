@@ -894,18 +894,15 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	/**
 	 * Add media credit information to media using shortcode notation before sending to editor.
 	 *
-	 * @param string       $html          The image HTML markup to send.
-	 * @param int          $attachment_id The attachment id.
-	 * @param string       $caption       The image caption.
-	 * @param string       $title         The image title.
-	 * @param string       $align         The image alignment.
-	 * @param string       $url           The image source URL.
-	 * @param string|array $size          Size of image. Image size or array of width and height values (in that order). Default 'medium'.
-	 * @param string       $alt           The image alternative, or alt, text.
+	 * @param string $html          The image HTML markup to send.
+	 * @param int    $attachment_id The attachment id.
+	 * @param string $caption       The image caption.
+	 * @param string $title         The image title.
+	 * @param string $align         The image alignment.
 	 *
 	 * @return string
 	 */
-	public function image_send_to_editor( $html, $attachment_id, $caption, $title, $align, $url, $size, $alt = '' ) {
+	public function image_send_to_editor( $html, $attachment_id, $caption, $title, $align ) {
 		$attachment  = get_post( $attachment_id );
 		$credit_meta = Media_Credit_Template_Tags::get_freeform_media_credit( $attachment );
 		$credit_url  = Media_Credit_Template_Tags::get_media_credit_url( $attachment );
