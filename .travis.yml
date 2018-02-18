@@ -69,12 +69,9 @@ script:
       fi
     # WordPress Coding Standards.
     - if [[ "$SCOPE" == "phpcs" ]]; then
-            # PHP Coding Standards
             composer phpcs;
-            # JavaScript hints.
-            pwd; jshint .;
-            # JavaScript Coding Standards.
-            pwd; jscs .;
+            jshint .;
+            jscs .;
       fi
     # Unit tests.
     - if [[ "$SCOPE" == "tests" ]]; then composer test; fi
