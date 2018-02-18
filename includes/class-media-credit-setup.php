@@ -64,7 +64,7 @@ class Media_Credit_Setup implements Media_Credit_Base {
 	 */
 	 public function __construct( $slug, $version ) {
 		$this->plugin_name = $slug;
-		$this->plugin_version = $version;
+		$this->version     = $version;
 	}
 
 	/**
