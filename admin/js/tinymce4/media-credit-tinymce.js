@@ -586,7 +586,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	}
 
 	function hasTextContent( node ) {
-		return node && !! ( node.textContent || node.innerText );
+		return node && !! ( node.textContent || node.innerText ).replace( /\ufeff/g, '' );
 	}
 
 	// Verify HTML in captions
