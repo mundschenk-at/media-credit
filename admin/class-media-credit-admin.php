@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2017 Peter Putzer.
+ * Copyright 2013-2018 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -128,7 +128,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	public function enqueue_styles() {
 		// Style the preview area for the settings page.
 		if ( $this->is_media_settings_page() ) {
-			wp_enqueue_style( 'media-credit-preview-style', $this->resource_url . "css/media-credit-preview$sufix.css", array(), $this->version, 'screen' );
+			wp_enqueue_style( 'media-credit-preview-style', $this->resource_url . "css/media-credit-preview{$this->resource_suffix}.css", array(), $this->version, 'screen' );
 		}
 
 		// Style placeholders when editing media.
