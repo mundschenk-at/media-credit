@@ -68,10 +68,14 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	 */
 	public static function get_media_credit_url( $post = null ) {
 
-		$post = get_post( $post );
+		$post   = get_post( $post );
+		$result = get_post_meta( $post->ID, self::URL_POSTMETA_KEY, true );
 
-		return get_post_meta( $post->ID, self::URL_POSTMETA_KEY, true );
+		if ( empty( $result ) ) {
+			$result = '';
+		}
 
+		return $result;
 	}
 
 	/**
