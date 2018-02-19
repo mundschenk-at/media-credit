@@ -993,10 +993,13 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		if ( ! empty( $matches ) ) {
 			foreach ( $matches as $shortcode ) {
 				if ( 'media-credit' === $shortcode[2] ) {
-					$attr             = shortcode_parse_atts( $shortcode[3] );
 					$img              = $shortcode[5];
 					$image_attributes = wp_get_attachment_image_src( $image_id );
 					$image_filename   = $this->get_image_filename_from_full_url( $image_attributes[0] );
+
+					// Ensure that $attr is an array.
+					$attr = shortcode_parse_atts( $shortcode[3] );
+					$attr = '' === $attr ? array() : $attr;
 
 					if ( preg_match( '/src=".*' . $image_filename . '/', $img ) && preg_match( '/wp-image-' . $image_id . '/', $img ) ) {
 						if ( $author_id > 0 ) {
@@ -1074,6 +1077,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	public function sanitize_option_values( $input ) {
 		// Retrieve currently set options.
 		$valid_options = get_option( self::OPTION );
+		$valid_options = empty( $valid_options ) ? array() : $valid_options;
 
 		// Blank out checkboxes because unset checkbox don't get sent by the browser.
 		$valid_options['credit_at_end']         = false;
