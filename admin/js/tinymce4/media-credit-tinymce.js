@@ -8,6 +8,8 @@
 // jscs:disable requirePaddingNewLinesBeforeLineComments
 
 tinymce.PluginManager.add( 'mediacredit', function( editor ) {
+	'use strict';
+
 	var toolbar, serializer, touchOnImage, pasteInCaption,
 		each = tinymce.each,
 		trim = tinymce.trim,
