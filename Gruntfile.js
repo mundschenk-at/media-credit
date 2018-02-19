@@ -42,6 +42,7 @@ module.exports = function( grunt ) {
 		wp_deploy: {
 			options: {
 				plugin_slug: 'media-credit',
+				svn_url: "https://plugins.svn.wordpress.org/{plugin-slug}/",
 				// svn_user: 'your-wp-repo-username',
 				build_dir: 'build', //relative path to your build directory
 				assets_dir: 'wp-assets', //relative path to your assets directory (optional).
