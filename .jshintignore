@@ -2,4 +2,5 @@
 admin/js/tinymce4/tinymce-noneditable.js
 node_modules/**/*.js
 build/**/*.js
+vendor/**/*.js
 Gruntfile.js
