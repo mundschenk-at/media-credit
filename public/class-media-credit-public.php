@@ -283,8 +283,8 @@ class Media_Credit_Public implements Media_Credit_Base {
 	 */
 	public function add_media_credits_to_end( $content ) {
 
-		// Check if we're inside the main loop in a single post page.
-		if ( ! is_single() || ! in_the_loop() || ! is_main_query() ) {
+		// Check if we're inside the main loop in a single post/page/CPT.
+		if ( ! is_singular() || ! in_the_loop() || ! is_main_query() ) {
 			return $content; // abort.
 		}
 

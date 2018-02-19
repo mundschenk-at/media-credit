@@ -2,7 +2,7 @@
 Contributors: pputzer
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.9
-Tested up to: 4.8
+Tested up to: 4.9
 Stable tag: 3.1.7
 
 Adds a "Credit" field when uploading media to posts and displays it under the images
@@ -121,7 +121,8 @@ by <strong>leaving a message in the Wordpress.org [support forums here](https://
 
 == Changelog ==
 
-= 3.2.0 (Jun. xx, 2017) =
+= 3.2.0 (Feb. xx, 2018) =
+*   "Display credit after posts" now works with pages as well as regular posts (and custom post types).
 *
 
 = 3.1.7 (Feb. 24, 2017) =
@@ -135,7 +136,7 @@ by <strong>leaving a message in the Wordpress.org [support forums here](https://
 
 = 3.1.5 (Jan. 29, 2017) =
 *   Prevent invalid link nesting in featured image credits. This means that by default,
-    no `<a>` tags are printed for featured image credits. The old behaviour can
+    no `<a>` tags are printed for featured image credits. The old behavior can
     be restored by including `add_filter( 'media_credit_post_thumbnail_include_links', __return_true );`
     in the theme's `functions.php`.
 *   "Display credit after posts" is now restricted to the proper single post view
