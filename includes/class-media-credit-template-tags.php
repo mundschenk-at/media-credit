@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2017 Peter Putzer.
+ * Copyright 2013-2018 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -41,13 +41,13 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	 * Returns the media credit as plain text for some media attachment.
 	 *
 	 * @param  int|object $post  Optional post ID or object of attachment. Default is global $post object.
-	 * @param  boolean    $fancy Fancy output (<user> <separator> <organization>) for local user credits. Optional. Default false.
+	 * @param  boolean    $fancy Fancy output (<user> <separator> <organization>) for local user credits. Optional. Default false.
 	 * @return string            The media credit.
 	 */
 	public static function get_media_credit( $post = null, $fancy = false ) {
 
-		$post = get_post( $post );
-		$credit_meta = self::get_freeform_media_credit( $post );
+		$post             = get_post( $post );
+		$credit_meta      = self::get_freeform_media_credit( $post );
 		$credit_wp_author = self::get_wpuser_media_credit( $post );
 
 		if ( '' !== $credit_meta ) {
@@ -68,10 +68,14 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	 */
 	public static function get_media_credit_url( $post = null ) {
 
-		$post = get_post( $post );
+		$post   = get_post( $post );
+		$result = get_post_meta( $post->ID, self::URL_POSTMETA_KEY, true );
 
-		return get_post_meta( $post->ID, self::URL_POSTMETA_KEY, true );
+		if ( empty( $result ) ) {
+			$result = '';
+		}
 
+		return $result;
 	}
 
 	/**
@@ -137,7 +141,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	public static function get_media_credit_html_by_user_id( $id ) {
 
 		$credit_wp_author = get_the_author_meta( 'display_name', $id );
-		$options = get_option( self::OPTION );
+		$options          = get_option( self::OPTION );
 
 		return '<a href="' . get_author_posts_url( $id ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 	}
@@ -184,7 +188,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	 * @param boolean $exclude_unattached Optional. Default true.
 	 */
 	public static function author_media_and_posts( $author_id, $include_posts = true, $limit = 0, $exclude_unattached = true ) {
-		$cache_key = "author_media_and_posts_{$author_id}_i" . ( $include_posts ? '1' : '0') . "_l{$limit}_e" . ( $exclude_unattached ? '1' : '0' );
+		$cache_key = "author_media_and_posts_{$author_id}_i" . ( $include_posts ? '1' : '0' ) . "_l{$limit}_e" . ( $exclude_unattached ? '1' : '0' );
 		$results   = wp_cache_get( $cache_key, 'media-credit' );
 
 		if ( false === $results ) {
@@ -214,7 +218,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 				$start_date = $options['install_date'];
 
 				if ( $start_date ) {
-					$date_query = ' AND post_date >= %s';
+					$date_query   = ' AND post_date >= %s';
 					$query_vars[] = $start_date; // second parameter.
 				}
 			}
@@ -224,7 +228,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 
 			// Optionally set limit.
 			if ( $limit > 0 ) {
-				$limit_query = ' LIMIT %d';
+				$limit_query  = ' LIMIT %d';
 				$query_vars[] = $limit; // always the last parameter.
 			}
 
@@ -236,7 +240,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 				 		  GROUP BY ID ORDER BY post_date DESC {$limit_query}";
 
 			// Prepare and execute query.
-			$results = $wpdb->get_results( $wpdb->prepare( $sql_query, $query_vars ) ); // WPSC: unprepared sql ok.
+			$results = $wpdb->get_results( $wpdb->prepare( $sql_query, $query_vars ) ); // WPSC: DB call ok, unprepared sql ok.
 
 			// Cache results for a short time.
 			wp_cache_set( $cache_key, $results, 'media-credit', MINUTE_IN_SECONDS );
@@ -267,7 +271,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 			$header = '<h3>' . __( 'Recent Media', 'media-credit' ) . '</h3>';
 		}
 
-		$id = 'id = ' . ( $sidebar ? 'recent-media-sidebar' : 'recent-media-inline' );
+		$id        = 'id = ' . ( $sidebar ? 'recent-media-sidebar' : 'recent-media-inline' );
 		$container = 'div';
 
 		echo "<div {$id}>$header"; // XSS OK.
@@ -283,7 +287,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 			}
 
 			$image = preg_replace( '/title=".*"/', '', $image ); // remove title attribute from image.
-			$link = $post->post_parent > 0 ? "<a href='" . get_permalink( $post->post_parent ) . "' title='" . get_the_title( $post->post_parent ) . "'>$image</a>" : $image;
+			$link  = $post->post_parent > 0 ? "<a href='" . /* @scrutinizer ignore-type */ get_permalink( $post->post_parent ) . "' title='" . get_the_title( $post->post_parent ) . "'>$image</a>" : $image;
 
 			echo "<$container class='author-media' id='attachment-" . esc_attr( $post->ID ) . "'>$link</$container>"; // XSS OK.
 		}

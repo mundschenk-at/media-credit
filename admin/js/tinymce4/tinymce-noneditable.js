@@ -8,7 +8,7 @@
  * Contributing: http://www.tinymce.com/contributing
  */
 
-/*global tinymce:true */
+/* globals tinymce */
 
 tinymce.PluginManager.add('noneditable', function(editor) {
 	var editClass, nonEditClass, nonEditableRegExps, contentEditableAttrName = 'contenteditable';

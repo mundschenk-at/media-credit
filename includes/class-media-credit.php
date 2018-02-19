@@ -99,27 +99,8 @@ class Media_Credit implements Media_Credit_Base {
 		$this->version         = $version;
 		$this->loader          = new Media_Credit_Loader();
 
-		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-
-	}
-
-	/**
-	 * Define the locale for this plugin for internationalization.
-	 *
-	 * Uses the Media_Credit_I18n class in order to set the domain and to register the hook
-	 * with WordPress.
-	 *
-	 * @since    3.0.0
-	 * @access   private
-	 */
-	private function set_locale() {
-
-		$plugin_i18n = new Media_Credit_I18n();
-		$plugin_i18n->set_domain( $this->get_plugin_name() );
-
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 
 	}
 
@@ -150,7 +131,7 @@ class Media_Credit implements Media_Credit_Base {
 		$this->loader->add_filter( 'wp_prepare_attachment_for_js',                  $plugin_admin, 'prepare_attachment_media_credit_for_js', 10, 3 );
 		$this->loader->add_filter( 'attachment_fields_to_edit',                     $plugin_admin, 'add_media_credit_fields',                10, 2 );
 		$this->loader->add_filter( 'attachment_fields_to_save',                     $plugin_admin, 'save_media_credit_fields',               10, 2 );
-		$this->loader->add_filter( 'image_send_to_editor',                          $plugin_admin, 'image_send_to_editor',                   10, 8 );
+		$this->loader->add_filter( 'image_send_to_editor',                          $plugin_admin, 'image_send_to_editor',                   10, 5 );
 		$this->loader->add_filter( 'plugin_action_links_' . $this->plugin_basename, $plugin_admin, 'add_action_links',                       10, 1 );
 	}
 
@@ -179,7 +160,7 @@ class Media_Credit implements Media_Credit_Base {
 
 		// Post thumbnail credits.
 		if ( ! empty( $options['post_thumbnail_credit'] ) ) {
-			$this->loader->add_filter( 'post_thumbnail_html', $plugin_public, 'add_media_credit_to_post_thumbnail', 10, 5 );
+			$this->loader->add_filter( 'post_thumbnail_html', $plugin_public, 'add_media_credit_to_post_thumbnail', 10, 3 );
 		}
 	}
 

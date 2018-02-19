@@ -1,12 +1,14 @@
 # tmp files
 *~
 
-# Eclipse
-.project
-.settings/*
+# Composer
+vendor/*
+composer.lock
+
 
 # Node.js/Grunt
 node_modules/*
+package-lock.json
 
 # grunt-wp-deploy
 build/*

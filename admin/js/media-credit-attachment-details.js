@@ -1,8 +1,11 @@
-/*
- ** Properly handle editing credits in the media modal.
+/**
+ *  Properly handle editing credits in the media modal.
+ *
+ *  global: tinymce
  */
 
 jQuery( function( $ ) {
+	'use strict';
 
 	var mediaCredit = window.$mediaCredit || {};
 
@@ -63,8 +66,6 @@ jQuery( function( $ ) {
 					if ( credit !== view.model.get( 'mediaCreditAuthorDisplay' ) ) {
 						updateFreeformCredit( credit );
 					}
-
-					return false;
 				}
 			},
 
@@ -146,7 +147,7 @@ jQuery( function( $ ) {
 			},
 
 			updateSetting: function( event ) {
-				var $input   = $( event.target );
+				var $input = $( event.target );
 
 				// Handle checkboxes.
 				if ( $input.is( 'input[type="checkbox"]' ) ) {

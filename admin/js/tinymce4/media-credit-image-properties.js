@@ -1,7 +1,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2014-2016 Peter Putzer.
+ * Copyright 2014-2018 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License,
@@ -23,9 +23,11 @@
  * @package    Media_Credit
  * @subpackage Media_Credit/admin
  */
-( function( $, wp, _ ) {
+( function( $, wp ) {
+	'use strict';
+
 	var MediaCreditImagePropertiesView, frame,
-		  mediaCredit = window.$mediaCredit || {};
+		  mediaCredit = window.$mediaCredit || {};
 
 	// Sanity check.
 	if ( ! wp.media.events ) {
@@ -102,7 +104,7 @@
 		if ( image.parentNode && 'A' === image.parentNode.nodeName ) {
 			mediaCreditBlock = dom.getNext( image.parentNode, '.mceMediaCreditTemp' );
 		} else {
-			mediaCreditBlock = dom.getNext( image, '.mceMediaCreditTemp' );;
+			mediaCreditBlock = dom.getNext( image, '.mceMediaCreditTemp' );
 		}
 
 		if ( mediaCredit.id[ mediaCreditAuthorID ] !== mediaCreditText ) {
@@ -114,7 +116,7 @@
 		align = 'align' + ( align || 'none' );
 
 		// No current media credit block.
-		if ( null === mediaCreditBlock && ( mediaCreditText || mediaCreditAuthorID ) ) {
+		if ( null === mediaCreditBlock && ( mediaCreditText || mediaCreditAuthorID ) ) {
 
 			// Create new representation for media-credit.
 			mediaCreditBlock = dom.create( 'span', {
@@ -141,7 +143,7 @@
 				// Standalone [media-credit].
 				mediaCreditWrapper = dom.create( 'div', {
 					'class': 'mceMediaCreditOuterTemp ' + align,
-					'style': 'width: ' + ( parseInt( width ) + 10 ) + 'px'
+					'style': 'width: ' + ( parseInt( width, 10 ) + 10 ) + 'px'
 				} );
 
 				// Swap existing parent with our new wrapper.
@@ -158,4 +160,4 @@
 		}
 	} );
 
-} )( jQuery, wp, _ );
+} )( jQuery, wp );

@@ -4,9 +4,8 @@
     "excludeFiles": [
     	"admin/js/**/*.min.js",
     	"public/js/**/*.min.js",
-		"**/js/tinymce4/media-credit-tinymce-switch.js",
-		"**/js/tinymce4/media-credit-tinymce.js",
-		"**/js/tinymce4/tinymce-noneditable.js",
-    	"Gruntfile.js"
+        "vendor/**/*.js",
+        "**/js/tinymce4/tinymce-noneditable.js",
+        "Gruntfile.js"
     ]
 }

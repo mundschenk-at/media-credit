@@ -8,9 +8,12 @@
 
 	<!-- Include the WordPress ruleset, with exclusions. -->
 	<rule ref="WordPress">
+		<config name="minimum_supported_wp_version" value="4.9"/>
+
 		<exclude name="Generic.WhiteSpace.ScopeIndent.IncorrectExact" />
 		<exclude name="Generic.WhiteSpace.ScopeIndent.Incorrect" />
 		<exclude name="PEAR.Functions.FunctionCallSignature.Indent" />
+		<exclude name="Generic.Functions.FunctionCallArgumentSpacing" />
 	</rule>
 	<rule ref="WordPress-VIP">
 		<exclude name="WordPress.VIP.RestrictedFunctions.error_log" />
@@ -19,6 +22,15 @@
 		<exclude name="Squiz.Commenting.LongConditionClosingComment" />
 	</rule>
 
+	<rule ref="WordPress.Arrays.MultipleStatementAlignment">
+		<properties>
+			<property name="exact" value="false" />
+			<property name="maxColumn" value="70" />
+		</properties>
+	</rule>
+
 	<!-- Include sniffs for PHP cross-version compatibility. -->
-	<rule ref="PHPCompatibility"/>
+	<rule ref="PHPCompatibility">
+		<config name="testVersion" value="5.2-7.2"/>
+	</rule>
 </ruleset>

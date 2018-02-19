@@ -1,0 +1,46 @@
+filter:
+    paths:
+        - 'includes/*'
+        - 'admin/*'
+        - 'public/*'
+        - 'media-credit.php'
+
+    dependency_paths:
+        - wordpress/
+
+    excluded_paths:
+        - 'js/*.min.js'
+
+build:
+    cache:
+        directories:
+            - ~/.composer   # Composer home directory (avoid fetching already fetched packages)
+            # vendor is already included.
+
+    environment:
+        rabbitmq: false
+        mysql: false
+        postgresql: false
+        mongodb: false
+        elasticsearch: false
+        redis: false
+        memcached: false
+        neo4j: false
+        php:
+            version: 7.1
+    tests:
+        override:
+            - phpcs-run -p media-credit.php includes/ admin/ public/ --extensions=php
+    nodes:
+        analysis:
+            project_setup:
+                override: true
+            dependencies:
+                before:
+                    - composer require --dev johnpbloch/wordpress
+            tests:
+                override: [php-scrutinizer-run]
+tools:
+    php_code_sniffer: false
+    php_cs_fixer: false
+    external_code_coverage: false

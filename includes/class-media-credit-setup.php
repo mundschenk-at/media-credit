@@ -1,23 +1,23 @@
 <?php
 /**
- *  This file is part of Media Credit.
+ * This file is part of Media Credit.
  *
- *  Copyright 2013-2016 Peter Putzer.
- *  Copyright 2010-2011 Scott Bressler.
+ * Copyright 2013-2018 Peter Putzer.
+ * Copyright 2010-2011 Scott Bressler.
  *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License,
- *	version 2 as published by the Free Software Foundation.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License,
+ * version 2 as published by the Free Software Foundation.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- *  MA 02110-1301, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
  *
  * @link       https://mundschenk.at
  * @since      3.0.0
@@ -62,9 +62,9 @@ class Media_Credit_Setup implements Media_Credit_Base {
 	 * @param string $slug    The plugin slug.
 	 * @param string $version The version string.
 	 */
-	function __construct( $slug, $version ) {
+	public function __construct( $slug, $version ) {
 		$this->plugin_name = $slug;
-		$this->plugin_version = $version;
+		$this->version     = $version;
 	}
 
 	/**
@@ -113,7 +113,11 @@ class Media_Credit_Setup implements Media_Credit_Base {
 		if ( version_compare( $installed_options['version'], '1.0.1', '<' ) ) {
 			// Update all media-credit postmeta keys to _media_credit.
 			global $wpdb;
-			$wpdb->update( $wpdb->postmeta, array( 'meta_key' => self::POSTMETA_KEY ), array( 'meta_key' => 'media-credit' ) ); // WPSC: cache ok, tax_query ok.
+			$wpdb->update( $wpdb->postmeta, array(
+				'meta_key' => self::POSTMETA_KEY,
+			), array(
+				'meta_key' => 'media-credit',
+			) ); // WPSC: db call ok, cache ok, slow query ok.
 
 			$installed_options['version'] = '1.0.1';
 			update_option( $this->plugin_name, $installed_options );
@@ -157,7 +161,7 @@ class Media_Credit_Setup implements Media_Credit_Base {
 	 *
 	 * @since    3.0.0
 	 */
-	static function uninstall() {
+	public static function uninstall() {
 		delete_option( self::OPTION );
 	}
 }

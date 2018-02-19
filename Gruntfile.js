@@ -33,7 +33,7 @@ module.exports = function( grunt ) {
 		copy: {
 			build: {
 				files: [
-					{ expand: true, nonull: true, src: ['readme.txt','*.php'], dest: 'build/' },
+					{ expand: true, nonull: true, src: ['readme.txt', 'CHANGELOG.md','*.php'], dest: 'build/' },
 					{ expand: true, nonull: true, src: ['admin/**','public/**','includes/**', '!**/scss/**'], dest: 'build/' },
 				],
 			}
@@ -75,6 +75,7 @@ module.exports = function( grunt ) {
 				'!**/*.min.js'
 			],
 			options: {
+				reporter: require('jshint-stylish'),
 				expr: true,
 				globals: {
 					jQuery: true,
@@ -100,15 +101,8 @@ module.exports = function( grunt ) {
 				src: ['includes/**/*.php', 'admin/**/*.php', 'public/**/*.php']
 			},
 			options: {
-				bin: 'phpcs -p -s -v -n ',
+				bin: 'vendor/bin/phpcs -p -s -v -n ',
 				standard: './phpcs.xml'
-			}
-		},
-
-		delegate: {
-			sass: {
-				src: [ '<%= sass.dev.files.src %>**/*.scss' ],
-				dest: '<%= sass.dev.files.dest %>'
 			}
 		},
 
@@ -221,27 +215,22 @@ module.exports = function( grunt ) {
 	});
 
 	grunt.registerTask( 'default', [
-			'wp_readme_to_markdown',
+			'newer:wp_readme_to_markdown',
 			'newer:jscs',
 			'newer:jshint',
 			'newer:phpcs',
-			'newer:delegate:sass:dev',
+			'newer:sass:dev',
 			'newer:postcss:dev'
 	] );
 
 	grunt.registerTask( 'build', [
-			'wp_readme_to_markdown',
+			'newer:wp_readme_to_markdown',
 			'clean:build',
-			'newer:delegate:sass:dist',
+			'newer:sass:dist',
 			'newer:postcss:dist',
 			'newer:minify',
 			'copy:build'
 	] );
-
-	// delegate stuff
-	grunt.registerTask( 'delegate', function() {
-		grunt.task.run( this.args.join( ':' ) );
-	} );
 
 	// dynamically generate uglify targets
 	grunt.registerMultiTask('minify', function () {

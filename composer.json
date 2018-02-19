@@ -1,0 +1,46 @@
+{
+    "name": "mundschenk-at/media-credit",
+    "description": "Properly credit the artists on your WordPress site.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Peter Putzer",
+            "email": "github@mundschenk.at",
+            "homepage": "https://code.mundschenk.at",
+            "role": "Developer"
+        },
+        {
+            "name": "Scott Bressler",
+            "homepage": "http://www.scottbressler.com/",
+            "role": "Original author"
+        }
+    ],
+
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/mundschenk-at/composer-for-wordpress.git",
+            "no-api": true
+        }
+    ],
+
+    "require": {
+        "php": ">=5.2.0"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.0",
+        "wp-coding-standards/wpcs": "^0.14.0",
+        "wimg/php-compatibility": "^8.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.4"
+    },
+
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+
+    "scripts": {
+      "phpcs": [
+          "phpcs -p -s includes/ admin/ public/ --extensions=php"
+      ]
+    }
+}
