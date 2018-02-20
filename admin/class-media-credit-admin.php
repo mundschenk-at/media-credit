@@ -1083,6 +1083,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 		$valid_options['credit_at_end']         = false;
 		$valid_options['no_default_credit']     = false;
 		$valid_options['post_thumbnail_credit'] = false;
+		$valid_options['schema_org_markup']     = false;
 
 		// Sanitize the actual input values.
 		foreach ( $input as $key => $value ) {
