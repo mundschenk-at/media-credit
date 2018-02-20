@@ -28,9 +28,6 @@ build:
         neo4j: false
         php:
             version: 7.1
-    tests:
-        override:
-            - phpcs-run -p media-credit.php includes/ admin/ public/ --extensions=php
     nodes:
         analysis:
             project_setup:
@@ -39,7 +36,9 @@ build:
                 before:
                     - composer require --dev johnpbloch/wordpress
             tests:
-                override: [php-scrutinizer-run]
+                override:
+                    - php-scrutinizer-run
+                    - phpcs-run -p media-credit.php includes/ admin/ public/ --extensions=php
 tools:
     php_code_sniffer: false
     php_cs_fixer: false
