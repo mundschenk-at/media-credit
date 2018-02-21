@@ -1,7 +1,7 @@
 /**
  * Extend editor formatting when switching between HTML and Visual mode.
  *
- * Based on revision 47807 of /wp-admin/js/editor.js (removep)
+ * Based on revision @42574 of https://core.trac.wordpress.org/log/trunk/src/wp-admin/js/editor.js (removep)
  *
  */
 
@@ -68,15 +68,15 @@
 			html = html.replace( /\n[\s\u00a0]+\n/g, '\n\n' );
 
 			// Replace <br> tags with line breaks.
-      html = html.replace( /(\s*)<br ?\/?>\s*/gi, function( match, space ) {
-          if ( space && space.indexOf( '\n' ) !== -1 ) {
-              return '\n\n';
-          }
+			html = html.replace( /(\s*)<br ?\/?>\s*/gi, function( match, space ) {
+				if ( space && space.indexOf( '\n' ) !== -1 ) {
+					return '\n\n';
+				}
 
-          return '\n';
-      });
+				return '\n';
+			});
 
-      // Fix line breaks around <div>.
+			// Fix line breaks around <div>.
 			html = html.replace( /\s*<div/g, '\n<div' );
 			html = html.replace( /<\/div>\s*/g, '</div>\n' );
 
@@ -121,7 +121,7 @@
 			html = html.replace( /<\/p#>/g, '</p>\n' );
 
 			// Pad remaining <p> tags whit a line break.
-			html = html.replace( /\s*(<p	 [^>]+>[\s\S]*?<\/p>)/g, '\n$1' );
+			html = html.replace( /\s*(<p [^>]+>[\s\S]*?<\/p>)/g, '\n$1' );
 
 			// Trim.
 			html = html.replace( /^\s+/, '' );

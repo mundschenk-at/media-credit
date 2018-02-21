@@ -8,6 +8,8 @@
 // jscs:disable requirePaddingNewLinesBeforeLineComments
 
 tinymce.PluginManager.add( 'mediacredit', function( editor ) {
+	'use strict';
+
 	var toolbar, serializer, touchOnImage, pasteInCaption,
 		each = tinymce.each,
 		trim = tinymce.trim,
@@ -1140,7 +1142,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			if ( node.nodeName === 'DIV' && ( dom.hasClass( node, 'mceTemp' ) || dom.hasClass( node, 'mceMediaCreditOuterTemp' ) ) ) {
 				wrap = node;
 			} else if ( node.nodeName === 'IMG' || node.nodeName === 'DT' || node.nodeName === 'A' ) {
-				wrap = dom.getParent( node, 'div.mceTemp' ) || editor.dom.getParent( node, 'div.mceMediaCreditOuterTemp' );
+				wrap = dom.getParent( node, 'div.mceTemp' ) || dom.getParent( node, 'div.mceMediaCreditOuterTemp' );
 			}
 
 			if ( wrap ) {
@@ -1148,6 +1150,37 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				removeImage( node );
 				return false;
 			}
+		}
+	});
+
+	// Also remove credit if image was removed.
+	editor.on( 'NodeChange', function( event ) {
+		var wrap, P,
+		textContent = '',
+		remove = false,
+		node = event.element,
+		dom = editor.dom;
+
+		wrap = dom.getParent( node, 'div.mceTemp' ) || dom.getParent( node, 'div.mceMediaCreditOuterTemp' );
+		if ( ! wrap ) {
+			return;
+		}
+
+		if ( node.nodeName === 'A' && node.children.length === 0 ) {
+			textContent = node.textContent;
+			remove = true;
+		} else if ( node.nodeName === 'DIV' && dom.hasClass( node, 'mceMediaCreditOuterTemp' ) && node.children.length === 1 && dom.hasClass( node.firstElementChild, 'mceMediaCreditTemp' ) ) {
+			textContent = node.firstChild.textContent;
+			remove = true;
+		}
+
+		if ( remove ) {
+			P = dom.create( 'p', null, textContent );
+			dom.insertAfter( P, wrap );
+
+			dom.events.cancel( event );
+			dom.remove( wrap );
+			return false;
 		}
 	});
 

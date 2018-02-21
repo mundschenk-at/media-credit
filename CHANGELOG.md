@@ -1,3 +1,10 @@
+= 3.2.0 (Feb. 21, 2018) =
+*   Use minified stylesheets and JavaScript files if running in a production environment.
+*   "Display credit after posts" now works with pages as well as regular posts (and custom post types).
+*   "Include schema.org structured data" can switched off again after first being enabled.
+*   General code clean-up.
+*   TinyMCE components updated.
+
 = 3.1.7 (Feb. 24, 2017) =
 *   JavaScript components should be slightly more fault tolerant now.
 *   The plugin does not depend on the visual editor being enabled anymore. Props
