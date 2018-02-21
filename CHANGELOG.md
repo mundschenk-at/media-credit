@@ -1,4 +1,4 @@
-= 3.2.0 (Feb. xx, 2018) =
+= 3.2.0 (Feb. 21, 2018) =
 *   Use minified stylesheets and JavaScript files if running in a production environment.
 *   "Display credit after posts" now works with pages as well as regular posts (and custom post types).
 *   "Include schema.org structured data" can switched off again after first being enabled.

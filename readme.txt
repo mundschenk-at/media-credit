@@ -3,7 +3,7 @@ Contributors: pputzer
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.9
 Tested up to: 4.9
-Stable tag: 3.1.7
+Stable tag: 3.2.0
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
@@ -85,7 +85,7 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
-= 3.2.0 (Feb. xx, 2018) =
+= 3.2.0 (Feb. 21, 2018) =
 *   Use minified stylesheets and JavaScript files if running in a production environment.
 *   "Display credit after posts" now works with pages as well as regular posts (and custom post types).
 *   "Include schema.org structured data" can switched off again after first being enabled.
