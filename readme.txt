@@ -1,5 +1,5 @@
 === Media Credit ===
-Contributors: pputzer
+Contributors: pputzer, sbressler
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.9
 Tested up to: 4.9
