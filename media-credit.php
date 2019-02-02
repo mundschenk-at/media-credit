@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2018 Peter Putzer.
+ * Copyright 2013-2019 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -79,9 +79,10 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/media-credit-template.php';
  * then kicking off the plugin from this point in the file does
  * not affect the page life cycle.
  *
- * @since    3.0.0
+ * @since 3.0.0
+ * @since 3.3.0 Renamed to media_credit_run
  */
-function run_media_credit() {
+function media_credit_run() {
 
 	// Set up autoloader.
 	spl_autoload_register( 'media_credit_autoloader' );
@@ -106,4 +107,4 @@ function run_media_credit() {
 	// Start the plugin for real.
 	$plugin->run();
 }
-run_media_credit();
+media_credit_run();

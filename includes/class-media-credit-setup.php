@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2018 Peter Putzer.
+ * Copyright 2013-2019 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -113,11 +113,9 @@ class Media_Credit_Setup implements Media_Credit_Base {
 		if ( version_compare( $installed_options['version'], '1.0.1', '<' ) ) {
 			// Update all media-credit postmeta keys to _media_credit.
 			global $wpdb;
-			$wpdb->update( $wpdb->postmeta, array(
-				'meta_key' => self::POSTMETA_KEY,
-			), array(
-				'meta_key' => 'media-credit',
-			) ); // WPSC: db call ok, cache ok, slow query ok.
+
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update( $wpdb->postmeta, array( 'meta_key' => self::POSTMETA_KEY ), array( 'meta_key' => 'media-credit' ) );
 
 			$installed_options['version'] = '1.0.1';
 			update_option( $this->plugin_name, $installed_options );

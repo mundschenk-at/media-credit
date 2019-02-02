@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2018 Peter Putzer.
+ * Copyright 2013-2019 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -190,15 +190,19 @@ class Media_Credit_Public implements Media_Credit_Base {
 			return do_shortcode( $content );
 		}
 
-		$atts = shortcode_atts( array(
-			'id'         => -1,
-			'name'       => '',
-			'link'       => '',
-			'standalone' => 'true',
-			'align'      => 'alignnone',
-			'width'      => '',
-			'nofollow'   => '',
-		), $atts, 'media-credit' );
+		$atts = shortcode_atts(
+			array(
+				'id'         => -1,
+				'name'       => '',
+				'link'       => '',
+				'standalone' => 'true',
+				'align'      => 'alignnone',
+				'width'      => '',
+				'nofollow'   => '',
+			),
+			$atts,
+			'media-credit'
+		);
 
 		$atts['standalone'] = filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
 		$atts['nofollow']   = filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
@@ -234,7 +238,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 		 * @param array  $atts          Attributes of the media-credit shortcode.
 		 * @param string $content       The image element, possibly wrapped in a hyperlink.
 		 */
-		$credit_width = apply_filters( 'img_caption_shortcode_width', $credit_width, $atts, $content );
+		$credit_width = apply_filters( 'img_caption_shortcode_width', $credit_width, $atts, $content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 		// Apply credit width via style attribute.
 		$style = '';
