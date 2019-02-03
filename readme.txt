@@ -20,6 +20,7 @@ When this media is then inserted into a post, a new shortcode, `[media-credit]`,
 
 You can also display all the media by an author on the author's page. See more in the [FAQ](https://wordpress.org/plugins/media-credit/faq/).
 
+[](http://coderisk.com/wp/plugin/media-credit/RIPS--FzZ0Hq_kh)
 
 == Frequently Asked Questions ==
 
