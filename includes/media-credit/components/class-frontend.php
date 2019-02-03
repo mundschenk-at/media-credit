@@ -27,6 +27,8 @@
 
 namespace Media_Credit\Components;
 
+use Media_Credit\Template_Tags;
+
 /**
  * The public-facing functionality of the plugin.
  *
@@ -317,7 +319,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		// Get a list of credits for the page.
 		$credit_unique = array();
 		foreach ( $images[1] as $image_id ) {
-			$credit = \Media_Credit_Template_Tags::get_media_credit_html( $image_id, $include_default_credit );
+			$credit = Template_Tags::get_media_credit_html( $image_id, $include_default_credit );
 
 			if ( ! empty( $credit ) ) {
 				$credit_unique[] = $credit;
@@ -329,7 +331,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 			$post_thumbnail_id = get_post_thumbnail_id();
 
 			if ( '' !== $post_thumbnail_id ) {
-				$credit = \Media_Credit_Template_Tags::get_media_credit_html( (int) $post_thumbnail_id, $include_default_credit );
+				$credit = Template_Tags::get_media_credit_html( (int) $post_thumbnail_id, $include_default_credit );
 
 				if ( ! empty( $credit ) ) {
 					array_unshift( $credit_unique, $credit );
@@ -419,11 +421,11 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		 * @param int  $post_thumbnail_id The post thumbnail's attachment ID.
 		 */
 		if ( apply_filters( 'media_credit_post_thumbnail_include_links', false, $post_id, $post_thumbnail_id ) ) {
-			$credit = \Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, $include_default_credits );
+			$credit = Template_Tags::get_media_credit_html( $post_thumbnail_id, $include_default_credits );
 		} elseif ( $include_default_credits ) {
-			$credit = \Media_Credit_Template_Tags::get_media_credit( $post_thumbnail_id, true );
+			$credit = Template_Tags::get_media_credit( $post_thumbnail_id, true );
 		} else {
-			$credit = \Media_Credit_Template_Tags::get_freeform_media_credit( $post_thumbnail_id );
+			$credit = Template_Tags::get_freeform_media_credit( $post_thumbnail_id );
 		}
 
 		// Don't print the default credit.

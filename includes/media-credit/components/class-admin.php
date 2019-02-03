@@ -27,6 +27,8 @@
 
 namespace Media_Credit\Components;
 
+use Media_Credit\Template_Tags;
+
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -299,7 +301,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		}
 
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
-		add_filter( 'the_author', [ \Media_Credit_Template_Tags::class, 'get_media_credit' ] );
+		add_filter( 'the_author', [ Template_Tags::class, 'get_media_credit' ] );
 	}
 
 	/**
@@ -762,7 +764,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		}
 
 		if ( isset( $changes['mediaCreditNoFollow'] ) ) {
-			$data = wp_parse_args( array( 'nofollow' => $nofollow ), \Media_Credit_Template_Tags::get_media_credit_data( $attachment_id ) );
+			$data = wp_parse_args( array( 'nofollow' => $nofollow ), Template_Tags::get_media_credit_data( $attachment_id ) );
 			update_post_meta( $attachment_id, self::DATA_POSTMETA_KEY, $data ); // insert '_media_credit_data' metadata field.
 		}
 
@@ -807,10 +809,10 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 */
 	public function prepare_attachment_media_credit_for_js( $response, $attachment, $meta ) {
 
-		$credit    = \Media_Credit_Template_Tags::get_media_credit( $attachment );
-		$url       = \Media_Credit_Template_Tags::get_media_credit_url( $attachment );
-		$data      = \Media_Credit_Template_Tags::get_media_credit_data( $attachment );
-		$author_id = '' === \Media_Credit_Template_Tags::get_freeform_media_credit( $attachment ) ? $attachment->post_author : '';
+		$credit    = Template_Tags::get_media_credit( $attachment );
+		$url       = Template_Tags::get_media_credit_url( $attachment );
+		$data      = Template_Tags::get_media_credit_data( $attachment );
+		$author_id = '' === Template_Tags::get_freeform_media_credit( $attachment ) ? $attachment->post_author : '';
 		$options   = get_option( self::OPTION );
 
 		// Set up Media Credit model data (not as an array because data-settings code in View can't deal with it.
@@ -841,9 +843,9 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 */
 	public function add_media_credit_fields( $fields, $post ) {
 		$options   = get_option( self::OPTION );
-		$credit    = \Media_Credit_Template_Tags::get_media_credit( $post );
+		$credit    = Template_Tags::get_media_credit( $post );
 		$value     = 'value';
-		$author_id = '' === \Media_Credit_Template_Tags::get_freeform_media_credit( $post ) ? $post->post_author : '';
+		$author_id = '' === Template_Tags::get_freeform_media_credit( $post ) ? $post->post_author : '';
 
 		// Use placeholders instead of value if no freeform credit is set with `no_default_credit` enabled.
 		if ( ! empty( $options['no_default_credit'] ) && ! empty( $author_id ) ) {
@@ -860,7 +862,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		);
 
 		// Set up credit URL field.
-		$url = \Media_Credit_Template_Tags::get_media_credit_url( $post );
+		$url = Template_Tags::get_media_credit_url( $post );
 
 		$fields['media-credit-url'] = array(
 			'label'         => __( 'Credit URL', 'media-credit' ),
@@ -871,7 +873,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		);
 
 		// Set up nofollow checkbox.
-		$data = \Media_Credit_Template_Tags::get_media_credit_data( $post );
+		$data = Template_Tags::get_media_credit_data( $post );
 		$html = "<label><input id='attachments[$post->ID][media-credit-nofollow]' class='media-credit-input' type='checkbox' value='1' name='attachments[$post->ID][media-credit-nofollow]' " . checked( ! empty( $data['nofollow'] ), true, false ) . '/>' . __( 'Add <code>rel="nofollow"</code>.', 'media-credit' ) . '</label>';
 
 		$fields['media-credit-data'] = array(
@@ -883,7 +885,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		);
 
 		// Set up hidden field as a container for additional data.
-		$author_display = \Media_Credit_Template_Tags::get_media_credit( $post );
+		$author_display = Template_Tags::get_media_credit( $post );
 		$nonce          = wp_create_nonce( 'media_credit_author_names' );
 
 		$fields['media-credit-hidden'] = array(
@@ -914,7 +916,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		update_post_meta( $post['ID'], self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
 
 		// Update optional data array with nofollow.
-		update_post_meta( $post['ID'], self::DATA_POSTMETA_KEY, wp_parse_args( array( 'nofollow' => $nofollow ), \Media_Credit_Template_Tags::get_media_credit_data( $post ) ) );
+		update_post_meta( $post['ID'], self::DATA_POSTMETA_KEY, wp_parse_args( array( 'nofollow' => $nofollow ), Template_Tags::get_media_credit_data( $post ) ) );
 
 		/**
 		 * A valid WP user was selected, and the display name matches the free-form. The final conditional is
@@ -984,9 +986,9 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 */
 	public function image_send_to_editor( $html, $attachment_id, $caption, $title, $align ) {
 		$attachment  = get_post( $attachment_id );
-		$credit_meta = \Media_Credit_Template_Tags::get_freeform_media_credit( $attachment );
-		$credit_url  = \Media_Credit_Template_Tags::get_media_credit_url( $attachment );
-		$credit_data = \Media_Credit_Template_Tags::get_media_credit_data( $attachment );
+		$credit_meta = Template_Tags::get_freeform_media_credit( $attachment );
+		$credit_url  = Template_Tags::get_media_credit_url( $attachment );
+		$credit_data = Template_Tags::get_media_credit_data( $attachment );
 		$options     = get_option( self::OPTION );
 
 		// Set freeform or blog user credit.

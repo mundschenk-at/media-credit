@@ -26,6 +26,8 @@
  * @subpackage Media_Credit/includes
  */
 
+use Media_Credit\Template_Tags;
+
 if ( ! function_exists( 'get_media_credit' ) ) {
 	/**
 	 * Template tag to return the media credit as plain text for some media attachment.
@@ -33,7 +35,7 @@ if ( ! function_exists( 'get_media_credit' ) ) {
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function get_media_credit( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		return Media_Credit_Template_Tags::get_media_credit( $post );
+		return Template_Tags::get_media_credit( $post );
 	}
 }
 
@@ -55,7 +57,7 @@ if ( ! function_exists( 'get_media_credit_url' ) ) {
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function get_media_credit_url( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		return Media_Credit_Template_Tags::get_media_credit_url( $post );
+		return Template_Tags::get_media_credit_url( $post );
 	}
 }
 
@@ -78,7 +80,7 @@ if ( ! function_exists( 'get_media_credit_html' ) ) {
 	 * @param boolean    $include_default_credit Optional flag to decide if default credits (owner) should be returned as well. Default is true.
 	 */
 	function get_media_credit_html( $post = null, $include_default_credit = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		return Media_Credit_Template_Tags::get_media_credit_html( $post, $include_default_credit );
+		return Template_Tags::get_media_credit_html( $post, $include_default_credit );
 	}
 }
 
@@ -100,7 +102,7 @@ if ( ! function_exists( 'get_media_credit_html_by_user_id' ) ) {
 	 * @param int $id User ID of a WordPress user.
 	 */
 	function get_media_credit_html_by_user_id( $id ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		return Media_Credit_Template_Tags::get_media_credit_html_by_user_id( $id );
+		return Template_Tags::get_media_credit_html_by_user_id( $id );
 	}
 }
 
@@ -128,7 +130,7 @@ if ( ! function_exists( 'get_wpuser_media_credit' ) ) {
 
 		_deprecated_function( __FUNCTION__, '3.0.0' );
 
-		return Media_Credit_Template_Tags::get_wpuser_media_credit( $post );
+		return Template_Tags::get_wpuser_media_credit( $post );
 	}
 }
 
@@ -145,7 +147,7 @@ if ( ! function_exists( 'get_freeform_media_credit' ) ) {
 
 		_deprecated_function( __FUNCTION__, '3.0.0' );
 
-		return Media_Credit_Template_Tags::get_freeform_media_credit( $post );
+		return Template_Tags::get_freeform_media_credit( $post );
 	}
 }
 
@@ -161,7 +163,7 @@ if ( ! function_exists( 'display_author_media' ) ) {
 	 * @param boolean $exclude_unattached  Optional. Default true.
 	 */
 	function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = null, $exclude_unattached = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		Media_Credit_Template_tags::display_author_media( $author_id, $sidebar, $limit, $link_without_parent, $header, $exclude_unattached );
+		Template_Tags::display_author_media( $author_id, $sidebar, $limit, $link_without_parent, $header, $exclude_unattached );
 	}
 }
 
@@ -175,7 +177,7 @@ if ( ! function_exists( 'author_media_and_posts' ) ) {
 	 * @param boolean $exclude_unattached Optional. Default true.
 	 */
 	function author_media_and_posts( $author_id, $include_posts = true, $limit = 0, $exclude_unattached = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		return Media_Credit_Template_Tags::author_media_and_posts( $author_id, $include_posts, $limit, $exclude_unattached );
+		return Template_Tags::author_media_and_posts( $author_id, $include_posts, $limit, $exclude_unattached );
 	}
 }
 
