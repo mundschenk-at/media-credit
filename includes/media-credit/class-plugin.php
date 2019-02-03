@@ -27,6 +27,7 @@
 namespace Media_Credit;
 
 use Media_Credit\Components\Admin;
+use Media_Credit\Components\Frontend;
 use Media_Credit\Components\Setup;
 
 /**
@@ -46,11 +47,13 @@ class Plugin {
 	/**
 	 * Creates an instance of the plugin controller.
 	 *
-	 * @param Setup $setup    The (de-)activation handling.
-	 * @param Admin $admin    The backend.
+	 * @param Setup    $setup    The (de-)activation handling.
+	 * @param Frontend $frontend The frontend.
+	 * @param Admin    $admin    The backend.
 	 */
-	public function __construct( Setup $setup, Admin $admin ) {
+	public function __construct( Setup $setup, Frontend $frontend, Admin $admin ) {
 		$this->components[] = $setup;
+		$this->components[] = $frontend;
 		$this->components[] = $admin;
 	}
 
