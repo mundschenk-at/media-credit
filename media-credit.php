@@ -35,42 +35,13 @@
  * License: GPL2
  */
 
-/**
- * If this file is called directly, abort.
- */
-if ( ! defined( 'WPINC' ) ) {
-	die;
+// Don't do anything if called directly.
+if ( ! defined( 'ABSPATH' ) || ! defined( 'WPINC' ) ) {
+	die();
 }
 
-/**
- * An autoloader implementation for our classes.
- *
- * @param string $class_name  The class name (including namespaces).
- */
-function media_credit_autoloader( $class_name ) {
-	if ( false === strpos( $class_name, 'Media_Credit' ) ) {
-		return; // abort.
-	}
-
-	static $classes_dir;
-	if ( empty( $classes_dir ) ) {
-		$classes_dir['default'] = realpath( plugin_dir_path( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR;
-		$classes_dir['public']  = realpath( plugin_dir_path( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR;
-		$classes_dir['admin']   = realpath( plugin_dir_path( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR;
-	}
-	$class_file = 'class-' . str_replace( '_', '-', strtolower( $class_name ) ) . '.php';
-
-	if ( is_file( $class_file_path = $classes_dir['default'] . $class_file ) || // @codingStandardsIgnoreStart
-	     is_file( $class_file_path = $classes_dir['admin']   . $class_file ) ||
-	     is_file( $class_file_path = $classes_dir['public']  . $class_file ) ) { // @codingStandardsIgnoreEnd
-		require_once $class_file_path;
-	}
-}
-
-/**
- * Load legacy template tags.
- */
-require_once plugin_dir_path( __FILE__ ) . 'includes/media-credit-template.php';
+// Load requirements class in a PHP 5.2 compatible manner.
+require_once dirname( __FILE__ ) . '/vendor/mundschenk-at/check-wp-requirements/class-mundschenk-wp-requirements.php';
 
 /**
  * Begins execution of the plugin.
@@ -83,28 +54,35 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/media-credit-template.php';
  * @since 3.3.0 Renamed to media_credit_run
  */
 function media_credit_run() {
+	// Define our requirements.
+	$reqs = array(
+		'php'       => '5.6.0',
+		'multibyte' => false,
+		'utf-8'     => false,
+	);
 
-	// Set up autoloader.
-	spl_autoload_register( 'media_credit_autoloader' );
+	// Validate the requirements.
+	$requirements = new Mundschenk_WP_Requirements( 'Media Credit', __FILE__, 'media-credit', $reqs );
+	if ( $requirements->check() ) {
+		// Autoload the rest of our classes.
+		require_once __DIR__ . '/vendor/autoload.php'; // phpcs:ignore PHPCompatibility.Keywords.NewKeywords.t_dirFound
 
-	// Define plugin slug.
-	$slug = 'media-credit';
+		// Load version from plugin data.
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		$plugin_data = get_plugin_data( __FILE__, false, false );
+		$version     = $plugin_data['Version'];
 
-	// Load version from plugin data.
-	if ( ! function_exists( 'get_plugin_data' ) ) {
-		include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		// Create the plugin instance.
+		$plugin = new Media_Credit( 'media-credit', $version, plugin_basename( __FILE__ ) );
+
+		// Register activation & deactivation hooks.
+		$setup = new Media_Credit_Setup( 'media-credit', $version );
+		$setup->register( __FILE__ );
+
+		// Start the plugin for real.
+		$plugin->run();
 	}
-	$plugin_data = get_plugin_data( __FILE__, false, false );
-	$version     = $plugin_data['Version'];
-
-	// Create the plugin instance.
-	$plugin = new Media_Credit( $slug, $version, plugin_basename( __FILE__ ) );
-
-	// Register activation & deactivation hooks.
-	$setup = new Media_Credit_Setup( $slug, $version );
-	$setup->register( __FILE__ );
-
-	// Start the plugin for real.
-	$plugin->run();
 }
 media_credit_run();

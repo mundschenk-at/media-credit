@@ -2,26 +2,46 @@
 const sass = require('node-sass');
 
 module.exports = function( grunt ) {
-
-	// load all tasks
-	require( 'load-grunt-tasks' )( grunt, { scope: 'devDependencies' } );
-
 	grunt.initConfig({
 		pkg: grunt.file.readJSON( 'package.json' ),
-//		phpunit: {
-//		classes: {
-//		options: {
-//		testsuite: 'media-credit',
-//		}
-//		},
-//		options: {
-//		colors: true,
-//		configuration: 'phpunit.xml',
-//		}
-//		}
+
 		clean: {
-			build: [ "build/*" ]//,
+			build: [ "build/*" ],
+			autoloader: [ "build/tests", "build/composer.*", "build/vendor/composer/*.json", "build/vendor/mundschenk-at/composer-for-wordpress/**" ]
 		},
+
+		composer: {
+			build: {
+					options: {
+							//flags: ['quiet'],
+							cwd: 'build',
+					},
+			},
+			dev: {
+					options : {
+							flags: [],
+							cwd: '.',
+					},
+			},
+		},
+
+		"string-replace": {
+        autoloader: {
+            files: {
+                "build/": "build/vendor/composer/autoload_{classmap,psr4,static}.php",
+            },
+            options: {
+                replacements: [{
+                    pattern: /\s+'Dangoodman\\\\ComposerForWordpress\\\\' =>\s+array\s*\([^,]+,\s*\),/g,
+                    replacement: ''
+                }, {
+                    pattern: /\s+'Dangoodman\\\\ComposerForWordpress\\\\.*,(?=\n)/g,
+                    replacement: ''
+                }]
+            }
+        }
+    },
+
 		wp_readme_to_markdown: {
 			readme: {
 				files: {
@@ -32,12 +52,55 @@ module.exports = function( grunt ) {
 				screenshot_url: 'wp-assets/{screenshot}.png',
 			}
 		},
+
 		copy: {
 			build: {
 				files: [
 					{ expand: true, nonull: true, src: ['readme.txt', 'CHANGELOG.md','*.php'], dest: 'build/' },
 					{ expand: true, nonull: true, src: ['admin/**','public/**','includes/**', '!**/scss/**'], dest: 'build/' },
 				],
+			}
+		},
+
+		copy: {
+			main: {
+				files: [ {
+					expand: true,
+					nonull: true,
+					src: [
+						'readme.txt',
+						'*.php',
+						'admin/**',
+						'public/**',
+						'includes/**',
+						'!**/scss/**',
+						'composer.*',
+						'vendor/composer/**',
+						'vendor/mundschenk-at/check-wp-requirements/*.php',
+						'vendor/mundschenk-at/check-wp-requirements/partials/*.php',
+						'vendor/mundschenk-at/wp-data-storage/src/**/*.php',
+						'vendor/mundschenk-at/wp-settings-ui/src/**/*.php',
+						'vendor/mundschenk-at/wp-settings-ui/partials/**/*.php',
+						'vendor/level-2/dice/**/*.php',
+						'!**/scss/**',
+						'!**/tests/**'
+					],
+					dest: 'build/'
+				}	],
+			},
+			meta: {
+				files: [ {
+					expand: true,
+					nonull: false,
+					src: [
+						'vendor/{composer,mundschenk-at,level-2}/**/LICENSE*',
+						'vendor/{composer,mundschenk-at,level-2}/**/README*',
+						'vendor/{composer,mundschenk-at,level-2}/**/CREDITS*',
+						'vendor/{composer,mundschenk-at,level-2}/**/COPYING*',
+						'vendor/{composer,mundschenk-at,level-2}/**/CHANGE*',
+					],
+					dest: 'build/'
+				} ],
 			}
 		},
 
@@ -220,6 +283,10 @@ module.exports = function( grunt ) {
 		},
 	});
 
+	// load all tasks
+	require( 'load-grunt-tasks' )( grunt, { scope: 'devDependencies' } );
+
+
 	grunt.registerTask( 'default', [
 			'newer:wp_readme_to_markdown',
 			'newer:jscs',
@@ -235,7 +302,12 @@ module.exports = function( grunt ) {
 			'newer:sass:dist',
 			'newer:postcss:dist',
 			'newer:minify',
-			'copy:build'
+			'copy:main',
+			'copy:meta',
+			'composer:build:build-wordpress',
+			'composer:build:dump-autoload:classmap-authoritative:no-dev',
+			'clean:autoloader',
+			'string-replace:autoloader',
 	] );
 
 	// dynamically generate uglify targets
