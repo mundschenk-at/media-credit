@@ -6,8 +6,9 @@
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License,
- * version 2 as published by the Free Software Foundation.
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,74 +17,77 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * @link       https://mundschenk.at
- * @since      3.0.0
+ *  ***
  *
- * @package    Media_Credit
- * @subpackage Media_Credit/includes
+ * @package mundschenk-at/media-credit
+ * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
+
+namespace Media_Credit\Components;
+
+use Mundschenk\Data_Storage\Options;
 
 /**
- * Fired during plugin de-/activation and uninstall.
+ * Handles plugin activation and deactivation.
  *
- * This class defines all code necessary to run during the plugin's setup and teardown.
- *
- * @since      3.0.0
- * @package    Media_Credit
- * @subpackage Media_Credit/includes
- * @author     Peter Putzer <github@mundschenk.at>
+ * @since 3.0.0
+ * @since 3.3.0 Moved to \Media_Credit\Components\Setup
  */
-class Media_Credit_Setup implements Media_Credit\Base {
+class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 
 	/**
-	 * The unique identifier of this plugin.
+	 * The full path to the main plugin file.
 	 *
-	 * @since    3.0.0
-	 * @access   protected
-	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
+	 * @var string
 	 */
-	protected $plugin_name;
+	private $plugin_file;
 
 	/**
-	 * The current version of the plugin.
+	 * The plugin version string.
 	 *
-	 * @since    3.0.0
-	 * @access   protected
-	 * @var      string    $version    The current version of the plugin.
+	 * @var string
 	 */
-	protected $version;
+	private $version;
 
 	/**
-	 * Create new Media_Credit_Setup object.
+	 * The options handler.
 	 *
-	 * @param string $slug    The plugin slug.
-	 * @param string $version The version string.
+	 * @var Options
 	 */
-	public function __construct( $slug, $version ) {
-		$this->plugin_name = $slug;
+	private $options;
+
+	/**
+	 * Creates a new Setup instance.
+	 *
+	 * @param string     $plugin_file     The full path to the base plugin file.
+	 * @param string     $version         The plugin version string.
+	 * @param Options    $options         The options handler.
+	 */
+	public function __construct( $plugin_file, $version, Options $options ) {
+		$this->plugin_file = $plugin_file;
 		$this->version     = $version;
+		$this->options     = $options;
 	}
 
 	/**
-	 * Register the de-/activation/uninstall hooks for the plugin.
+	 * Sets up the various hooks for the plugin component.
 	 *
-	 * @param string $plugin_file The full path and filename to the main plugin file.
+	 * @return void
 	 */
-	public function register( $plugin_file ) {
-		register_activation_hook( $plugin_file, array( $this, 'activate' ) );
-		register_deactivation_hook( $plugin_file, array( $this, 'deactivate' ) );
-		register_uninstall_hook( $plugin_file, __CLASS__ . '::uninstall' );
+	public function run() {
+		// Register deactivation hook. Activation is handled by the update check instead.
+		\register_deactivation_hook( $this->plugin_file, [ $this, 'deactivate' ] );
+
+		// Update settings and database if necessary.
+		\add_action( 'plugins_loaded', [ $this, 'update_check' ] );
 	}
 
 	/**
-	 * Fired during plugin activation.
-	 *
-	 * @since      3.0.0
+	 * Checks if the default settings or database schema need to be upgraded.
 	 */
-	public function activate() {
+	public function update_check() {
 		/**
 		 * A hash containing the default options.
 		 */
@@ -101,12 +105,12 @@ class Media_Credit_Setup implements Media_Credit\Base {
 		$installed_options = get_option( self::OPTION );
 
 		if ( empty( $installed_options ) ) { // Install plugin for the first time.
-			add_option( $this->plugin_name, $default_options );
+			add_option( self::OPTION, $default_options );
 			$installed_options = $default_options;
 		} elseif ( ! isset( $installed_options['version'] ) ) { // Upgrade plugin to 1.0 (0.5.5 didn't have a version number).
 			$installed_options['version']      = '1.0';
 			$installed_options['install_date'] = $default_options['install_date'];
-			update_option( $this->plugin_name, $installed_options );
+			update_option( self::OPTION, $installed_options );
 		}
 
 		// Upgrade plugin to 1.0.1.
@@ -118,48 +122,38 @@ class Media_Credit_Setup implements Media_Credit\Base {
 			$wpdb->update( $wpdb->postmeta, array( 'meta_key' => self::POSTMETA_KEY ), array( 'meta_key' => 'media-credit' ) );
 
 			$installed_options['version'] = '1.0.1';
-			update_option( $this->plugin_name, $installed_options );
+			update_option( self::OPTION, $installed_options );
 		}
 
 		// Upgrade plugin to 2.2.0.
 		if ( version_compare( $installed_options['version'], '2.2.0', '<' ) ) {
 			$installed_options['version']           = '2.2.0';
 			$installed_options['no_default_credit'] = $default_options['no_default_credit'];
-			update_option( $this->plugin_name, $installed_options );
+			update_option( self::OPTION, $installed_options );
 		}
 
 		// Upgrade plugin to 3.0.0.
 		if ( version_compare( $installed_options['version'], '3.0.0', '<' ) ) {
 			$installed_options['version']               = '3.0.0';
 			$installed_options['post_thumbnail_credit'] = $default_options['post_thumbnail_credit'];
-			update_option( $this->plugin_name, $installed_options );
+			update_option( self::OPTION, $installed_options );
 		}
 
 		// Upgrade plugin to 3.1.0.
 		if ( version_compare( $installed_options['version'], '3.1.0', '<' ) ) {
 			$installed_options['version']           = '3.1.0';
 			$installed_options['schema_org_markup'] = $default_options['schema_org_markup'];
-			update_option( $this->plugin_name, $installed_options );
+			update_option( self::OPTION, $installed_options );
 		}
-	}
-
-	/**
-	 * Fired during plugin deactivation.
-	 *
-	 * @since    3.0.0
-	 */
-	public function deactivate() {
 
 	}
 
 	/**
-	 * Fired during uninstall.
+	 * Handles plugin deactivation.
 	 *
-	 * Long Description.
-	 *
-	 * @since    3.0.0
+	 * @param  bool $network_wide A flag indicating if the plugin was network-activated.
 	 */
-	public static function uninstall() {
-		delete_option( self::OPTION );
+	public function deactivate( /* @scrutinizer ignore-unused */ $network_wide ) {
+		// Not used yet.
 	}
 }
