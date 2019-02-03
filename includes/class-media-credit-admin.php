@@ -164,7 +164,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * Template for setting Media Credit in image properties.
 	 */
 	public function image_properties_template() {
-		include dirname( __FILE__ ) . '/partials/media-credit-image-properties-tmpl.php';
+		include dirname( __DIR__ ) . '/admin/partials/media-credit-image-properties-tmpl.php';
 	}
 
 	/**
@@ -173,7 +173,7 @@ class Media_Credit_Admin implements Media_Credit_Base {
 	 * @since 3.1.0
 	 */
 	public function attachment_details_template() {
-		include dirname( __FILE__ ) . '/partials/media-credit-attachment-details-tmpl.php';
+		include dirname( __DIR__ ) . '/admin/partials/media-credit-attachment-details-tmpl.php';
 	}
 
 
