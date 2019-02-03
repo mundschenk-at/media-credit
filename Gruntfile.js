@@ -1,4 +1,6 @@
 'use strict';
+const sass = require('node-sass');
+
 module.exports = function( grunt ) {
 
 	// load all tasks
@@ -108,6 +110,9 @@ module.exports = function( grunt ) {
 		},
 
 		sass: {
+			options: {
+				implementation: sass,
+			},
 			dist: {
 				options: {
 					outputStyle: 'compressed',
@@ -157,7 +162,7 @@ module.exports = function( grunt ) {
 				map: true, // inline sourcemaps.
 				processors: [
 					require('pixrem')(), // add fallbacks for rem units
-					require('autoprefixer')( { browsers: [ '>1%', 'last 2 versions', 'IE 9', 'IE 10' ] } ) // add vendor prefixes
+					require('autoprefixer')() // add vendor prefixes
 				]
 			},
 			dev: {
