@@ -35,7 +35,7 @@
  * @subpackage Media_Credit/includes
  * @author     Peter Putzer <github@mundschenk.at>
  */
-class Media_Credit_Template_Tags implements Media_Credit_Base {
+class Media_Credit_Template_Tags implements Media_Credit\Base {
 
 	/**
 	 * Returns the media credit as plain text for some media attachment.

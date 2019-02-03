@@ -36,7 +36,7 @@
  * @subpackage Media_Credit/includes
  * @author     Peter Putzer <github@mundschenk.at>
  */
-class Media_Credit_Setup implements Media_Credit_Base {
+class Media_Credit_Setup implements Media_Credit\Base {
 
 	/**
 	 * The unique identifier of this plugin.

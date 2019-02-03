@@ -40,7 +40,7 @@
  * @subpackage Media_Credit/includes
  * @author     Peter Putzer <github@mundschenk.at>
  */
-class Media_Credit implements Media_Credit_Base {
+class Media_Credit implements Media_Credit\Base {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
