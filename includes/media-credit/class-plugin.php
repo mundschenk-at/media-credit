@@ -26,9 +26,8 @@
 
 namespace Media_Credit;
 
-use Media_Credit\Components\Privacy_Tools;
+use Media_Credit\Components\Admin;
 use Media_Credit\Components\Setup;
-use Media_Credit\Components\Settings_Page;
 
 /**
  * Initializes the Media Credit plugin.
@@ -47,14 +46,12 @@ class Plugin {
 	/**
 	 * Creates an instance of the plugin controller.
 	 *
-	 * @param Setup         $setup    The (de-)activation handling.
-	 * @param Settings_Page $settings The admin settings handler.
-	 * @param Privacy_Tools $privacy  The privacy tools handler.
+	 * @param Setup $setup    The (de-)activation handling.
+	 * @param Admin $admin    The backend.
 	 */
- 	public function __construct( Setup $setup /*, Settings_Page $settings, Privacy_Tools $privacy */ ) {
+	public function __construct( Setup $setup, Admin $admin ) {
 		$this->components[] = $setup;
-		// $this->components[] = $settings;
-		// $this->components[] = $privacy;
+		$this->components[] = $admin;
 	}
 
 	/**

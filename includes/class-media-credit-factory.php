@@ -77,7 +77,8 @@ abstract class Media_Credit_Factory {
 				Data_Storage\Network_Options::class => self::SHARED,
 
 				// Components.
-				Components\Setup::class             => $full_path_rule,
+				Components\Admin::class             => [ 'constructParams' => [ $full_plugin_path, $version ] ],
+				Components\Setup::class             => [ 'constructParams' => [ $full_plugin_path, $version ] ],
 				Components\Uninstallation::class    => $full_path_rule,
 			];
 
