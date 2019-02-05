@@ -182,13 +182,15 @@ if ( ! function_exists( 'author_media_and_posts' ) ) {
 
 if ( ! function_exists( 'author_media' ) ) {
 	/**
-	 * Template tag to return the recently added media attachments for a given author.
+	 * Returns the recently added media attachments for a given author.
 	 *
-	 * @param int     $author_id          The user ID of the author.
-	 * @param int     $limit              Optional. Default 0.
-	 * @param boolean $exclude_unattached Optional. Default true.
+	 * @param  int  $author_id          The user ID of the author.
+	 * @param  int  $limit              Optional. The upper limit to the number of returned posts. Default 0 (no limit).
+	 * @param  bool $exclude_unattached Optional. Flag indicating if media not attached to a post should be included. Default true.
+	 *
+	 * @return array
 	 */
 	function author_media( $author_id, $limit = 0, $exclude_unattached = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		return author_media_and_posts( $author_id, false, $limit, $exclude_unattached );
+		return Template_Tags::author_media_and_posts( $author_id, false, $limit, $exclude_unattached );
 	}
 }

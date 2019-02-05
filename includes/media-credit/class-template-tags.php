@@ -262,7 +262,7 @@ class Template_Tags implements Base {
 	 */
 	public static function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = null, $exclude_unattached = true ) {
 
-		$media = author_media( $author_id, $limit, $exclude_unattached );
+		$media = self::author_media_and_posts( $author_id, false, $limit, $exclude_unattached );
 		if ( empty( $media ) ) {
 			return; // abort.
 		}
