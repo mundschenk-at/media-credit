@@ -267,31 +267,7 @@ class Template_Tags implements Base {
 			return; // abort.
 		}
 
-		// More complex default argument.
-		if ( null === $header ) {
-			$header = '<h3>' . __( 'Recent Media', 'media-credit' ) . '</h3>';
-		}
-
-		$id        = 'id = ' . ( $sidebar ? 'recent-media-sidebar' : 'recent-media-inline' );
-		$container = 'div';
-
-		echo "<div {$id}>$header"; // XSS OK.
-		foreach ( $media as $post ) {
-
-			setup_postdata( $post );
-
-			// If media is attached to a post, link to the parent post. Otherwise, link to attachment page itself.
-			if ( $post->post_parent > 0 || ! $link_without_parent ) {
-				$image = wp_get_attachment_image( $post->ID, 'thumbnail' );
-			} else {
-				$image = wp_get_attachment_link( $post->ID, 'thumbnail', true );
-			}
-
-			$image = preg_replace( '/title=".*"/', '', $image ); // remove title attribute from image.
-			$link  = $post->post_parent > 0 ? "<a href='" . /* @scrutinizer ignore-type */ get_permalink( $post->post_parent ) . "' title='" . get_the_title( $post->post_parent ) . "'>$image</a>" : $image;
-
-			echo "<$container class='author-media' id='attachment-" . esc_attr( $post->ID ) . "'>$link</$container>"; // XSS OK.
-		}
-		echo '</div>';
+		// Load the template part.
+		require \dirname( MEDIA_CREDIT_PLUGIN_FILE ) . '/public/partials/author-media.php';
 	}
 }
