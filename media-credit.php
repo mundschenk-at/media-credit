@@ -41,6 +41,11 @@ if ( ! defined( 'ABSPATH' ) || ! defined( 'WPINC' ) ) {
 	die();
 }
 
+// Make plugin file path available globally.
+if ( ! defined( 'MEDIA_CREDIT_PLUGIN_FILE' ) ) {
+	define( 'MEDIA_CREDIT_PLUGIN_FILE', __FILE__ );
+}
+
 // Load requirements class in a PHP 5.2 compatible manner.
 require_once dirname( __FILE__ ) . '/vendor/mundschenk-at/check-wp-requirements/class-mundschenk-wp-requirements.php';
 
