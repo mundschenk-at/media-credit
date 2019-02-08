@@ -27,7 +27,7 @@
 
 namespace Media_Credit\Components;
 
-use Mundschenk\Data_Storage\Options;
+use Media_Credit\Data_Storage\Options;
 
 /**
  * Handles plugin activation and deactivation.
@@ -61,9 +61,9 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 	/**
 	 * Creates a new Setup instance.
 	 *
-	 * @param string     $plugin_file     The full path to the base plugin file.
-	 * @param string     $version         The plugin version string.
-	 * @param Options    $options         The options handler.
+	 * @param string  $plugin_file     The full path to the base plugin file.
+	 * @param string  $version         The plugin version string.
+	 * @param Options $options         The options handler.
 	 */
 	public function __construct( $plugin_file, $version, Options $options ) {
 		$this->plugin_file = $plugin_file;
@@ -100,15 +100,15 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 			'schema_org_markup'     => false,
 		];
 
-		$installed_options = get_option( self::OPTION );
+		$original_options  = $this->options->get( Options::OPTION, [], true );
+		$installed_options = $original_options;
 
-		if ( empty( $installed_options ) ) { // Install plugin for the first time.
-			add_option( self::OPTION, $default_options );
+		if ( empty( $installed_options ) ) {
+			// The plugin was installed for the frist time.
 			$installed_options = $default_options;
-		} elseif ( ! isset( $installed_options['version'] ) ) { // Upgrade plugin to 1.0 (0.5.5 didn't have a version number).
-			$installed_options['version']      = '1.0';
+		} elseif ( ! isset( $installed_options['version'] ) ) {
+			// Upgrade plugin to 1.0 (0.5.5 didn't have a version number).
 			$installed_options['install_date'] = $default_options['install_date'];
-			update_option( self::OPTION, $installed_options );
 		}
 
 		// Upgrade plugin to 1.0.1.
@@ -118,32 +118,30 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 
 			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->update( $wpdb->postmeta, [ 'meta_key' => self::POSTMETA_KEY ], [ 'meta_key' => 'media-credit' ] );
-
-			$installed_options['version'] = '1.0.1';
-			update_option( self::OPTION, $installed_options );
 		}
 
 		// Upgrade plugin to 2.2.0.
 		if ( version_compare( $installed_options['version'], '2.2.0', '<' ) ) {
-			$installed_options['version']           = '2.2.0';
 			$installed_options['no_default_credit'] = $default_options['no_default_credit'];
-			update_option( self::OPTION, $installed_options );
 		}
 
 		// Upgrade plugin to 3.0.0.
 		if ( version_compare( $installed_options['version'], '3.0.0', '<' ) ) {
-			$installed_options['version']               = '3.0.0';
 			$installed_options['post_thumbnail_credit'] = $default_options['post_thumbnail_credit'];
-			update_option( self::OPTION, $installed_options );
 		}
 
 		// Upgrade plugin to 3.1.0.
 		if ( version_compare( $installed_options['version'], '3.1.0', '<' ) ) {
-			$installed_options['version']           = '3.1.0';
 			$installed_options['schema_org_markup'] = $default_options['schema_org_markup'];
-			update_option( self::OPTION, $installed_options );
 		}
 
+		// Update installed version.
+		$installed_options['version'] = $this->version;
+
+		// Store upgraded options.
+		if ( $original_options !== $installed_options ) {
+			$this->options->set( Options::OPTION, $installed_options, true );
+		}
 	}
 
 	/**
