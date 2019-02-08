@@ -205,13 +205,11 @@ class Template_Tags implements Base {
 			if ( $include_posts ) {
 				$posts_query = "OR (post_type = 'post' AND post_parent = '0' AND post_status = 'publish')";
 			}
-			$posts_query .= ')';
 
 			// Optionally exclude "unattached" attachments.
 			if ( $exclude_unattached ) {
 				$attached = " AND post_parent != '0' AND post_parent IN (SELECT id FROM {$wpdb->posts} WHERE post_status='publish')";
 			}
-			$attached .= ') ';
 
 			// Exclude attachments from before the install date of the Media Credit plugin.
 			$options = get_option( self::OPTION );
@@ -236,7 +234,7 @@ class Template_Tags implements Base {
 			// Construct our query.
 			$sql_query = "SELECT * FROM {$wpdb->posts}
 				 		  WHERE post_author = %d {$date_query}
-				 		  AND ( (post_type = 'attachment' {$attached} {$posts_query}
+				 		  AND ( ( post_type = 'attachment' {$attached} ) {$posts_query} )
 				 		  AND ID NOT IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s )
 				 		  GROUP BY ID ORDER BY post_date DESC {$limit_query}";
 
