@@ -28,6 +28,7 @@
 namespace Media_Credit\Components;
 
 use Media_Credit\Template_Tags;
+use Media_Credit\Data_Storage\Options;
 
 /**
  * The admin-specific functionality of the plugin.
@@ -103,16 +104,26 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	private $preview_data = [];
 
 	/**
+	 * The options handler.
+	 *
+	 * @var Options
+	 */
+	private $options;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    3.0.0
+	 * @since    3.3.0 Parameter $options added.
 	 *
-	 * @param string $plugin_file The full path to the main plugin file.
-	 * @param string $version     The plugin version.
+	 * @param string  $plugin_file The full path to the main plugin file.
+	 * @param string  $version     The plugin version.
+	 * @param Options $options     The options handler.
 	 */
-	public function __construct( $plugin_file, $version ) {
+	public function __construct( $plugin_file, $version, Options $options ) {
 		$this->plugin_file = $plugin_file;
 		$this->version     = $version;
+		$this->options     = $options;
 	}
 
 	/**
@@ -242,7 +253,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 * Add our global variable for the TinyMCE plugin.
 	 */
 	public function admin_head() {
-		$options = get_option( self::OPTION );
+		$options = $this->options->get( Options::OPTION, [] );
 
 		$authors = [];
 		foreach ( get_users( [ 'who' => 'authors' ] ) as $author ) {
@@ -813,7 +824,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		$url       = Template_Tags::get_media_credit_url( $attachment );
 		$data      = Template_Tags::get_media_credit_data( $attachment );
 		$author_id = '' === Template_Tags::get_freeform_media_credit( $attachment ) ? $attachment->post_author : '';
-		$options   = get_option( self::OPTION );
+		$options   = $this->options->get( Options::OPTION, [], true );
 
 		// Set up Media Credit model data (not as an array because data-settings code in View can't deal with it.
 		$response['mediaCreditText']          = $credit;
@@ -842,7 +853,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 * @return array               The list of fields.
 	 */
 	public function add_media_credit_fields( $fields, $post ) {
-		$options   = get_option( self::OPTION );
+		$options   = $this->options->get( Options::OPTION, [], true );
 		$credit    = Template_Tags::get_media_credit( $post );
 		$value     = 'value';
 		$author_id = '' === Template_Tags::get_freeform_media_credit( $post ) ? $post->post_author : '';
@@ -910,7 +921,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		$freeform_name = $attachment['media-credit'];
 		$url           = $attachment['media-credit-url'];
 		$nofollow      = $attachment['media-credit-nofollow'];
-		$options       = get_option( self::OPTION );
+		$options   = $this->options->get( Options::OPTION, [], true );
 
 		// We need to update the credit URL in any case.
 		update_post_meta( $post['ID'], self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
@@ -989,7 +1000,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		$credit_meta = Template_Tags::get_freeform_media_credit( $attachment );
 		$credit_url  = Template_Tags::get_media_credit_url( $attachment );
 		$credit_data = Template_Tags::get_media_credit_data( $attachment );
-		$options     = get_option( self::OPTION );
+		$options   = $this->options->get( Options::OPTION, [], true );
 
 		// Set freeform or blog user credit.
 		if ( self::EMPTY_META_STRING === $credit_meta ) {
@@ -1131,8 +1142,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 */
 	public function sanitize_option_values( $input ) {
 		// Retrieve currently set options.
-		$valid_options = get_option( self::OPTION );
-		$valid_options = empty( $valid_options ) ? [] : $valid_options;
+		$valid_options = $this->options->get( Options::OPTION, [], true );
 
 		// Blank out checkboxes because unset checkbox don't get sent by the browser.
 		$valid_options['credit_at_end']         = false;

@@ -28,6 +28,7 @@
 namespace Media_Credit\Components;
 
 use Media_Credit\Template_Tags;
+use Media_Credit\Data_Storage\Options;
 
 /**
  * The public-facing functionality of the plugin.
@@ -55,14 +56,30 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 	private $version;
 
 	/**
+	 * The plugin settings.
+	 *
+	 * @var array
+	 */
+	private $settings;
+
+	/**
+	 * The options handler.
+	 *
+	 * @var Options
+	 */
+	private $options;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @param string $plugin_file The full path to the main plugin file.
-	 * @param string $version     The version of this plugin.
+	 * @param string  $plugin_file The full path to the main plugin file.
+	 * @param string  $version     The version of this plugin.
+	 * @param Options $options     The options handler.
 	 */
-	public function __construct( $plugin_file, $version ) {
+	public function __construct( $plugin_file, $version, Options $options ) {
 		$this->plugin_file = $plugin_file;
 		$this->version     = $version;
+		$this->options     = $options;
 	}
 
 	/**
@@ -71,20 +88,25 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 	 * @return void
 	 */
 	public function run() {
+		// Retrieve plugin settings.
+		$this->settings = $this->options->get( Options::OPTION, [], true );
+
+		// Enqueue scripts and styles.
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 
+		// Register shortcodes.
 		add_shortcode( 'wp_caption',   [ $this, 'caption_shortcode' ] );
 		add_shortcode( 'caption',      [ $this, 'caption_shortcode' ] );
 		add_shortcode( 'media-credit', [ $this, 'media_credit_shortcode' ] );
 
-		$options = get_option( self::OPTION );
-		if ( ! empty( $options['credit_at_end'] ) ) {
+		// Optional credits after the main content.
+		if ( ! empty( $this->settings['credit_at_end'] ) ) {
 			add_filter( 'the_content', [ $this, 'add_media_credits_to_end' ], 10, 1 );
 		}
 
 		// Post thumbnail credits.
-		if ( ! empty( $options['post_thumbnail_credit'] ) ) {
+		if ( ! empty( $this->settings['post_thumbnail_credit'] ) ) {
 			add_filter( 'post_thumbnail_html', [ $this, 'add_media_credit_to_post_thumbnail' ], 10, 3 );
 		}
 	}
@@ -93,13 +115,11 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 	 * Register the stylesheets for the public-facing side of the site.
 	 */
 	public function enqueue_styles() {
-		$options = get_option( self::OPTION );
-
 		// Set up file suffix.
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		// Do not display inline media credit if media credit is displayed at end of posts.
-		if ( ! empty( $options['credit_at_end'] ) ) {
+		if ( ! empty( $this->settings['credit_at_end'] ) ) {
 			wp_enqueue_style( 'media-credit-end', plugin_dir_url( $this->plugin_file ) . "public/css/media-credit-end$suffix.css", [], $this->version, 'all' );
 		} else {
 			wp_enqueue_style( 'media-credit', plugin_dir_url( $this->plugin_file ) . "public/css/media-credit$suffix.css", [], $this->version, 'all' );
@@ -151,8 +171,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		$caption = img_caption_shortcode( $attr, $content );
 
 		// Optionally add schema.org markup.
-		$options = get_option( self::OPTION );
-		if ( ! empty( $options['schema_org_markup'] ) && empty( $options['credit_at_end'] ) ) {
+		if ( ! empty( $this->settings['schema_org_markup'] ) && empty( $this->settings['credit_at_end'] ) ) {
 			// Inject schema.org markup for figure.
 			if ( ! preg_match( '/<figure[^>]*\bitemscope\b/', $caption ) ) {
 				$caption = preg_replace( '/<figure\b/', '<figure itemscope itemtype="http://schema.org/ImageObject"', $caption );
@@ -198,9 +217,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 			return $output;
 		}
 
-		$options = get_option( self::OPTION );
-
-		if ( ! empty( $options['credit_at_end'] ) ) {
+		if ( ! empty( $this->settings['credit_at_end'] ) ) {
 			return do_shortcode( $content );
 		}
 
@@ -224,7 +241,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		if ( -1 !== $atts['id'] ) {
 			$url              = empty( $atts['link'] ) ? get_author_posts_url( $atts['id'] ) : $atts['link'];
 			$credit_wp_author = get_the_author_meta( 'display_name', $atts['id'] );
-			$author_link      = '<a href="' . esc_url( $url ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
+			$author_link      = '<a href="' . esc_url( $url ) . '">' . $credit_wp_author . '</a>' . $this->settings['separator'] . $this->settings['organization'];
 		} else {
 			if ( ! empty( $atts['link'] ) ) {
 				$nofollow    = ! empty( $atts['nofollow'] ) ? ' rel="nofollow"' : '';
@@ -266,7 +283,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		// Optional schema.org markup.
 		$schema_org        = '';
 		$figure_schema_org = '';
-		if ( ! empty( $options['schema_org_markup'] ) && empty( $options['credit_at_end'] ) ) {
+		if ( ! empty( $this->settings['schema_org_markup'] ) && empty( $this->settings['credit_at_end'] ) ) {
 			$schema_org        = ' itemprop="copyrightHolder"';
 			$figure_schema_org = ' itemscope itemtype="http://schema.org/ImageObject"';
 
@@ -307,9 +324,8 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		}
 
 		// Look at the plugin options.
-		$options                = get_option( self::OPTION );
-		$include_default_credit = empty( $options['no_default_credit'] );
-		$include_post_thumbnail = ! empty( $options['post_thumbnail_credit'] );
+		$include_default_credit = empty( $this->settings['no_default_credit'] );
+		$include_post_thumbnail = ! empty( $this->settings['post_thumbnail_credit'] );
 
 		// Find the attachment_IDs of all media used in $content.
 		if ( ! preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $images ) && ! $include_post_thumbnail ) {
@@ -402,11 +418,10 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		}
 
 		// Look at our options.
-		$options                 = get_option( self::OPTION );
-		$include_default_credits = empty( $options['no_default_credit'] );
+		$include_default_credits = empty( $this->settings['no_default_credit'] );
 
 		// Return early if credits are displayed at end.
-		if ( ! empty( $options['credit_at_end'] ) ) {
+		if ( ! empty( $this->settings['credit_at_end'] ) ) {
 			return $html; // abort.
 		}
 

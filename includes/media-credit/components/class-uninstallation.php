@@ -78,6 +78,6 @@ class Uninstallation implements \Media_Credit\Component, \Media_Credit\Base {
 	 * @return void
 	 */
 	public function run() {
-		delete_option( self::OPTION );
+		$this->options->delete( self::OPTION, true );
 	}
 }
