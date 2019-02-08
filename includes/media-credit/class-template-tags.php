@@ -239,7 +239,7 @@ class Template_Tags implements Base {
 				 		  GROUP BY ID ORDER BY post_date DESC {$limit_query}";
 
 			// Prepare and execute query.
-			$results = $wpdb->get_results( $wpdb->prepare( $sql_query, $query_vars ) ); // WPSC: DB call ok, unprepared sql ok.
+			$results = $wpdb->get_results( $wpdb->prepare( $sql_query, $query_vars ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 			// Cache results for a short time.
 			wp_cache_set( $cache_key, $results, 'media-credit', MINUTE_IN_SECONDS );
