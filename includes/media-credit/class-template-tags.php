@@ -93,7 +93,7 @@ class Template_Tags implements Base {
 		$result = get_post_meta( $post->ID, self::DATA_POSTMETA_KEY, true );
 
 		if ( empty( $result ) ) {
-			$result = array();
+			$result = [];
 		}
 
 		return $result;

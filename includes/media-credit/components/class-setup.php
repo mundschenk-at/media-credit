@@ -88,19 +88,17 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 	 * Checks if the default settings or database schema need to be upgraded.
 	 */
 	public function update_check() {
-		/**
-		 * A hash containing the default options.
-		 */
-		$default_options = array(
+		// The default plugin options.
+		$default_options = [
 			'version'               => $this->version,
-			'install_date'          => date( 'Y-m-d' ),
+			'install_date'          => \date( 'Y-m-d' ),
 			'separator'             => self::DEFAULT_SEPARATOR,
-			'organization'          => get_bloginfo( 'name', 'display' ),
+			'organization'          => \get_bloginfo( 'name', 'display' ),
 			'credit_at_end'         => false,
 			'no_default_credit'     => false,
 			'post_thumbnail_credit' => false,
 			'schema_org_markup'     => false,
-		);
+		];
 
 		$installed_options = get_option( self::OPTION );
 
@@ -119,7 +117,7 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 			global $wpdb;
 
 			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->update( $wpdb->postmeta, array( 'meta_key' => self::POSTMETA_KEY ), array( 'meta_key' => 'media-credit' ) );
+			$wpdb->update( $wpdb->postmeta, [ 'meta_key' => self::POSTMETA_KEY ], [ 'meta_key' => 'media-credit' ] );
 
 			$installed_options['version'] = '1.0.1';
 			update_option( self::OPTION, $installed_options );

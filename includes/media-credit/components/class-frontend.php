@@ -100,9 +100,9 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 
 		// Do not display inline media credit if media credit is displayed at end of posts.
 		if ( ! empty( $options['credit_at_end'] ) ) {
-			wp_enqueue_style( 'media-credit-end', plugin_dir_url( $this->plugin_file ) . "public/css/media-credit-end$suffix.css", array(), $this->version, 'all' );
+			wp_enqueue_style( 'media-credit-end', plugin_dir_url( $this->plugin_file ) . "public/css/media-credit-end$suffix.css", [], $this->version, 'all' );
 		} else {
-			wp_enqueue_style( 'media-credit', plugin_dir_url( $this->plugin_file ) . "public/css/media-credit$suffix.css", array(), $this->version, 'all' );
+			wp_enqueue_style( 'media-credit', plugin_dir_url( $this->plugin_file ) . "public/css/media-credit$suffix.css", [], $this->version, 'all' );
 		}
 	}
 
@@ -205,7 +205,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		}
 
 		$atts = shortcode_atts(
-			array(
+			[
 				'id'         => -1,
 				'name'       => '',
 				'link'       => '',
@@ -213,7 +213,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 				'align'      => 'alignnone',
 				'width'      => '',
 				'nofollow'   => '',
-			),
+			],
 			$atts,
 			'media-credit'
 		);
@@ -317,7 +317,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		}
 
 		// Get a list of credits for the page.
-		$credit_unique = array();
+		$credit_unique = [];
 		foreach ( $images[1] as $image_id ) {
 			$credit = Template_Tags::get_media_credit_html( $image_id, $include_default_credit );
 

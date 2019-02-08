@@ -80,11 +80,11 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 * @access   private
 	 * @var      array   $kses_tags The allowed HTML tags.
 	 */
-	private $kses_tags = array(
-		'strong' => array(),
-		'br'     => array(),
-		'code'   => array(),
-	);
+	private $kses_tags = [
+		'strong' => [],
+		'br'     => [],
+		'code'   => [],
+	];
 
 	/**
 	 * Some strings for displaying the preview.
@@ -100,7 +100,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 *         @type string $joiner  The string used to join multiple image credits.
 	 * }
 	 */
-	private $preview_data = array();
+	private $preview_data = [];
 
 	/**
 	 * Initialize the class and set its properties.
@@ -157,12 +157,12 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	public function enqueue_styles() {
 		// Style the preview area for the settings page.
 		if ( $this->is_media_settings_page() ) {
-			wp_enqueue_style( 'media-credit-preview-style', "{$this->resource_url}/admin/css/media-credit-preview{$this->resource_suffix}.css", array(), $this->version, 'screen' );
+			wp_enqueue_style( 'media-credit-preview-style', "{$this->resource_url}/admin/css/media-credit-preview{$this->resource_suffix}.css", [], $this->version, 'screen' );
 		}
 
 		// Style placeholders when editing media.
 		if ( $this->is_legacy_media_edit_page() || did_action( 'wp_enqueue_media' ) ) {
-			wp_enqueue_style( 'media-credit-attachment-details-style', "{$this->resource_url}/admin/css/media-credit-attachment-details{$this->resource_suffix}.css", array(), $this->version, 'screen' );
+			wp_enqueue_style( 'media-credit-attachment-details-style', "{$this->resource_url}/admin/css/media-credit-attachment-details{$this->resource_suffix}.css", [], $this->version, 'screen' );
 		}
 	}
 
@@ -175,18 +175,18 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 
 		// Preview script for the settings page.
 		if ( $this->is_media_settings_page() ) {
-			wp_enqueue_script( 'media-credit-preview', "{$this->resource_url}/admin/js/media-credit-preview{$this->resource_suffix}.js", array( 'jquery' ), $this->version, true );
+			wp_enqueue_script( 'media-credit-preview', "{$this->resource_url}/admin/js/media-credit-preview{$this->resource_suffix}.js", [ 'jquery' ], $this->version, true );
 			wp_localize_script( 'media-credit-preview', 'mediaCreditPreviewData', $this->preview_data );
 		}
 
 		// Autocomplete when editing media via the legacy form...
 		if ( $this->is_legacy_media_edit_page() ) {
-			wp_enqueue_script( 'media-credit-legacy-autocomplete', "{$this->resource_url}/admin/js/media-credit-legacy-autocomplete{$this->resource_suffix}.js", array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
+			wp_enqueue_script( 'media-credit-legacy-autocomplete', "{$this->resource_url}/admin/js/media-credit-legacy-autocomplete{$this->resource_suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
 		}
 
 		// ... and for when the new JavaScript Media API is used.
 		if ( did_action( 'wp_enqueue_media' ) ) {
-			wp_enqueue_script( 'media-credit-attachment-details', "{$this->resource_url}/admin/js/media-credit-attachment-details{$this->resource_suffix}.js", array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
+			wp_enqueue_script( 'media-credit-attachment-details', "{$this->resource_url}/admin/js/media-credit-attachment-details{$this->resource_suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
 		}
 	}
 
@@ -244,17 +244,17 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	public function admin_head() {
 		$options = get_option( self::OPTION );
 
-		$authors = array();
-		foreach ( get_users( array( 'who' => 'authors' ) ) as $author ) {
+		$authors = [];
+		foreach ( get_users( [ 'who' => 'authors' ] ) as $author ) {
 			$authors[ $author->ID ] = $author->display_name;
 		}
 
-		$media_credit = array(
+		$media_credit = [
 			'separator'       => $options['separator'],
 			'organization'    => $options['organization'],
 			'noDefaultCredit' => $options['no_default_credit'],
 			'id'              => $authors,
-		);
+		];
 
 		?>
 		<script type='text/javascript'>
@@ -279,24 +279,24 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 */
 	public function admin_init() {
 		// Initialize preview strings with translations.
-		$this->preview_data = array(
+		$this->preview_data = [
 			/* translators: 1: last credit 2: concatenated other credits (empty in singular) */
 			'pattern' => _n( 'Image courtesy of %2$s%1$s', 'Images courtesy of %2$s and %1$s', 3, 'media-credit' ),
 			'name1'   => _x( 'John Smith', 'Male example name for preview', 'media-credit' ),
 			'name2'   => _x( 'Jane Doe', 'Female example name for preview', 'media-credit' ),
 			'joiner'  => _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' ),
-		);
+		];
 
-		register_setting( 'media', self::OPTION, array( $this, 'sanitize_option_values' ) );
+		register_setting( 'media', self::OPTION, [ $this, 'sanitize_option_values' ] );
 
 		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages.
 		if ( ( current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) ) {
-			add_action( 'admin_head', array( $this, 'admin_head' ) );
+			add_action( 'admin_head', [ $this, 'admin_head' ] );
 
 			if ( user_can_richedit() ) {
-				add_filter( 'mce_external_plugins', array( $this, 'tinymce_external_plugins' ) );
-				add_filter( 'tiny_mce_plugins',     array( $this, 'tinymce_internal_plugins' ) );
-				add_filter( 'mce_css',              array( $this, 'tinymce_css' ) );
+				add_filter( 'mce_external_plugins', [ $this, 'tinymce_external_plugins' ] );
+				add_filter( 'tiny_mce_plugins',     [ $this, 'tinymce_internal_plugins' ] );
+				add_filter( 'mce_css',              [ $this, 'tinymce_css' ] );
 			}
 		}
 
@@ -357,10 +357,10 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	public function display_settings() {
 		$options = get_option( self::OPTION );
 
-		add_settings_section( self::SETTINGS_SECTION, __( 'Media Credit', 'media-credit' ), array( $this, 'print_settings_section' ), 'media' );
+		add_settings_section( self::SETTINGS_SECTION, __( 'Media Credit', 'media-credit' ), [ $this, 'print_settings_section' ], 'media' );
 
 		$this->add_settings_field(
-			array(
+			[
 				'id'          => 'media-credit-preview',
 				'label'       => __( 'Preview', 'media-credit' ),
 				'input_type'  => 'preview',
@@ -368,38 +368,38 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 				'css_class'   => '',
 				'description' => __( 'This is what media credits will look like with your current settings.', 'media-credit' ),
 				'options'     => $options,
-			)
+			]
 		);
 
 		$this->add_settings_field(
-			array(
+			[
 				'id'          => 'separator',
 				'label'       => __( 'Separator', 'media-credit' ),
 				'value'       => $options['separator'],
 				'with_label'  => true,
 				'css_class'   => 'small-text',
 				'description' => __( 'Text used to separate author names from organization when crediting media to users of this blog.', 'media-credit' ),
-			)
+			]
 		);
 
 		$this->add_settings_field(
-			array(
+			[
 				'id'          => 'organization',
 				'label'       => __( 'Organization', 'media-credit' ),
 				'value'       => $options['organization'],
 				'with_label'  => true,
 				'css_class'   => 'regular-text',
 				'description' => __( 'Organization used when crediting media to users of this blog.', 'media-credit' ),
-			)
+			]
 		);
 
 		$this->add_settings_field(
-			array(
+			[
 				'id'          => 'credit_at_end',
 				'label'       => __( 'Credit position', 'media-credit' ),
 				'input_type'  => 'multi',
-				'fields'      => array(
-					array(
+				'fields'      => [
+					[
 						'id'          => 'credit_at_end',
 						'check_label' => __( 'Display credit after posts.', 'media-credit' ),
 						'input_type'  => 'checkbox',
@@ -407,21 +407,21 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 						'css_class'   => '',
 						'description' => __( "Display media credit for all the images attached to a post after the post content. Style with CSS class 'media-credit-end'.", 'media-credit' ) .
 										'<br><strong>' . __( 'Warning', 'media-credit' ) . '</strong>: ' . __( 'This will cause credit for all images in all posts to display at the bottom of every post on this blog', 'media-credit' ),
-					),
-					array(
+					],
+					[
 						'id'          => 'post_thumbnail_credit',
 						'check_label' => __( 'Display credit for featured images.', 'media-credit' ),
 						'input_type'  => 'checkbox',
 						'value'       => ! empty( $options['post_thumbnail_credit'] ),
 						'css_class'   => '',
 						'description' => __( 'Try to add media credit to featured images (depends on theme support).', 'media-credit' ),
-					),
-				),
-			)
+					],
+				],
+			]
 		);
 
 		$this->add_settings_field(
-			array(
+			[
 				'id'          => 'no_default_credit',
 				'label'       => __( 'Default credit', 'media-credit' ),
 				'check_label' => __( 'Do not display default credit.', 'media-credit' ),
@@ -430,11 +430,11 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 				'with_label'  => false,
 				'css_class'   => '',
 				'description' => __( 'Do not display the attachment author as default credit if it has not been set explicitly (= freeform credits only).', 'media-credit' ),
-			)
+			]
 		);
 
 		$this->add_settings_field(
-			array(
+			[
 				'id'          => 'schema_org_markup',
 				'label'       => __( 'Structured data', 'media-credit' ),
 				'check_label' => __( 'Include schema.org structured data in HTML5 microdata markup.', 'media-credit' ),
@@ -443,7 +443,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 				'with_label'  => false,
 				'css_class'   => '',
 				'description' => __( 'Microdata is added to the credit itself and the surrounding <code>figure</code> and <code>img</code> (if they don\'t already have other microdata set). The setting has no effect if credits are displayed after posts.', 'media-credit' ),
-			)
+			]
 		);
 	}
 
@@ -467,7 +467,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	private function add_settings_field( array $args ) {
 		$args = wp_parse_args(
 			$args,
-			array(
+			[
 				'id'          => 'invalid',
 				'label'       => 'invalid',
 				'check_label' => null,
@@ -475,12 +475,12 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 				'value'       => '',
 				'css_class'   => 'regular-text',
 				'description' => null,
-			)
+			]
 		);
 
 		// Set up standard callback.
-		$callback      = array( $this, 'print_input_field' );
-		$callback_args = array(
+		$callback      = [ $this, 'print_input_field' ];
+		$callback_args = [
 			'label_for'   => ! empty( $args['with_label'] ) ? "media-credit[{$args['id']}]" : '',
 			'id'          => $args['id'],
 			'check_label' => $args['check_label'],
@@ -488,16 +488,16 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 			'value'       => $args['value'],
 			'class'       => $args['css_class'],
 			'description' => $args['description'],
-		);
+		];
 
 		switch ( $args['input_type'] ) {
 			case 'checkbox':
-				$callback = array( $this, 'print_checkbox_field' );
+				$callback = [ $this, 'print_checkbox_field' ];
 				break;
 
 			case 'multi':
 				if ( isset( $args['fields'] ) && is_array( $args['fields'] ) ) {
-					$callback      = array( $this, 'print_multiple_fields' );
+					$callback      = [ $this, 'print_multiple_fields' ];
 					$callback_args = $args['fields'];
 				} else {
 					return; // invalid parameters, abort.
@@ -505,13 +505,13 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 				break;
 
 			case 'preview':
-				$callback      = array( $this, 'print_preview_field' );
-				$callback_args = array(
+				$callback      = [ $this, 'print_preview_field' ];
+				$callback_args = [
 					'id'          => $args['id'],
 					'class'       => 'media-credit-preview-row',
 					'options'     => $args['options'],
 					'description' => $args['description'],
-				);
+				];
 				break;
 		}
 
@@ -559,12 +559,12 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	public function print_input_field( array $args ) {
 		$args = wp_parse_args(
 			$args,
-			array(
+			[
 				'value' => '',
 				'type'  => 'text',
 				'class' => 'regular-text',
 				'id'    => 'invalid',
-			)
+			]
 		);
 
 		$field_name = "media-credit[{$args['id']}]";
@@ -597,10 +597,10 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	public function print_checkbox_field( array $args ) {
 		$args = wp_parse_args(
 			$args,
-			array(
+			[
 				'value' => '',
 				'id'    => 'invalid',
-			)
+			]
 		);
 
 		$field_name = "media-credit[{$args['id']}]";
@@ -643,9 +643,9 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	public function print_preview_field( $args ) {
 		$args = wp_parse_args(
 			$args,
-			array(
+			[
 				'id'    => 'preview',
-			)
+			]
 		);
 
 		$field_name   = $args['id'];
@@ -669,7 +669,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		<?php if ( ! empty( $args['description'] ) ) : ?>
 			aria-describedby="<?php echo esc_attr( $field_name ); ?>-description"
 		<?php endif; ?>>
-			<?php echo wp_kses( $credit_html, array( 'a' => array( 'href' ) ) ); ?>
+			<?php echo wp_kses( $credit_html, [ 'a' => [ 'href' ] ] ); ?>
 		</p>
 		<?php if ( ! empty( $args['description'] ) ) : ?>
 			<p id="<?php echo esc_attr( $field_name ); ?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ); ?></p>
@@ -688,11 +688,11 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 			// because in some cases such as /wp-admin/press-this.php the media
 			// library isn't enqueued and shouldn't be. The script includes
 			// safeguards to avoid errors in this situation.
-			wp_enqueue_script( 'media-credit-image-properties', "{$this->resource_url}/admin/js/tinymce4/media-credit-image-properties{$this->resource_suffix}.js", array( 'jquery', 'media-credit-attachment-details' ), $this->version, true );
-			wp_enqueue_script( 'media-credit-tinymce-switch',   "{$this->resource_url}/admin/js/tinymce4/media-credit-tinymce-switch{$this->resource_suffix}.js",   array( 'jquery' ), $this->version, true );
+			wp_enqueue_script( 'media-credit-image-properties', "{$this->resource_url}/admin/js/tinymce4/media-credit-image-properties{$this->resource_suffix}.js", [ 'jquery', 'media-credit-attachment-details' ], $this->version, true );
+			wp_enqueue_script( 'media-credit-tinymce-switch',   "{$this->resource_url}/admin/js/tinymce4/media-credit-tinymce-switch{$this->resource_suffix}.js",   [ 'jquery' ], $this->version, true );
 
 			// Edit in style.
-			wp_enqueue_style( 'media-credit-image-properties-style', "{$this->resource_url}/admin/css/tinymce4/media-credit-image-properties{$this->resource_suffix}.css", array(), $this->version, 'screen' );
+			wp_enqueue_style( 'media-credit-image-properties-style', "{$this->resource_url}/admin/css/tinymce4/media-credit-image-properties{$this->resource_suffix}.css", [], $this->version, 'screen' );
 		}
 	}
 
@@ -719,16 +719,16 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		if ( isset( $changes['mediaCreditText'] ) ) {
 			$freeform = wp_kses(
 				$changes['mediaCreditText'],
-				array(
-					'a' => array( 'href', 'rel' ),
-				)
+				[
+					'a' => [ 'href', 'rel' ],
+				]
 			);
 		} elseif ( isset( $media_credit ) ) {
 			$freeform = wp_kses(
 				$media_credit['text'],
-				array(
-					'a' => array( 'href', 'rel' ),
-				)
+				[
+					'a' => [ 'href', 'rel' ],
+				]
 			);
 		} else {
 			wp_send_json_error( 'freeform credit not found' );
@@ -764,7 +764,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		}
 
 		if ( isset( $changes['mediaCreditNoFollow'] ) ) {
-			$data = wp_parse_args( array( 'nofollow' => $nofollow ), Template_Tags::get_media_credit_data( $attachment_id ) );
+			$data = wp_parse_args( [ 'nofollow' => $nofollow ], Template_Tags::get_media_credit_data( $attachment_id ) );
 			update_post_meta( $attachment_id, self::DATA_POSTMETA_KEY, $data ); // insert '_media_credit_data' metadata field.
 		}
 
@@ -774,10 +774,10 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 				// the final conditional is necessary for the case when a valid user is selected, filling in the hidden
 				// field, then free-form text is entered after that. if so, the free-form text is what should be used.
 				if ( ! wp_update_post(
-					array(
+					[
 						'ID'          => $attachment_id,
 						'post_author' => $wp_user_id,
-					)
+					]
 				) ) { // update post_author with the chosen user.
 					wp_send_json_error( 'Failed to update post author' );
 				}
@@ -853,48 +853,48 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		}
 
 		// Set up credit input field.
-		$fields['media-credit'] = array(
+		$fields['media-credit'] = [
 			'label'         => __( 'Credit', 'media-credit' ),
 			'input'         => 'html',
 			'html'          => "<input id='attachments[$post->ID][media-credit]' class='media-credit-input' size='30' $value='$credit' name='attachments[$post->ID][media-credit]' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
-		);
+		];
 
 		// Set up credit URL field.
 		$url = Template_Tags::get_media_credit_url( $post );
 
-		$fields['media-credit-url'] = array(
+		$fields['media-credit-url'] = [
 			'label'         => __( 'Credit URL', 'media-credit' ),
 			'input'         => 'html',
 			'html'          => "<input id='attachments[$post->ID][media-credit-url]' class='media-credit-input' type='url' size='30' value='$url' name='attachments[$post->ID][media-credit-url]' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
-		);
+		];
 
 		// Set up nofollow checkbox.
 		$data = Template_Tags::get_media_credit_data( $post );
 		$html = "<label><input id='attachments[$post->ID][media-credit-nofollow]' class='media-credit-input' type='checkbox' value='1' name='attachments[$post->ID][media-credit-nofollow]' " . checked( ! empty( $data['nofollow'] ), true, false ) . '/>' . __( 'Add <code>rel="nofollow"</code>.', 'media-credit' ) . '</label>';
 
-		$fields['media-credit-data'] = array(
+		$fields['media-credit-data'] = [
 			'label'         => '', // necessary for HTML type fields.
 			'input'         => 'html',
 			'html'          => $html,
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
-		);
+		];
 
 		// Set up hidden field as a container for additional data.
 		$author_display = Template_Tags::get_media_credit( $post );
 		$nonce          = wp_create_nonce( 'media_credit_author_names' );
 
-		$fields['media-credit-hidden'] = array(
+		$fields['media-credit-hidden'] = [
 			'label'         => '', // necessary for HTML type fields.
 			'input'         => 'html',
 			'html'          => "<input name='attachments[$post->ID][media-credit-hidden]' id='attachments[$post->ID][media-credit-hidden]' type='hidden' value='$author_id' class='media-credit-hidden' data-author-id='{$post->post_author}' data-post-id='$post->ID' data-author-display='$author_display' data-nonce='$nonce' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
-		);
+		];
 
 		return $fields;
 	}
@@ -916,7 +916,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		update_post_meta( $post['ID'], self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
 
 		// Update optional data array with nofollow.
-		update_post_meta( $post['ID'], self::DATA_POSTMETA_KEY, wp_parse_args( array( 'nofollow' => $nofollow ), Template_Tags::get_media_credit_data( $post ) ) );
+		update_post_meta( $post['ID'], self::DATA_POSTMETA_KEY, wp_parse_args( [ 'nofollow' => $nofollow ], Template_Tags::get_media_credit_data( $post ) ) );
 
 		/**
 		 * A valid WP user was selected, and the display name matches the free-form. The final conditional is
@@ -1054,7 +1054,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 
 					// Ensure that $attr is an array.
 					$attr = shortcode_parse_atts( $shortcode[3] );
-					$attr = '' === $attr ? array() : $attr;
+					$attr = '' === $attr ? [] : $attr;
 
 					if ( preg_match( '/src=".*' . $image_filename . '/', $img ) && preg_match( '/wp-image-' . $image_id . '/', $img ) ) {
 						if ( $author_id > 0 ) {
@@ -1132,7 +1132,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	public function sanitize_option_values( $input ) {
 		// Retrieve currently set options.
 		$valid_options = get_option( self::OPTION );
-		$valid_options = empty( $valid_options ) ? array() : $valid_options;
+		$valid_options = empty( $valid_options ) ? [] : $valid_options;
 
 		// Blank out checkboxes because unset checkbox don't get sent by the browser.
 		$valid_options['credit_at_end']         = false;
@@ -1145,7 +1145,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 			switch ( $key ) {
 				case 'separator':
 					// We can't use sanitize_text_field because we want to keep enclosing whitespace.
-					$valid_options[ $key ] = wp_kses( $value, array() );
+					$valid_options[ $key ] = wp_kses( $value, [] );
 					break;
 
 				default:
