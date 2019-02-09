@@ -91,9 +91,8 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		// Retrieve plugin settings.
 		$this->settings = $this->options->get( Options::OPTION, [], true );
 
-		// Enqueue scripts and styles.
+		// Enqueue frontend styles.
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
-		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 
 		// Register shortcodes.
 		add_shortcode( 'wp_caption',   [ $this, 'caption_shortcode' ] );
@@ -124,24 +123,6 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		} else {
 			wp_enqueue_style( 'media-credit', plugin_dir_url( $this->plugin_file ) . "public/css/media-credit$suffix.css", [], $this->version, 'all' );
 		}
-	}
-
-	/**
-	 * Register the JavaScript for the public-facing side of the site.
-	 */
-	public function enqueue_scripts() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Media_Credit_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Media_Credit_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
 	}
 
 	/**
