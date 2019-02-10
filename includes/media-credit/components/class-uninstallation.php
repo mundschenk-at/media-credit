@@ -26,8 +26,9 @@
 
 namespace Media_Credit\Components;
 
+use Media_Credit\Data_Storage\Options;
+
 use Mundschenk\Data_Storage\Network_Options;
-use Mundschenk\Data_Storage\Options;
 use Mundschenk\Data_Storage\Site_Transients;
 use Mundschenk\Data_Storage\Transients;
 
@@ -78,6 +79,6 @@ class Uninstallation implements \Media_Credit\Component, \Media_Credit\Base {
 	 * @return void
 	 */
 	public function run() {
-		$this->options->delete( self::OPTION, true );
+		$this->options->delete( Options::OPTION );
 	}
 }

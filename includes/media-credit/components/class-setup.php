@@ -100,8 +100,14 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 			'schema_org_markup'     => false,
 		];
 
-		$original_options  = $this->options->get( Options::OPTION, [], true );
+		// Retrieve options.
+		$original_options  = $this->options->get( Options::OPTION, [] );
 		$installed_options = $original_options;
+
+		// Also look for legacy options.
+		if ( empty( $original_options ) ) {
+			$installed_options = $this->load_legacy_options();
+		}
 
 		if ( empty( $installed_options ) ) {
 			// The plugin was installed for the frist time.
@@ -140,8 +146,26 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 
 		// Store upgraded options.
 		if ( $original_options !== $installed_options ) {
-			$this->options->set( Options::OPTION, $installed_options, true );
+			$this->options->set( Options::OPTION, $installed_options );
 		}
+	}
+
+	/**
+	 * Retrieves legacy options and deletes them from the database.
+	 *
+	 * @return array   The legacy options, or an empty array.
+	 */
+	protected function load_legacy_options() {
+		$legacy_options = $this->options->get( 'media-credit', [], true );
+		if ( empty( $legacy_options ) ) {
+			// No legacy options found, abort.
+			return [];
+		}
+
+		// Delete legacy options.
+		$this->options->delete( 'media-credit', true );
+
+		return $legacy_options;
 	}
 
 	/**

@@ -89,7 +89,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 	 */
 	public function run() {
 		// Retrieve plugin settings.
-		$this->settings = $this->options->get( Options::OPTION, [], true );
+		$this->settings = $this->options->get( Options::OPTION, [] );
 
 		// Enqueue frontend styles.
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
