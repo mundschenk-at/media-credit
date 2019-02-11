@@ -60,7 +60,8 @@ before_script:
 # All commands must exit with code 0 on success. Anything else is considered failure.
 script:
     # Search for PHP syntax errors.
-    - if [[ "$SCOPE" == "php52" ]]; then
+    - |
+      if [[ "$SCOPE" == "php52" ]]; then
             find -L . -name 'media-credit.php' -print0 | xargs -0 -n 1 -P 4 php -l;
             find -L . -name 'uninstall.php' -print0 | xargs -0 -n 1 -P 4 php -l;
       else
@@ -69,12 +70,14 @@ script:
     # WordPress Coding Standards.
     - if [[ "$PHPCS" == "1" ]]; then composer phpcs; fi
     # Unit tests.
-    - if [[ "$SCOPE" == "tests" ]]; then
+    - |
+      if [[ "$SCOPE" == "tests" ]]; then
             # composer test;
             true;
       fi
     # Code coverage
-    - if [[ "$SCOPE" == "coverage" ]]; then
+    - |
+      if [[ "$SCOPE" == "coverage" ]]; then
             mkdir -p build/logs;
             # composer test -- --coverage-clover build/logs/clover.xml;
             true;
