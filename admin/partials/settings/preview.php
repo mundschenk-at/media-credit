@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019 Peter Putzer.
+ * Copyright 2013-2019 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,34 +24,23 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace Media_Credit\Data_Storage;
+use Media_Credit\Settings;
 
-/**
- * A plugin-specific options handler.
- *
- * @since 3.3.0
- *
- * @author Peter Putzer <github@mundschenk.at>
- */
-class Options extends \Mundschenk\Data_Storage\Options {
-	/**
-	 * The prefix for the plugin options.
-	 *
-	 * @var string
-	 */
-	const PREFIX = 'media_credit_';
+$user        = \wp_get_current_user();
+$user_credit = '<a href="' . \esc_url( \get_author_posts_url( $user->ID ) ) . '">' . \esc_html( $user->display_name ) . '</a>' . \esc_html( $options[ Settings::SEPARATOR ] . $options[ Settings::ORGANIZATION ] );
 
-	/**
-	 * The name used for the plugin option in the database.
-	 *
-	 * @var string OPTION
-	 */
-	const OPTION = 'settings';
-
-	/**
-	 * Creates a new instance.
-	 */
-	public function __construct() {
-		parent::__construct( self::PREFIX );
-	}
+if ( ! empty( $options[ Settings::CREDIT_AT_END ] ) ) {
+	$credit_html = \sprintf(
+		$this->preview_data['pattern'],
+		$this->preview_data['name1'],
+		$user_credit . $this->preview_data['joiner'] . $this->preview_data['name2']
+	);
+} else {
+	$credit_html = $user_credit;
 }
+
+?>
+<p id="<?php echo \esc_attr( Settings::MEDIA_CREDIT_PREVIEW ); ?>" class="notice notice-info" aria-describedby="<?php echo \esc_attr( Settings::MEDIA_CREDIT_PREVIEW ); ?>-description">
+	<?php echo \wp_kses( $credit_html, [ 'a' => [ 'href' ] ] ); ?>
+</p>
+<?php

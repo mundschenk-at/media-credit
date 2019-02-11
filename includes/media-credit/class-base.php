@@ -36,13 +36,6 @@ namespace Media_Credit;
 interface Base {
 
 	/**
-	 * The name used for the plugin option in the database (without the prefix).
-	 *
-	 * @var string
-	 */
-	const OPTION = 'settings';
-
-	/**
 	 * The string stored in the database when the credit meta is empty.
 	 *
 	 * @var string EMPTY_META_STRING

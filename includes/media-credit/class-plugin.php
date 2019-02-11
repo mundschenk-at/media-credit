@@ -29,6 +29,7 @@ namespace Media_Credit;
 use Media_Credit\Components\Admin;
 use Media_Credit\Components\Frontend;
 use Media_Credit\Components\Setup;
+use Media_Credit\Components\Settings_Page;
 
 /**
  * Initializes the Media Credit plugin.
@@ -47,14 +48,16 @@ class Plugin {
 	/**
 	 * Creates an instance of the plugin controller.
 	 *
-	 * @param Setup    $setup    The (de-)activation handling.
-	 * @param Frontend $frontend The frontend.
-	 * @param Admin    $admin    The backend.
+	 * @param Setup         $setup    The (de-)activation handling.
+	 * @param Frontend      $frontend The frontend.
+	 * @param Admin         $admin    The backend.
+	 * @param Settings_Page $media_settings The Media settings page.
 	 */
-	public function __construct( Setup $setup, Frontend $frontend, Admin $admin ) {
+	public function __construct( Setup $setup, Frontend $frontend, Admin $admin, Settings_Page $media_settings ) {
 		$this->components[] = $setup;
 		$this->components[] = $frontend;
 		$this->components[] = $admin;
+		$this->components[] = $media_settings;
 	}
 
 	/**

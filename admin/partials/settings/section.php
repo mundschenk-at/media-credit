@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019 Peter Putzer.
+ * Copyright 2013-2019 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,34 +24,8 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace Media_Credit\Data_Storage;
-
-/**
- * A plugin-specific options handler.
- *
- * @since 3.3.0
- *
- * @author Peter Putzer <github@mundschenk.at>
- */
-class Options extends \Mundschenk\Data_Storage\Options {
-	/**
-	 * The prefix for the plugin options.
-	 *
-	 * @var string
-	 */
-	const PREFIX = 'media_credit_';
-
-	/**
-	 * The name used for the plugin option in the database.
-	 *
-	 * @var string OPTION
-	 */
-	const OPTION = 'settings';
-
-	/**
-	 * Creates a new instance.
-	 */
-	public function __construct() {
-		parent::__construct( self::PREFIX );
-	}
-}
+?>
+<a id="media-credit"></a><p>
+	<?php esc_html_e( 'Choose how to display media credit on your blog:', 'media-credit' ); ?>
+</p>
+<?php

@@ -75,35 +75,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	private $resource_suffix;
 
 	/**
-	 * The allowed HTML tags passed to wp_kses.
-	 *
-	 * @since    3.1.0
-	 * @access   private
-	 * @var      array   $kses_tags The allowed HTML tags.
-	 */
-	private $kses_tags = [
-		'strong' => [],
-		'br'     => [],
-		'code'   => [],
-	];
-
-	/**
-	 * Some strings for displaying the preview.
-	 *
-	 * @since  3.1.5
-	 * @access private
-	 * @var    array   $preview_data {
-	 *         Strings used for generating the preview.
-	 *
-	 *         @type string $pattern The pattern string for credits with two names.
-	 *         @type string $name1   A male example name.
-	 *         @type string $name2   A female example name.
-	 *         @type string $joiner  The string used to join multiple image credits.
-	 * }
-	 */
-	private $preview_data = [];
-
-	/**
 	 * The options handler.
 	 *
 	 * @var Options
@@ -144,7 +115,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		add_action( 'wp_enqueue_editor',     [ $this, 'enqueue_editor' ], 10, 1 );
 		add_action( 'print_media_templates', [ $this, 'image_properties_template' ] );
 		add_action( 'print_media_templates', [ $this, 'attachment_details_template' ] );
-		add_action( 'admin_menu',            [ $this, 'display_settings' ] );
 		add_action( 'admin_init',            [ $this, 'admin_init' ] );
 
 		// AJAX actions.
@@ -166,11 +136,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 * @since    3.0.0
 	 */
 	public function enqueue_styles() {
-		// Style the preview area for the settings page.
-		if ( $this->is_media_settings_page() ) {
-			wp_enqueue_style( 'media-credit-preview-style', "{$this->resource_url}/admin/css/media-credit-preview{$this->resource_suffix}.css", [], $this->version, 'screen' );
-		}
-
 		// Style placeholders when editing media.
 		if ( $this->is_legacy_media_edit_page() || did_action( 'wp_enqueue_media' ) ) {
 			wp_enqueue_style( 'media-credit-attachment-details-style', "{$this->resource_url}/admin/css/media-credit-attachment-details{$this->resource_suffix}.css", [], $this->version, 'screen' );
@@ -183,13 +148,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 * @since    3.0.0
 	 */
 	public function enqueue_scripts() {
-
-		// Preview script for the settings page.
-		if ( $this->is_media_settings_page() ) {
-			wp_enqueue_script( 'media-credit-preview', "{$this->resource_url}/admin/js/media-credit-preview{$this->resource_suffix}.js", [ 'jquery' ], $this->version, true );
-			wp_localize_script( 'media-credit-preview', 'mediaCreditPreviewData', $this->preview_data );
-		}
-
 		// Autocomplete when editing media via the legacy form...
 		if ( $this->is_legacy_media_edit_page() ) {
 			wp_enqueue_script( 'media-credit-legacy-autocomplete', "{$this->resource_url}/admin/js/media-credit-legacy-autocomplete{$this->resource_suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
@@ -289,17 +247,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 * Initialize settings.
 	 */
 	public function admin_init() {
-		// Initialize preview strings with translations.
-		$this->preview_data = [
-			/* translators: 1: last credit 2: concatenated other credits (empty in singular) */
-			'pattern' => _n( 'Image courtesy of %2$s%1$s', 'Images courtesy of %2$s and %1$s', 3, 'media-credit' ),
-			'name1'   => _x( 'John Smith', 'Male example name for preview', 'media-credit' ),
-			'name2'   => _x( 'Jane Doe', 'Female example name for preview', 'media-credit' ),
-			'joiner'  => _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' ),
-		];
-
-		register_setting( 'media', self::OPTION, [ $this, 'sanitize_option_values' ] );
-
 		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages.
 		if ( ( current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) ) {
 			add_action( 'admin_head', [ $this, 'admin_head' ] );
@@ -328,17 +275,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	}
 
 	/**
-	 * Is the current page the media settings page?
-	 *
-	 * @access private
-	 */
-	private function is_media_settings_page() {
-		global $pagenow;
-
-		return ( 'options-media.php' === $pagenow );
-	}
-
-	/**
 	 * AJAX hook for filtering post content after editing media files
 	 */
 	public function ajax_filter_content() {
@@ -360,332 +296,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		}
 
 		wp_send_json_success( $this->filter_post_content( $content, $attachment_id, $author_id, $freeform, $url ) );
-	}
-
-	/**
-	 * Display settings for plugin on the built-in Media options page.
-	 */
-	public function display_settings() {
-		$options = get_option( self::OPTION );
-
-		add_settings_section( self::SETTINGS_SECTION, __( 'Media Credit', 'media-credit' ), [ $this, 'print_settings_section' ], 'media' );
-
-		$this->add_settings_field(
-			[
-				'id'          => 'media-credit-preview',
-				'label'       => __( 'Preview', 'media-credit' ),
-				'input_type'  => 'preview',
-				'with_label'  => false,
-				'css_class'   => '',
-				'description' => __( 'This is what media credits will look like with your current settings.', 'media-credit' ),
-				'options'     => $options,
-			]
-		);
-
-		$this->add_settings_field(
-			[
-				'id'          => 'separator',
-				'label'       => __( 'Separator', 'media-credit' ),
-				'value'       => $options['separator'],
-				'with_label'  => true,
-				'css_class'   => 'small-text',
-				'description' => __( 'Text used to separate author names from organization when crediting media to users of this blog.', 'media-credit' ),
-			]
-		);
-
-		$this->add_settings_field(
-			[
-				'id'          => 'organization',
-				'label'       => __( 'Organization', 'media-credit' ),
-				'value'       => $options['organization'],
-				'with_label'  => true,
-				'css_class'   => 'regular-text',
-				'description' => __( 'Organization used when crediting media to users of this blog.', 'media-credit' ),
-			]
-		);
-
-		$this->add_settings_field(
-			[
-				'id'          => 'credit_at_end',
-				'label'       => __( 'Credit position', 'media-credit' ),
-				'input_type'  => 'multi',
-				'fields'      => [
-					[
-						'id'          => 'credit_at_end',
-						'check_label' => __( 'Display credit after posts.', 'media-credit' ),
-						'input_type'  => 'checkbox',
-						'value'       => ! empty( $options['credit_at_end'] ),
-						'css_class'   => '',
-						'description' => __( "Display media credit for all the images attached to a post after the post content. Style with CSS class 'media-credit-end'.", 'media-credit' ) .
-										'<br><strong>' . __( 'Warning', 'media-credit' ) . '</strong>: ' . __( 'This will cause credit for all images in all posts to display at the bottom of every post on this blog', 'media-credit' ),
-					],
-					[
-						'id'          => 'post_thumbnail_credit',
-						'check_label' => __( 'Display credit for featured images.', 'media-credit' ),
-						'input_type'  => 'checkbox',
-						'value'       => ! empty( $options['post_thumbnail_credit'] ),
-						'css_class'   => '',
-						'description' => __( 'Try to add media credit to featured images (depends on theme support).', 'media-credit' ),
-					],
-				],
-			]
-		);
-
-		$this->add_settings_field(
-			[
-				'id'          => 'no_default_credit',
-				'label'       => __( 'Default credit', 'media-credit' ),
-				'check_label' => __( 'Do not display default credit.', 'media-credit' ),
-				'input_type'  => 'checkbox',
-				'value'       => ! empty( $options['no_default_credit'] ),
-				'with_label'  => false,
-				'css_class'   => '',
-				'description' => __( 'Do not display the attachment author as default credit if it has not been set explicitly (= freeform credits only).', 'media-credit' ),
-			]
-		);
-
-		$this->add_settings_field(
-			[
-				'id'          => 'schema_org_markup',
-				'label'       => __( 'Structured data', 'media-credit' ),
-				'check_label' => __( 'Include schema.org structured data in HTML5 microdata markup.', 'media-credit' ),
-				'input_type'  => 'checkbox',
-				'value'       => ! empty( $options['schema_org_markup'] ),
-				'with_label'  => false,
-				'css_class'   => '',
-				'description' => __( 'Microdata is added to the credit itself and the surrounding <code>figure</code> and <code>img</code> (if they don\'t already have other microdata set). The setting has no effect if credits are displayed after posts.', 'media-credit' ),
-			]
-		);
-	}
-
-	/**
-	 * Add a settings field.
-	 *
-	 * @since 3.1.0
-	 *
-	 * @param array $args {
-	 *      Arguments array.
-	 *
-	 *      @type string $id          Field ID.
-	 *      @type string $label       Field label (translated).
-	 *      @type string $check_label Checkbox label. Optional. Default null.
-	 *      @type string $input_type  The input type. Optional. Default 'text'.
-	 *      @type string $value       The default value. Optiona. Default ''.
-	 *      @type string $description Description for the field. Optional. Default null.
-	 *      @type string $css_class   CSS class for input field. Optional. Default 'regular-text'.
-	 * }
-	 */
-	private function add_settings_field( array $args ) {
-		$args = wp_parse_args(
-			$args,
-			[
-				'id'          => 'invalid',
-				'label'       => 'invalid',
-				'check_label' => null,
-				'input_type'  => 'text',
-				'value'       => '',
-				'css_class'   => 'regular-text',
-				'description' => null,
-			]
-		);
-
-		// Set up standard callback.
-		$callback      = [ $this, 'print_input_field' ];
-		$callback_args = [
-			'label_for'   => ! empty( $args['with_label'] ) ? "media-credit[{$args['id']}]" : '',
-			'id'          => $args['id'],
-			'check_label' => $args['check_label'],
-			'type'        => $args['input_type'],
-			'value'       => $args['value'],
-			'class'       => $args['css_class'],
-			'description' => $args['description'],
-		];
-
-		switch ( $args['input_type'] ) {
-			case 'checkbox':
-				$callback = [ $this, 'print_checkbox_field' ];
-				break;
-
-			case 'multi':
-				if ( isset( $args['fields'] ) && is_array( $args['fields'] ) ) {
-					$callback      = [ $this, 'print_multiple_fields' ];
-					$callback_args = $args['fields'];
-				} else {
-					return; // invalid parameters, abort.
-				}
-				break;
-
-			case 'preview':
-				$callback      = [ $this, 'print_preview_field' ];
-				$callback_args = [
-					'id'          => $args['id'],
-					'class'       => 'media-credit-preview-row',
-					'options'     => $args['options'],
-					'description' => $args['description'],
-				];
-				break;
-		}
-
-		add_settings_field( $args['id'], $args['label'], $callback, 'media', self::SETTINGS_SECTION, $callback_args );
-	}
-
-	/**
-	 * Print HTML for multiple input fields.
-	 *
-	 * @since 3.1.0
-	 *
-	 * @param array $args An array of arrays suitable for `print_input_field` and `print_checkbox_field`.
-	 */
-	public function print_multiple_fields( array $args ) {
-		?>
-		<fieldset>
-			<?php
-			foreach ( $args as $field ) {
-				if ( isset( $field['input_type'] ) ) {
-					switch ( $field['input_type'] ) {
-						case 'checkbox':
-							$this->print_checkbox_field( $field );
-							break;
-
-						default:
-							$this->print_input_field( $field );
-					}
-					?>
-					<br>
-					<?php
-				}
-			}
-			?>
-		</fieldset>
-		<?php
-	}
-
-	/**
-	 * Print HTML for input field.
-	 *
-	 * @since 3.1.0
-	 *
-	 * @param array $args Arguments array.
-	 */
-	public function print_input_field( array $args ) {
-		$args = wp_parse_args(
-			$args,
-			[
-				'value' => '',
-				'type'  => 'text',
-				'class' => 'regular-text',
-				'id'    => 'invalid',
-			]
-		);
-
-		$field_name = "media-credit[{$args['id']}]";
-		?>
-			<input
-				type="<?php echo esc_attr( $args['type'] ); ?>"
-				id="<?php echo esc_attr( $field_name ); ?>"
-				name="<?php echo esc_attr( $field_name ); ?>"
-			<?php if ( ! empty( $args['description'] ) ) : ?>
-				aria-describedby="<?php echo esc_attr( $field_name ); ?>-description"
-			<?php endif; ?>
-			<?php if ( ! empty( $args['class'] ) ) : ?>
-				class="<?php echo esc_attr( $args['class'] ); ?>"
-				value="<?php echo esc_attr( $args['value'] ); ?>"
-			<?php endif; ?>
-				autocomplete="off" />
-			<?php if ( ! empty( $args['description'] ) ) : ?>
-				<p id="<?php echo esc_attr( $field_name ); ?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ); ?></p>
-			<?php endif; ?>
-		<?php
-	}
-
-	/**
-	 * Print HTML for checkbox field.
-	 *
-	 * @since 3.1.0
-	 *
-	 * @param array $args Arguments array.
-	 */
-	public function print_checkbox_field( array $args ) {
-		$args = wp_parse_args(
-			$args,
-			[
-				'value' => '',
-				'id'    => 'invalid',
-			]
-		);
-
-		$field_name = "media-credit[{$args['id']}]";
-
-		?>
-		<?php if ( ! empty( $args['check_label'] ) ) : ?>
-		<label for="<?php echo esc_attr( $field_name ); ?>">
-		<?php endif; ?>
-			<input
-				type="checkbox"
-				id="<?php echo esc_attr( $field_name ); ?>"
-				name="<?php echo esc_attr( $field_name ); ?>"
-			<?php if ( ! empty( $args['description'] ) ) : ?>
-				aria-describedby="<?php echo esc_attr( $field_name ); ?>-description"
-			<?php endif; ?>
-			<?php if ( ! empty( $args['class'] ) ) : ?>
-				class="<?php echo esc_attr( $args['class'] ); ?>"
-				value="<?php echo esc_attr( $args['value'] ); ?>"
-			<?php endif; ?>
-				<?php checked( 1, $args['value'], true ); ?>
-				autocomplete="off" />
-		<?php if ( ! empty( $args['check_label'] ) ) : ?>
-			<?php echo esc_html( $args['check_label'] ); ?>
-		</label>
-		<?php endif; ?>
-
-		<?php if ( ! empty( $args['description'] ) ) : ?>
-			<p id="<?php echo esc_attr( $field_name ); ?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ); ?></p>
-		<?php endif; ?>
-		<?php
-	}
-
-	/**
-	 * Print HTML for preview area.
-	 *
-	 * @since 3.1.0
-	 *
-	 * @param array $args The argument array.
-	 */
-	public function print_preview_field( $args ) {
-		$args = wp_parse_args(
-			$args,
-			[
-				'id'    => 'preview',
-			]
-		);
-
-		$field_name   = $args['id'];
-		$current_user = wp_get_current_user();
-		$user_credit  = '<a href="' . esc_url_raw( get_author_posts_url( $current_user->ID ) ) . '">' . esc_html( $current_user->display_name ) . '</a>' . esc_html( $args['options']['separator'] . $args['options']['organization'] );
-
-		if ( ! empty( $args['options']['credit_at_end'] ) ) {
-			$credit_html = sprintf(
-				$this->preview_data['pattern'],
-				$this->preview_data['name1'],
-				$user_credit . $this->preview_data['joiner'] . $this->preview_data['name2']
-			);
-		} else {
-			$credit_html = $user_credit;
-		}
-
-		?>
-		<p
-			id="<?php echo esc_attr( $args['id'] ); ?>"
-			class="notice notice-info"
-		<?php if ( ! empty( $args['description'] ) ) : ?>
-			aria-describedby="<?php echo esc_attr( $field_name ); ?>-description"
-		<?php endif; ?>>
-			<?php echo wp_kses( $credit_html, [ 'a' => [ 'href' ] ] ); ?>
-		</p>
-		<?php if ( ! empty( $args['description'] ) ) : ?>
-			<p id="<?php echo esc_attr( $field_name ); ?>-description" class="description"><?php echo wp_kses( $args['description'], $this->kses_tags ); ?></p>
-		<?php endif; ?>
-		<?php
 	}
 
 	/**
@@ -1130,41 +740,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 			<?php esc_html_e( 'Choose how to display media credit on your blog:', 'media-credit' ); ?>
 		</p>
 		<?php
-	}
-
-	/**
-	 * Sanitize our option values.
-	 *
-	 * @since 3.1.0
-	 *
-	 * @param  array $input An array of ( $key => $value ).
-	 * @return array        The sanitized array.
-	 */
-	public function sanitize_option_values( $input ) {
-		// Retrieve currently set options.
-		$valid_options = $this->options->get( Options::OPTION, [] );
-
-		// Blank out checkboxes because unset checkbox don't get sent by the browser.
-		$valid_options['credit_at_end']         = false;
-		$valid_options['no_default_credit']     = false;
-		$valid_options['post_thumbnail_credit'] = false;
-		$valid_options['schema_org_markup']     = false;
-
-		// Sanitize the actual input values.
-		foreach ( $input as $key => $value ) {
-			switch ( $key ) {
-				case 'separator':
-					// We can't use sanitize_text_field because we want to keep enclosing whitespace.
-					$valid_options[ $key ] = wp_kses( $value, [] );
-					break;
-
-				default:
-					$valid_options[ $key ] = sanitize_text_field( $value );
-			}
-		}
-
-		// Return updated options array for storage.
-		return $valid_options;
 	}
 
 	/**
