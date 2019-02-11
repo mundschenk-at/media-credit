@@ -26,7 +26,11 @@
     ],
 
     "require": {
-        "php": ">=5.2.0"
+        "php": ">=5.6.0",
+        "level-2/dice": "^2.0.3",
+        "mundschenk-at/check-wp-requirements": "^1.0",
+        "mundschenk-at/wp-data-storage": "^1.0",
+        "mundschenk-at/wp-settings-ui": "^1.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.0",
@@ -36,12 +40,21 @@
         "roave/security-advisories": "dev-master"
     },
 
+    "autoload": {
+        "classmap": ["includes/", "public/", "admin/"],
+        "files": ["includes/media-credit-template.php"]
+    },
+
     "minimum-stability": "dev",
     "prefer-stable": true,
 
     "scripts": {
-      "phpcs": [
-          "phpcs -p -s includes/ admin/ public/ --extensions=php"
-      ]
+        "phpcs": [
+            "phpcs -p -s includes/ admin/ public/ --extensions=php"
+        ],
+        "build-wordpress": [
+            "@composer require mundschenk-at/composer-for-wordpress=dev-master --no-update",
+            "@composer update --no-dev"
+        ]
     }
 }

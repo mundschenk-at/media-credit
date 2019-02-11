@@ -2,8 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
- * Copyright 2010-2011 Scott Bressler.
+ * Copyright 2019 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,43 +22,22 @@
  *
  * @package mundschenk-at/media-credit
  * @license http://www.gnu.org/licenses/gpl-2.0.html
- *
- * @wordpress-plugin
- * Plugin Name: Media Credit
- * Plugin URI: https://code.mundschenk.at/media-credit/
- * Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
- * Version: 3.3.0-alpha.1
- * Author: Peter Putzer
- * Author URI: https://code.mundschenk.at/
- * License: GNU General Public License v2 or later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: media-credit
  */
 
 // Don't do anything if called directly.
-if ( ! defined( 'ABSPATH' ) || ! defined( 'WPINC' ) ) {
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	die();
-}
-
-// Make plugin file path available globally.
-if ( ! defined( 'MEDIA_CREDIT_PLUGIN_FILE' ) ) {
-	define( 'MEDIA_CREDIT_PLUGIN_FILE', __FILE__ );
 }
 
 // Load requirements class in a PHP 5.2 compatible manner.
 require_once dirname( __FILE__ ) . '/vendor/mundschenk-at/check-wp-requirements/class-mundschenk-wp-requirements.php';
 
 /**
- * Begins execution of the plugin.
+ * Uninstall the plugin after checking for the necessary PHP version.
  *
- * Since everything within the plugin is registered via hooks,
- * then kicking off the plugin from this point in the file does
- * not affect the page life cycle.
- *
- * @since 3.0.0
- * @since 3.3.0 Renamed to media_credit_run
+ * It's necessary to do this here because our classes rely on namespaces.
  */
-function media_credit_run() {
+function media_credit_uninstall() {
 	// Define our requirements.
 	$reqs = array(
 		'php'       => '5.6.0',
@@ -69,13 +47,14 @@ function media_credit_run() {
 
 	// Validate the requirements.
 	$requirements = new Mundschenk_WP_Requirements( 'Media Credit', __FILE__, 'media-credit', $reqs );
+
 	if ( $requirements->check() ) {
-		// Autoload the rest of our classes.
+		// Autoload the rest of your classes.
 		require_once __DIR__ . '/vendor/autoload.php'; // phpcs:ignore PHPCompatibility.Keywords.NewKeywords.t_dirFound
 
-		// Create and start the plugin.
-		$plugin = Media_Credit_Factory::get( __FILE__ )->create( 'Media_Credit\Plugin' );
-		$plugin->run();
+		// Create and start the uninstallation handler.
+		$uninstaller = Media_Credit_Factory::get( __FILE__ )->create( 'Media_Credit\Components\Uninstallation' );
+		$uninstaller->run();
 	}
 }
-media_credit_run();
+media_credit_uninstall();

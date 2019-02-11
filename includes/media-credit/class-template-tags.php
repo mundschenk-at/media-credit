@@ -6,8 +6,9 @@
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License,
- * version 2 as published by the Free Software Foundation.
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,15 +17,17 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * @link       https://mundschenk.at
- * @since      3.0.0
+ *  ***
  *
- * @package    Media_Credit
- * @subpackage Media_Credit/includes
+ * @package mundschenk-at/media-credit
+ * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
+
+namespace Media_Credit;
+
+use Media_Credit\Data_Storage\Options;
 
 /**
  * A container of static functions implementing the internals of the
@@ -35,7 +38,7 @@
  * @subpackage Media_Credit/includes
  * @author     Peter Putzer <github@mundschenk.at>
  */
-class Media_Credit_Template_Tags implements Media_Credit_Base {
+class Template_Tags implements Base {
 
 	/**
 	 * Returns the media credit as plain text for some media attachment.
@@ -53,7 +56,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 		if ( '' !== $credit_meta ) {
 			return $credit_meta;
 		} elseif ( $fancy ) {
-			$options = get_option( self::OPTION );
+			$options = get_option( Options::PREFIX . Options::OPTION ); // FIXME: Needs proper solution (singleton).
 			return $credit_wp_author . $options['separator'] . $options['organization'];
 		} else {
 			return $credit_wp_author;
@@ -92,7 +95,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 		$result = get_post_meta( $post->ID, self::DATA_POSTMETA_KEY, true );
 
 		if ( empty( $result ) ) {
-			$result = array();
+			$result = [];
 		}
 
 		return $result;
@@ -123,7 +126,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 				$credit = $credit_meta;
 			}
 		} elseif ( $include_default_credit ) {
-			$options = get_option( self::OPTION );
+			$options = get_option( Options::PREFIX . Options::OPTION ); // FIXME: Needs proper solution (singleton).
 			$url     = ! empty( $credit_url ) ? $credit_url : get_author_posts_url( $post->post_author );
 			$credit  = '<a href="' . esc_url( $url ) . '">' . self::get_wpuser_media_credit( $post ) . '</a>' . $options['separator'] . $options['organization'];
 		}
@@ -141,7 +144,7 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	public static function get_media_credit_html_by_user_id( $id ) {
 
 		$credit_wp_author = get_the_author_meta( 'display_name', $id );
-		$options          = get_option( self::OPTION );
+		$options          = get_option( Options::PREFIX . Options::OPTION ); // FIXME: Needs proper solution (singleton).
 
 		return '<a href="' . get_author_posts_url( $id ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 	}
@@ -204,16 +207,14 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 			if ( $include_posts ) {
 				$posts_query = "OR (post_type = 'post' AND post_parent = '0' AND post_status = 'publish')";
 			}
-			$posts_query .= ')';
 
 			// Optionally exclude "unattached" attachments.
 			if ( $exclude_unattached ) {
 				$attached = " AND post_parent != '0' AND post_parent IN (SELECT id FROM {$wpdb->posts} WHERE post_status='publish')";
 			}
-			$attached .= ') ';
 
 			// Exclude attachments from before the install date of the Media Credit plugin.
-			$options = get_option( self::OPTION );
+			$options = get_option( Options::PREFIX . Options::OPTION ); // FIXME: Needs proper solution (singleton).
 			if ( isset( $options['install_date'] ) ) {
 				$start_date = $options['install_date'];
 
@@ -235,12 +236,12 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 			// Construct our query.
 			$sql_query = "SELECT * FROM {$wpdb->posts}
 				 		  WHERE post_author = %d {$date_query}
-				 		  AND ( (post_type = 'attachment' {$attached} {$posts_query}
+				 		  AND ( ( post_type = 'attachment' {$attached} ) {$posts_query} )
 				 		  AND ID NOT IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s )
 				 		  GROUP BY ID ORDER BY post_date DESC {$limit_query}";
 
 			// Prepare and execute query.
-			$results = $wpdb->get_results( $wpdb->prepare( $sql_query, $query_vars ) ); // WPSC: DB call ok, unprepared sql ok.
+			$results = $wpdb->get_results( $wpdb->prepare( $sql_query, $query_vars ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 			// Cache results for a short time.
 			wp_cache_set( $cache_key, $results, 'media-credit', MINUTE_IN_SECONDS );
@@ -261,36 +262,12 @@ class Media_Credit_Template_Tags implements Media_Credit_Base {
 	 */
 	public static function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = null, $exclude_unattached = true ) {
 
-		$media = author_media( $author_id, $limit, $exclude_unattached );
+		$media = self::author_media_and_posts( $author_id, false, $limit, $exclude_unattached );
 		if ( empty( $media ) ) {
 			return; // abort.
 		}
 
-		// More complex default argument.
-		if ( null === $header ) {
-			$header = '<h3>' . __( 'Recent Media', 'media-credit' ) . '</h3>';
-		}
-
-		$id        = 'id = ' . ( $sidebar ? 'recent-media-sidebar' : 'recent-media-inline' );
-		$container = 'div';
-
-		echo "<div {$id}>$header"; // XSS OK.
-		foreach ( $media as $post ) {
-
-			setup_postdata( $post );
-
-			// If media is attached to a post, link to the parent post. Otherwise, link to attachment page itself.
-			if ( $post->post_parent > 0 || ! $link_without_parent ) {
-				$image = wp_get_attachment_image( $post->ID, 'thumbnail' );
-			} else {
-				$image = wp_get_attachment_link( $post->ID, 'thumbnail', true );
-			}
-
-			$image = preg_replace( '/title=".*"/', '', $image ); // remove title attribute from image.
-			$link  = $post->post_parent > 0 ? "<a href='" . /* @scrutinizer ignore-type */ get_permalink( $post->post_parent ) . "' title='" . get_the_title( $post->post_parent ) . "'>$image</a>" : $image;
-
-			echo "<$container class='author-media' id='attachment-" . esc_attr( $post->ID ) . "'>$link</$container>"; // XSS OK.
-		}
-		echo '</div>';
+		// Load the template part.
+		require \dirname( MEDIA_CREDIT_PLUGIN_FILE ) . '/public/partials/author-media.php';
 	}
 }

@@ -6,8 +6,9 @@
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License,
- * version 2 as published by the Free Software Foundation.
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,15 +17,18 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * @link       https://mundschenk.at
- * @since      3.0.0
+ *  ***
  *
- * @package    Media_Credit
- * @subpackage Media_Credit/public
+ * @package mundschenk-at/media-credit
+ * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
+
+namespace Media_Credit\Components;
+
+use Media_Credit\Template_Tags;
+use Media_Credit\Data_Storage\Options;
 
 /**
  * The public-facing functionality of the plugin.
@@ -32,82 +36,93 @@
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the admin-specific stylesheet and JavaScript.
  *
- * @package    Media_Credit
- * @subpackage Media_Credit/public
- * @author     Peter Putzer <github@mundschenk.at>
+ * @since 3.0.0
  */
-class Media_Credit_Public implements Media_Credit_Base {
+class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 
 	/**
-	 * The ID of this plugin.
+	 * The full path to the main plugin file.
 	 *
-	 * @since    3.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
+	 * @var string
 	 */
-	private $plugin_name;
+	private $plugin_file;
 
 	/**
 	 * The version of this plugin.
 	 *
-	 * @since    3.0.0
 	 * @access   private
 	 * @var      string    $version    The current version of this plugin.
 	 */
 	private $version;
 
 	/**
+	 * The plugin settings.
+	 *
+	 * @var array
+	 */
+	private $settings;
+
+	/**
+	 * The options handler.
+	 *
+	 * @var Options
+	 */
+	private $options;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since    3.0.0
-	 *
-	 * @param string $plugin_name The name of the plugin.
-	 * @param string $version     The version of this plugin.
+	 * @param string  $plugin_file The full path to the main plugin file.
+	 * @param string  $version     The version of this plugin.
+	 * @param Options $options     The options handler.
 	 */
-	public function __construct( $plugin_name, $version ) {
-
-		$this->plugin_name = $plugin_name;
+	public function __construct( $plugin_file, $version, Options $options ) {
+		$this->plugin_file = $plugin_file;
 		$this->version     = $version;
-
+		$this->options     = $options;
 	}
 
 	/**
-	 * Register the stylesheets for the public-facing side of the site.
+	 * Sets up the various hooks for the plugin component.
 	 *
-	 * @since    3.0.0
+	 * @return void
 	 */
-	public function enqueue_styles() {
-		$options = get_option( self::OPTION );
+	public function run() {
+		// Retrieve plugin settings.
+		$this->settings = $this->options->get( Options::OPTION, [] );
 
-		// Set up file suffix.
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
+		// Enqueue frontend styles.
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
 
-		// Do not display inline media credit if media credit is displayed at end of posts.
-		if ( ! empty( $options['credit_at_end'] ) ) {
-			wp_enqueue_style( 'media-credit-end', plugin_dir_url( __FILE__ ) . "css/media-credit-end$suffix.css", array(), $this->version, 'all' );
-		} else {
-			wp_enqueue_style( 'media-credit', plugin_dir_url( __FILE__ ) . "css/media-credit$suffix.css", array(), $this->version, 'all' );
+		// Register shortcodes.
+		add_shortcode( 'wp_caption',   [ $this, 'caption_shortcode' ] );
+		add_shortcode( 'caption',      [ $this, 'caption_shortcode' ] );
+		add_shortcode( 'media-credit', [ $this, 'media_credit_shortcode' ] );
+
+		// Optional credits after the main content.
+		if ( ! empty( $this->settings['credit_at_end'] ) ) {
+			add_filter( 'the_content', [ $this, 'add_media_credits_to_end' ], 10, 1 );
+		}
+
+		// Post thumbnail credits.
+		if ( ! empty( $this->settings['post_thumbnail_credit'] ) ) {
+			add_filter( 'post_thumbnail_html', [ $this, 'add_media_credit_to_post_thumbnail' ], 10, 3 );
 		}
 	}
 
 	/**
-	 * Register the JavaScript for the public-facing side of the site.
-	 *
-	 * @since    3.0.0
+	 * Register the stylesheets for the public-facing side of the site.
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_styles() {
+		// Set up file suffix.
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Media_Credit_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Media_Credit_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
+		// Do not display inline media credit if media credit is displayed at end of posts.
+		if ( ! empty( $this->settings['credit_at_end'] ) ) {
+			wp_enqueue_style( 'media-credit-end', plugin_dir_url( $this->plugin_file ) . "public/css/media-credit-end$suffix.css", [], $this->version, 'all' );
+		} else {
+			wp_enqueue_style( 'media-credit', plugin_dir_url( $this->plugin_file ) . "public/css/media-credit$suffix.css", [], $this->version, 'all' );
+		}
 	}
 
 	/**
@@ -137,8 +152,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 		$caption = img_caption_shortcode( $attr, $content );
 
 		// Optionally add schema.org markup.
-		$options = get_option( self::OPTION );
-		if ( ! empty( $options['schema_org_markup'] ) && empty( $options['credit_at_end'] ) ) {
+		if ( ! empty( $this->settings['schema_org_markup'] ) && empty( $this->settings['credit_at_end'] ) ) {
 			// Inject schema.org markup for figure.
 			if ( ! preg_match( '/<figure[^>]*\bitemscope\b/', $caption ) ) {
 				$caption = preg_replace( '/<figure\b/', '<figure itemscope itemtype="http://schema.org/ImageObject"', $caption );
@@ -184,14 +198,12 @@ class Media_Credit_Public implements Media_Credit_Base {
 			return $output;
 		}
 
-		$options = get_option( self::OPTION );
-
-		if ( ! empty( $options['credit_at_end'] ) ) {
+		if ( ! empty( $this->settings['credit_at_end'] ) ) {
 			return do_shortcode( $content );
 		}
 
 		$atts = shortcode_atts(
-			array(
+			[
 				'id'         => -1,
 				'name'       => '',
 				'link'       => '',
@@ -199,7 +211,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 				'align'      => 'alignnone',
 				'width'      => '',
 				'nofollow'   => '',
-			),
+			],
 			$atts,
 			'media-credit'
 		);
@@ -210,7 +222,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 		if ( -1 !== $atts['id'] ) {
 			$url              = empty( $atts['link'] ) ? get_author_posts_url( $atts['id'] ) : $atts['link'];
 			$credit_wp_author = get_the_author_meta( 'display_name', $atts['id'] );
-			$author_link      = '<a href="' . esc_url( $url ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
+			$author_link      = '<a href="' . esc_url( $url ) . '">' . $credit_wp_author . '</a>' . $this->settings['separator'] . $this->settings['organization'];
 		} else {
 			if ( ! empty( $atts['link'] ) ) {
 				$nofollow    = ! empty( $atts['nofollow'] ) ? ' rel="nofollow"' : '';
@@ -252,7 +264,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 		// Optional schema.org markup.
 		$schema_org        = '';
 		$figure_schema_org = '';
-		if ( ! empty( $options['schema_org_markup'] ) && empty( $options['credit_at_end'] ) ) {
+		if ( ! empty( $this->settings['schema_org_markup'] ) && empty( $this->settings['credit_at_end'] ) ) {
 			$schema_org        = ' itemprop="copyrightHolder"';
 			$figure_schema_org = ' itemscope itemtype="http://schema.org/ImageObject"';
 
@@ -293,9 +305,8 @@ class Media_Credit_Public implements Media_Credit_Base {
 		}
 
 		// Look at the plugin options.
-		$options                = get_option( self::OPTION );
-		$include_default_credit = empty( $options['no_default_credit'] );
-		$include_post_thumbnail = ! empty( $options['post_thumbnail_credit'] );
+		$include_default_credit = empty( $this->settings['no_default_credit'] );
+		$include_post_thumbnail = ! empty( $this->settings['post_thumbnail_credit'] );
 
 		// Find the attachment_IDs of all media used in $content.
 		if ( ! preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $images ) && ! $include_post_thumbnail ) {
@@ -303,9 +314,9 @@ class Media_Credit_Public implements Media_Credit_Base {
 		}
 
 		// Get a list of credits for the page.
-		$credit_unique = array();
+		$credit_unique = [];
 		foreach ( $images[1] as $image_id ) {
-			$credit = Media_Credit_Template_Tags::get_media_credit_html( $image_id, $include_default_credit );
+			$credit = Template_Tags::get_media_credit_html( $image_id, $include_default_credit );
 
 			if ( ! empty( $credit ) ) {
 				$credit_unique[] = $credit;
@@ -317,7 +328,7 @@ class Media_Credit_Public implements Media_Credit_Base {
 			$post_thumbnail_id = get_post_thumbnail_id();
 
 			if ( '' !== $post_thumbnail_id ) {
-				$credit = Media_Credit_Template_Tags::get_media_credit_html( (int) $post_thumbnail_id, $include_default_credit );
+				$credit = Template_Tags::get_media_credit_html( (int) $post_thumbnail_id, $include_default_credit );
 
 				if ( ! empty( $credit ) ) {
 					array_unshift( $credit_unique, $credit );
@@ -388,11 +399,10 @@ class Media_Credit_Public implements Media_Credit_Base {
 		}
 
 		// Look at our options.
-		$options                 = get_option( self::OPTION );
-		$include_default_credits = empty( $options['no_default_credit'] );
+		$include_default_credits = empty( $this->settings['no_default_credit'] );
 
 		// Return early if credits are displayed at end.
-		if ( ! empty( $options['credit_at_end'] ) ) {
+		if ( ! empty( $this->settings['credit_at_end'] ) ) {
 			return $html; // abort.
 		}
 
@@ -407,11 +417,11 @@ class Media_Credit_Public implements Media_Credit_Base {
 		 * @param int  $post_thumbnail_id The post thumbnail's attachment ID.
 		 */
 		if ( apply_filters( 'media_credit_post_thumbnail_include_links', false, $post_id, $post_thumbnail_id ) ) {
-			$credit = Media_Credit_Template_Tags::get_media_credit_html( $post_thumbnail_id, $include_default_credits );
+			$credit = Template_Tags::get_media_credit_html( $post_thumbnail_id, $include_default_credits );
 		} elseif ( $include_default_credits ) {
-			$credit = Media_Credit_Template_Tags::get_media_credit( $post_thumbnail_id, true );
+			$credit = Template_Tags::get_media_credit( $post_thumbnail_id, true );
 		} else {
-			$credit = Media_Credit_Template_Tags::get_freeform_media_credit( $post_thumbnail_id );
+			$credit = Template_Tags::get_freeform_media_credit( $post_thumbnail_id );
 		}
 
 		// Don't print the default credit.

@@ -6,8 +6,8 @@ jQuery( function( $ ) {
 	 */
 	function renderCreditExample() {
 		var author       = $( '#media-credit-preview a' ).clone().wrap( '<p>' ).parent().html();
-		var separator    = $( 'input[name=\'media-credit[separator]\']' ).val();
-		var organization = $( 'input[name=\'media-credit[organization]\']' ).val();
+		var separator    = $( 'input[name=\'media_credit_settings[separator]\']' ).val();
+		var organization = $( 'input[name=\'media_credit_settings[organization]\']' ).val();
 
 		$( '#media-credit-preview' ).html( author + separator + organization );
 	}
@@ -17,8 +17,8 @@ jQuery( function( $ ) {
 	 */
 	function renderCreditAtEndExample() {
 	    var author         = $( '#media-credit-preview a' ).clone().wrap( '<p>' ).parent().html();
-	    var separator      = $( 'input[name=\'media-credit[separator]\']' ).val();
-	    var organization   = $( 'input[name=\'media-credit[organization]\']' ).val();
+	    var separator      = $( 'input[name=\'media_credit_settings[separator]\']' ).val();
+	    var organization   = $( 'input[name=\'media_credit_settings[organization]\']' ).val();
 			var previewData    = window.mediaCreditPreviewData || {
 
 				// Default object if translated version is missing.
@@ -34,8 +34,8 @@ jQuery( function( $ ) {
 	/**
 	 * Handle changes to the text fields.
 	 */
-	$( 'input[name^=\'media-credit\']' ).keyup( function() {
-		if ( ! $( 'input[name=\'media-credit[credit_at_end]\']' ).prop( 'checked' ) ) {
+	$( 'input[name^=\'media_credit_settings\']' ).keyup( function() {
+		if ( ! $( 'input[name=\'media_credit_settings[credit_at_end]\']' ).prop( 'checked' ) ) {
 			renderCreditExample();
 		} else {
 			renderCreditAtEndExample();
@@ -45,7 +45,7 @@ jQuery( function( $ ) {
 	/**
 	 * Handle changes to 'Display credits at the end' checkbox.
 	 */
-	$( 'input[name=\'media-credit[credit_at_end]\']' ).change( function() {
+	$( 'input[name=\'media_credit_settings[credit_at_end]\']' ).change( function() {
 		if ( this.checked ) {
 			renderCreditAtEndExample();
 		} else {

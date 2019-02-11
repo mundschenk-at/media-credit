@@ -32,7 +32,7 @@
 			<# } #>
 		/>
 		<?php
-			echo wp_kses( __( 'Add <code>rel="nofollow"</code>.', 'media-credit' ), array( 'code' => array() ) );
+			echo wp_kses( __( 'Add <code>rel="nofollow"</code>.', 'media-credit' ), [ 'code' => [] ] );
 		?>
 	</label>
 </script>
