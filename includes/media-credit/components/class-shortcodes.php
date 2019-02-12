@@ -38,6 +38,21 @@ use Media_Credit\Data_Storage\Options;
 class Shortcodes implements \Media_Credit\Component {
 
 	/**
+	 * The default shortcode attributes for `[media-credit]`.
+	 *
+	 * @var array
+	 */
+	const MEDIA_CREDIT_DEFAULTS = [
+		'id'         => -1,
+		'name'       => '',
+		'link'       => '',
+		'standalone' => true,
+		'align'      => 'alignnone',
+		'width'      => 0,
+		'nofollow'   => false,
+	];
+
+	/**
 	 * The plugin settings.
 	 *
 	 * @var array
@@ -190,19 +205,7 @@ class Shortcodes implements \Media_Credit\Component {
 			return \do_shortcode( $content );
 		}
 
-		$atts = \shortcode_atts(
-			[
-				'id'         => -1,
-				'name'       => '',
-				'link'       => '',
-				'standalone' => 'true',
-				'align'      => 'alignnone',
-				'width'      => '',
-				'nofollow'   => '',
-			],
-			$atts,
-			'media-credit'
-		);
+		$atts = \shortcode_atts( self::MEDIA_CREDIT_DEFAULTS, $atts, 'media-credit' );
 
 		$atts['standalone'] = \filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
 		$atts['nofollow']   = \filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
