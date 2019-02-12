@@ -99,12 +99,12 @@ class Shortcodes implements \Media_Credit\Component {
 	public function caption_shortcode( $attr, $content = null ) {
 		// New-style shortcode with the caption inside the shortcode with the link and image tags.
 		if ( ! isset( $attr['caption'] ) ) {
-			if ( \preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#is', $content, $matches ) ) {
+			if ( \preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#Sis', $content, $matches ) ) {
 				$content         = $matches[1];
 				$attr['caption'] = \trim( $matches[2] );
 
 				// Add attribute "standalone=0" to [media-credit] shortcode if present.
-				$content = \preg_replace( '#\[media-credit([^]]+)\]#', '[media-credit standalone=0$1]', $content );
+				$content = \preg_replace( '#\[media-credit([^]]+)\]#S', '[media-credit standalone=0$1]', $content );
 			}
 		}
 
@@ -114,13 +114,13 @@ class Shortcodes implements \Media_Credit\Component {
 		// Optionally add schema.org markup.
 		if ( ! empty( $this->settings['schema_org_markup'] ) && empty( $this->settings['credit_at_end'] ) ) {
 			// Inject schema.org markup for figure.
-			if ( ! \preg_match( '/<figure[^>]*\bitemscope\b/', $caption ) ) {
-				$caption = \preg_replace( '/<figure\b/', '<figure itemscope itemtype="http://schema.org/ImageObject"', $caption );
+			if ( ! \preg_match( '/<figure[^>]*\bitemscope\b/S', $caption ) ) {
+				$caption = \preg_replace( '/<figure\b/S', '<figure itemscope itemtype="http://schema.org/ImageObject"', $caption );
 			}
 
 			// Inject schema.org markup for figcaption.
-			if ( ! \preg_match( '/<figcaption[^>]*\bitemprop\s*=\b/', $caption ) ) {
-				$caption = \preg_replace( '/<figcaption\b/', '<figcaption itemprop="caption"', $caption );
+			if ( ! \preg_match( '/<figcaption[^>]*\bitemprop\s*=\b/S', $caption ) ) {
+				$caption = \preg_replace( '/<figcaption\b/S', '<figcaption itemprop="caption"', $caption );
 			}
 		}
 
@@ -230,8 +230,8 @@ class Shortcodes implements \Media_Credit\Component {
 			$schema_org        = ' itemprop="copyrightHolder"';
 			$figure_schema_org = ' itemscope itemtype="http://schema.org/ImageObject"';
 
-			if ( ! \preg_match( '/\bitemprop\s*=/', $content ) ) {
-				$content = \preg_replace( '/<img\b/', '<img itemprop="contentUrl"', $content );
+			if ( ! \preg_match( '/\bitemprop\s*=/S', $content ) ) {
+				$content = \preg_replace( '/<img\b/S', '<img itemprop="contentUrl"', $content );
 			}
 		}
 
