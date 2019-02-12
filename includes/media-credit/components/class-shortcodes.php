@@ -135,10 +135,23 @@ class Shortcodes implements \Media_Credit\Component {
 	 * Usage: `[media-credit id=1 align="aligncenter" width="300"]` or
 	 *        `[media-credit name="Another User" align="aligncenter" width="300"]`
 	 *
-	 * @param array  $atts    Shortcode attributes.
-	 * @param string $content Content enclosed by the shortcode. Optional. Default null.
+	 * @param array  $atts {
+	 *     An array of shortcode attributes.
 	 *
-	 * @return string
+	 *     @type int    $id         Optional. A user ID. Default -1.
+	 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
+	 *     @type string $link       Optional. A URL used for linking the credit.
+	 *     @type bool   $standalone Optional. A flag indicating that the shortcode
+	 *                              was used without an enclosing `[caption]`. Default true.
+	 *     @type string $align      Optional. The alignment to use for the image/figure
+	 *                              (if used without `[caption]`). Default 'alignnone'.
+	 *     @type int    $width      Optional. The width of the image/figure. Default 0.
+	 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
+	 *                              attribute should be added to the link tag.
+	 * }
+	 * @param string $content Optional. Shortcode content. Default null.
+	 *
+	 * @return string         The HTML markup for the media credit.
 	 */
 	public function media_credit_shortcode( $atts, $content = null ) {
 
@@ -150,7 +163,20 @@ class Shortcodes implements \Media_Credit\Component {
 		 * the media credit.
 		 *
 		 * @param string $markup  The media credit markup. Default ''.
-		 * @param array  $atts    The `[media-credit]` shortcode attributes.
+		 * @param array  $atts {
+		 *     The `[media-credit]` shortcode attributes.
+		 *
+		 *     @type int    $id         Optional. A user ID. Default -1.
+		 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
+		 *     @type string $link       Optional. A URL used for linking the credit.
+		 *     @type bool   $standalone Optional. A flag indicating that the shortcode
+		 *                              was used without an enclosing `[caption]`. Default true.
+		 *     @type string $align      Optional. The alignment to use for the image/figure
+		 *                              (if used without `[caption]`). Default 'alignnone'.
+		 *     @type int    $width      Optional. The width of the image/figure. Default 0.
+		 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
+		 *                              attribute should be added to the link tag.
+		 * }
 		 * @param string $content The image element, possibly wrapped in a hyperlink.
 		 *                        Should be integrated into the returned `$markup`.
 		 */
@@ -159,6 +185,7 @@ class Shortcodes implements \Media_Credit\Component {
 			return $output;
 		}
 
+		// Disable shortcode if credits should be shown after the post content.
 		if ( ! empty( $this->settings['credit_at_end'] ) ) {
 			return \do_shortcode( $content );
 		}
