@@ -229,8 +229,11 @@ class Shortcodes implements \Media_Credit\Component {
 			}
 		}
 
-		$html5_enabled = \current_theme_supports( 'html5', 'caption' );
-		$credit_width  = (int) $atts['width'] + ( $html5_enabled ? 0 : 10 );
+		// Check for HTML5 support.
+		$html5 = \current_theme_supports( 'html5', 'caption' );
+
+		// Calculate default width in pixels for the media credit.
+		$width = $atts['width'] + ( $html5 ? 0 : 10 );
 
 		/**
 		 * Filters the width of an image's credit/caption.
@@ -248,12 +251,12 @@ class Shortcodes implements \Media_Credit\Component {
 		 * @param array  $atts          Attributes of the media-credit shortcode.
 		 * @param string $content       The image element, possibly wrapped in a hyperlink.
 		 */
-		$credit_width = \apply_filters( 'img_caption_shortcode_width', $credit_width, $atts, $content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+		$width = \apply_filters( 'img_caption_shortcode_width', $width, $atts, $content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 		// Apply credit width via style attribute.
 		$style = '';
-		if ( $credit_width ) {
-			$style = ' style="width: ' . (int) $credit_width . 'px"';
+		if ( $width ) {
+			$style = ' style="width: ' . (int) $width . 'px"';
 		}
 
 		// Prepare media content.
@@ -275,7 +278,7 @@ class Shortcodes implements \Media_Credit\Component {
 						$content . '<span class="media-credit"' . $schema_org . '>' . $author_link . '</span></div>';
 
 		// Wrap output in <figure> if HTML5 is supported & the shortcode is a standalone one.
-		if ( ! empty( $atts['standalone'] ) && $html5_enabled ) {
+		if ( ! empty( $atts['standalone'] ) && $html5 ) {
 			$output =
 				'<figure class="wp-caption ' . \esc_attr( $atts['align'] ) . '"' . $style . $figure_schema_org . '>' .
 					$output .
