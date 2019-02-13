@@ -169,6 +169,10 @@ class Shortcodes implements \Media_Credit\Component {
 	 * @return string         The HTML markup for the media credit.
 	 */
 	public function media_credit_shortcode( $atts, $content = null ) {
+		// Disable shortcode if credits should be shown after the post content.
+		if ( ! empty( $this->settings['credit_at_end'] ) ) {
+			return \do_shortcode( $content );
+		}
 
 		/**
 		 * Filters the `[media-credit]` shortcode to allow plugins and themes to
@@ -198,11 +202,6 @@ class Shortcodes implements \Media_Credit\Component {
 		$output = \apply_filters( 'media_credit_shortcode', '', $atts, $content );
 		if ( '' !== $output ) {
 			return $output;
-		}
-
-		// Disable shortcode if credits should be shown after the post content.
-		if ( ! empty( $this->settings['credit_at_end'] ) ) {
-			return \do_shortcode( $content );
 		}
 
 		$atts = \shortcode_atts( self::MEDIA_CREDIT_DEFAULTS, $atts, 'media-credit' );
