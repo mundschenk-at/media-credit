@@ -43,7 +43,7 @@ class Shortcodes implements \Media_Credit\Component {
 	 * @var array
 	 */
 	const MEDIA_CREDIT_DEFAULTS = [
-		'id'         => -1,
+		'id'         => 0,
 		'name'       => '',
 		'link'       => '',
 		'standalone' => true,
@@ -153,7 +153,7 @@ class Shortcodes implements \Media_Credit\Component {
 	 * @param array  $atts {
 	 *     An array of shortcode attributes.
 	 *
-	 *     @type int    $id         Optional. A user ID. Default -1.
+	 *     @type int    $id         Optional. A user ID. Default 0.
 	 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
 	 *     @type string $link       Optional. A URL used for linking the credit.
 	 *     @type bool   $standalone Optional. A flag indicating that the shortcode
@@ -185,7 +185,7 @@ class Shortcodes implements \Media_Credit\Component {
 		 * @param array  $atts {
 		 *     The `[media-credit]` shortcode attributes.
 		 *
-		 *     @type int    $id         Optional. A user ID. Default -1.
+		 *     @type int    $id         Optional. A user ID. Default 0.
 		 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
 		 *     @type string $link       Optional. A URL used for linking the credit.
 		 *     @type bool   $standalone Optional. A flag indicating that the shortcode
@@ -209,7 +209,7 @@ class Shortcodes implements \Media_Credit\Component {
 		$atts['standalone'] = \filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
 		$atts['nofollow']   = \filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
 
-		if ( -1 !== $atts['id'] ) {
+		if ( empty( $atts['id'] ) ) {
 			$url              = empty( $atts['link'] ) ? \get_author_posts_url( $atts['id'] ) : $atts['link'];
 			$credit_wp_author = \get_the_author_meta( 'display_name', $atts['id'] );
 			$author_link      = '<a href="' . \esc_url( $url ) . '">' . $credit_wp_author . '</a>' . $this->settings['separator'] . $this->settings['organization'];
