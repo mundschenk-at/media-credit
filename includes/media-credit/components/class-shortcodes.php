@@ -174,6 +174,18 @@ class Shortcodes implements \Media_Credit\Component {
 			return \do_shortcode( $content );
 		}
 
+		// Merge default shortcode attributes.
+		$atts = \shortcode_atts( self::MEDIA_CREDIT_DEFAULTS, $atts, 'media-credit' );
+
+		// Sanitize attribute values.
+		$atts['id']         = \absint( $atts['id'] );
+		$atts['name']       = \sanitize_text_field( $atts['name'] );
+		$atts['link']       = \esc_url_raw( $atts['link'] );
+		$atts['standalone'] = \filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
+		$atts['align']      = \sanitize_html_class( $atts['align'] );
+		$atts['width']      = \absint( $atts['width'] );
+		$atts['nofollow']   = \filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
+
 		/**
 		 * Filters the `[media-credit]` shortcode to allow plugins and themes to
 		 * override the default media credit template.
@@ -203,11 +215,6 @@ class Shortcodes implements \Media_Credit\Component {
 		if ( '' !== $output ) {
 			return $output;
 		}
-
-		$atts = \shortcode_atts( self::MEDIA_CREDIT_DEFAULTS, $atts, 'media-credit' );
-
-		$atts['standalone'] = \filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
-		$atts['nofollow']   = \filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
 
 		if ( empty( $atts['id'] ) ) {
 			$url              = empty( $atts['link'] ) ? \get_author_posts_url( $atts['id'] ) : $atts['link'];
