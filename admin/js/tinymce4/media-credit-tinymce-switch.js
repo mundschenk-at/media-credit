@@ -5,13 +5,11 @@
  *
  */
 
- // jscs:disable requirePaddingNewLinesBeforeLineComments
- // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-
 ( function( $ ) {
   'use strict';
 
   $( function() {
+		/* eslint-disable camelcase, yoda */
 		window.wp.editor.removep = window.switchEditors._wp_Nop = function( html ) {
 			var blocklist = 'blockquote|ul|ol|li|dl|dt|dd|table|thead|tbody|tfoot|tr|th|td|h[1-6]|fieldset|figure',
 			blocklist1 = blocklist + '|div|p',
@@ -39,7 +37,7 @@
 					a = a.replace( /<br ?\/?>(\r\n|\n)?/g, '<wp-line-break>' );
 					a = a.replace( /<\/?p( [^>]*)?>(\r\n|\n)?/g, '<wp-line-break>' );
 					return a.replace( /\r?\n/g, '<wp-line-break>' );
-				});
+				} );
 			}
 
 			// Remove line breaks but keep <br> tags inside image captions.
@@ -47,7 +45,7 @@
 				preserve_br = true;
 				html = html.replace( /\[caption[\s\S]+?\[\/caption\]/g, function( a ) {
 					return a.replace( /<br([^>]*)>/g, '<wp-temp-br$1>' ).replace( /[\r\n\t]+/, '' );
-				});
+				} );
 			}
 
 			// Normalize white space characters before and after block tags.
@@ -74,7 +72,7 @@
 				}
 
 				return '\n';
-			});
+			} );
 
 			// Fix line breaks around <div>.
 			html = html.replace( /\s*<div/g, '\n<div' );
@@ -90,6 +88,7 @@
 
 			html = html.replace( /\[\/media-credit\]\n\n([^\[]*)\[\/caption\]/gi, '[/media-credit] $1[/caption]' ); // Remove extra newlines for nested media-credit.
 			html = html.replace( /\s*\[caption([^\[]+)\[media-credit([^\[]+)\[\/media-credit\]([^\[]*)\[\/caption\]\s*/gi, '\n\n[caption$1[media-credit$2[/media-credit]$3[/caption]\n\n' );
+
 			// END MODIFICATION
 
 			// Pad block elements tags with a line break.
@@ -114,7 +113,7 @@
 			if ( html.indexOf( '<object' ) !== -1 ) {
 				html = html.replace( /<object[\s\S]+?<\/object>/g, function( a ) {
 					return a.replace( /[\r\n]+/g, '' );
-				});
+				} );
 			}
 
 			// Unmark special paragraph closing tags.
