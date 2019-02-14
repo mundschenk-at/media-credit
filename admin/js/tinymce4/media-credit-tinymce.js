@@ -2,7 +2,7 @@
  * Adapted from https://core.trac.wordpress.org/browser/trunk/src/wp-includes/js/tinymce/plugins/wpeditimage/plugin.js
  */
 
-/* globals tinymce, $mediaCredit */
+/* globals tinymce, $mediaCredit, wp, _ */
 
 /* eslint-disable yoda, lines-around-comment */
 

@@ -1,5 +1,7 @@
 /*
- ** Properly handle editing credits in the media modal.
+ * Properly handle editing credits in the media modal.
+ *
+ * global: _
  */
 
 jQuery( function( $ ) {

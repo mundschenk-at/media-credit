@@ -1,7 +1,7 @@
 /**
  *  Properly handle editing credits in the media modal.
  *
- *  global: tinymce
+ *  global: tinymce, wp, _
  */
 
 jQuery( function( $ ) {

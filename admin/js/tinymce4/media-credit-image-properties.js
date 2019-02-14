@@ -22,6 +22,8 @@
  *
  * @package    Media_Credit
  * @subpackage Media_Credit/admin
+ *
+ * global: wp
  */
 ( function( $, wp ) {
 	'use strict';
