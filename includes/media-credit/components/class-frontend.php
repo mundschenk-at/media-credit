@@ -42,13 +42,6 @@ use Media_Credit\Data_Storage\Options;
 class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 
 	/**
-	 * The full path to the main plugin file.
-	 *
-	 * @var string
-	 */
-	private $plugin_file;
-
-	/**
 	 * The version of this plugin.
 	 *
 	 * @access   private
@@ -73,14 +66,12 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @param string  $plugin_file The full path to the main plugin file.
-	 * @param string  $version     The version of this plugin.
-	 * @param Options $options     The options handler.
+	 * @param string  $version The version of this plugin.
+	 * @param Options $options The options handler.
 	 */
-	public function __construct( $plugin_file, $version, Options $options ) {
-		$this->plugin_file = $plugin_file;
-		$this->version     = $version;
-		$this->options     = $options;
+	public function __construct( $version, Options $options ) {
+		$this->version = $version;
+		$this->options = $options;
 	}
 
 	/**
@@ -112,12 +103,13 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 	public function enqueue_styles() {
 		// Set up file suffix.
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
+		$url    = \plugin_dir_url( MEDIA_CREDIT_PLUGIN_FILE );
 
 		// Do not display inline media credit if media credit is displayed at end of posts.
 		if ( ! empty( $this->settings['credit_at_end'] ) ) {
-			wp_enqueue_style( 'media-credit-end', plugin_dir_url( $this->plugin_file ) . "public/css/media-credit-end$suffix.css", [], $this->version, 'all' );
+			\wp_enqueue_style( 'media-credit-end', "{$url}public/css/media-credit-end{$suffix}.css", [], $this->version, 'all' );
 		} else {
-			wp_enqueue_style( 'media-credit', plugin_dir_url( $this->plugin_file ) . "public/css/media-credit$suffix.css", [], $this->version, 'all' );
+			\wp_enqueue_style( 'media-credit', "{$url}public/css/media-credit{$suffix}.css", [], $this->version, 'all' );
 		}
 	}
 

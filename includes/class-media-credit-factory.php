@@ -78,7 +78,7 @@ abstract class Media_Credit_Factory {
 
 				// Components.
 				Components\Admin::class             => [ 'constructParams' => [ $full_plugin_path, $version ] ],
-				Components\Frontend::class          => [ 'constructParams' => [ $full_plugin_path, $version ] ],
+				Components\Frontend::class          => [ 'constructParams' => [ $version ] ],
 				Components\Settings_Page::class     => [ 'constructParams' => [ $version ] ],
 				Components\Setup::class             => [ 'constructParams' => [ $full_plugin_path, $version ] ],
 				Components\Uninstallation::class    => $full_path_rule,
