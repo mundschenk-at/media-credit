@@ -216,19 +216,6 @@ class Shortcodes implements \Media_Credit\Component {
 			return $output;
 		}
 
-		if ( empty( $atts['id'] ) ) {
-			$url              = empty( $atts['link'] ) ? \get_author_posts_url( $atts['id'] ) : $atts['link'];
-			$credit_wp_author = \get_the_author_meta( 'display_name', $atts['id'] );
-			$author_link      = '<a href="' . \esc_url( $url ) . '">' . $credit_wp_author . '</a>' . $this->settings['separator'] . $this->settings['organization'];
-		} else {
-			if ( ! empty( $atts['link'] ) ) {
-				$nofollow    = ! empty( $atts['nofollow'] ) ? ' rel="nofollow"' : '';
-				$author_link = '<a href="' . \esc_attr( $atts['link'] ) . '"' . $nofollow . '>' . $atts['name'] . '</a>';
-			} else {
-				$author_link = $atts['name'];
-			}
-		}
-
 		// Check for HTML5 support.
 		$html5 = \current_theme_supports( 'html5', 'caption' );
 
@@ -253,38 +240,28 @@ class Shortcodes implements \Media_Credit\Component {
 		 */
 		$width = \apply_filters( 'img_caption_shortcode_width', $width, $atts, $content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
-		// Apply credit width via style attribute.
-		$style = '';
-		if ( $width ) {
-			$style = ' style="width: ' . (int) $width . 'px"';
+		// The default credit and link.
+		$credit        = $atts['name'];
+		$credit_suffix = '';
+		$url           = $atts['link'];
+
+		// If present, use the user ID.
+		if ( $atts['id'] > 0 ) {
+			$credit        = \get_the_author_meta( 'display_name', $atts['id'] );
+			$credit_suffix = empty( $atts['link'] ) ? \get_author_posts_url( $atts['id'] ) : $atts['link'];
+			$url           = $url ?: \get_author_posts_url( $atts['id'] );
 		}
 
-		// Prepare media content.
+		// Prepare media content (nested shortcodes).
 		$content = \do_shortcode( $content );
 
-		// Optional schema.org markup.
-		$schema_org        = '';
-		$figure_schema_org = '';
-		if ( ! empty( $this->settings['schema_org_markup'] ) && empty( $this->settings['credit_at_end'] ) ) {
-			$schema_org        = ' itemprop="copyrightHolder"';
-			$figure_schema_org = ' itemscope itemtype="http://schema.org/ImageObject"';
+		// Start buffering.
+		\ob_start();
 
-			if ( ! \preg_match( '/\bitemprop\s*=/S', $content ) ) {
-				$content = \preg_replace( '/<img\b/S', '<img itemprop="contentUrl"', $content );
-			}
-		}
+		// Require partial.
+		require \dirname( MEDIA_CREDIT_PLUGIN_FILE ) . '/public/partials/media-credit-shortcode.php';
 
-		$output = '<div class="media-credit-container ' . \esc_attr( $atts['align'] ) . '"' . $style . '>' .
-						$content . '<span class="media-credit"' . $schema_org . '>' . $author_link . '</span></div>';
-
-		// Wrap output in <figure> if HTML5 is supported & the shortcode is a standalone one.
-		if ( ! empty( $atts['standalone'] ) && $html5 ) {
-			$output =
-				'<figure class="wp-caption ' . \esc_attr( $atts['align'] ) . '"' . $style . $figure_schema_org . '>' .
-					$output .
-				'</figure>';
-		}
-
-		return $output;
+		// Retrieve buffer.
+		return \ob_get_clean();
 	}
 }
