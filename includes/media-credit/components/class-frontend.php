@@ -84,16 +84,16 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		$this->settings = $this->options->get( Options::OPTION, [] );
 
 		// Enqueue frontend styles.
-		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
+		\add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
 
 		// Optional credits after the main content.
 		if ( ! empty( $this->settings['credit_at_end'] ) ) {
-			add_filter( 'the_content', [ $this, 'add_media_credits_to_end' ], 10, 1 );
+			\add_filter( 'the_content', [ $this, 'add_media_credits_to_end' ], 10, 1 );
 		}
 
 		// Post thumbnail credits.
 		if ( ! empty( $this->settings['post_thumbnail_credit'] ) ) {
-			add_filter( 'post_thumbnail_html', [ $this, 'add_media_credit_to_post_thumbnail' ], 10, 3 );
+			\add_filter( 'post_thumbnail_html', [ $this, 'add_media_credit_to_post_thumbnail' ], 10, 3 );
 		}
 	}
 
@@ -126,7 +126,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 	public function add_media_credits_to_end( $content ) {
 
 		// Check if we're inside the main loop in a single post/page/CPT.
-		if ( ! is_singular() || ! in_the_loop() || ! is_main_query() ) {
+		if ( ! \is_singular() || ! \in_the_loop() || ! \is_main_query() ) {
 			return $content; // abort.
 		}
 
@@ -135,7 +135,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		$include_post_thumbnail = ! empty( $this->settings['post_thumbnail_credit'] );
 
 		// Find the attachment_IDs of all media used in $content.
-		if ( ! preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $images ) && ! $include_post_thumbnail ) {
+		if ( ! \preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $images ) && ! $include_post_thumbnail ) {
 			return $content; // no images found.
 		}
 
@@ -151,19 +151,19 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 
 		// Optionally include post thumbnail credit.
 		if ( $include_post_thumbnail ) {
-			$post_thumbnail_id = get_post_thumbnail_id();
+			$post_thumbnail_id = \get_post_thumbnail_id();
 
 			if ( '' !== $post_thumbnail_id ) {
 				$credit = Template_Tags::get_media_credit_html( (int) $post_thumbnail_id, $include_default_credit );
 
 				if ( ! empty( $credit ) ) {
-					array_unshift( $credit_unique, $credit );
+					\array_unshift( $credit_unique, $credit );
 				}
 			}
 		}
 
 		// Make credit list unique.
-		$credit_unique = array_unique( $credit_unique );
+		$credit_unique = \array_unique( $credit_unique );
 
 		// If no images are left, don't display credit line.
 		if ( empty( $credit_unique ) ) {
@@ -172,17 +172,17 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 
 		// Prepare credit line string.
 		/* translators: 1: last credit 2: concatenated other credits (empty in singular) */
-		$image_credit = _n(
+		$image_credit = \_n(
 			'Image courtesy of %2$s%1$s', // %2$s will be empty
 			'Images courtesy of %2$s and %1$s',
-			count( $credit_unique ),
+			\count( $credit_unique ),
 			'media-credit'
 		);
 
 		// Construct actual credit line from list of unique credits.
-		$last_credit   = array_pop( $credit_unique );
-		$other_credits = implode( _x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' ), $credit_unique );
-		$image_credit  = sprintf( $image_credit, $last_credit, $other_credits );
+		$last_credit   = \array_pop( $credit_unique );
+		$other_credits = \implode( \_x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' ), $credit_unique );
+		$image_credit  = \sprintf( $image_credit, $last_credit, $other_credits );
 
 		// Restore credit array for filter.
 		$credit_unique[] = $last_credit;
@@ -194,7 +194,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		 * @param string   $content       The original content before the end credits were added.
 		 * @param string[] $credit_unique An array of unique media credits contained in the current post.
 		 */
-		return apply_filters( 'media_credit_at_end', $content . '<div class="media-credit-end">' . $image_credit . '</div>', $content, $credit_unique );
+		return \apply_filters( 'media_credit_at_end', $content . '<div class="media-credit-end">' . $image_credit . '</div>', $content, $credit_unique );
 	}
 
 	/**
@@ -206,7 +206,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 	 */
 	public function add_media_credit_to_post_thumbnail( $html, $post_id, $post_thumbnail_id ) {
 		// Return early if we are not in the main loop or credits are to displayed at end of posts.
-		if ( ! in_the_loop() || ! empty( $this->settings['credit_at_end'] ) ) {
+		if ( ! \in_the_loop() || ! empty( $this->settings['credit_at_end'] ) ) {
 			return $html;
 		}
 
@@ -219,7 +219,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		 * @param int    $post_id           The current post ID.
 		 * @param int    $post_thumbnail_id The attachment ID of the post thumbnail.
 		 */
-		$output = apply_filters( 'media_credit_post_thumbnail', '', $html, $post_id, $post_thumbnail_id );
+		$output = \apply_filters( 'media_credit_post_thumbnail', '', $html, $post_id, $post_thumbnail_id );
 		if ( '' !== $output ) {
 			return $output;
 		}
@@ -238,7 +238,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		 * @param int  $post_id           The post ID.
 		 * @param int  $post_thumbnail_id The post thumbnail's attachment ID.
 		 */
-		if ( apply_filters( 'media_credit_post_thumbnail_include_links', false, $post_id, $post_thumbnail_id ) ) {
+		if ( \apply_filters( 'media_credit_post_thumbnail_include_links', false, $post_id, $post_thumbnail_id ) ) {
 			$credit = Template_Tags::get_media_credit_html( $post_thumbnail_id, $include_default_credits );
 		} elseif ( $include_default_credits ) {
 			$credit = Template_Tags::get_media_credit( $post_thumbnail_id, true );
@@ -252,7 +252,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		}
 
 		// Extract image width.
-		if ( preg_match( "/<img[^>]+width=([\"'])([0-9]+)\\1/", $html, $match ) ) {
+		if ( \preg_match( "/<img[^>]+width=([\"'])([0-9]+)\\1/", $html, $match ) ) {
 			$credit_width = $match[2];
 		}
 
