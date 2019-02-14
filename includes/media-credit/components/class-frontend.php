@@ -213,8 +213,9 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 	 * @param int    $post_thumbnail_id The post thumbnail ID.
 	 */
 	public function add_media_credit_to_post_thumbnail( $html, $post_id, $post_thumbnail_id ) {
-		if ( ! in_the_loop() ) {
-			return $html; // abort.
+		// Return early if we are not in the main loop or credits are to displayed at end of posts.
+		if ( ! in_the_loop() || ! empty( $this->settings['credit_at_end'] ) ) {
+			return $html;
 		}
 
 		/**
@@ -233,11 +234,6 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 
 		// Look at our options.
 		$include_default_credits = empty( $this->settings['no_default_credit'] );
-
-		// Return early if credits are displayed at end.
-		if ( ! empty( $this->settings['credit_at_end'] ) ) {
-			return $html; // abort.
-		}
 
 		/**
 		 * Filters whether link tags should be included in the post thumbnail credit.
