@@ -37,6 +37,7 @@ use Media_Credit\Data_Storage\Options;
  * enqueue the admin-specific stylesheet and JavaScript.
  *
  * @since 3.0.0
+ * @since 3.3.0 Shortcodes moved to Media_Credit\Components\Shortcodes class.
  */
 class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 
@@ -106,7 +107,7 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 	}
 
 	/**
-	 * Register the stylesheets for the public-facing side of the site.
+	 * Registers the stylesheets for the public-facing side of the site.
 	 */
 	public function enqueue_styles() {
 		// Set up file suffix.
@@ -197,9 +198,9 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		/**
 		 * Filters the credits at the end of a post.
 		 *
-		 * @param string $markup        The generated end credit mark-up.
-		 * @param string $content       The original content before the end credits were added.
-		 * @param arrray $credit_unique An array of unique media credits contained in the current post.
+		 * @param string   $markup        The generated end credit mark-up.
+		 * @param string   $content       The original content before the end credits were added.
+		 * @param string[] $credit_unique An array of unique media credits contained in the current post.
 		 */
 		return apply_filters( 'media_credit_at_end', $content . '<div class="media-credit-end">' . $image_credit . '</div>', $content, $credit_unique );
 	}
@@ -216,10 +217,9 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 			return $html; // abort.
 		}
 
-		// Allow plugins/themes to override the default media credit template.
 		/**
 		 * Replaces the post thumbnail media credits with custom markup. If the returned
-		 * string is non-empty, it will be used as the post thumbnail markup.
+		 * string is non-empty, it will be used as the post thumbnail media credit markup.
 		 *
 		 * @param string $content           The generated markup. Default ''.
 		 * @param string $html              The post thumbnail `<img>` markup. Should be integrated in the returned `$content`.
@@ -240,8 +240,9 @@ class Frontend implements \Media_Credit\Base, \Media_Credit\Component {
 		}
 
 		/**
-		 * Filters whether link tags should be included in the post thumbnail credit. By default, both custom
-		 * and default links are disabled because post thumbnails are often wrapped in `<a></a>`.
+		 * Filters whether link tags should be included in the post thumbnail credit.
+		 * By default, both custom and default links are disabled because post
+		 * thumbnails are often wrapped in `<a></a>`.
 		 *
 		 * @since 3.1.5
 		 *
