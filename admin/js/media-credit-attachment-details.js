@@ -1,7 +1,7 @@
 /**
  *  Properly handle editing credits in the media modal.
  *
- *  global: tinymce
+ *  global: tinymce, wp, _
  */
 
 jQuery( function( $ ) {
@@ -20,9 +20,9 @@ jQuery( function( $ ) {
 
 		var updateFreeformCredit = function( credit ) {
 			view.model.set( {
-				mediaCreditAuthorID:      '',
+				mediaCreditAuthorID: '',
 				mediaCreditAuthorDisplay: credit,
-				mediaCreditText:          credit
+				mediaCreditText: credit
 			} );
 
 			if ( saveModel ) {
@@ -45,9 +45,9 @@ jQuery( function( $ ) {
 			select: function( event, ui ) {
 				$( this ).attr( 'value', ui.item.value );
 				view.model.set( {
-					mediaCreditAuthorID:      ui.item.id,
+					mediaCreditAuthorID: ui.item.id,
 					mediaCreditAuthorDisplay: ui.item.value,
-					mediaCreditText:          ui.item.value
+					mediaCreditText: ui.item.value
 				} );
 
 				if ( saveModel ) {
@@ -89,9 +89,9 @@ jQuery( function( $ ) {
 
 			if ( noDefaultCredit && '' === credit && '' === view.model.get( 'mediaCreditAuthorID' ) ) {
 				view.model.set( {
-					mediaCreditAuthorID:      view.model.get( 'author' ),
+					mediaCreditAuthorID: view.model.get( 'author' ),
 					mediaCreditAuthorDisplay: view.model.get( 'authorName' ),
-					mediaCreditText:          view.model.get( 'authorName' )
+					mediaCreditText: view.model.get( 'authorName' )
 				} );
 
 				if ( saveModel ) {
@@ -113,6 +113,7 @@ jQuery( function( $ ) {
 	};
 
 	if ( wp.media.view.Attachment.Details ) {
+
 		/**
 		 * MediaCredit.AttachmentDetails
 		 *
@@ -193,6 +194,7 @@ jQuery( function( $ ) {
 	}
 
 	if ( wp.media.model.Attachment ) {
+
 		/**
 		 * MediaCredit.AttachmentModel
 		 *
@@ -221,11 +223,11 @@ jQuery( function( $ ) {
 
 						// Set the action and ID.
 						options.data = _.extend( options.data || {}, {
-							action:  'save-attachment-media-credit',
-							id:      this.id,
-							nonce:   nonces.mediaCredit.update,
-							post_id: wp.media.model.settings.post.id
-						});
+							action: 'save-attachment-media-credit',
+							id: this.id,
+							nonce: nonces.mediaCredit.update,
+							post_id: wp.media.model.settings.post.id // eslint-disable-line camelcase
+						} );
 
 						// Record the values of the changed attributes.
 						if ( model.hasChanged() ) {
@@ -253,7 +255,7 @@ jQuery( function( $ ) {
 						}
 
 						// Don't trigger AJAX call if we have no media-credit changes.
-						if ( _.size( options.data.changes ) > 0 ) {
+						if ( 0 < _.size( options.data.changes ) ) {
 							result = wp.media.ajax( options );
 
 							// Clean-up, part I.
@@ -285,8 +287,8 @@ jQuery( function( $ ) {
 				if ( previousContent && nonces && nonces.mediaCredit && nonces.mediaCredit.content ) {
 					ajaxOptions = _.extend( options, {
 						data: _.extend( options.data, {
-							action:      'update-media-credit-in-post-content',
-							nonce:       nonces.mediaCredit.content,
+							action: 'update-media-credit-in-post-content',
+							nonce: nonces.mediaCredit.content,
 							mediaCredit: _.extend( options.data.mediaCredit, {
 								content: previousContent
 							} )
@@ -303,7 +305,7 @@ jQuery( function( $ ) {
 							editor = tinymce.get( 'content' );
 							if ( editor && editor instanceof tinymce.Editor && $( '#wp-content-wrap' ).hasClass( 'tmce-active' ) ) {
 								editor.setContent( newContent );
-								editor.save( { no_events: true } );
+								editor.save( { no_events: true } ); // eslint-disable-line camelcase
 							} else {
 								$( 'textarea#content' ).val( newContent );
 							}

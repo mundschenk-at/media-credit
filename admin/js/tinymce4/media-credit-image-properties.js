@@ -22,12 +22,14 @@
  *
  * @package    Media_Credit
  * @subpackage Media_Credit/admin
+ *
+ * global: wp
  */
 ( function( $, wp ) {
 	'use strict';
 
 	var MediaCreditImagePropertiesView, frame,
-		  mediaCredit = window.$mediaCredit || {};
+			mediaCredit = window.$mediaCredit || {};
 
 	// Sanity check.
 	if ( ! wp.media.events ) {
@@ -120,13 +122,13 @@
 
 			// Create new representation for media-credit.
 			mediaCreditBlock = dom.create( 'span', {
-												'class':                  'mceMediaCreditTemp mceNonEditable',
-												'data-media-credit-author-id': mediaCreditAuthorID,
-												'data-media-credit-text':      mediaCreditText,
-												'data-media-credit-align':     align,
-												'data-media-credit-link':      mediaCreditLink,
-												'data-media-credit-nofollow':  mediaCreditNoFollow
-										 }, credit );
+				'class': 'mceMediaCreditTemp mceNonEditable',
+				'data-media-credit-author-id': mediaCreditAuthorID,
+				'data-media-credit-text': mediaCreditText,
+				'data-media-credit-align': align,
+				'data-media-credit-link': mediaCreditLink,
+				'data-media-credit-nofollow': mediaCreditNoFollow
+			}, credit );
 
 			if ( image.parentNode && 'A' === image.parentNode.nodeName ) {
 				dom.insertAfter( mediaCreditBlock, image.parentNode );
@@ -160,4 +162,4 @@
 		}
 	} );
 
-} )( jQuery, wp );
+} ( jQuery, wp ) );

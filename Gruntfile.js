@@ -134,32 +134,13 @@ module.exports = function( grunt ) {
 			}
 		},
 
-		jshint: {
-			files: [
-				'admin/js/**/*.js',
-				'public/js/**/*.js',
-				'!**/*.min.js'
-			],
-			options: {
-				reporter: require('jshint-stylish'),
-				jshintrc: true,
-				globals: {
-					jQuery: true,
-					console: true,
-					module: true,
-					document: true
-				},
-			}
-		},
-
-		jscs: {
+		eslint: {
 			src: [
 				'admin/js/**/*.js',
 				'public/js/**/*.js',
-				'!**/*.min.js'
-			],
-			options: {
-			}
+				'!**/*.min.js',
+				'!admin/js/**/tinymce-noneditable.js'
+			]
 		},
 
 		phpcs: {
@@ -289,8 +270,7 @@ module.exports = function( grunt ) {
 
 	grunt.registerTask( 'default', [
 			'newer:wp_readme_to_markdown',
-			'newer:jscs',
-			'newer:jshint',
+			'newer:eslint',
 			'newer:phpcs',
 			'newer:sass:dev',
 			'newer:postcss:dev'
@@ -333,8 +313,7 @@ module.exports = function( grunt ) {
 
 	grunt.registerTask('deploy', [
 			'phpcs',
-			'jshint',
-			'jscs',
+			'eslint',
 			'build',
 			'wp_deploy:release'
 	] );
@@ -342,7 +321,7 @@ module.exports = function( grunt ) {
 	grunt.registerTask('trunk', [
 			'wp_readme_to_markdown',
 			'phpcs',
-			'jscs',
+			'eslint',
 			'build',
 			'wp_deploy:trunk'
 	] );

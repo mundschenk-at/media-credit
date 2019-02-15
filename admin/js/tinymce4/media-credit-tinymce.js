@@ -2,10 +2,9 @@
  * Adapted from https://core.trac.wordpress.org/browser/trunk/src/wp-includes/js/tinymce/plugins/wpeditimage/plugin.js
  */
 
-/* globals tinymce, $mediaCredit */
+/* globals tinymce, $mediaCredit, wp, _ */
 
-// jscs:disable requireYodaConditions
-// jscs:disable requirePaddingNewLinesBeforeLineComments
+/* eslint-disable yoda, lines-around-comment */
 
 tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	'use strict';
@@ -102,11 +101,11 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				if ( event.target.nodeName === 'IMG' && ! isNonEditable( event.target ) ) {
 					touchOnImage = true;
 				}
-			});
+			} );
 
 			editor.dom.bind( editor.getDoc(), 'touchmove', function() {
 				touchOnImage = false;
-			});
+			} );
 
 			editor.on( 'touchend', function( event ) {
 				var node;
@@ -122,8 +121,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				} else if ( toolbar ) {
 					toolbar.hide();
 				}
-			});
-		});
+			} );
+		} );
 	}
 
 	function parseShortcode( content ) {
@@ -195,7 +194,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 			return '<div class="mceTemp"><dl id="' + id + '" class="wp-caption ' + align + classes + '" style="width: ' + width + 'px">' +
 				'<dt class="wp-caption-dt">' + img + '</dt><dd class="wp-caption-dd">' + caption + '</dd></dl></div>';
-		});
+		} );
 
 		/*
 		 * Handle all other occurences of [media-credit]
@@ -288,33 +287,33 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			credit = '' + ( name ? name : ( $mediaCredit.id[id] + $mediaCredit.separator + $mediaCredit.organization ) );
 			credit = credit.replace( /<[^>]+>(.*)<\/[^>]+>/g, '$1' ); // Basic sanitation.
 
-			out = img + wp.html.string({
+			out = img + wp.html.string( {
 				tag: 'span',
 				content: credit,
 				attrs: {
 					'class': 'mceMediaCreditTemp mceNonEditable',
 					'data-media-credit-author-id': id,
-					'data-media-credit-text':      _.escape( name ),
-					'data-media-credit-align':     align,
-					'data-media-credit-link':      _.escape( link ),
-					'data-media-credit-nofollow':  _.escape( nofollow )
+					'data-media-credit-text': _.escape( name ),
+					'data-media-credit-align': align,
+					'data-media-credit-link': _.escape( link ),
+					'data-media-credit-nofollow': _.escape( nofollow )
 				}
-			});
+			} );
 
 			if ( standalone ) {
-				out = wp.html.string({
+				out = wp.html.string( {
 					tag: 'div',
 					content: out,
 					attrs: {
 						'class': 'mceMediaCreditOuterTemp ' + align,
 						style: 'width: ' + width + 'px'
 					}
-				});
+				} );
 			}
 
 			return out;
 
-		});
+		} );
 	}
 
 	function getShortcode( content ) {
@@ -365,7 +364,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 					// No line breaks inside HTML tags.
 					return a.replace( /[\r\n\t]+/, ' ' );
-				});
+				} );
 
 				// Convert remaining line breaks to <br>.
 				caption = caption.replace( /\s*\n\s*/g, '<br />' );
@@ -374,7 +373,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 				return '[caption id="' + id + '" align="' + align + '" width="' + width + '"' + classes + ']' + c + ' ' + caption + '[/caption]';
 
-			});
+			} );
 
 			if ( out.indexOf( '[caption' ) === -1 ) {
 
@@ -384,7 +383,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			}
 
 			return out;
-		});
+		} );
 
 		/*
 		 * Handle all other media-credits
@@ -403,7 +402,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		}
 
 		return content.replace( pattern, function( a, b, c, d ) {
-			var out = '', id, name, w, align, link, nofollow, quotedName, credit;
+			var out = '',
+					id, name, w, align, link, nofollow, quotedName, credit;
 
 			if ( b.indexOf( '<img ' ) === -1 ) {
 
@@ -463,8 +463,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	 * unquoted - whether quotes are necessary (default)
 	 */
 	function parseAttribute( content, attr, pattern, unquoted ) {
-		var result = null, searchPattern;
-		unquoted = ( typeof unquoted === 'undefined' ? false : unquoted );
+		var result = null,
+				searchPattern;
+				unquoted = ( typeof unquoted === 'undefined' ? false : unquoted );
 
 		if ( unquoted ) {
 			searchPattern = new RegExp( attr + '=(' + pattern + ') ?' );
@@ -494,7 +495,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 		// Default attributes.
 		metadata = {
-			attachment_id: false,
+			attachment_id: false, // eslint-disable-line camelcase
 			size: 'custom',
 			caption: '',
 			align: 'none',
@@ -534,7 +535,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 		tinymce.each( classes, function( name ) {
 			if ( /^wp-image/.test( name ) ) {
-				metadata.attachment_id = parseInt( name.replace( 'wp-image-', '' ), 10 );
+				metadata.attachment_id = parseInt( name.replace( 'wp-image-', '' ), 10 ); // eslint-disable-line camelcase
 			} else if ( /^align/.test( name ) ) {
 				metadata.align = name.replace( 'align', '' );
 			} else if ( /^size/.test( name ) ) {
@@ -613,7 +614,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			serializer = new tinymce.html.Serializer( {}, editor.schema );
 		}
 
-		return serializer.serialize( editor.parser.parse( caption, { forced_root_block: false } ) );
+		return serializer.serialize( editor.parser.parse( caption, { forced_root_block: false } ) ); // eslint-disable-line camelcase
 	}
 
 	function updateImage( imageNode, imageData ) {
@@ -689,7 +690,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				dom.remove( imageNode.parentNode, true );
 			}
 		} else if ( imageData.linkUrl ) {
-			if ( linkNode = dom.getParent( imageNode, 'a' ) ) {
+			if ( linkNode = dom.getParent( imageNode, 'a' ) ) { // eslint-disable-line no-cond-assign
 				// The image is inside a link together with other nodes,
 				// or is nested in another node, move it out
 				dom.insertAfter( imageNode, linkNode );
@@ -752,7 +753,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				wrap = dom.create( 'div', { 'class': 'mceTemp' }, html );
 
 				if ( ( parent = dom.getParent( node, 'p' ) ) ||
-					 ( parent = dom.getParent( node, '.mceMediaCreditOuterTemp' ) ) ) {
+						( parent = dom.getParent( node, '.mceMediaCreditOuterTemp' ) ) ) {
 					parent.parentNode.insertBefore( wrap, parent );
 
 					// Prevent duplicate children.
@@ -865,9 +866,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			editor: editor,
 			metadata: metadata,
 			image: img
-		});
+		} );
 
-		frame = wp.media({
+		frame = wp.media( {
 			frame: 'image',
 			state: 'image-details',
 			metadata: metadata
@@ -888,7 +889,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		frame.on( 'close', function() {
 			editor.focus();
 			frame.detach();
-		});
+		} );
 
 		frame.open();
 	}
@@ -937,9 +938,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 					// This will make the caption text editable.
 					event.target.focus();
 				}
-			});
+			} );
 		}
-	});
+	} );
 
 	editor.on( 'ObjectResized', function( event ) {
 		var node = event.target;
@@ -953,7 +954,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 					if ( node.nodeName === 'IMG' ) {
 						node.className = node.className.replace( /\bsize-[^ ]+/, '' );
 
-						if ( parent = dom.getParent( node, '.wp-caption' ) ) {
+						if ( parent = dom.getParent( node, '.wp-caption' ) ) { // eslint-disable-line no-cond-assign
 							width = event.width || dom.getAttrib( node, 'width' );
 
 							if ( width ) {
@@ -967,9 +968,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 							}
 						}
 					}
-				});
+				} );
 		}
-	});
+	} );
 
 	editor.on( 'pastePostProcess', function( event ) {
 
@@ -1095,7 +1096,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				value: event.value
 			} );
 		}
-	});
+	} );
 
 	editor.on( 'keydown', function( event ) {
 		var node, wrap, P, spacer,
@@ -1122,7 +1123,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 					if ( dom.isEmpty( element ) ) {
 						dom.remove( element );
 					}
-				});
+				} );
 
 				spacer = tinymce.Env.ie && tinymce.Env.ie < 11 ? '' : '<br data-mce-bogus="1" />';
 				P = dom.create( 'p', null, spacer );
@@ -1151,7 +1152,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				return false;
 			}
 		}
-	});
+	} );
 
 	// Also remove credit if image was removed.
 	editor.on( 'NodeChange', function( event ) {
@@ -1182,7 +1183,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			dom.remove( wrap );
 			return false;
 		}
-	});
+	} );
 
 	// After undo/redo FF seems to set the image height very slowly when it is set to 'auto' in the CSS.
 	// This causes image.getBoundingClientRect() to return wrong values and the resize handles are shown in wrong places.
@@ -1192,7 +1193,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			if ( editor.selection.getNode().nodeName === 'IMG' ) {
 				editor.selection.collapse();
 			}
-		});
+		} );
 	}
 
 	editor.wpSetImgCaption = function( content ) {
@@ -1207,19 +1208,19 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		if ( event.format !== 'raw' ) {
 			editor.$( 'img[id="__wp-temp-img-id"]' ).attr( 'id', null );
 		}
-	});
+	} );
 
 	editor.on( 'BeforeSetContent', function( event ) {
 		if ( event.format !== 'raw' ) {
 			event.content = editor.wpSetImgCaption( event.content );
 		}
-	});
+	} );
 
 	editor.on( 'PostProcess', function( event ) {
 		if ( event.get ) {
 			event.content = editor.wpGetImgCaption( event.content );
 		}
-	});
+	} );
 
 	( function() {
 		var wrap;
@@ -1258,7 +1259,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 			wrap = null;
 		} );
-	} )();
+	} () );
 
 	// Add to editor.wp
 	editor.wp = editor.wp || {};
@@ -1266,7 +1267,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 	// Back-compat.
 	return {
-		_do_shcode: parseShortcode,
-		_get_shcode: getShortcode
+		_do_shcode: parseShortcode, // eslint-disable-line camelcase
+		_get_shcode: getShortcode  // eslint-disable-line camelcase
 	};
 } );
