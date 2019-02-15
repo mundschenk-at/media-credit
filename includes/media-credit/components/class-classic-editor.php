@@ -191,49 +191,51 @@ class Classic_Editor implements \Media_Credit\Component, \Media_Credit\Base {
 	 * @return string
 	 */
 	public function add_media_credit_to_image( $html, $attachment_id, $caption, $title, $align ) {
-		$attachment  = \get_post( $attachment_id );
-		$credit_meta = Template_Tags::get_freeform_media_credit( $attachment );
-		$credit_url  = Template_Tags::get_media_credit_url( $attachment );
-		$credit_data = Template_Tags::get_media_credit_data( $attachment );
-		$options     = $this->options->get( Options::OPTION, [] );
+		// Get the attachment object.
+		$attachment = \get_post( $attachment_id );
 
-		// Set freeform or blog user credit.
-		if ( self::EMPTY_META_STRING === $credit_meta ) {
+		// Are default credits (= WordPress users) allowed?
+		$options     = $this->options->get( Options::OPTION, [] );
+		$no_defaults = ! empty( $options['no_default_credit'] );
+
+		// Set freeform or site user credit.
+		$freeform = \get_post_meta( $attachment_id, self::POSTMETA_KEY, true );
+		if ( self::EMPTY_META_STRING === $freeform || ( empty( $freeform ) && $no_defaults ) ) {
+			// No credit to add.
 			return $html;
-		} elseif ( ! empty( $credit_meta ) ) {
-			$credit = 'name="' . $credit_meta . '"';
-		} elseif ( empty( $options['no_default_credit'] ) ) {
-			$credit = 'id=' . $attachment->post_author;
+		} elseif ( ! empty( $freeform ) ) {
+			// Add the freeform credit.
+			$shortcode_arguments = "name='{$freeform}'";
 		} else {
-			return $html;
+			// Add the user credit.
+			$shortcode_arguments = "id={$attachment->post_author}";
 		}
 
 		// Add link URL.
-		if ( ! empty( $credit_url ) ) {
-			$credit .= ' link="' . $credit_url . '"';
+		$url = Template_Tags::get_media_credit_url( $attachment );
+		if ( ! empty( $url ) ) {
+			$shortcode_arguments .= " link='{$url}'";
 
-			// Optionally add nofollow parameter.
-			if ( ! empty( $credit_data['nofollow'] ) ) {
-				$credit .= ' nofollow=' . $credit_data['nofollow'] . '';
+			// Optionally add "nofollow" parameter.
+			$data = Template_Tags::get_media_credit_data( $attachment );
+			if ( ! empty( $data['nofollow'] ) ) {
+				$shortcode_arguments .= ' nofollow=1';
 			}
 		}
 
-		// Extract image width.
-		if ( ! \preg_match( '/width="([0-9]+)/', $html, $width ) ) {
-			return $html;
+		// Try to extract the image width and add it to the shortcode arguments if possible.
+		if ( \preg_match( '/width=["\']([0-9]+)/S', $html, $width ) ) {
+			$shortcode_arguments .= " width=$width[1]";
 		}
-		$width = $width[1];
 
-		// Extract alignment.
-		$html = \preg_replace( '/(class=["\'][^\'"]*)align(none|left|right|center)\b/S', '$1', $html );
-		if ( empty( $align ) ) {
-			$align = 'none';
-		}
+		// Add alignment to shortcode arguments and strip it from the image markup.
+		$shortcode_arguments .= " align='{$align}'";
+		$html                 = \preg_replace( "/(class=[\"'][^\"']*)align{$align}\s*/S", '$1', $html );
 
 		// Put it all together.
-		$shcode = '[media-credit ' . $credit . ' align="align' . $align . '" width="' . $width . '"]' . $html . '[/media-credit]';
+		$shortcode = "[media-credit {$shortcode_arguments}]{$html}[/media-credit]";
 
 		// @todo Document filter.
-		return \apply_filters( 'media_add_credit_shortcode', $shcode, $html );
+		return \apply_filters( 'media_add_credit_shortcode', $shortcode, $html );
 	}
 }
