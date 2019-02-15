@@ -38,8 +38,6 @@ use Media_Credit\Data_Storage\Options;
  */
 class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 
-	const SETTINGS_SECTION = 'media-credit';
-
 	/**
 	 * The full path to the main plugin file.
 	 *
@@ -727,19 +725,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		array_unshift( $links, $settings_link );
 
 		return $links;
-	}
-
-	/**
-	 * Print HTML for settings section.
-	 *
-	 * @param array $args The argument array.
-	 */
-	public function print_settings_section( $args ) {
-		?>
-		<a id="media-credit"></a><p>
-			<?php esc_html_e( 'Choose how to display media credit on your blog:', 'media-credit' ); ?>
-		</p>
-		<?php
 	}
 
 	/**
