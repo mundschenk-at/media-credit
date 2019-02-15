@@ -110,8 +110,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
-		add_action( 'wp_enqueue_editor',     [ $this, 'enqueue_editor' ], 10, 1 );
-		add_action( 'print_media_templates', [ $this, 'image_properties_template' ] );
 		add_action( 'print_media_templates', [ $this, 'attachment_details_template' ] );
 		add_action( 'admin_init',            [ $this, 'admin_init' ] );
 
@@ -123,7 +121,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		add_filter( 'wp_prepare_attachment_for_js',    [ $this, 'prepare_attachment_media_credit_for_js' ], 10, 3 );
 		add_filter( 'attachment_fields_to_edit',       [ $this, 'add_media_credit_fields' ],                10, 2 );
 		add_filter( 'attachment_fields_to_save',       [ $this, 'save_media_credit_fields' ],               10, 2 );
-		add_filter( 'image_send_to_editor',            [ $this, 'image_send_to_editor' ],                   10, 5 );
 		add_filter( "plugin_action_links_{$basename}", [ $this, 'add_action_links' ],                       10, 1 );
 
 	}
@@ -158,51 +155,12 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	}
 
 	/**
-	 * Template for setting Media Credit in image properties.
-	 */
-	public function image_properties_template() {
-		include dirname( $this->plugin_file ) . '/admin/partials/media-credit-image-properties-tmpl.php';
-	}
-
-	/**
 	 * Template for setting Media Credit in attachment details.
 	 *
 	 * @since 3.1.0
 	 */
 	public function attachment_details_template() {
 		include dirname( $this->plugin_file ) . '/admin/partials/media-credit-attachment-details-tmpl.php';
-	}
-
-
-	/**
-	 * Removes the default wpeditimage plugin.
-	 *
-	 * @param array $plugins An array of plugins to load.
-	 * @return array The array of plugins to load.
-	 */
-	public function tinymce_internal_plugins( $plugins ) {
-		$key = array_search( 'wpeditimage', $plugins, true );
-
-		if ( false !== $key ) {
-			unset( $plugins[ $key ] );
-		}
-
-		return $plugins;
-	}
-
-	/**
-	 * Add our own version of the wpeditimage plugin.
-	 * The plugins depend on the global variable echoed in admin_head().
-	 *
-	 * @param array $plugins An array of plugins to load.
-	 *
-	 * @return array The array of plugins to load.
-	 */
-	public function tinymce_external_plugins( $plugins ) {
-		$plugins['mediacredit'] = "{$this->resource_url}/admin/js/tinymce4/media-credit-tinymce{$this->resource_suffix}.js";
-		$plugins['noneditable'] = "{$this->resource_url}/admin/js/tinymce4/tinymce-noneditable{$this->resource_suffix}.js";
-
-		return $plugins;
 	}
 
 	/**
@@ -231,29 +189,12 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	}
 
 	/**
-	 * Add styling for media credits in the rich editor.
-	 *
-	 * @param string $css A comma separated list of CSS files.
-	 *
-	 * @return string A comma separated list of CSS files.
-	 */
-	public function tinymce_css( $css ) {
-		return $css . ( ! empty( $css ) ? ',' : '' ) . "{$this->resource_url}/admin/css/media-credit-tinymce{$this->resource_suffix}.css";
-	}
-
-	/**
 	 * Initialize settings.
 	 */
 	public function admin_init() {
 		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages.
 		if ( ( current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) ) {
 			add_action( 'admin_head', [ $this, 'admin_head' ] );
-
-			if ( user_can_richedit() ) {
-				add_filter( 'mce_external_plugins', [ $this, 'tinymce_external_plugins' ] );
-				add_filter( 'tiny_mce_plugins',     [ $this, 'tinymce_internal_plugins' ] );
-				add_filter( 'mce_css',              [ $this, 'tinymce_css' ] );
-			}
 		}
 
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
@@ -294,25 +235,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		}
 
 		wp_send_json_success( $this->filter_post_content( $content, $attachment_id, $author_id, $freeform, $url ) );
-	}
-
-	/**
-	 * Enqueue scripts & styles for displaying media credits in the rich-text editor.
-	 *
-	 * @param array $options An array of options. Used ot check if TinyMCE is enabled.
-	 */
-	public function enqueue_editor( $options ) {
-		if ( $options['tinymce'] ) {
-			// Note: An additional dependency "media-views" is not listed below
-			// because in some cases such as /wp-admin/press-this.php the media
-			// library isn't enqueued and shouldn't be. The script includes
-			// safeguards to avoid errors in this situation.
-			wp_enqueue_script( 'media-credit-image-properties', "{$this->resource_url}/admin/js/tinymce4/media-credit-image-properties{$this->resource_suffix}.js", [ 'jquery', 'media-credit-attachment-details' ], $this->version, true );
-			wp_enqueue_script( 'media-credit-tinymce-switch',   "{$this->resource_url}/admin/js/tinymce4/media-credit-tinymce-switch{$this->resource_suffix}.js",   [ 'jquery' ], $this->version, true );
-
-			// Edit in style.
-			wp_enqueue_style( 'media-credit-image-properties-style', "{$this->resource_url}/admin/css/tinymce4/media-credit-image-properties{$this->resource_suffix}.css", [], $this->version, 'screen' );
-		}
 	}
 
 	/**
@@ -590,64 +512,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 
 			wp_update_post( $parent );
 		}
-	}
-
-	/**
-	 * Add media credit information to media using shortcode notation before sending to editor.
-	 *
-	 * @param string $html          The image HTML markup to send.
-	 * @param int    $attachment_id The attachment id.
-	 * @param string $caption       The image caption.
-	 * @param string $title         The image title.
-	 * @param string $align         The image alignment.
-	 *
-	 * @return string
-	 */
-	public function image_send_to_editor( $html, $attachment_id, $caption, $title, $align ) {
-		$attachment  = get_post( $attachment_id );
-		$credit_meta = Template_Tags::get_freeform_media_credit( $attachment );
-		$credit_url  = Template_Tags::get_media_credit_url( $attachment );
-		$credit_data = Template_Tags::get_media_credit_data( $attachment );
-		$options     = $this->options->get( Options::OPTION, [] );
-
-		// Set freeform or blog user credit.
-		if ( self::EMPTY_META_STRING === $credit_meta ) {
-			return $html;
-		} elseif ( ! empty( $credit_meta ) ) {
-			$credit = 'name="' . $credit_meta . '"';
-		} elseif ( empty( $options['no_default_credit'] ) ) {
-			$credit = 'id=' . $attachment->post_author;
-		} else {
-			return $html;
-		}
-
-		// Add link URL.
-		if ( ! empty( $credit_url ) ) {
-			$credit .= ' link="' . $credit_url . '"';
-
-			// Optionally add nofollow parameter.
-			if ( ! empty( $credit_data['nofollow'] ) ) {
-				$credit .= ' nofollow=' . $credit_data['nofollow'] . '';
-			}
-		}
-
-		// Extract image width.
-		if ( ! preg_match( '/width="([0-9]+)/', $html, $width ) ) {
-			return $html;
-		}
-		$width = $width[1];
-
-		// Extract alignment.
-		$html = preg_replace( '/(class=["\'][^\'"]*)align(none|left|right|center)\s?/', '$1', $html );
-		if ( empty( $align ) ) {
-			$align = 'none';
-		}
-
-		// Put it all together.
-		$shcode = '[media-credit ' . $credit . ' align="align' . $align . '" width="' . $width . '"]' . $html . '[/media-credit]';
-
-		// @todo Document filter.
-		return apply_filters( 'media_add_credit_shortcode', $shcode, $html );
 	}
 
 	/**
