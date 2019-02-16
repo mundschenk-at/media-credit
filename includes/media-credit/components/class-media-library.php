@@ -31,46 +31,38 @@ use Media_Credit\Template_Tags;
 use Media_Credit\Data_Storage\Options;
 
 /**
- * The admin-specific functionality of the plugin.
+ * The component handling the integration with the WordPress Media Library.
  *
- * Defines the plugin name, version, and two examples hooks for how to
- * enqueue the admin-specific stylesheet and JavaScript.
+ * @since 3.3.0 Renamed to Media_Credit\Components\Media_Library
  */
-class Admin implements \Media_Credit\Component, \Media_Credit\Base {
-
-	/**
-	 * The full path to the main plugin file.
-	 *
-	 * @var string
-	 */
-	private $plugin_file;
+class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 
 	/**
 	 * The version of this plugin.
 	 *
-	 * @since    3.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
+	 * @since 3.0.0
+	 *
+	 * @var string
 	 */
 	private $version;
 
 	/**
-	 * The base URL for loading ressources.
+	 * The base URL for loading resources.
 	 *
-	 * @since    3.0.0
-	 * @access   private
-	 * @var      string    $resource_url    The base URL for admin ressources.
+	 * @since 3.0.0
+	 *
+	 * @var string
 	 */
-	private $resource_url;
+	private $url;
 
 	/**
 	 * The file suffix for loading ressources.
 	 *
-	 * @since    3.2.0
-	 * @access   private
-	 * @var      string    $resource_suffix    Empty string or '.min'.
+	 * @since 3.2.0
+	 *
+	 * @var string
 	 */
-	private $resource_suffix;
+	private $suffix;
 
 	/**
 	 * The options handler.
@@ -85,14 +77,12 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 * @since    3.0.0
 	 * @since    3.3.0 Parameter $options added.
 	 *
-	 * @param string  $plugin_file The full path to the main plugin file.
 	 * @param string  $version     The plugin version.
 	 * @param Options $options     The options handler.
 	 */
-	public function __construct( $plugin_file, $version, Options $options ) {
-		$this->plugin_file = $plugin_file;
-		$this->version     = $version;
-		$this->options     = $options;
+	public function __construct( $version, Options $options ) {
+		$this->version = $version;
+		$this->options = $options;
 	}
 
 	/**
@@ -102,22 +92,22 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 */
 	public function run() {
 		// Set up resource files.
-		$this->resource_url    = \plugin_dir_url( $this->plugin_file );
-		$this->resource_suffix = SCRIPT_DEBUG ? '' : '.min';
+		$this->url    = \plugin_dir_url( MEDIA_CREDIT_PLUGIN_FILE );
+		$this->suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
-		add_action( 'print_media_templates', [ $this, 'attachment_details_template' ] );
-		add_action( 'admin_init',            [ $this, 'admin_init' ] );
+		\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
+		\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		\add_action( 'print_media_templates', [ $this, 'attachment_details_template' ] );
+		\add_action( 'admin_init',            [ $this, 'admin_init' ] );
 
 		// AJAX actions.
-		add_action( 'wp_ajax_update-media-credit-in-post-content', [ $this, 'ajax_filter_content' ] );
-		add_action( 'wp_ajax_save-attachment-media-credit',        [ $this, 'ajax_save_attachment_media_credit' ] );
+		\add_action( 'wp_ajax_update-media-credit-in-post-content', [ $this, 'ajax_filter_content' ] );
+		\add_action( 'wp_ajax_save-attachment-media-credit',        [ $this, 'ajax_save_attachment_media_credit' ] );
 
 		// Filter hooks.
-		add_filter( 'wp_prepare_attachment_for_js',    [ $this, 'prepare_attachment_media_credit_for_js' ], 10, 3 );
-		add_filter( 'attachment_fields_to_edit',       [ $this, 'add_media_credit_fields' ],                10, 2 );
-		add_filter( 'attachment_fields_to_save',       [ $this, 'save_media_credit_fields' ],               10, 2 );
+		\add_filter( 'wp_prepare_attachment_for_js',    [ $this, 'prepare_attachment_media_credit_for_js' ], 10, 3 );
+		\add_filter( 'attachment_fields_to_edit',       [ $this, 'add_media_credit_fields' ],                10, 2 );
+		\add_filter( 'attachment_fields_to_save',       [ $this, 'save_media_credit_fields' ],               10, 2 );
 
 	}
 
@@ -129,7 +119,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	public function enqueue_styles() {
 		// Style placeholders when editing media.
 		if ( $this->is_legacy_media_edit_page() || did_action( 'wp_enqueue_media' ) ) {
-			wp_enqueue_style( 'media-credit-attachment-details-style', "{$this->resource_url}/admin/css/media-credit-attachment-details{$this->resource_suffix}.css", [], $this->version, 'screen' );
+			wp_enqueue_style( 'media-credit-attachment-details-style', "{$this->url}/admin/css/media-credit-attachment-details{$this->suffix}.css", [], $this->version, 'screen' );
 		}
 	}
 
@@ -141,12 +131,12 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	public function enqueue_scripts() {
 		// Autocomplete when editing media via the legacy form...
 		if ( $this->is_legacy_media_edit_page() ) {
-			wp_enqueue_script( 'media-credit-legacy-autocomplete', "{$this->resource_url}/admin/js/media-credit-legacy-autocomplete{$this->resource_suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
+			wp_enqueue_script( 'media-credit-legacy-autocomplete', "{$this->url}/admin/js/media-credit-legacy-autocomplete{$this->suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
 		}
 
 		// ... and for when the new JavaScript Media API is used.
 		if ( did_action( 'wp_enqueue_media' ) ) {
-			wp_enqueue_script( 'media-credit-attachment-details', "{$this->resource_url}/admin/js/media-credit-attachment-details{$this->resource_suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
+			wp_enqueue_script( 'media-credit-attachment-details', "{$this->url}/admin/js/media-credit-attachment-details{$this->suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
 		}
 	}
 
@@ -156,7 +146,7 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 	 * @since 3.1.0
 	 */
 	public function attachment_details_template() {
-		include dirname( $this->plugin_file ) . '/admin/partials/media-credit-attachment-details-tmpl.php';
+		include \dirname( MEDIA_CREDIT_PLUGIN_FILE ) . '/admin/partials/media-credit-attachment-details-tmpl.php';
 	}
 
 	/**

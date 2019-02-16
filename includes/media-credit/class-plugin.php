@@ -26,9 +26,9 @@
 
 namespace Media_Credit;
 
-use Media_Credit\Components\Admin;
 use Media_Credit\Components\Classic_Editor;
 use Media_Credit\Components\Frontend;
+use Media_Credit\Components\Media_Library;
 use Media_Credit\Components\Setup;
 use Media_Credit\Components\Settings_Page;
 use Media_Credit\Components\Shortcodes;
@@ -54,15 +54,15 @@ class Plugin {
 	 * @param Frontend       $frontend       The frontend.
 	 * @param Shortcodes     $shortcodes     The shortcodes handler.
 	 * @param Classic_Editor $classic_editor The Classic Editor integration.
-	 * @param Admin          $admin          The backend.
+	 * @param Media_Library  $library        The Media Library integration.
 	 * @param Settings_Page  $media_settings The Media settings page.
 	 */
-	public function __construct( Setup $setup, Frontend $frontend, Shortcodes $shortcodes, Classic_Editor $classic_editor, Admin $admin, Settings_Page $media_settings ) {
+	public function __construct( Setup $setup, Frontend $frontend, Shortcodes $shortcodes, Classic_Editor $classic_editor, Media_Library $library, Settings_Page $media_settings ) {
 		$this->components[] = $setup;
 		$this->components[] = $frontend;
 		$this->components[] = $shortcodes;
 		$this->components[] = $classic_editor;
-		$this->components[] = $admin;
+		$this->components[] = $library;
 		$this->components[] = $media_settings;
 	}
 
