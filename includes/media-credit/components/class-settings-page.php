@@ -102,6 +102,10 @@ class Settings_Page implements \Media_Credit\Component {
 
 			// Enqueue some scripts and styles.
 			\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts_and_styles' ] );
+
+			// Add settings link to plugins page.
+			$basename = \plugin_basename( MEDIA_CREDIT_PLUGIN_FILE );
+			\add_filter( "plugin_action_links_{$basename}", [ $this, 'add_action_links' ] );
 		}
 	}
 
@@ -218,4 +222,20 @@ class Settings_Page implements \Media_Credit\Component {
 		require \dirname( MEDIA_CREDIT_PLUGIN_FILE ) . '/admin/partials/settings/section.php';
 	}
 
+	/**
+	 * Adds a Settings link for the plugin.
+	 *
+	 * @param  string[] $links An array of plugin action links. By default this
+	 *                         can include 'activate', 'deactivate', and 'delete'.
+	 *                         With Multisite active this can also include
+	 *                         'network_active' and 'network_only' items.
+	 *
+	 * @return string[]        The modified list of action links.
+	 */
+	public function add_action_links( $links ) {
+		$settings_link = '<a href="options-media.php#media-credit">' . \__( 'Settings', 'media-credit' ) . '</a>';
+		\array_unshift( $links, $settings_link );
+
+		return $links;
+	}
 }

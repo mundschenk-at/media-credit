@@ -105,9 +105,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		$this->resource_url    = \plugin_dir_url( $this->plugin_file );
 		$this->resource_suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		// The plugin basename.
-		$basename = \plugin_basename( $this->plugin_file );
-
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'print_media_templates', [ $this, 'attachment_details_template' ] );
@@ -121,7 +118,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		add_filter( 'wp_prepare_attachment_for_js',    [ $this, 'prepare_attachment_media_credit_for_js' ], 10, 3 );
 		add_filter( 'attachment_fields_to_edit',       [ $this, 'add_media_credit_fields' ],                10, 2 );
 		add_filter( 'attachment_fields_to_save',       [ $this, 'save_media_credit_fields' ],               10, 2 );
-		add_filter( "plugin_action_links_{$basename}", [ $this, 'add_action_links' ],                       10, 1 );
 
 	}
 
@@ -576,19 +572,6 @@ class Admin implements \Media_Credit\Component, \Media_Credit\Base {
 		}
 
 		return $content;
-	}
-
-	/**
-	 * Add a Settings link for the plugin.
-	 *
-	 * @param array $links A list of action links.
-	 * @return array The modified list of action links.
-	 */
-	public function add_action_links( $links ) {
-		$settings_link = '<a href="options-media.php#media-credit">' . __( 'Settings', 'media-credit' ) . '</a>';
-		array_unshift( $links, $settings_link );
-
-		return $links;
 	}
 
 	/**
