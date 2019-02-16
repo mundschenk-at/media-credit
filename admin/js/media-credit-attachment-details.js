@@ -152,7 +152,7 @@ jQuery( function( $ ) {
 
 				// Handle checkboxes.
 				if ( $input.is( 'input[type="checkbox"]' ) ) {
-					event.target.value = $input.prop( 'checked' );
+					event.target.value = $input.prop( 'checked' ) ? 1 : 0;
 				}
 
 				wp.media.view.Attachment.prototype.updateSetting.apply( this, [ event ] );
