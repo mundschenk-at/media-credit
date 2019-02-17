@@ -80,6 +80,7 @@ abstract class Media_Credit_Factory {
 				Components\Classic_Editor::class    => [ 'constructParams' => [ $version ] ],
 				Components\Frontend::class          => [ 'constructParams' => [ $version ] ],
 				Components\Media_Library::class     => [ 'constructParams' => [ $version ] ],
+				Components\REST_API::class          => [],
 				Components\Settings_Page::class     => [ 'constructParams' => [ $version ] ],
 				Components\Setup::class             => [ 'constructParams' => [ $full_plugin_path, $version ] ],
 				Components\Uninstallation::class    => $full_path_rule,
