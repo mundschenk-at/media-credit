@@ -26,6 +26,7 @@
 
 namespace Media_Credit\Components;
 
+use Media_Credit\Core;
 use Media_Credit\Template_Tags;
 
 /**
@@ -96,6 +97,21 @@ class REST_API implements \Media_Credit\Component, \Media_Credit\Base {
 		],
 	];
 
+	/**
+	 * The core API.
+	 *
+	 * @var Core
+	 */
+	private $core;
+
+	/**
+	 * Creates a new instance of the REST API handler.
+	 *
+	 * @param Core $core The core plugin API.
+	 */
+	public function __construct( Core $core ) {
+		$this->core = $core;
+	}
 
 	/**
 	 * Start up enabled integrations.
@@ -267,13 +283,13 @@ class REST_API implements \Media_Credit\Component, \Media_Credit\Base {
 				);
 
 				$success = $success && \delete_post_meta( $post->ID, self::POSTMETA_KEY ); // delete any residual metadata from a free-form field (as inserted below).
-				$this->update_media_credit_in_post( $post->ID, '', $url );
+				$this->core->update_media_credit_in_post( $post->ID, '', $url );
 			} else {
 				// Free-form text was entered, insert postmeta with credit.
 				// if free-form text is blank, insert a single space in postmeta.
 				$freeform = $freeform ?: self::EMPTY_META_STRING;
 				$success  = $success && \update_post_meta( $post->ID, self::POSTMETA_KEY, $freeform ); // insert '_media_credit' metadata field for image with free-form text.
-				$this->update_media_credit_in_post( $post->ID, $freeform, $url );
+				$this->core->update_media_credit_in_post( $post->ID, $freeform, $url );
 			}
 		}
 
@@ -303,7 +319,7 @@ class REST_API implements \Media_Credit\Component, \Media_Credit\Base {
 
 		// Return the filtered post content in a response object.
 		$response = new \WP_REST_Response(
-			$this->filter_post_content(
+			$this->core->filter_changed_media_credits(
 				$params['content'],
 				$params['attachment_id'],
 				$params['author_id'],
@@ -313,109 +329,5 @@ class REST_API implements \Media_Credit\Component, \Media_Credit\Base {
 		);
 
 		return $response;
-	}
-
-	/**
-	 * If the given media is attached to a post, edit the media-credit info in the attached (parent) post.
-	 *
-	 * @since 3.2.0 Unused parameter $wp_user removed.
-	 *
-	 * @param int|\WP_Post $post     Object of attachment containing all fields from get_post().
-	 * @param string       $freeform Credit for attachment with freeform string. Empty if attachment should be credited to a user of this blog, as indicated by $wp_user above.
-	 * @param string       $url      Credit URL for linking. Empty means default link for user of this blog, no link for freeform credit.
-	 */
-	private function update_media_credit_in_post( $post, $freeform = '', $url = '' ) {
-		if ( is_int( $post ) ) {
-			$post = get_post( $post, ARRAY_A );
-		}
-
-		if ( ! empty( $post['post_parent'] ) ) {
-			$parent                 = get_post( $post['post_parent'], ARRAY_A );
-			$parent['post_content'] = $this->filter_post_content( $parent['post_content'], $post['ID'], $post['post_author'], $freeform, $url );
-
-			wp_update_post( $parent );
-		}
-	}
-
-	/**
-	 * Filter post content for changed media credits.
-	 *
-	 * @param string $content   The current post content.
-	 * @param int    $image_id  The attachment ID.
-	 * @param int    $author_id The author ID.
-	 * @param string $freeform  The freeform credit.
-	 * @param string $url       The credit URL. Optional. Default ''.
-	 *
-	 * @return string           The filtered post content.
-	 */
-	private function filter_post_content( $content, $image_id, $author_id, $freeform, $url = '' ) {
-		preg_match_all( '/' . get_shortcode_regex() . '/s', $content, $matches, PREG_SET_ORDER );
-
-		if ( ! empty( $matches ) ) {
-			foreach ( $matches as $shortcode ) {
-				if ( 'media-credit' === $shortcode[2] ) {
-					$img              = $shortcode[5];
-					$image_attributes = wp_get_attachment_image_src( $image_id );
-					$image_filename   = $this->get_image_filename_from_full_url( $image_attributes[0] );
-
-					// Ensure that $attr is an array.
-					$attr = shortcode_parse_atts( $shortcode[3] );
-					$attr = '' === $attr ? [] : $attr;
-
-					if ( preg_match( '/src=".*' . $image_filename . '/', $img ) && preg_match( '/wp-image-' . $image_id . '/', $img ) ) {
-						if ( $author_id > 0 ) {
-							$attr['id'] = $author_id;
-							unset( $attr['name'] );
-						} else {
-							$attr['name'] = $freeform;
-							unset( $attr['id'] );
-						}
-
-						if ( ! empty( $url ) ) {
-							$attr['link'] = $url;
-						} else {
-							unset( $attr['link'] );
-						}
-
-						$new_shortcode = '[media-credit';
-						if ( isset( $attr['id'] ) ) {
-							$new_shortcode .= ' id=' . $attr['id'];
-							unset( $attr['id'] );
-						} elseif ( isset( $attr['name'] ) ) {
-							$new_shortcode .= ' name="' . $attr['name'] . '"';
-							unset( $attr['name'] );
-						}
-						foreach ( $attr as $name => $value ) {
-							$new_shortcode .= ' ' . $name . '="' . $value . '"';
-						}
-						$new_shortcode .= ']' . $img . '[/media-credit]';
-
-						$content = str_replace( $shortcode[0], $new_shortcode, $content );
-					}
-				} elseif ( ! empty( $shortcode[5] ) && has_shortcode( $shortcode[5], 'media-credit' ) ) {
-					$content = str_replace( $shortcode[5], $this->filter_post_content( $shortcode[5], $image_id, $author_id, $freeform, $url ), $content );
-				}
-			}
-		}
-
-		return $content;
-	}
-
-	/**
-	 * Returns the filename of an image in the wp_content directory (normally, could be any dir really) given the full URL to the image, ignoring WP sizes.
-	 * E.g.:
-	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-150x150.jpg, returns ParksTrip2010_100706_1487 (ignores size at end of string)
-	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-thumb.jpg, return ParksTrip2010_100706_1487-thumb
-	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-1.jpg, return ParksTrip2010_100706_1487-1
-	 *
-	 * @param  string $image Full URL to an image.
-	 * @return string        The filename of the image excluding any size or extension, as given in the example above.
-	 */
-	private function get_image_filename_from_full_url( $image ) {
-		$last_slash_pos = strrpos( $image, '/' );
-		$image_filename = substr( $image, $last_slash_pos + 1, strrpos( $image, '.' ) - $last_slash_pos - 1 );
-		$image_filename = preg_replace( '/(.*)-\d+x\d+/', '$1', $image_filename ); // drop "-{$width}x{$height}".
-
-		return $image_filename;
 	}
 }

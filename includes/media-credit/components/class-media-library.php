@@ -27,6 +27,7 @@
 
 namespace Media_Credit\Components;
 
+use Media_Credit\Core;
 use Media_Credit\Template_Tags;
 use Media_Credit\Data_Storage\Options;
 
@@ -72,16 +73,25 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 	private $options;
 
 	/**
+	 * The core API.
+	 *
+	 * @var Core
+	 */
+	private $core;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    3.0.0
 	 * @since    3.3.0 Parameter $options added.
 	 *
 	 * @param string  $version     The plugin version.
+	 * @param Core    $core        The core plugin API.
 	 * @param Options $options     The options handler.
 	 */
-	public function __construct( $version, Options $options ) {
+	public function __construct( $version, Core $core, Options $options ) {
 		$this->version = $version;
+		$this->core    = $core;
 		$this->options = $options;
 	}
 
@@ -332,7 +342,7 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 			delete_post_meta( $post['ID'], self::POSTMETA_KEY );
 
 			// Update media credit shortcodes in the current post.
-			$this->update_media_credit_in_post( $post, '', $url );
+			$this->core->update_media_credit_in_post( $post, '', $url );
 		} else {
 			/**
 			 * Free-form text was entered, insert postmeta with credit. If free-form text is blank, insert
@@ -344,7 +354,7 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 			update_post_meta( $post['ID'], self::POSTMETA_KEY, $freeform );
 
 			// Update media credit shortcodes in the current post.
-			$this->update_media_credit_in_post( $post, $freeform, $url );
+			$this->core->update_media_credit_in_post( $post, $freeform, $url );
 		}
 
 		return $post;

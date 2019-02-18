@@ -26,7 +26,9 @@
 
 use Dice\Dice;
 
+use Media_Credit\Core;
 use Media_Credit\Components;
+
 use Mundschenk\Data_Storage;
 
 /**
@@ -69,6 +71,15 @@ abstract class Media_Credit_Factory {
 
 			// Define rules.
 			$rules = [
+				// Core API.
+				Core::class                         => [
+					'shared'          => true,
+					'constructParams' => [ $version ],
+					'call'            => [
+						[ 'make_singleton', [] ],
+					],
+				],
+
 				// Shared helpers.
 				Data_Storage\Cache::class           => self::SHARED,
 				Data_Storage\Transients::class      => self::SHARED,
