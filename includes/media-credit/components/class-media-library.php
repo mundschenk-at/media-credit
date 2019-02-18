@@ -100,12 +100,8 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 		\add_action( 'print_media_templates', [ $this, 'attachment_details_template' ] );
 		\add_action( 'admin_init',            [ $this, 'admin_init' ] );
 
-		// AJAX actions.
-		\add_action( 'wp_ajax_update-media-credit-in-post-content', [ $this, 'ajax_filter_content' ] );
-		\add_action( 'wp_ajax_save-attachment-media-credit',        [ $this, 'ajax_save_attachment_media_credit' ] );
-
 		// Filter hooks.
-		\add_filter( 'wp_prepare_attachment_for_js',    [ $this, 'prepare_attachment_media_credit_for_js' ], 10, 3 );
+		\add_filter( 'wp_prepare_attachment_for_js',    [ $this, 'prepare_attachment_media_credit_for_js' ], 10, 2 );
 		\add_filter( 'attachment_fields_to_edit',       [ $this, 'add_media_credit_fields' ],                10, 2 );
 		\add_filter( 'attachment_fields_to_save',       [ $this, 'save_media_credit_fields' ],               10, 2 );
 
@@ -136,7 +132,7 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 
 		// ... and for when the new JavaScript Media API is used.
 		if ( did_action( 'wp_enqueue_media' ) ) {
-			wp_enqueue_script( 'media-credit-attachment-details', "{$this->url}/admin/js/media-credit-attachment-details{$this->suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
+			wp_enqueue_script( 'media-credit-attachment-details', "{$this->url}/admin/js/media-credit-attachment-details{$this->suffix}.js", [ 'jquery', 'jquery-ui-autocomplete', 'wp-api' ], $this->version, true );
 		}
 	}
 
@@ -200,141 +196,17 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 	}
 
 	/**
-	 * AJAX hook for filtering post content after editing media files
-	 */
-	public function ajax_filter_content() {
-		if ( ! isset( $_REQUEST['id'] ) || ! $attachment_id = absint( $_REQUEST['id'] ) ) { // Input var okay. // @codingStandardsIgnoreLine
-			wp_send_json_error();
-		}
-
-		check_ajax_referer( "update-attachment-{$attachment_id}-media-credit-in-editor", 'nonce' );
-
-		if ( ! isset( $_REQUEST['mediaCredit'] ) ) { // Input var okay. // @codingStandardsIgnoreLine
-			wp_send_json_error();
-		}
-
-		if ( ! isset( $_REQUEST['mediaCredit']['content'] ) || ! ( $content   = filter_var( wp_unslash( $_REQUEST['mediaCredit']['content'] ) ) )       || // Input var okay. Only uses for comparison. // @codingStandardsIgnoreLine
-			 ! isset( $_REQUEST['mediaCredit']['id'] )      || ! ( $author_id = absint( $_REQUEST['mediaCredit']['id'] ) )                              || // Input var okay. // @codingStandardsIgnoreLine
-			 ! isset( $_REQUEST['mediaCredit']['text'] )    || ! ( $freeform  = sanitize_text_field( wp_unslash( $_REQUEST['mediaCredit']['text'] ) ) ) || // Input var okay. // @codingStandardsIgnoreLine
-			 ! isset( $_REQUEST['mediaCredit']['link'] )    || ! ( $url       = esc_url_raw( wp_unslash( $_REQUEST['mediaCredit']['link'] ) ) ) ) {        // Input var okay. // @codingStandardsIgnoreLine
-			wp_send_json_error();
-		}
-
-		wp_send_json_success( $this->filter_post_content( $content, $attachment_id, $author_id, $freeform, $url ) );
-	}
-
-	/**
-	 * Handle saving requests from the Attachment Details dialogs.
-	 *
-	 * @since 3.1.0
-	 */
-	public function ajax_save_attachment_media_credit() {
-		if ( ! isset( $_REQUEST['id'] ) || ! $attachment_id = absint( $_REQUEST['id'] ) ) { // Input var okay. // @codingStandardsIgnoreLine
-			wp_send_json_error(); // Standard response for failure.
-		}
-
-		check_ajax_referer( "save-attachment-{$attachment_id}-media-credit", 'nonce' );
-
-		if ( ! isset( $_REQUEST['changes'] ) || ! $changes = wp_unslash( $_REQUEST['changes'] ) ) { // Input var okay. WPCS: sanitization ok. // @codingStandardsIgnoreLine
-			wp_send_json_error(); // Standard response for failure.
-		}
-
-		if ( ! isset( $_REQUEST['mediaCredit'] ) || ! $media_credit = wp_unslash( $_REQUEST['mediaCredit'] ) ) { // Input var okay. WPCS: sanitization ok. // @codingStandardsIgnoreLine
-			wp_send_json_error(); // Standard response for failure.
-		}
-
-		if ( isset( $changes['mediaCreditText'] ) ) {
-			$freeform = wp_kses(
-				$changes['mediaCreditText'],
-				[
-					'a' => [ 'href', 'rel' ],
-				]
-			);
-		} elseif ( isset( $media_credit ) ) {
-			$freeform = wp_kses(
-				$media_credit['text'],
-				[
-					'a' => [ 'href', 'rel' ],
-				]
-			);
-		} else {
-			wp_send_json_error( 'freeform credit not found' );
-		}
-
-		if ( isset( $changes['mediaCreditLink'] ) ) {
-			$url = sanitize_text_field( $changes['mediaCreditLink'] );
-		} elseif ( isset( $media_credit ) ) {
-			$url = sanitize_text_field( $media_credit['link'] );
-		} else {
-			wp_send_json_error( 'link not found' );
-		}
-
-		if ( isset( $changes['mediaCreditAuthorID'] ) ) {
-			$wp_user_id = intval( $changes['mediaCreditAuthorID'] );
-		} elseif ( isset( $media_credit ) ) {
-			$wp_user_id = intval( $media_credit['id'] );
-		} else {
-			wp_send_json_error( 'author_id not found' );
-		}
-
-		if ( isset( $changes['mediaCreditNoFollow'] ) ) {
-			$nofollow = filter_var( $changes['mediaCreditNoFollow'], FILTER_VALIDATE_BOOLEAN );
-		} elseif ( isset( $media_credit ) ) {
-			$nofollow = filter_var( $media_credit['nofollow'], FILTER_VALIDATE_BOOLEAN );
-		} else {
-			wp_send_json_error( 'nofollow not found' );
-		}
-
-		if ( isset( $changes['mediaCreditLink'] ) ) {
-			// We need to update the credit URL.
-			update_post_meta( $attachment_id, self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
-		}
-
-		if ( isset( $changes['mediaCreditNoFollow'] ) ) {
-			$data = wp_parse_args( [ 'nofollow' => $nofollow ], Template_Tags::get_media_credit_data( $attachment_id ) );
-			update_post_meta( $attachment_id, self::DATA_POSTMETA_KEY, $data ); // insert '_media_credit_data' metadata field.
-		}
-
-		if ( isset( $changes['mediaCreditText'] ) || isset( $changes['mediaCreditAuthorID'] ) ) {
-			if ( ! empty( $wp_user_id ) && get_the_author_meta( 'display_name', $wp_user_id ) === $freeform ) {
-				// A valid WP user was selected, and the display name matches the free-form
-				// the final conditional is necessary for the case when a valid user is selected, filling in the hidden
-				// field, then free-form text is entered after that. if so, the free-form text is what should be used.
-				if ( ! wp_update_post(
-					[
-						'ID'          => $attachment_id,
-						'post_author' => $wp_user_id,
-					]
-				) ) { // update post_author with the chosen user.
-					wp_send_json_error( 'Failed to update post author' );
-				}
-
-				delete_post_meta( $attachment_id, self::POSTMETA_KEY ); // delete any residual metadata from a free-form field (as inserted below).
-				$this->update_media_credit_in_post( $attachment_id, '', $url );
-			} elseif ( isset( $freeform ) ) {
-				// Free-form text was entered, insert postmeta with credit.
-				// if free-form text is blank, insert a single space in postmeta.
-				$freeform = empty( $freeform ) ? self::EMPTY_META_STRING : $freeform;
-				update_post_meta( $attachment_id, self::POSTMETA_KEY, $freeform ); // insert '_media_credit' metadata field for image with free-form text.
-				$this->update_media_credit_in_post( $attachment_id, $freeform, $url );
-			}
-		}
-
-		wp_send_json_success();
-	}
-
-	/**
 	 * Add media credit information to wp.media.model.Attachment.
 	 *
 	 * @since 3.1.0
+	 * @since 3.3.0 Removed unused parameter $meta.
 	 *
 	 * @param array      $response   Array of prepared attachment data.
 	 * @param int|object $attachment Attachment ID or object.
-	 * @param array      $meta       Array of attachment meta data.
 	 *
 	 * @return array Array of prepared attachment data.
 	 */
-	public function prepare_attachment_media_credit_for_js( $response, $attachment, $meta ) {
+	public function prepare_attachment_media_credit_for_js( $response, $attachment ) {
 
 		$credit    = Template_Tags::get_media_credit( $attachment );
 		$url       = Template_Tags::get_media_credit_url( $attachment );
@@ -476,109 +348,5 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 		}
 
 		return $post;
-	}
-
-	/**
-	 * If the given media is attached to a post, edit the media-credit info in the attached (parent) post.
-	 *
-	 * @since 3.2.0 Unused parameter $wp_user removed.
-	 *
-	 * @param int|\WP_Post $post     Object of attachment containing all fields from get_post().
-	 * @param string       $freeform Credit for attachment with freeform string. Empty if attachment should be credited to a user of this blog, as indicated by $wp_user above.
-	 * @param string       $url      Credit URL for linking. Empty means default link for user of this blog, no link for freeform credit.
-	 */
-	private function update_media_credit_in_post( $post, $freeform = '', $url = '' ) {
-		if ( is_int( $post ) ) {
-			$post = get_post( $post, ARRAY_A );
-		}
-
-		if ( ! empty( $post['post_parent'] ) ) {
-			$parent                 = get_post( $post['post_parent'], ARRAY_A );
-			$parent['post_content'] = $this->filter_post_content( $parent['post_content'], $post['ID'], $post['post_author'], $freeform, $url );
-
-			wp_update_post( $parent );
-		}
-	}
-
-	/**
-	 * Filter post content for changed media credits.
-	 *
-	 * @param string $content   The current post content.
-	 * @param int    $image_id  The attachment ID.
-	 * @param int    $author_id The author ID.
-	 * @param string $freeform  The freeform credit.
-	 * @param string $url       The credit URL. Optional. Default ''.
-	 *
-	 * @return string           The filtered post content.
-	 */
-	private function filter_post_content( $content, $image_id, $author_id, $freeform, $url = '' ) {
-		preg_match_all( '/' . get_shortcode_regex() . '/s', $content, $matches, PREG_SET_ORDER );
-
-		if ( ! empty( $matches ) ) {
-			foreach ( $matches as $shortcode ) {
-				if ( 'media-credit' === $shortcode[2] ) {
-					$img              = $shortcode[5];
-					$image_attributes = wp_get_attachment_image_src( $image_id );
-					$image_filename   = $this->get_image_filename_from_full_url( $image_attributes[0] );
-
-					// Ensure that $attr is an array.
-					$attr = shortcode_parse_atts( $shortcode[3] );
-					$attr = '' === $attr ? [] : $attr;
-
-					if ( preg_match( '/src=".*' . $image_filename . '/', $img ) && preg_match( '/wp-image-' . $image_id . '/', $img ) ) {
-						if ( $author_id > 0 ) {
-							$attr['id'] = $author_id;
-							unset( $attr['name'] );
-						} else {
-							$attr['name'] = $freeform;
-							unset( $attr['id'] );
-						}
-
-						if ( ! empty( $url ) ) {
-							$attr['link'] = $url;
-						} else {
-							unset( $attr['link'] );
-						}
-
-						$new_shortcode = '[media-credit';
-						if ( isset( $attr['id'] ) ) {
-							$new_shortcode .= ' id=' . $attr['id'];
-							unset( $attr['id'] );
-						} elseif ( isset( $attr['name'] ) ) {
-							$new_shortcode .= ' name="' . $attr['name'] . '"';
-							unset( $attr['name'] );
-						}
-						foreach ( $attr as $name => $value ) {
-							$new_shortcode .= ' ' . $name . '="' . $value . '"';
-						}
-						$new_shortcode .= ']' . $img . '[/media-credit]';
-
-						$content = str_replace( $shortcode[0], $new_shortcode, $content );
-					}
-				} elseif ( ! empty( $shortcode[5] ) && has_shortcode( $shortcode[5], 'media-credit' ) ) {
-					$content = str_replace( $shortcode[5], $this->filter_post_content( $shortcode[5], $image_id, $author_id, $freeform, $url ), $content );
-				}
-			}
-		}
-
-		return $content;
-	}
-
-	/**
-	 * Returns the filename of an image in the wp_content directory (normally, could be any dir really) given the full URL to the image, ignoring WP sizes.
-	 * E.g.:
-	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-150x150.jpg, returns ParksTrip2010_100706_1487 (ignores size at end of string)
-	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-thumb.jpg, return ParksTrip2010_100706_1487-thumb
-	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-1.jpg, return ParksTrip2010_100706_1487-1
-	 *
-	 * @param  string $image Full URL to an image.
-	 * @return string        The filename of the image excluding any size or extension, as given in the example above.
-	 */
-	private function get_image_filename_from_full_url( $image ) {
-		$last_slash_pos = strrpos( $image, '/' );
-		$image_filename = substr( $image, $last_slash_pos + 1, strrpos( $image, '.' ) - $last_slash_pos - 1 );
-		$image_filename = preg_replace( '/(.*)-\d+x\d+/', '$1', $image_filename ); // drop "-{$width}x{$height}".
-
-		return $image_filename;
 	}
 }
