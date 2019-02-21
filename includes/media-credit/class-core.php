@@ -154,53 +154,67 @@ class Core {
 	 * @return string           The filtered post content.
 	 */
 	public function filter_changed_media_credits( $content, $image_id, $author_id, $freeform, $url = '' ) {
-		preg_match_all( '/' . get_shortcode_regex() . '/s', $content, $matches, PREG_SET_ORDER );
 
-		if ( ! empty( $matches ) ) {
-			foreach ( $matches as $shortcode ) {
-				if ( 'media-credit' === $shortcode[2] ) {
-					$img              = $shortcode[5];
-					$image_attributes = wp_get_attachment_image_src( $image_id );
-					$image_filename   = $this->get_image_filename_from_full_url( $image_attributes[0] );
+		// Get the image source URL.
+		$src = \wp_get_attachment_image_src( $image_id );
+		if ( empty( $src[0] ) ) {
+			// Invalid image ID.
+			return $content;
+		}
 
-					// Ensure that $attr is an array.
-					$attr = shortcode_parse_atts( $shortcode[3] );
-					$attr = '' === $attr ? [] : $attr;
+		// Extract the image basename without the size for use in a regular expression.
+		$filename = \preg_quote( $this->get_image_filename_from_full_url( $src[0] ), '/' );
 
-					if ( preg_match( '/src=".*' . $image_filename . '/', $img ) && preg_match( '/wp-image-' . $image_id . '/', $img ) ) {
-						if ( $author_id > 0 ) {
-							$attr['id'] = $author_id;
-							unset( $attr['name'] );
-						} else {
-							$attr['name'] = $freeform;
-							unset( $attr['id'] );
-						}
+		// Look at every matching shortcode.
+		\preg_match_all( '/' . \get_shortcode_regex( [ 'media-credit' ] ) . '/Ss', $content, $matches, PREG_SET_ORDER );
 
-						if ( ! empty( $url ) ) {
-							$attr['link'] = $url;
-						} else {
-							unset( $attr['link'] );
-						}
+		foreach ( $matches as $shortcode ) {
 
-						$new_shortcode = '[media-credit';
-						if ( isset( $attr['id'] ) ) {
-							$new_shortcode .= ' id=' . $attr['id'];
-							unset( $attr['id'] );
-						} elseif ( isset( $attr['name'] ) ) {
-							$new_shortcode .= ' name="' . $attr['name'] . '"';
-							unset( $attr['name'] );
-						}
-						foreach ( $attr as $name => $value ) {
-							$new_shortcode .= ' ' . $name . '="' . $value . '"';
-						}
-						$new_shortcode .= ']' . $img . '[/media-credit]';
+			// Grab the shortcode attributes ...
+			$attr = \shortcode_parse_atts( $shortcode[3] );
+			$attr = $attr ?: [];
 
-						$content = str_replace( $shortcode[0], $new_shortcode, $content );
-					}
-				} elseif ( ! empty( $shortcode[5] ) && has_shortcode( $shortcode[5], 'media-credit' ) ) {
-					$content = str_replace( $shortcode[5], $this->filter_changed_media_credits( $shortcode[5], $image_id, $author_id, $freeform, $url ), $content );
-				}
+			// ... and the contained <img> tag.
+			$img = $shortcode[5];
+
+			if ( ! \preg_match( "/src=([\"'])(?:(?!\1).)*{$filename}/S", $img ) || ! \preg_match( "/wp-image-{$image_id}/S", $img ) ) {
+				// This shortcode is for another image.
+				continue;
 			}
+
+			// Check for credit type.
+			if ( $author_id > 0 ) {
+				// The new credit should use the ID.
+				$id_or_name = "id={$author_id}";
+			} else {
+				// No valid ID, so use the freeform credit.
+				$id_or_name = "name=\"{$freeform}\"";
+			}
+
+			// Drop the old id/name attributes (if any).
+			unset( $attr['id'] );
+			unset( $attr['name'] );
+
+			// Update link attribute.
+			if ( ! empty( $url ) ) {
+				$attr['link'] = $url;
+			} else {
+				unset( $attr['link'] );
+			}
+
+			// Start reconstructing the shortcode.
+			$new_shortcode = "[media-credit {$id_or_name}";
+
+			// Add the rest of the attributes.
+			foreach ( $attr as $name => $value ) {
+				$new_shortcode .= " {$name}=\"{$value}\"";
+			}
+
+			// Finish up with the closing bracket and the <img> content.
+			$new_shortcode .= ']' . $img . '[/media-credit]';
+
+			// Replace the old shortcode with then new one.
+			$content = \str_replace( $shortcode[0], $new_shortcode, $content );
 		}
 
 		return $content;
