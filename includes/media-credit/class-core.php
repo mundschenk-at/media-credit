@@ -116,7 +116,7 @@ class Core {
 	/**
 	 * Retrieves the plugin version.
 	 *
-	 * @var string
+	 * @return string
 	 */
 	public function get_version() {
 		return $this->version;
