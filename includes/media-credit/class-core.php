@@ -217,10 +217,7 @@ class Core {
 	 * @return string        The filename of the image excluding any size or extension, as given in the example above.
 	 */
 	protected function get_image_filename_from_full_url( $image ) {
-		$last_slash_pos = strrpos( $image, '/' );
-		$image_filename = substr( $image, $last_slash_pos + 1, strrpos( $image, '.' ) - $last_slash_pos - 1 );
-		$image_filename = preg_replace( '/(.*)-\d+x\d+/', '$1', $image_filename ); // drop "-{$width}x{$height}".
-
-		return $image_filename;
+		// Drop "-{$width}x{$height}".
+		return \preg_replace( '/(.*?)(\-\d+x\d+)?\.\w+/S', '$1', \wp_basename( $image ) );
 	}
 }
