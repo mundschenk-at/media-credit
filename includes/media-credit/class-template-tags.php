@@ -56,7 +56,7 @@ class Template_Tags implements Base {
 		if ( '' !== $credit_meta ) {
 			return $credit_meta;
 		} elseif ( $fancy ) {
-			$options = get_option( Options::PREFIX . Options::OPTION ); // FIXME: Needs proper solution (singleton).
+			$options = Core::get_instance()->get_settings();
 			return $credit_wp_author . $options['separator'] . $options['organization'];
 		} else {
 			return $credit_wp_author;
@@ -126,7 +126,7 @@ class Template_Tags implements Base {
 				$credit = $credit_meta;
 			}
 		} elseif ( $include_default_credit ) {
-			$options = get_option( Options::PREFIX . Options::OPTION ); // FIXME: Needs proper solution (singleton).
+			$options = Core::get_instance()->get_settings();
 			$url     = ! empty( $credit_url ) ? $credit_url : get_author_posts_url( $post->post_author );
 			$credit  = '<a href="' . esc_url( $url ) . '">' . self::get_wpuser_media_credit( $post ) . '</a>' . $options['separator'] . $options['organization'];
 		}
@@ -144,7 +144,7 @@ class Template_Tags implements Base {
 	public static function get_media_credit_html_by_user_id( $id ) {
 
 		$credit_wp_author = get_the_author_meta( 'display_name', $id );
-		$options          = get_option( Options::PREFIX . Options::OPTION ); // FIXME: Needs proper solution (singleton).
+		$options          = Core::get_instance()->get_settings();
 
 		return '<a href="' . get_author_posts_url( $id ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 	}
@@ -214,7 +214,7 @@ class Template_Tags implements Base {
 			}
 
 			// Exclude attachments from before the install date of the Media Credit plugin.
-			$options = get_option( Options::PREFIX . Options::OPTION ); // FIXME: Needs proper solution (singleton).
+			$options = Core::get_instance()->get_settings();
 			if ( isset( $options['install_date'] ) ) {
 				$start_date = $options['install_date'];
 

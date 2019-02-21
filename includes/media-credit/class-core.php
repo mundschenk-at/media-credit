@@ -71,6 +71,13 @@ class Core {
 	private $settings_template;
 
 	/**
+	 * The cached plugin settings.
+	 *
+	 * @var array
+	 */
+	private $settings;
+
+	/**
 	 * Creates a new instance.
 	 *
 	 * @param string   $version           The plugin version string (e.g. "3.0.0-beta.2").
@@ -120,6 +127,19 @@ class Core {
 	 */
 	public function get_version() {
 		return $this->version;
+	}
+
+	/**
+	 * Retrieves the plugin settings.
+	 *
+	 * @return array
+	 */
+	public function get_settings() {
+		if ( empty( $this->settings ) ) {
+			$this->settings = $this->options->get( Options::OPTION, [] );
+		}
+
+		return $this->settings;
 	}
 
 	/**

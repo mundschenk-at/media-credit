@@ -159,7 +159,7 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 	 * Add our global variable for the TinyMCE plugin.
 	 */
 	public function admin_head() {
-		$options = $this->options->get( Options::OPTION, [] );
+		$options = $this->core->get_settings();
 
 		$authors = [];
 		foreach ( get_users( [ 'who' => 'authors' ] ) as $author ) {
@@ -222,7 +222,7 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 		$url       = Template_Tags::get_media_credit_url( $attachment );
 		$data      = Template_Tags::get_media_credit_data( $attachment );
 		$author_id = '' === Template_Tags::get_freeform_media_credit( $attachment ) ? $attachment->post_author : '';
-		$options   = $this->options->get( Options::OPTION, [] );
+		$options   = $this->core->get_settings();
 
 		// Set up Media Credit model data (not as an array because data-settings code in View can't deal with it.
 		$response['mediaCreditText']          = $credit;
@@ -251,7 +251,7 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 	 * @return array               The list of fields.
 	 */
 	public function add_media_credit_fields( $fields, $post ) {
-		$options   = $this->options->get( Options::OPTION, [] );
+		$options   = $this->core->get_settings();
 		$credit    = Template_Tags::get_media_credit( $post );
 		$value     = 'value';
 		$author_id = '' === Template_Tags::get_freeform_media_credit( $post ) ? $post->post_author : '';
@@ -319,7 +319,7 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 		$freeform_name = $attachment['media-credit'];
 		$url           = $attachment['media-credit-url'];
 		$nofollow      = $attachment['media-credit-nofollow'];
-		$options       = $this->options->get( Options::OPTION, [] );
+		$options       = $this->core->get_settings();
 
 		// We need to update the credit URL in any case.
 		update_post_meta( $post['ID'], self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.

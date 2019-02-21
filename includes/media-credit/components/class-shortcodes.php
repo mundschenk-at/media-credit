@@ -27,6 +27,7 @@
 
 namespace Media_Credit\Components;
 
+use Media_Credit\Core;
 use Media_Credit\Data_Storage\Options;
 
 /**
@@ -67,11 +68,20 @@ class Shortcodes implements \Media_Credit\Component {
 	private $options;
 
 	/**
+	 * The core API.
+	 *
+	 * @var Core
+	 */
+	private $core;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
+	 * @param Core    $core    The core plugin API.
 	 * @param Options $options     The options handler.
 	 */
-	public function __construct( Options $options ) {
+	public function __construct( Core $core, Options $options ) {
+		$this->core    = $core;
 		$this->options = $options;
 	}
 
@@ -90,7 +100,7 @@ class Shortcodes implements \Media_Credit\Component {
 	 */
 	public function add_shortcodes() {
 		// Load plugin options.
-		$this->settings = $this->options->get( Options::OPTION, [] );
+		$this->settings = $this->core->get_settings();
 
 		// Override WordPress caption shortcodes.
 		\add_shortcode( 'wp_caption',   [ $this, 'caption_shortcode' ] );

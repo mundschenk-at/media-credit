@@ -27,6 +27,7 @@
 
 namespace Media_Credit\Components;
 
+use Media_Credit\Core;
 use Media_Credit\Template_Tags;
 use Media_Credit\Data_Storage\Options;
 
@@ -78,13 +79,22 @@ class Frontend implements \Media_Credit\Component {
 	private $options;
 
 	/**
+	 * The core API.
+	 *
+	 * @var Core
+	 */
+	private $core;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @param string  $version The version of this plugin.
+	 * @param Core    $core    The core plugin API.
 	 * @param Options $options The options handler.
 	 */
-	public function __construct( $version, Options $options ) {
+	public function __construct( $version, Core $core, Options $options ) {
 		$this->version = $version;
+		$this->core    = $core;
 		$this->options = $options;
 	}
 
@@ -95,7 +105,7 @@ class Frontend implements \Media_Credit\Component {
 	 */
 	public function run() {
 		// Retrieve plugin settings.
-		$this->settings = $this->options->get( Options::OPTION, [] );
+		$this->settings = $this->core->get_settings();
 
 		// Enqueue frontend styles.
 		\add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );

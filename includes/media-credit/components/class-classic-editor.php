@@ -27,6 +27,7 @@
 
 namespace Media_Credit\Components;
 
+use Media_Credit\Core;
 use Media_Credit\Template_Tags;
 use Media_Credit\Data_Storage\Options;
 
@@ -52,6 +53,13 @@ class Classic_Editor implements \Media_Credit\Component, \Media_Credit\Base {
 	private $options;
 
 	/**
+	 * The core API.
+	 *
+	 * @var Core
+	 */
+	private $core;
+
+	/**
 	 * The base URL for loading ressources.
 	 *
 	 * @var string
@@ -69,10 +77,12 @@ class Classic_Editor implements \Media_Credit\Component, \Media_Credit\Base {
 	 * Initialize the class and set its properties.
 	 *
 	 * @param string  $version     The plugin version.
+	 * @param Core    $core    The core plugin API.
 	 * @param Options $options     The options handler.
 	 */
-	public function __construct( $version, Options $options ) {
+	public function __construct( $version, Core $core, Options $options ) {
 		$this->version = $version;
+		$this->core    = $core;
 		$this->options = $options;
 	}
 
@@ -195,7 +205,7 @@ class Classic_Editor implements \Media_Credit\Component, \Media_Credit\Base {
 		$attachment = \get_post( $attachment_id );
 
 		// Are default credits (= WordPress users) allowed?
-		$options     = $this->options->get( Options::OPTION, [] );
+		$options     = $this->core->get_settings();
 		$no_defaults = ! empty( $options['no_default_credit'] );
 
 		// Set freeform or site user credit.
