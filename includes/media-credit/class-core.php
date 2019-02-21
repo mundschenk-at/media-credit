@@ -125,20 +125,26 @@ class Core {
 	/**
 	 * If the given media is attached to a post, edit the media-credit info in the attached (parent) post.
 	 *
-	 * @param int|\WP_Post $post     Object of attachment containing all fields from get_post().
-	 * @param string       $freeform Credit for attachment with freeform string. Empty if attachment should be credited to the attachment author.
-	 * @param string       $url      Credit URL for linking. Empty means default link for user of this blog, no link for freeform credit.
+	 * @param int|\WP_Post $attachment An attachemnt ID or the corresponding \WP_Post object.
+	 * @param string       $freeform   Credit for attachment with freeform string. Empty if attachment should be credited to the attachment author.
+	 * @param string       $url        Credit URL for linking. Empty means default link for user of this blog, no link for freeform credit.
 	 */
-	public function update_media_credit_in_post( $post, $freeform = '', $url = '' ) {
-		if ( is_int( $post ) ) {
-			$post = get_post( $post, ARRAY_A );
+	public function update_media_credit_in_post( $attachment, $freeform = '', $url = '' ) {
+
+		// Make sure we are dealing with a post object.
+		if ( ! $attachment instanceof \WP_Post ) {
+			$attachment = \get_post( $attachment );
 		}
 
-		if ( ! empty( $post['post_parent'] ) ) {
-			$parent                 = get_post( $post['post_parent'], ARRAY_A );
-			$parent['post_content'] = $this->filter_changed_media_credits( $parent['post_content'], $post['ID'], $post['post_author'], $freeform, $url );
+		if ( ! empty( $attachment->post_parent ) ) {
+			// Get the parent post of the attachment.
+			$post = \get_post( $attachment->post_parent );
 
-			wp_update_post( $parent );
+			// Filter the post's content.
+			$post->post_content = $this->filter_changed_media_credits( $post->post_content, $attachment->ID, (int) $attachment->post_author, $freeform, $url );
+
+			// Save the filtered content in the database.
+			\wp_update_post( $post );
 		}
 	}
 
