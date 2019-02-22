@@ -40,13 +40,6 @@ use Media_Credit\Data_Storage\Options;
 class Setup implements \Media_Credit\Component {
 
 	/**
-	 * The full path to the main plugin file.
-	 *
-	 * @var string
-	 */
-	private $plugin_file;
-
-	/**
 	 * The plugin version string.
 	 *
 	 * @var string
@@ -63,14 +56,12 @@ class Setup implements \Media_Credit\Component {
 	/**
 	 * Creates a new Setup instance.
 	 *
-	 * @param string  $plugin_file     The full path to the base plugin file.
 	 * @param string  $version         The plugin version string.
 	 * @param Options $options         The options handler.
 	 */
-	public function __construct( $plugin_file, $version, Options $options ) {
-		$this->plugin_file = $plugin_file;
-		$this->version     = $version;
-		$this->options     = $options;
+	public function __construct( $version, Options $options ) {
+		$this->version = $version;
+		$this->options = $options;
 	}
 
 	/**
@@ -80,7 +71,7 @@ class Setup implements \Media_Credit\Component {
 	 */
 	public function run() {
 		// Register deactivation hook. Activation is handled by the update check instead.
-		\register_deactivation_hook( $this->plugin_file, [ $this, 'deactivate' ] );
+		\register_deactivation_hook( MEDIA_CREDIT_PLUGIN_FILE, [ $this, 'deactivate' ] );
 
 		// Update settings and database if necessary.
 		\add_action( 'plugins_loaded', [ $this, 'update_check' ] );
