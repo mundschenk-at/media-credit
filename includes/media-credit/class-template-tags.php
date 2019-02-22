@@ -33,10 +33,8 @@ use Media_Credit\Data_Storage\Options;
  * A container of static functions implementing the internals of the
  * plugin's template tags.
  *
- * @since      3.0.0
- * @package    Media_Credit
- * @subpackage Media_Credit/includes
- * @author     Peter Putzer <github@mundschenk.at>
+ * @since 3.0.0
+ * @since 3.3.0 Renamed to Media_Credit\Template_Tags
  */
 class Template_Tags {
 
@@ -66,39 +64,38 @@ class Template_Tags {
 	/**
 	 * Returns the media credit URL as plain text for some media attachment.
 	 *
-	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
-	 * @return string           The credit URL (or the empty string if none is set).
+	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
+	 *
+	 * @return string                  The credit URL (or the empty string if none is set).
 	 */
-	public static function get_media_credit_url( $post = null ) {
+	public static function get_media_credit_url( $attachment ) {
 
-		$post   = get_post( $post );
-		$result = get_post_meta( $post->ID, Core::URL_POSTMETA_KEY, true );
-
-		if ( empty( $result ) ) {
-			$result = '';
+		// Make sure we are dealing with a post object.
+		if ( ! $attachment instanceof \WP_Post ) {
+			$attachment = \get_post( $attachment );
 		}
 
-		return $result;
+		return Core::get_instance()->get_media_credit_url( $attachment->ID );
+
 	}
 
 	/**
-	 * Returns the optional media credit data array for some media attachment.
+	 * Returns the optional media credit data array for a media attachment.
 	 *
 	 * @since 3.1.0
 	 *
-	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
-	 * @return array            The optional data array.
+	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
+	 *
+	 * @return array                   The data array.
 	 */
-	public static function get_media_credit_data( $post = null ) {
+	public static function get_media_credit_data( $attachment ) {
 
-		$post   = get_post( $post );
-		$result = get_post_meta( $post->ID, Core::DATA_POSTMETA_KEY, true );
-
-		if ( empty( $result ) ) {
-			$result = [];
+		// Make sure we are dealing with a post object.
+		if ( ! $attachment instanceof \WP_Post ) {
+			$attachment = \get_post( $attachment );
 		}
 
-		return $result;
+		return Core::get_instance()->get_media_credit_data( $attachment->ID );
 	}
 
 	/**
@@ -166,15 +163,21 @@ class Template_Tags {
 	/**
 	 * Returns the freeform media credit for a given post/attachment.
 	 *
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
 	 *
-	 * @return string The freeform credit (or the empty string).
+	 * @return string                  The freeform credit (or the empty string).
 	 */
-	public static function get_freeform_media_credit( $post = null ) {
+	public static function get_freeform_media_credit( $attachment ) {
 
-		$post   = get_post( $post );
-		$credit = get_post_meta( $post->ID, Core::POSTMETA_KEY, true );
+		// Make sure we are dealing with a post object.
+		if ( ! $attachment instanceof \WP_Post ) {
+			$attachment = \get_post( $attachment );
+		}
 
+		// Retrieve the credit.
+		$credit = Core::get_instance()->get_media_credit_freeform_text( $attachment->ID );
+
+		// Don't display our special "empty" string.
 		if ( Core::EMPTY_META_STRING === $credit ) {
 			$credit = '';
 		}

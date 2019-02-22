@@ -297,4 +297,59 @@ class Core {
 	public function authorized_to_edit_media_credit() {
 		return \current_user_can( 'edit_posts' );
 	}
+
+	/**
+	 * Returns the freeform media credit for a given attachment.
+	 *
+	 * @param int $attachment_id An attachment ID.
+	 *
+	 * @return string            The freeform credit (or the empty string).
+	 */
+	public function get_media_credit_freeform_text( $attachment_id ) {
+
+		$result = \get_post_meta( $attachment_id, self::POSTMETA_KEY, true );
+
+		if ( empty( $result ) ) {
+			$result = '';
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Returns the media credit URL as plain text for a given attachment.
+	 *
+	 * @param int $attachment_id An attachment ID.
+	 *
+	 * @return string            The credit URL (or the empty string if none is set).
+	 */
+	public function get_media_credit_url( $attachment_id ) {
+
+		$result = \get_post_meta( $attachment_id, self::URL_POSTMETA_KEY, true );
+
+		if ( empty( $result ) ) {
+			$result = '';
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Returns the optional media credit data array for some media attachment.
+	 *
+	 * @param int $attachment_id An attachment ID.
+	 *
+	 * @return array             The data array.
+	 */
+	public function get_media_credit_data( $attachment_id ) {
+
+		$result = \get_post_meta( $attachment_id, self::DATA_POSTMETA_KEY, true );
+
+		// Always return an array.
+		if ( empty( $result ) ) {
+			$result = [];
+		}
+
+		return $result;
+	}
 }

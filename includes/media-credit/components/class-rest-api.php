@@ -208,28 +208,29 @@ class REST_API implements \Media_Credit\Component {
 	 * @return array
 	 */
 	public function prepare_media_credit_fields( $post, $field_name, \WP_REST_Request $request ) {
-		return $this->get_media_credit_json( $post['id'] );
+		return $this->get_media_credit_json( $post['id'], $post['author'] );
 	}
 
 	/**
 	 * Prepares the JSON data for the given attachment's media credit.
 	 *
 	 * @param  int $attachment_id The post ID of the media item.
+	 * @param  int $author_id     The author ID of the media item.
 	 *
 	 * @return array
 	 */
-	protected function get_media_credit_json( $attachment_id ) {
+	protected function get_media_credit_json( $attachment_id, $author_id ) {
 		// Prepare helper objects.
 		$post_object = \get_post( $attachment_id );
-		$flags       = Template_Tags::get_media_credit_data( $post_object );
+		$flags       = $this->core->get_media_credit_data( $attachment_id );
 
 		// Return media credit data.
 		return [
 			'rendered'  => Template_Tags::get_media_credit_html( $post_object, true ),
 			'plaintext' => Template_Tags::get_media_credit( $post_object, true ),
 			'user_id'   => $author_id,
-			'freeform'  => Template_Tags::get_freeform_media_credit( $post_object ),
-			'url'       => Template_Tags::get_media_credit_url( $post_object ),
+			'freeform'  => $this->core->get_media_credit_freeform_text( $attachment_id ),
+			'url'       => $this->core->get_media_credit_url( $attachment_id ),
 			'flags'     => [
 				'nofollow' => ! empty( $flags['nofollow'] ),
 			],
@@ -248,7 +249,7 @@ class REST_API implements \Media_Credit\Component {
 	 */
 	public function update_media_credit_fields( $value, \WP_Post $post, $field_name, \WP_REST_Request $request ) {
 		$success  = true;
-		$previous = $this->get_media_credit_json( $post->ID );
+		$previous = $this->get_media_credit_json( $post->ID, (int) $post->post_author );
 
 		$freeform   = isset( $value['freeform'] ) ? \wp_kses( $value['freeform'], [ 'a' => [ 'href', 'rel' ] ] ) : $previous['freeform'];
 		$url        = isset( $value['url'] ) ? \esc_url_raw( $value['url'] ) : $previous['url'];
@@ -261,7 +262,7 @@ class REST_API implements \Media_Credit\Component {
 		}
 
 		if ( isset( $value['flags']['nofollow'] ) ) {
-			$flags             = Template_Tags::get_media_credit_data( $post );
+			$flags             = $this->core->get_media_credit_data( $post->ID );
 			$flags['nofollow'] = $nofollow;
 			$success           = $success && \update_post_meta( $post->ID, Core::DATA_POSTMETA_KEY, $flags ); // insert '_media_credit_data' metadata field.
 		}

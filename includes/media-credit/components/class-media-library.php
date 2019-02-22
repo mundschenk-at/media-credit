@@ -211,16 +211,16 @@ class Media_Library implements \Media_Credit\Component {
 	 * @since 3.1.0
 	 * @since 3.3.0 Removed unused parameter $meta.
 	 *
-	 * @param array      $response   Array of prepared attachment data.
-	 * @param int|object $attachment Attachment ID or object.
+	 * @param array    $response   Array of prepared attachment data.
+	 * @param \WP_Post $attachment Attachment object.
 	 *
 	 * @return array Array of prepared attachment data.
 	 */
-	public function prepare_attachment_media_credit_for_js( $response, $attachment ) {
+	public function prepare_attachment_media_credit_for_js( array $response, \WP_Post $attachment ) {
 
 		$credit    = Template_Tags::get_media_credit( $attachment );
-		$url       = Template_Tags::get_media_credit_url( $attachment );
-		$data      = Template_Tags::get_media_credit_data( $attachment );
+		$url       = $this->core->get_media_credit_url( $attachment->ID );
+		$data      = $this->core->get_media_credit_data( $attachment->ID );
 		$author_id = '' === Template_Tags::get_freeform_media_credit( $attachment ) ? $attachment->post_author : '';
 		$options   = $this->core->get_settings();
 
@@ -325,7 +325,7 @@ class Media_Library implements \Media_Credit\Component {
 		update_post_meta( $post['ID'], Core::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
 
 		// Update optional data array with nofollow.
-		update_post_meta( $post['ID'], Core::DATA_POSTMETA_KEY, wp_parse_args( [ 'nofollow' => $nofollow ], Template_Tags::get_media_credit_data( $post ) ) );
+		update_post_meta( $post['ID'], Core::DATA_POSTMETA_KEY, wp_parse_args( [ 'nofollow' => $nofollow ], $this->core->get_media_credit_data( $post['ID'] ) ) );
 
 		/**
 		 * A valid WP user was selected, and the display name matches the free-form. The final conditional is
