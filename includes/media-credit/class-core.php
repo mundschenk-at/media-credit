@@ -288,4 +288,13 @@ class Core {
 		// Drop "-{$width}x{$height}".
 		return \preg_replace( '/(.*?)(\-\d+x\d+)?\.\w+/S', '$1', \wp_basename( $image ) );
 	}
+
+	/**
+	 * Checks if the current user is authorized to edit the `media_credit` fields.
+	 *
+	 * @return bool
+	 */
+	public function authorized_to_edit_media_credit() {
+		return \current_user_can( 'edit_posts' );
+	}
 }

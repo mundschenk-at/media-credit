@@ -77,7 +77,7 @@ class REST_API implements \Media_Credit\Component {
 				'context'     => [ 'view', 'edit' ],
 			],
 			'url'       => [
-				'description' => 'A URL to link from the copyright information (overriding the default linkt to author pages)',
+				'description' => 'A URL to link from the copyright information (overriding the default link to author pages)',
 				'type'        => 'string',
 				'format'      => 'uri',
 				'context'     => [ 'view', 'edit' ],
@@ -124,10 +124,6 @@ class REST_API implements \Media_Credit\Component {
 	/**
 	 * Registers the meta fields for use (not only) with the REST API.
 	 */
-
-	/**
-	 * Registers the meta fields for use (not only) with the REST API.
-	 */
 	public function register_media_credit_fields() {
 		\register_rest_field(
 			'attachment',
@@ -135,7 +131,7 @@ class REST_API implements \Media_Credit\Component {
 			[
 				'get_callback'    => [ $this, 'prepare_media_credit_fields' ],
 				'update_callback' => [ $this, 'update_media_credit_fields' ],
-				'auth_callback'   => [ $this, 'authorized_to_edit_media_credit' ],
+				'auth_callback'   => [ $this->core, 'authorized_to_edit_media_credit' ],
 				'schema'          => self::SCHEMA_MEDIA_CREDIT_FIELDS,
 			]
 		);
@@ -294,15 +290,6 @@ class REST_API implements \Media_Credit\Component {
 		}
 
 		return $success;
-	}
-
-	/**
-	 * Checks if the current user is authorized to edit the `media_credit` fields.
-	 *
-	 * @return bool
-	 */
-	public function authorized_to_edit_media_credit() {
-		return \current_user_can( 'edit_posts' );
 	}
 
 	/**

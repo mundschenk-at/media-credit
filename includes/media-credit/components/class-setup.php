@@ -47,6 +47,13 @@ class Setup implements \Media_Credit\Component {
 	private $version;
 
 	/**
+	 * The core API.
+	 *
+	 * @var Core
+	 */
+	private $core;
+
+	/**
 	 * The options handler.
 	 *
 	 * @var Options
@@ -57,10 +64,12 @@ class Setup implements \Media_Credit\Component {
 	 * Creates a new Setup instance.
 	 *
 	 * @param string  $version         The plugin version string.
+	 * @param Core    $core            The core plugin API.
 	 * @param Options $options         The options handler.
 	 */
-	public function __construct( $version, Options $options ) {
+	public function __construct( $version, Core $core, Options $options ) {
 		$this->version = $version;
+		$this->core    = $core;
 		$this->options = $options;
 	}
 
@@ -75,6 +84,9 @@ class Setup implements \Media_Credit\Component {
 
 		// Update settings and database if necessary.
 		\add_action( 'plugins_loaded', [ $this, 'update_check' ] );
+
+		// Register the meta fields.
+		\add_action( 'init', [ $this, 'register_meta_fields' ] );
 	}
 
 	/**
@@ -168,5 +180,49 @@ class Setup implements \Media_Credit\Component {
 	 */
 	public function deactivate( /* @scrutinizer ignore-unused */ $network_wide ) {
 		// Not used yet.
+	}
+
+	/**
+	 * Sets up the meta fields with proper authorization and sanitization callbacks.
+	 *
+	 * @since 3.3.0
+	 */
+	public function register_meta_fields() {
+		\register_meta(
+			'post',
+			Core::POSTMETA_KEY,
+			[
+				'object_subtype' => 'attachment',
+				'type'           => 'string',
+				'description'    => 'The copyright line itself (if not overridden by the `user_id`)',
+				'single'         => true,
+				'auth_callback'  => [ $this->core, 'authorized_to_edit_media_credit' ],
+				'show_in_rest'   => false,
+			]
+		);
+		\register_meta(
+			'post',
+			Core::URL_POSTMETA_KEY,
+			[
+				'object_subtype' => 'attachment',
+				'type'           => 'string',
+				'description'    => 'A URL to link from the copyright information (overriding the default link to author pages)',
+				'single'         => true,
+				'auth_callback'  => [ $this->core, 'authorized_to_edit_media_credit' ],
+				'show_in_rest'   => false,
+			]
+		);
+		\register_meta(
+			'post',
+			Core::DATA_POSTMETA_KEY,
+			[
+				'object_subtype' => 'attachment',
+				'type'           => 'array',
+				'description'    => 'Optional flags for the copyright information (or the link)',
+				'single'         => true,
+				'auth_callback'  => [ $this->core, 'authorized_to_edit_media_credit' ],
+				'show_in_rest'   => false,
+			]
+		);
 	}
 }
