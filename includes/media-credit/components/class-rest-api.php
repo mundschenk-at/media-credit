@@ -227,7 +227,7 @@ class REST_API implements \Media_Credit\Component {
 		return [
 			'rendered'  => Template_Tags::get_media_credit_html( $post_object, true ),
 			'plaintext' => Template_Tags::get_media_credit( $post_object, true ),
-			'user_id'   => Template_Tags::get_wpuser_media_credit( $post_object ),
+			'user_id'   => $author_id,
 			'freeform'  => Template_Tags::get_freeform_media_credit( $post_object ),
 			'url'       => Template_Tags::get_media_credit_url( $post_object ),
 			'flags'     => [
