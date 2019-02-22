@@ -173,7 +173,7 @@ class Core {
 	/**
 	 * If the given media is attached to a post, edit the media-credit info in the attached (parent) post.
 	 *
-	 * @param int|\WP_Post $attachment An attachemnt ID or the corresponding \WP_Post object.
+	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
 	 * @param string       $freeform   Credit for attachment with freeform string. Empty if attachment should be credited to the attachment author.
 	 * @param string       $url        Credit URL for linking. Empty means default link for user of this blog, no link for freeform credit.
 	 */
