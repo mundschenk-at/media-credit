@@ -37,7 +37,7 @@ use Mundschenk\Data_Storage\Transients;
  *
  * @author Peter Putzer <github@mundschenk.at>
  */
-class Uninstallation implements \Media_Credit\Component, \Media_Credit\Base {
+class Uninstallation implements \Media_Credit\Component {
 
 	/**
 	 * The full path to the main plugin file.

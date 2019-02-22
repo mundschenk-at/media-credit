@@ -39,7 +39,7 @@ use Mundschenk\UI\Controls;
  *
  * @author Peter Putzer <github@mundschenk.at>
  */
-class Settings implements Base {
+class Settings {
 	const INSTALLED_VERSION     = 'version';
 	const INSTALL_DATE          = 'install_date';
 	const SEPARATOR             = 'separator';
@@ -53,6 +53,13 @@ class Settings implements Base {
 
 	const SETTINGS_SECTION = 'media-credit';
 
+	/**
+	 * The string used to separate the username and the organization
+	 * for crediting local WordPress users.
+	 *
+	 * @var string
+	 */
+	const DEFAULT_SEPARATOR = ' | ';
 
 	/**
 	 * The fields definition array.

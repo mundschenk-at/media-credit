@@ -34,7 +34,7 @@ use Media_Credit\Template_Tags;
  *
  * @since 3.3.0
  */
-class REST_API implements \Media_Credit\Component, \Media_Credit\Base {
+class REST_API implements \Media_Credit\Component {
 
 	/**
 	 * The namespace for the custom API endpoints.
@@ -261,13 +261,13 @@ class REST_API implements \Media_Credit\Component, \Media_Credit\Base {
 
 		if ( isset( $value['url'] ) ) {
 			// We need to update the credit URL.
-			$success = $success && \update_post_meta( $post->ID, self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
+			$success = $success && \update_post_meta( $post->ID, Core::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
 		}
 
 		if ( isset( $value['flags']['nofollow'] ) ) {
 			$flags             = Template_Tags::get_media_credit_data( $post );
 			$flags['nofollow'] = $nofollow;
-			$success           = $success && \update_post_meta( $post->ID, self::DATA_POSTMETA_KEY, $flags ); // insert '_media_credit_data' metadata field.
+			$success           = $success && \update_post_meta( $post->ID, Core::DATA_POSTMETA_KEY, $flags ); // insert '_media_credit_data' metadata field.
 		}
 
 		if ( isset( $value['freeform'] ) || isset( $value['user_id'] ) ) {
@@ -282,13 +282,13 @@ class REST_API implements \Media_Credit\Component, \Media_Credit\Base {
 					]
 				);
 
-				$success = $success && \delete_post_meta( $post->ID, self::POSTMETA_KEY ); // delete any residual metadata from a free-form field (as inserted below).
+				$success = $success && \delete_post_meta( $post->ID, Core::POSTMETA_KEY ); // delete any residual metadata from a free-form field (as inserted below).
 				$this->core->update_media_credit_in_post( $post->ID, '', $url );
 			} else {
 				// Free-form text was entered, insert postmeta with credit.
 				// if free-form text is blank, insert a single space in postmeta.
-				$freeform = $freeform ?: self::EMPTY_META_STRING;
-				$success  = $success && \update_post_meta( $post->ID, self::POSTMETA_KEY, $freeform ); // insert '_media_credit' metadata field for image with free-form text.
+				$freeform = $freeform ?: Core::EMPTY_META_STRING;
+				$success  = $success && \update_post_meta( $post->ID, Core::POSTMETA_KEY, $freeform ); // insert '_media_credit' metadata field for image with free-form text.
 				$this->core->update_media_credit_in_post( $post->ID, $freeform, $url );
 			}
 		}

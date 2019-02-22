@@ -38,7 +38,7 @@ use Media_Credit\Data_Storage\Options;
  * @subpackage Media_Credit/includes
  * @author     Peter Putzer <github@mundschenk.at>
  */
-class Template_Tags implements Base {
+class Template_Tags {
 
 	/**
 	 * Returns the media credit as plain text for some media attachment.
@@ -72,7 +72,7 @@ class Template_Tags implements Base {
 	public static function get_media_credit_url( $post = null ) {
 
 		$post   = get_post( $post );
-		$result = get_post_meta( $post->ID, self::URL_POSTMETA_KEY, true );
+		$result = get_post_meta( $post->ID, Core::URL_POSTMETA_KEY, true );
 
 		if ( empty( $result ) ) {
 			$result = '';
@@ -92,7 +92,7 @@ class Template_Tags implements Base {
 	public static function get_media_credit_data( $post = null ) {
 
 		$post   = get_post( $post );
-		$result = get_post_meta( $post->ID, self::DATA_POSTMETA_KEY, true );
+		$result = get_post_meta( $post->ID, Core::DATA_POSTMETA_KEY, true );
 
 		if ( empty( $result ) ) {
 			$result = [];
@@ -173,9 +173,9 @@ class Template_Tags implements Base {
 	public static function get_freeform_media_credit( $post = null ) {
 
 		$post   = get_post( $post );
-		$credit = get_post_meta( $post->ID, self::POSTMETA_KEY, true );
+		$credit = get_post_meta( $post->ID, Core::POSTMETA_KEY, true );
 
-		if ( self::EMPTY_META_STRING === $credit ) {
+		if ( Core::EMPTY_META_STRING === $credit ) {
 			$credit = '';
 		}
 
@@ -225,7 +225,7 @@ class Template_Tags implements Base {
 			}
 
 			// We always need to include the meta key in our query.
-			$query_vars[] = self::POSTMETA_KEY;
+			$query_vars[] = Core::POSTMETA_KEY;
 
 			// Optionally set limit.
 			if ( $limit > 0 ) {

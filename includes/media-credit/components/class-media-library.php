@@ -36,7 +36,7 @@ use Media_Credit\Data_Storage\Options;
  *
  * @since 3.3.0 Renamed to Media_Credit\Components\Media_Library
  */
-class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
+class Media_Library implements \Media_Credit\Component {
 
 	/**
 	 * The version of this plugin.
@@ -322,10 +322,10 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 		$options       = $this->core->get_settings();
 
 		// We need to update the credit URL in any case.
-		update_post_meta( $post['ID'], self::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
+		update_post_meta( $post['ID'], Core::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
 
 		// Update optional data array with nofollow.
-		update_post_meta( $post['ID'], self::DATA_POSTMETA_KEY, wp_parse_args( [ 'nofollow' => $nofollow ], Template_Tags::get_media_credit_data( $post ) ) );
+		update_post_meta( $post['ID'], Core::DATA_POSTMETA_KEY, wp_parse_args( [ 'nofollow' => $nofollow ], Template_Tags::get_media_credit_data( $post ) ) );
 
 		/**
 		 * A valid WP user was selected, and the display name matches the free-form. The final conditional is
@@ -339,7 +339,7 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 			$post['post_author'] = $wp_user_id;
 
 			// Delete any residual metadata from a free-form field.
-			delete_post_meta( $post['ID'], self::POSTMETA_KEY );
+			delete_post_meta( $post['ID'], Core::POSTMETA_KEY );
 
 			// Update media credit shortcodes in the current post.
 			$this->core->update_media_credit_in_post( $post, '', $url );
@@ -348,10 +348,10 @@ class Media_Library implements \Media_Credit\Component, \Media_Credit\Base {
 			 * Free-form text was entered, insert postmeta with credit. If free-form text is blank, insert
 			 * a single space in postmeta.
 			 */
-			$freeform = empty( $freeform_name ) ? self::EMPTY_META_STRING : $freeform_name;
+			$freeform = empty( $freeform_name ) ? Core::EMPTY_META_STRING : $freeform_name;
 
 			// Insert '_media_credit' metadata field for image with free-form text.
-			update_post_meta( $post['ID'], self::POSTMETA_KEY, $freeform );
+			update_post_meta( $post['ID'], Core::POSTMETA_KEY, $freeform );
 
 			// Update media credit shortcodes in the current post.
 			$this->core->update_media_credit_in_post( $post, $freeform, $url );

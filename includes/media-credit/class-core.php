@@ -43,6 +43,34 @@ use Media_Credit\Data_Storage\Options;
 class Core {
 
 	/**
+	 * The string stored in the database when the credit meta is empty.
+	 *
+	 * @var string
+	 */
+	const EMPTY_META_STRING = ' ';
+
+	/**
+	 * The key used for storing the media credit in postmeta.
+	 *
+	 * @var string
+	 */
+	const POSTMETA_KEY = '_media_credit';
+
+	/**
+	 * The key used for storing the optional media credit URL in postmeta.
+	 *
+	 * @var string
+	 */
+	const URL_POSTMETA_KEY = '_media_credit_url';
+
+	/**
+	 * The key used for storing optional media credit data in postmeta.
+	 *
+	 * @var string
+	 */
+	const DATA_POSTMETA_KEY = '_media_credit_data';
+
+	/**
 	 * The singleton instance.
 	 *
 	 * @var Core

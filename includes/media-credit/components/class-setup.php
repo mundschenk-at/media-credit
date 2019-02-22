@@ -27,6 +27,8 @@
 
 namespace Media_Credit\Components;
 
+use Media_Credit\Core;
+use Media_Credit\Settings;
 use Media_Credit\Data_Storage\Options;
 
 /**
@@ -35,7 +37,7 @@ use Media_Credit\Data_Storage\Options;
  * @since 3.0.0
  * @since 3.3.0 Moved to \Media_Credit\Components\Setup
  */
-class Setup implements \Media_Credit\Component, \Media_Credit\Base {
+class Setup implements \Media_Credit\Component {
 
 	/**
 	 * The full path to the main plugin file.
@@ -92,7 +94,7 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 		$default_options = [
 			'version'               => $this->version,
 			'install_date'          => \date( 'Y-m-d' ),
-			'separator'             => self::DEFAULT_SEPARATOR,
+			'separator'             => Settings::DEFAULT_SEPARATOR,
 			'organization'          => \get_bloginfo( 'name', 'display' ),
 			'credit_at_end'         => false,
 			'no_default_credit'     => false,
@@ -123,7 +125,7 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 			global $wpdb;
 
 			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->update( $wpdb->postmeta, [ 'meta_key' => self::POSTMETA_KEY ], [ 'meta_key' => 'media-credit' ] );
+			$wpdb->update( $wpdb->postmeta, [ 'meta_key' => Core::POSTMETA_KEY ], [ 'meta_key' => 'media-credit' ] );
 		}
 
 		// Upgrade plugin to 2.2.0.

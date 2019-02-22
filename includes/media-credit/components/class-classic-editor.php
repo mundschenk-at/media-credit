@@ -36,7 +36,7 @@ use Media_Credit\Data_Storage\Options;
  *
  * @since 3.3.0
  */
-class Classic_Editor implements \Media_Credit\Component, \Media_Credit\Base {
+class Classic_Editor implements \Media_Credit\Component {
 
 	/**
 	 * The version of this plugin.
@@ -209,8 +209,8 @@ class Classic_Editor implements \Media_Credit\Component, \Media_Credit\Base {
 		$no_defaults = ! empty( $options['no_default_credit'] );
 
 		// Set freeform or site user credit.
-		$freeform = \get_post_meta( $attachment_id, self::POSTMETA_KEY, true );
-		if ( self::EMPTY_META_STRING === $freeform || ( empty( $freeform ) && $no_defaults ) ) {
+		$freeform = \get_post_meta( $attachment_id, Core::POSTMETA_KEY, true );
+		if ( Core::EMPTY_META_STRING === $freeform || ( empty( $freeform ) && $no_defaults ) ) {
 			// No credit to add.
 			return $html;
 		} elseif ( ! empty( $freeform ) ) {
