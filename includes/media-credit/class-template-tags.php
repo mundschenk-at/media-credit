@@ -27,111 +27,79 @@
 
 namespace Media_Credit;
 
-use Media_Credit\Data_Storage\Options;
-
 /**
  * A container of static functions implementing the internals of the
  * plugin's template tags.
  *
- * @since      3.0.0
- * @package    Media_Credit
- * @subpackage Media_Credit/includes
- * @author     Peter Putzer <github@mundschenk.at>
+ * @since 3.0.0
+ * @since 3.3.0 Renamed to Media_Credit\Template_Tags
  */
-class Template_Tags implements Base {
+class Template_Tags {
 
 	/**
 	 * Returns the media credit as plain text for some media attachment.
 	 *
-	 * @param  int|object $post  Optional post ID or object of attachment. Default is global $post object.
-	 * @param  boolean    $fancy Fancy output (<user> <separator> <organization>) for local user credits. Optional. Default false.
-	 * @return string            The media credit.
+	 * @param  int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
+	 * @param  bool         $fancy      Optional. Fancy output (<user> <separator> <organization>)
+	 *                                  for local user credits. Optional. Default false.
+	 *
+	 * @return string                   The media credit in plaintext format.
 	 */
-	public static function get_media_credit( $post = null, $fancy = false ) {
+	public static function get_media_credit( $attachment, $fancy = false ) {
 
-		$post             = get_post( $post );
-		$credit_meta      = self::get_freeform_media_credit( $post );
-		$credit_wp_author = self::get_wpuser_media_credit( $post );
+		// Get all the media credit fields.
+		$credit = self::get_media_credit_fields( $attachment );
 
-		if ( '' !== $credit_meta ) {
-			return $credit_meta;
-		} elseif ( $fancy ) {
-			$options = get_option( Options::PREFIX . Options::OPTION ); // FIXME: Needs proper solution (singleton).
-			return $credit_wp_author . $options['separator'] . $options['organization'];
-		} else {
-			return $credit_wp_author;
-		}
+		// We want the credit string in plain text format (but possibly "fancy").
+		return $fancy ? $credit['fancy'] : $credit['plaintext'];
 	}
 
 	/**
 	 * Returns the media credit URL as plain text for some media attachment.
 	 *
-	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
-	 * @return string           The credit URL (or the empty string if none is set).
+	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
+	 *
+	 * @return string                  The credit URL (or the empty string if none is set).
 	 */
-	public static function get_media_credit_url( $post = null ) {
+	public static function get_media_credit_url( $attachment ) {
 
-		$post   = get_post( $post );
-		$result = get_post_meta( $post->ID, self::URL_POSTMETA_KEY, true );
+		// Get all the media credit fields.
+		$credit = self::get_media_credit_fields( $attachment );
 
-		if ( empty( $result ) ) {
-			$result = '';
-		}
-
-		return $result;
+		return $credit['raw']['url'];
 	}
 
 	/**
-	 * Returns the optional media credit data array for some media attachment.
+	 * Returns the optional media credit data array for a media attachment.
 	 *
 	 * @since 3.1.0
 	 *
-	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
-	 * @return array            The optional data array.
+	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
+	 *
+	 * @return array                   The data array.
 	 */
-	public static function get_media_credit_data( $post = null ) {
+	public static function get_media_credit_data( $attachment ) {
 
-		$post   = get_post( $post );
-		$result = get_post_meta( $post->ID, self::DATA_POSTMETA_KEY, true );
+		// Get all the media credit fields.
+		$credit = self::get_media_credit_fields( $attachment );
 
-		if ( empty( $result ) ) {
-			$result = [];
-		}
-
-		return $result;
+		return $credit['raw']['flags'];
 	}
 
 	/**
 	 * Returns the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
-	 * @param  int|object $post                   Optional post ID or object of attachment. Default is global $post object.
-	 * @param  boolean    $include_default_credit Optional flag to decide if default credits (owner) should be returned as well. Default is true.
-	 * @return string                             The media credit HTML (or the empty string if no credit is set).
+	 * @param  int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
+	 * @param  bool         $deprecated Optional. Argument is ignored. Default true.
+	 *
+	 * @return string                   The media credit HTML (or the empty string if no credit is set).
 	 */
-	public static function get_media_credit_html( $post = null, $include_default_credit = true ) {
+	public static function get_media_credit_html( $attachment, $deprecated = true ) {
 
-		$post = get_post( $post );
-		if ( empty( $post ) ) {
-			return ''; // abort.
-		}
+		// Get all the media credit fields.
+		$credit = self::get_media_credit_fields( $attachment );
 
-		$credit_meta = self::get_freeform_media_credit( $post );
-		$credit_url  = self::get_media_credit_url( $post );
-		$credit      = '';
-
-		if ( '' !== $credit_meta ) {
-			if ( ! empty( $credit_url ) ) {
-				$credit = '<a href="' . esc_url( $credit_url ) . '">' . $credit_meta . '</a>';
-			} else {
-				$credit = $credit_meta;
-			}
-		} elseif ( $include_default_credit ) {
-			$options = get_option( Options::PREFIX . Options::OPTION ); // FIXME: Needs proper solution (singleton).
-			$url     = ! empty( $credit_url ) ? $credit_url : get_author_posts_url( $post->post_author );
-			$credit  = '<a href="' . esc_url( $url ) . '">' . self::get_wpuser_media_credit( $post ) . '</a>' . $options['separator'] . $options['organization'];
-		}
-
-		return $credit;
+		return $credit['rendered'];
 	}
 
 	/**
@@ -144,42 +112,29 @@ class Template_Tags implements Base {
 	public static function get_media_credit_html_by_user_id( $id ) {
 
 		$credit_wp_author = get_the_author_meta( 'display_name', $id );
-		$options          = get_option( Options::PREFIX . Options::OPTION ); // FIXME: Needs proper solution (singleton).
+		$options          = Core::get_instance()->get_settings();
 
 		return '<a href="' . get_author_posts_url( $id ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 	}
 
 	/**
-	 * Returns the default media credit for a given post/attachment (i.e. the post author).
-	 *
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
-	 *
-	 * @return string The post author display name.
-	 */
-	public static function get_wpuser_media_credit( $post = null ) {
-
-		$post = get_post( $post );
-
-		return get_the_author_meta( 'display_name', $post->post_author );
-	}
-
-	/**
 	 * Returns the freeform media credit for a given post/attachment.
 	 *
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
 	 *
-	 * @return string The freeform credit (or the empty string).
+	 * @return string                  The freeform credit (or the empty string).
 	 */
-	public static function get_freeform_media_credit( $post = null ) {
+	public static function get_freeform_media_credit( $attachment ) {
 
-		$post   = get_post( $post );
-		$credit = get_post_meta( $post->ID, self::POSTMETA_KEY, true );
+		// Get all the media credit fields.
+		$credit = self::get_media_credit_fields( $attachment );
 
-		if ( self::EMPTY_META_STRING === $credit ) {
-			$credit = '';
+		// Don't display our special "empty" string.
+		if ( Core::EMPTY_META_STRING === $credit['raw']['freeform'] ) {
+			return '';
 		}
 
-		return $credit;
+		return $credit['raw']['freeform'];
 	}
 
 	/**
@@ -214,7 +169,7 @@ class Template_Tags implements Base {
 			}
 
 			// Exclude attachments from before the install date of the Media Credit plugin.
-			$options = get_option( Options::PREFIX . Options::OPTION ); // FIXME: Needs proper solution (singleton).
+			$options = Core::get_instance()->get_settings();
 			if ( isset( $options['install_date'] ) ) {
 				$start_date = $options['install_date'];
 
@@ -225,7 +180,7 @@ class Template_Tags implements Base {
 			}
 
 			// We always need to include the meta key in our query.
-			$query_vars[] = self::POSTMETA_KEY;
+			$query_vars[] = Core::POSTMETA_KEY;
 
 			// Optionally set limit.
 			if ( $limit > 0 ) {
@@ -269,5 +224,46 @@ class Template_Tags implements Base {
 
 		// Load the template part.
 		require \dirname( MEDIA_CREDIT_PLUGIN_FILE ) . '/public/partials/author-media.php';
+	}
+
+	/**
+	 * Ensures a valid post object and returns the media credit data fields for
+	 * use in template methods. In case of an invalid attachment ID, all fields
+	 * be empty or 0.
+	 *
+	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
+	 *
+	 * @return array {
+	 *     The media credit fields.
+	 *
+	 *     @type string $rendered  The HTML representation of the credit (i.e. including links).
+	 *     @type string $plaintext The plain text representation of the credit (i.e. without any markup).
+	 *     @type array  $raw {
+	 *         The raw data used to store the media credit. On error, an empty array is returned.
+	 *
+	 *         @type int    $user_id  Optional. The ID of the media item author. Default 0 (invalid).
+	 *         @type string $freeform Optional. The media credit string (if $user_id is not used). Default ''.
+	 *         @type string $url      Optional. A URL the credit should link to. Default ''.
+	 *         @type array  $flags {
+	 *             Optional. An array of flags to modify the rendering of the media credit. Default [].
+	 *
+	 *             @type bool $nofollow Optional. A flag indicating that `rel=nofollow` should be added to the link. Default false.
+	 *         }
+	 *     }
+	 * }
+	 */
+	private static function get_media_credit_fields( $attachment ) {
+
+		// Load the attachment data if handed an ID.
+		if ( ! $attachment instanceof \WP_Post ) {
+			$attachment = \get_post( $attachment );
+		}
+
+		// Make sure this is a valid attachment object.
+		if ( ! $attachment instanceof \WP_Post ) {
+			return Core::INVALID_MEDIA_CREDIT;
+		}
+
+		return Core::get_instance()->get_media_credit_json( $attachment );
 	}
 }

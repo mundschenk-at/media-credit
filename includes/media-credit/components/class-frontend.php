@@ -27,8 +27,8 @@
 
 namespace Media_Credit\Components;
 
-use Media_Credit\Template_Tags;
-use Media_Credit\Data_Storage\Options;
+use Media_Credit\Core;
+use Media_Credit\Settings;
 
 /**
  * The public-facing functionality of the plugin.
@@ -71,21 +71,21 @@ class Frontend implements \Media_Credit\Component {
 	private $settings;
 
 	/**
-	 * The options handler.
+	 * The core API.
 	 *
-	 * @var Options
+	 * @var Core
 	 */
-	private $options;
+	private $core;
 
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @param string  $version The version of this plugin.
-	 * @param Options $options The options handler.
+	 * @param string $version The version of this plugin.
+	 * @param Core   $core    The core plugin API.
 	 */
-	public function __construct( $version, Options $options ) {
+	public function __construct( $version, Core $core ) {
 		$this->version = $version;
-		$this->options = $options;
+		$this->core    = $core;
 	}
 
 	/**
@@ -95,7 +95,7 @@ class Frontend implements \Media_Credit\Component {
 	 */
 	public function run() {
 		// Retrieve plugin settings.
-		$this->settings = $this->options->get( Options::OPTION, [] );
+		$this->settings = $this->core->get_settings();
 
 		// Enqueue frontend styles.
 		\add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
@@ -144,35 +144,30 @@ class Frontend implements \Media_Credit\Component {
 			return $content; // abort.
 		}
 
-		// Look at the plugin options.
-		$include_default_credit = empty( $this->settings['no_default_credit'] );
-		$include_post_thumbnail = ! empty( $this->settings['post_thumbnail_credit'] );
-
 		// Find the attachment_IDs of all media used in $content.
-		if ( ! \preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $images ) && ! $include_post_thumbnail ) {
-			return $content; // no images found.
+		\preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $images );
+		$images = $images[1];
+
+		// Optionally include post thumbnail credit.
+		if ( ! empty( $this->settings[ Settings::FEATURED_IMAGE_CREDIT ] ) ) {
+			$post_thumbnail_id = \get_post_thumbnail_id();
+
+			if ( ! empty( $post_thumbnail_id ) ) {
+				\array_unshift( $images, $post_thumbnail_id );
+			}
 		}
 
 		// Get a list of credits for the page.
 		$credit_unique = [];
-		foreach ( $images[1] as $image_id ) {
-			$credit = Template_Tags::get_media_credit_html( $image_id, $include_default_credit );
-
-			if ( ! empty( $credit ) ) {
-				$credit_unique[] = $credit;
+		foreach ( $images as $image_id ) {
+			$attachment = \get_post( $image_id );
+			if ( ! $attachment instanceof \WP_Post ) {
+				continue;
 			}
-		}
 
-		// Optionally include post thumbnail credit.
-		if ( $include_post_thumbnail ) {
-			$post_thumbnail_id = \get_post_thumbnail_id();
-
-			if ( '' !== $post_thumbnail_id ) {
-				$credit = Template_Tags::get_media_credit_html( (int) $post_thumbnail_id, $include_default_credit );
-
-				if ( ! empty( $credit ) ) {
-					\array_unshift( $credit_unique, $credit );
-				}
+			$credit = $this->core->get_media_credit_json( $attachment );
+			if ( ! empty( $credit['rendered'] ) ) {
+				$credit_unique[] = $credit['rendered'];
 			}
 		}
 
@@ -238,8 +233,16 @@ class Frontend implements \Media_Credit\Component {
 			return $output;
 		}
 
-		// Look at our options.
-		$include_default_credits = empty( $this->settings['no_default_credit'] );
+		// Retrieve the attachment.
+		$attachment = \get_post( $post_id );
+
+		// Abort if the post ID does not correspond to a valid attachment.
+		if ( ! $attachment instanceof \WP_Post ) {
+			return $html;
+		}
+
+		// Load the media credit fields.
+		$fields = $this->core->get_media_credit_json( $attachment );
 
 		/**
 		 * Filters whether link tags should be included in the post thumbnail credit.
@@ -253,14 +256,12 @@ class Frontend implements \Media_Credit\Component {
 		 * @param int  $post_thumbnail_id The post thumbnail's attachment ID.
 		 */
 		if ( \apply_filters( 'media_credit_post_thumbnail_include_links', false, $post_id, $post_thumbnail_id ) ) {
-			$credit = Template_Tags::get_media_credit_html( $post_thumbnail_id, $include_default_credits );
-		} elseif ( $include_default_credits ) {
-			$credit = Template_Tags::get_media_credit( $post_thumbnail_id, true );
+			$credit = $fields['rendered'];
 		} else {
-			$credit = Template_Tags::get_freeform_media_credit( $post_thumbnail_id );
+			$credit = \esc_html( $fields['fancy'] );
 		}
 
-		// Don't print the default credit.
+		// Don't print an empty default credit.
 		if ( empty( $credit ) ) {
 			return $html;
 		}

@@ -8,151 +8,12 @@
  * Contributing: http://www.tinymce.com/contributing
  */
 
+// Modified for use with WordPress (c) 2019 Peter Putzer
+
 ( function( tinymce ) {
 'use strict';
 
-var defs = {}; // id -> {dependencies, definition, instance (possibly undefined)}
-
-var instantiate = function( id ) {
-  var actual = defs[id];
-  var dependencies = actual.deps;
-  var definition = actual.defn;
-  var len = dependencies.length;
-  var instances = new Array( len );
-  var defResult = definition.apply( null, instances );
-  for ( var i = 0; i < len; ++i ) { // eslint-disable-line vars-on-top
-    instances[i] = dem( dependencies[i] );
-  }
-  if ( defResult === undefined ) {
-     throw 'module [' + id + '] returned undefined';
-  }
-  actual.instance = defResult;
-};
-
-var def = function( id, dependencies, definition ) {
-  if ( 'string' !== typeof id ) {
-    throw 'module id must be a string';
-  } else if ( dependencies === undefined ) {
-    throw 'no dependencies for ' + id;
-  } else if ( definition === undefined ) {
-    throw 'no definition function for ' + id;
-  }
-  defs[id] = {
-    deps: dependencies,
-    defn: definition,
-    instance: undefined
-  };
-};
-
-var dem = function( id ) {
-  var actual = defs[id];
-  if ( actual === undefined ) {
-    throw 'module [' + id + '] was undefined';
-  } else if ( actual.instance === undefined ) {
-    instantiate( id );
-  }
-  return actual.instance;
-};
-
-var req = function( ids, callback ) {
-  var len = ids.length;
-  var instances = new Array( len );
-  for ( var i = 0; i < len; ++i ) { // eslint-disable-line vars-on-top
-    instances.push( dem( ids[i] ) );
-  }
-  callback.apply( null, callback );
-};
-
-var ephox = {};
-
-ephox.bolt = {
-  module: {
-    api: {
-      define: def,
-      require: req,
-      demand: dem
-    }
-  }
-};
-
-var define = def; // eslint-disable-line vars-on-top
-
-// this helps with minificiation when using a lot of global references
-var defineGlobal = function( id, ref ) { // eslint-disable-line vars-on-top
-  define( id, [], function() {
- return ref;
-} );
-};
-
-/*jsc
-["tinymce.plugins.noneditable.Plugin","tinymce.core.PluginManager","tinymce.core.util.Tools","global!tinymce.util.Tools.resolve"]
-jsc*/
-defineGlobal( 'global!tinymce.util.Tools.resolve', tinymce.util.Tools.resolve );
-
-/**
- * ResolveGlobal.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-define(
-  'tinymce.core.PluginManager',
-  [
-    'global!tinymce.util.Tools.resolve'
-  ],
-  function( resolve ) {
-    return resolve( 'tinymce.PluginManager' );
-  }
-);
-
-/**
- * ResolveGlobal.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-define(
-  'tinymce.core.util.Tools',
-  [
-    'global!tinymce.util.Tools.resolve'
-  ],
-  function( resolve ) {
-    return resolve( 'tinymce.util.Tools' );
-  }
-);
-
-/**
- * Plugin.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-/**
- * This class contains all core logic for the noneditable plugin.
- *
- * @class tinymce.noneditable.Plugin
- * @private
- */
-define(
-  'tinymce.plugins.noneditable.Plugin',
-  [
-    'tinymce.core.PluginManager',
-    'tinymce.core.util.Tools'
-  ],
-  function( PluginManager, Tools ) {
-    PluginManager.add( 'noneditable', function( editor ) {
+tinymce.PluginManager.add( 'noneditable', function( editor ) {
       var editClass, nonEditClass, nonEditableRegExps,
           contentEditableAttrName = 'contenteditable';
 
@@ -165,7 +26,7 @@ define(
       function convertRegExpsToNonEditable( e ) {
         var i = nonEditableRegExps.length,
             content = e.content,
-            cls = Tools.trim( nonEditClass );
+            cls = tinymce.trim( nonEditClass );
 
         function replaceMatchWithSpan( match ) {
           var args = arguments,
@@ -206,8 +67,8 @@ define(
         e.content = content;
       }
 
-      editClass = ' ' + Tools.trim( editor.getParam( 'noneditable_editable_class', 'mceEditable' ) ) + ' ';
-      nonEditClass = ' ' + Tools.trim( editor.getParam( 'noneditable_noneditable_class', 'mceNonEditable' ) ) + ' ';
+      editClass = ' ' + tinymce.trim( editor.getParam( 'noneditable_editable_class', 'mceEditable' ) ) + ' ';
+      nonEditClass = ' ' + tinymce.trim( editor.getParam( 'noneditable_noneditable_class', 'mceNonEditable' ) ) + ' ';
 
       var hasEditClass = hasClass( editClass ); // eslint-disable-line vars-on-top
       var hasNonEditClass = hasClass( nonEditClass ); // eslint-disable-line vars-on-top
@@ -258,10 +119,6 @@ define(
           }
         } );
       } );
-    } );
+} );
 
-    return function() { };
-  }
-);
-dem( 'tinymce.plugins.noneditable.Plugin' )();
 } ( window.tinymce ) );

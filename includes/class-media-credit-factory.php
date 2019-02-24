@@ -26,7 +26,9 @@
 
 use Dice\Dice;
 
+use Media_Credit\Core;
 use Media_Credit\Components;
+
 use Mundschenk\Data_Storage;
 
 /**
@@ -65,10 +67,26 @@ abstract class Media_Credit_Factory {
 				'constructParams' => [ $full_plugin_path ],
 			];
 
+			// The plugin version.
 			$version = \get_plugin_data( $full_plugin_path, false, false )['Version'];
+
+			// Rule helper.
+			$version_shared_rule = [
+				'shared'          => true,
+				'constructParams' => [ $version ],
+			];
 
 			// Define rules.
 			$rules = [
+				// Core API.
+				Core::class                         => [
+					'shared'          => true,
+					'constructParams' => [ $version ],
+					'call'            => [
+						[ 'make_singleton', [] ],
+					],
+				],
+
 				// Shared helpers.
 				Data_Storage\Cache::class           => self::SHARED,
 				Data_Storage\Transients::class      => self::SHARED,
@@ -77,10 +95,12 @@ abstract class Media_Credit_Factory {
 				Data_Storage\Network_Options::class => self::SHARED,
 
 				// Components.
-				Components\Admin::class             => [ 'constructParams' => [ $full_plugin_path, $version ] ],
-				Components\Frontend::class          => [ 'constructParams' => [ $version ] ],
-				Components\Settings_Page::class     => [ 'constructParams' => [ $version ] ],
-				Components\Setup::class             => [ 'constructParams' => [ $full_plugin_path, $version ] ],
+				Components\Classic_Editor::class    => $version_shared_rule,
+				Components\Frontend::class          => $version_shared_rule,
+				Components\Media_Library::class     => $version_shared_rule,
+				Components\REST_API::class          => self::SHARED,
+				Components\Settings_Page::class     => $version_shared_rule,
+				Components\Setup::class             => $version_shared_rule,
 				Components\Uninstallation::class    => $full_path_rule,
 			];
 

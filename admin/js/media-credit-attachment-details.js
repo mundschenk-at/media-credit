@@ -152,7 +152,7 @@ jQuery( function( $ ) {
 
 				// Handle checkboxes.
 				if ( $input.is( 'input[type="checkbox"]' ) ) {
-					event.target.value = $input.prop( 'checked' );
+					event.target.value = $input.prop( 'checked' ) ? 1 : 0;
 				}
 
 				wp.media.view.Attachment.prototype.updateSetting.apply( this, [ event ] );
@@ -205,7 +205,9 @@ jQuery( function( $ ) {
 
 			sync: function( method, model, options ) {
 				var result = null,
-					nonces;
+						attachment,
+						attachmentId,
+						updatedMediaCredit = {};
 
 				// If the attachment does not yet have an `id`, return an instantly
 				// rejected promise. Otherwise, all of our requests will fail.
@@ -213,60 +215,50 @@ jQuery( function( $ ) {
 					return $.Deferred().rejectWith( this ).promise();
 				}
 
+				// Assign attachment ID.
+				attachmentId = this.id;
+
 				if ( 'update' === method && model.hasChanged() ) {
 
-					// If we do not have the necessary nonce, fall through to superclass.
-					nonces = this.get( 'nonces' );
-					if ( nonces && nonces.mediaCredit && nonces.mediaCredit.update ) {
-						options = options || {};
-						options.context = this;
+					// Handle placeholders gracefully.
+					if ( mediaCredit.noDefaultCredit && '' === model.changed.mediaCreditText && '' !== model.get( 'mediaCreditAuthorID' ) ) {
 
-						// Set the action and ID.
-						options.data = _.extend( options.data || {}, {
-							action: 'save-attachment-media-credit',
-							id: this.id,
-							nonce: nonces.mediaCredit.update,
-							post_id: wp.media.model.settings.post.id // eslint-disable-line camelcase
-						} );
+						// FIXME: Issue when default credits are off.
+						delete model.changed.mediaCreditText;
+					}
 
-						// Record the values of the changed attributes.
-						if ( model.hasChanged() ) {
-							options.data.changes     = {};
-							options.data.mediaCredit = {};
+					// Gather our changes.
+					_.each( model.changed, function( value, key ) {
+						if ( 0 === key.indexOf( 'mediaCredit' ) ) {
 
-							// Handle placeholders gracefully.
-							if ( mediaCredit.noDefaultCredit && '' === model.changed.mediaCreditText && '' !== model.get( 'mediaCreditAuthorID' ) ) {
-								delete model.changed.mediaCreditText;
+							// Handle according to field.
+							if ( 'mediaCreditAuthorID' === key ) {
+								updatedMediaCredit['user_id'] = this.get( key ) || 0;
+							} else if ( 'mediaCreditText' === key ) {
+								updatedMediaCredit.freeform = this.get( key );
+							} else if ( 'mediaCreditLink' === key ) {
+								updatedMediaCredit.url = this.get( key );
+							} else if ( 'mediaCreditNoFollow' === key ) {
+								updatedMediaCredit.flags          = updatedMediaCredit.flags || {};
+								updatedMediaCredit.flags.nofollow = this.get( key );
 							}
 
-							// Gather our changes.
-							_.each( model.changed, function( value, key ) {
-								if ( 0 === key.indexOf( 'mediaCredit' ) ) {
-									options.data.changes[ key ] = this.get( key );
-									delete model.changed[ key ];
-								}
-							}, this );
-
-							// Set up media credit attributes.
-							options.data.mediaCredit.text     = model.get( 'mediaCreditText' );
-							options.data.mediaCredit.link     = model.get( 'mediaCreditLink' );
-							options.data.mediaCredit.id       = model.get( 'mediaCreditAuthorID' );
-							options.data.mediaCredit.nofollow = model.get( 'mediaCreditNoFollow' );
+							// Nothing to see here.
+							delete model.changed[ key ];
 						}
+					}, this );
 
-						// Don't trigger AJAX call if we have no media-credit changes.
-						if ( 0 < _.size( options.data.changes ) ) {
-							result = wp.media.ajax( options );
+					// Don't trigger AJAX call if we have no relevant media-credit changes.
+					if ( 0 < _.size( updatedMediaCredit ) ) {
+						attachment = new wp.api.models.Media( { id: this.id } );
+						attachment.fetch();
+						attachment.set( 'media_credit', { raw: updatedMediaCredit } );
 
-							// Clean-up, part I.
-							delete options.data.changes;
+						// Necessary workaround, as post status 'inherited' is not supported by the REST API.
+						attachment.save( { status: 'publish' } );
 
-							// Update content currently in editor.
-							this.updateMediaCreditInEditorContent( $( 'textarea#content' ).val(), options );
-
-							// Clean-up, part II.
-							delete options.data.mediaCredit;
-						}
+						// Update content currently in editor.
+						this.updateMediaCreditInEditorContent( $( 'textarea#content' ).val(), attachmentId, model );
 					}
 				}
 
@@ -280,19 +272,19 @@ jQuery( function( $ ) {
 				}
 			},
 
-			updateMediaCreditInEditorContent: function( previousContent, options ) {
-				var nonces = this.get( 'nonces' ),
-					ajaxOptions;
-
-				if ( previousContent && nonces && nonces.mediaCredit && nonces.mediaCredit.content ) {
-					ajaxOptions = _.extend( options, {
-						data: _.extend( options.data, {
-							action: 'update-media-credit-in-post-content',
-							nonce: nonces.mediaCredit.content,
-							mediaCredit: _.extend( options.data.mediaCredit, {
-								content: previousContent
-							} )
-						} ),
+			updateMediaCreditInEditorContent: function( previousContent, attachmentId, model ) {
+				if ( previousContent ) {
+					wp.apiRequest( {
+						namespace: 'media-credit/v1',
+						endpoint: 'replace_in_content',
+						data: {
+							content: previousContent,
+							attachment_id: attachmentId || 0, // eslint-disable-line camelcase
+							author_id: model.get( 'mediaCreditAuthorID' ) || 0, // eslint-disable-line camelcase
+							freeform: model.get( 'mediaCreditText' ),
+							url: model.get( 'mediaCreditLink' ),
+							nofollow: model.get( 'mediaCreditNoFollow' )
+						},
 
 						/* globals tinymce: false */
 						success: function( newContent ) {
@@ -311,8 +303,6 @@ jQuery( function( $ ) {
 							}
 						}
 					} );
-
-					wp.media.ajax( 'update-media-credit-in-post-content', ajaxOptions );
 				}
 			}
 		} );

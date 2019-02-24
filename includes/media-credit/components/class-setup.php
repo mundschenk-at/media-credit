@@ -27,6 +27,8 @@
 
 namespace Media_Credit\Components;
 
+use Media_Credit\Core;
+use Media_Credit\Settings;
 use Media_Credit\Data_Storage\Options;
 
 /**
@@ -35,14 +37,7 @@ use Media_Credit\Data_Storage\Options;
  * @since 3.0.0
  * @since 3.3.0 Moved to \Media_Credit\Components\Setup
  */
-class Setup implements \Media_Credit\Component, \Media_Credit\Base {
-
-	/**
-	 * The full path to the main plugin file.
-	 *
-	 * @var string
-	 */
-	private $plugin_file;
+class Setup implements \Media_Credit\Component {
 
 	/**
 	 * The plugin version string.
@@ -50,6 +45,13 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 	 * @var string
 	 */
 	private $version;
+
+	/**
+	 * The core API.
+	 *
+	 * @var Core
+	 */
+	private $core;
 
 	/**
 	 * The options handler.
@@ -61,14 +63,14 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 	/**
 	 * Creates a new Setup instance.
 	 *
-	 * @param string  $plugin_file     The full path to the base plugin file.
 	 * @param string  $version         The plugin version string.
+	 * @param Core    $core            The core plugin API.
 	 * @param Options $options         The options handler.
 	 */
-	public function __construct( $plugin_file, $version, Options $options ) {
-		$this->plugin_file = $plugin_file;
-		$this->version     = $version;
-		$this->options     = $options;
+	public function __construct( $version, Core $core, Options $options ) {
+		$this->version = $version;
+		$this->core    = $core;
+		$this->options = $options;
 	}
 
 	/**
@@ -78,10 +80,13 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 	 */
 	public function run() {
 		// Register deactivation hook. Activation is handled by the update check instead.
-		\register_deactivation_hook( $this->plugin_file, [ $this, 'deactivate' ] );
+		\register_deactivation_hook( MEDIA_CREDIT_PLUGIN_FILE, [ $this, 'deactivate' ] );
 
 		// Update settings and database if necessary.
 		\add_action( 'plugins_loaded', [ $this, 'update_check' ] );
+
+		// Register the meta fields.
+		\add_action( 'init', [ $this, 'register_meta_fields' ] );
 	}
 
 	/**
@@ -92,7 +97,7 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 		$default_options = [
 			'version'               => $this->version,
 			'install_date'          => \date( 'Y-m-d' ),
-			'separator'             => self::DEFAULT_SEPARATOR,
+			'separator'             => Settings::DEFAULT_SEPARATOR,
 			'organization'          => \get_bloginfo( 'name', 'display' ),
 			'credit_at_end'         => false,
 			'no_default_credit'     => false,
@@ -123,7 +128,7 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 			global $wpdb;
 
 			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->update( $wpdb->postmeta, [ 'meta_key' => self::POSTMETA_KEY ], [ 'meta_key' => 'media-credit' ] );
+			$wpdb->update( $wpdb->postmeta, [ 'meta_key' => Core::POSTMETA_KEY ], [ 'meta_key' => 'media-credit' ] );
 		}
 
 		// Upgrade plugin to 2.2.0.
@@ -175,5 +180,49 @@ class Setup implements \Media_Credit\Component, \Media_Credit\Base {
 	 */
 	public function deactivate( /* @scrutinizer ignore-unused */ $network_wide ) {
 		// Not used yet.
+	}
+
+	/**
+	 * Sets up the meta fields with proper authorization and sanitization callbacks.
+	 *
+	 * @since 3.3.0
+	 */
+	public function register_meta_fields() {
+		\register_meta(
+			'post',
+			Core::POSTMETA_KEY,
+			[
+				'object_subtype' => 'attachment',
+				'type'           => 'string',
+				'description'    => 'The copyright line itself (if not overridden by the `user_id`)',
+				'single'         => true,
+				'auth_callback'  => [ $this->core, 'authorized_to_edit_media_credit' ],
+				'show_in_rest'   => false,
+			]
+		);
+		\register_meta(
+			'post',
+			Core::URL_POSTMETA_KEY,
+			[
+				'object_subtype' => 'attachment',
+				'type'           => 'string',
+				'description'    => 'A URL to link from the copyright information (overriding the default link to author pages)',
+				'single'         => true,
+				'auth_callback'  => [ $this->core, 'authorized_to_edit_media_credit' ],
+				'show_in_rest'   => false,
+			]
+		);
+		\register_meta(
+			'post',
+			Core::DATA_POSTMETA_KEY,
+			[
+				'object_subtype' => 'attachment',
+				'type'           => 'array',
+				'description'    => 'Optional flags for the copyright information (or the link)',
+				'single'         => true,
+				'auth_callback'  => [ $this->core, 'authorized_to_edit_media_credit' ],
+				'show_in_rest'   => false,
+			]
+		);
 	}
 }
