@@ -244,8 +244,16 @@ class Frontend implements \Media_Credit\Component {
 			return $output;
 		}
 
-		// Look at our options.
-		$include_default_credits = empty( $this->settings['no_default_credit'] );
+		// Retrieve the attachment.
+		$attachment = \get_post( $post_id );
+
+		// Abort if the post ID does not correspond to a valid attachment.
+		if ( ! $attachment instanceof \WP_Post ) {
+			return $html;
+		}
+
+		// Load the media credit fields.
+		$fields = $this->core->get_media_credit_json( $attachment );
 
 		/**
 		 * Filters whether link tags should be included in the post thumbnail credit.
@@ -259,14 +267,12 @@ class Frontend implements \Media_Credit\Component {
 		 * @param int  $post_thumbnail_id The post thumbnail's attachment ID.
 		 */
 		if ( \apply_filters( 'media_credit_post_thumbnail_include_links', false, $post_id, $post_thumbnail_id ) ) {
-			$credit = Template_Tags::get_media_credit_html( $post_thumbnail_id, $include_default_credits );
-		} elseif ( $include_default_credits ) {
-			$credit = Template_Tags::get_media_credit( $post_thumbnail_id, true );
+			$credit = $fields['rendered'];
 		} else {
-			$credit = Template_Tags::get_freeform_media_credit( $post_thumbnail_id );
+			$credit = \esc_html( $fields['fancy'] );
 		}
 
-		// Don't print the default credit.
+		// Don't print an empty default credit.
 		if ( empty( $credit ) ) {
 			return $html;
 		}
