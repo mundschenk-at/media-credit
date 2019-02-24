@@ -78,6 +78,7 @@ class Core {
 	const INVALID_MEDIA_CREDIT = [
 		'rendered'  => '',
 		'plaintext' => '',
+		'fancy'     => '',
 		'raw'       => [
 			'user_id'  => 0,
 			'freeform' => '',
@@ -422,16 +423,36 @@ class Core {
 		$s = $this->get_settings();
 
 		// Start building the credit markup.
-		$name   = $freeform;
-		$suffix = '';
+		$credit = $freeform;
 
 		if ( '' === $freeform && ! empty( $user_id ) && empty( $s[ Settings::NO_DEFAULT_CREDIT ] ) ) {
-			$name   = \get_the_author_meta( 'display_name', $user_id );
-			$suffix = $this->get_organization_suffix();
+			$credit = \get_the_author_meta( 'display_name', $user_id );
 		}
 
 		// The suffix should not contain any markup (the credit might).
-		return "{$name}{$suffix}";
+		return $credit;
+	}
+
+	/**
+	 * Renders the media credit as HTML (i.e. with a link to the author page or
+	 * custom URL).
+	 *
+	 * @param int    $user_id  Optional. The ID of the media item author. Default 0 (invalid).
+	 * @param string $freeform Optional. The media credit string (if $user_id is not used). Default ''.
+	 *
+	 * @return string                             The media credit HTML (or the empty string if no credit is set).
+	 */
+	protected function render_media_credit_fancy( $user_id = 0, $freeform = '' ) {
+
+		// Start building the credit markup.
+		$credit = $this->render_media_credit_plaintext( $user_id, $freeform );
+
+		if ( '' === $freeform && ! empty( $user_id ) && '' !== $credit ) {
+			$credit .= $this->get_organization_suffix();
+		}
+
+		// The suffix should not contain any markup (the credit might).
+		return $credit;
 	}
 
 	/**
@@ -470,6 +491,7 @@ class Core {
 		return [
 			'rendered'  => $this->render_media_credit_html( $user_id, $freeform, $url, $flags ),
 			'plaintext' => $this->render_media_credit_plaintext( $user_id, $freeform ),
+			'fancy'     => $this->render_media_credit_fancy( $user_id, $freeform ),
 			'raw'       => [
 				'user_id'   => $user_id,
 				'freeform'  => $freeform,

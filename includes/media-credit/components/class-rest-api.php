@@ -27,7 +27,6 @@
 namespace Media_Credit\Components;
 
 use Media_Credit\Core;
-use Media_Credit\Template_Tags;
 
 /**
  * Combines the WordPress REST API with Media Credit.
@@ -61,6 +60,12 @@ class REST_API implements \Media_Credit\Component {
 			],
 			'plaintext' => [
 				'description' => 'The copyright string as plain text, transformed for display',
+				'type'        => 'string',
+				'readonly'    => 'true',
+				'context'     => [ 'view' ],
+			],
+			'fancy'     => [
+				'description' => 'The copyright string as "fancy" plain text, including the organization where applicable',
 				'type'        => 'string',
 				'readonly'    => 'true',
 				'context'     => [ 'view' ],

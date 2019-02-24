@@ -50,16 +50,8 @@ class Template_Tags {
 		// Get all the media credit fields.
 		$credit = self::get_media_credit_fields( $attachment );
 
-		// We want the credit string in plain text format.
-		$result = $credit['plaintext'];
-
-		// If the caller does not want the "fancy" result, strip the separator and organization.
-		if ( ! $fancy && ! empty( $credit['raw']['user_id'] ) ) {
-			$suffix = \preg_quote( Core::get_instance()->get_organization_suffix(), '/' );
-			$result = \preg_replace( "/{$suffix}\$/S", '', $result, 1 );
-		}
-
-		return $result;
+		// We want the credit string in plain text format (but possibly "fancy").
+		return $fancy ? $credit['fancy'] : $credit['plaintext'];
 	}
 
 	/**
