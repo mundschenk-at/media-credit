@@ -29,8 +29,6 @@ namespace Media_Credit\Components;
 
 use Media_Credit\Core;
 use Media_Credit\Settings;
-use Media_Credit\Template_Tags;
-use Media_Credit\Data_Storage\Options;
 
 /**
  * The component handling the integration with the WordPress Media Library.
