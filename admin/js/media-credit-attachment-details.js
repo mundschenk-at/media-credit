@@ -252,7 +252,7 @@ jQuery( function( $ ) {
 					if ( 0 < _.size( updatedMediaCredit ) ) {
 						attachment = new wp.api.models.Media( { id: this.id } );
 						attachment.fetch();
-						attachment.set( 'media_credit', updatedMediaCredit );
+						attachment.set( 'media_credit', { raw: updatedMediaCredit } );
 
 						// Necessary workaround, as post status 'inherited' is not supported by the REST API.
 						attachment.save( { status: 'publish' } );

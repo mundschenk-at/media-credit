@@ -65,32 +65,39 @@ class REST_API implements \Media_Credit\Component {
 				'readonly'    => 'true',
 				'context'     => [ 'view' ],
 			],
-			'user_id'   => [
-				'description' => 'The user ID of the media items author (if set, it overrides any freeform credit)',
-				'type'        => 'integer',
-				'minimum'     => 0,
-				'context'     => [ 'view', 'edit' ],
-			],
-			'freeform'  => [
-				'description' => 'The copyright line itself (if not overridden by the `user_id`)',
-				'type'        => 'string',
-				'context'     => [ 'view', 'edit' ],
-			],
-			'url'       => [
-				'description' => 'A URL to link from the copyright information (overriding the default link to author pages)',
-				'type'        => 'string',
-				'format'      => 'uri',
-				'context'     => [ 'view', 'edit' ],
-			],
-			'flags'     => [
-				'description' => 'A list of flags',
+			'raw'       => [
+				'description' => 'The raw data used for storing the copyright information',
 				'type'        => 'object',
 				'context'     => [ 'view', 'edit' ],
 				'properties'  => [
-					'nofollow' => [
-						'description' => 'Indicates that `rel=nofollow` should be added to the copyright link',
-						'type'        => 'boolean',
+					'user_id'   => [
+						'description' => 'The user ID of the media items author (if set, it overrides any freeform credit)',
+						'type'        => 'integer',
+						'minimum'     => 0,
 						'context'     => [ 'view', 'edit' ],
+					],
+					'freeform'  => [
+						'description' => 'The copyright line itself (if not overridden by the `user_id`)',
+						'type'        => 'string',
+						'context'     => [ 'view', 'edit' ],
+					],
+					'url'       => [
+						'description' => 'A URL to link from the copyright information (overriding the default link to author pages)',
+						'type'        => 'string',
+						'format'      => 'uri',
+						'context'     => [ 'view', 'edit' ],
+					],
+					'flags'     => [
+						'description' => 'A list of flags',
+						'type'        => 'object',
+						'context'     => [ 'view', 'edit' ],
+						'properties'  => [
+							'nofollow' => [
+								'description' => 'Indicates that `rel=nofollow` should be added to the copyright link',
+								'type'        => 'boolean',
+								'context'     => [ 'view', 'edit' ],
+							],
+						],
 					],
 				],
 			],
@@ -248,8 +255,15 @@ class REST_API implements \Media_Credit\Component {
 	 * @return bool
 	 */
 	public function update_media_credit_fields( $value, \WP_Post $post, $field_name, \WP_REST_Request $request ) {
-		$success  = true;
+
+		$success = true;
+
+		// Saved fields.
 		$previous = $this->get_media_credit_json( $post->ID, (int) $post->post_author );
+		$previous = $previous['raw'] ?: [];
+
+		// New fields.
+		$value = $value['raw'] ?: [];
 
 		$freeform   = isset( $value['freeform'] ) ? \wp_kses( $value['freeform'], [ 'a' => [ 'href', 'rel' ] ] ) : $previous['freeform'];
 		$url        = isset( $value['url'] ) ? \esc_url_raw( $value['url'] ) : $previous['url'];
@@ -262,9 +276,8 @@ class REST_API implements \Media_Credit\Component {
 		}
 
 		if ( isset( $value['flags']['nofollow'] ) ) {
-			$flags             = $this->core->get_media_credit_data( $post->ID );
-			$flags['nofollow'] = $nofollow;
-			$success           = $success && \update_post_meta( $post->ID, Core::DATA_POSTMETA_KEY, $flags ); // insert '_media_credit_data' metadata field.
+			$previous['flags']['nofollow'] = $nofollow;
+			$success                       = $success && \update_post_meta( $post->ID, Core::DATA_POSTMETA_KEY, $previous['flags'] ); // insert '_media_credit_data' metadata field.
 		}
 
 		if ( isset( $value['freeform'] ) || isset( $value['user_id'] ) ) {
