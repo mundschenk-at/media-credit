@@ -73,13 +73,6 @@ class Frontend implements \Media_Credit\Component {
 	private $settings;
 
 	/**
-	 * The options handler.
-	 *
-	 * @var Options
-	 */
-	private $options;
-
-	/**
 	 * The core API.
 	 *
 	 * @var Core
@@ -89,14 +82,12 @@ class Frontend implements \Media_Credit\Component {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @param string  $version The version of this plugin.
-	 * @param Core    $core    The core plugin API.
-	 * @param Options $options The options handler.
+	 * @param string $version The version of this plugin.
+	 * @param Core   $core    The core plugin API.
 	 */
-	public function __construct( $version, Core $core, Options $options ) {
+	public function __construct( $version, Core $core ) {
 		$this->version = $version;
 		$this->core    = $core;
-		$this->options = $options;
 	}
 
 	/**

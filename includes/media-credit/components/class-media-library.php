@@ -67,13 +67,6 @@ class Media_Library implements \Media_Credit\Component {
 	private $suffix;
 
 	/**
-	 * The options handler.
-	 *
-	 * @var Options
-	 */
-	private $options;
-
-	/**
 	 * The core API.
 	 *
 	 * @var Core
@@ -86,14 +79,12 @@ class Media_Library implements \Media_Credit\Component {
 	 * @since    3.0.0
 	 * @since    3.3.0 Parameter $options added.
 	 *
-	 * @param string  $version     The plugin version.
-	 * @param Core    $core        The core plugin API.
-	 * @param Options $options     The options handler.
+	 * @param string $version     The plugin version.
+	 * @param Core   $core        The core plugin API.
 	 */
-	public function __construct( $version, Core $core, Options $options ) {
+	public function __construct( $version, Core $core ) {
 		$this->version = $version;
 		$this->core    = $core;
-		$this->options = $options;
 	}
 
 	/**
