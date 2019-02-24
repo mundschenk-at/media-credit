@@ -126,20 +126,6 @@ class Template_Tags {
 	}
 
 	/**
-	 * Returns the default media credit for a given post/attachment (i.e. the post author).
-	 *
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
-	 *
-	 * @return string The post author display name.
-	 */
-	public static function get_wpuser_media_credit( $post = null ) {
-
-		$post = get_post( $post );
-
-		return get_the_author_meta( 'display_name', $post->post_author );
-	}
-
-	/**
 	 * Returns the freeform media credit for a given post/attachment.
 	 *
 	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.

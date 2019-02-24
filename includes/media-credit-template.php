@@ -116,23 +116,6 @@ if ( ! function_exists( 'the_media_credit_html_by_user_id' ) ) {
 	}
 }
 
-if ( ! function_exists( 'get_wpuser_media_credit' ) ) {
-	/**
-	 * Retrieve the default media credit for a given post/attachment (i.e. the post author).
-	 *
-	 * @deprecated since 3.0.0
-	 *
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
-	 * @return string The post author display name.
-	 */
-	function get_wpuser_media_credit( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-
-		_deprecated_function( __FUNCTION__, '3.0.0' );
-
-		return Template_Tags::get_wpuser_media_credit( $post );
-	}
-}
-
 if ( ! function_exists( 'get_freeform_media_credit' ) ) {
 	/**
 	 * Retrieve the freeform emdia credit for a given post/attachment.
