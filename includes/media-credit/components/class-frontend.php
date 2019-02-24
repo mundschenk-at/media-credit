@@ -30,6 +30,7 @@ namespace Media_Credit\Components;
 use Media_Credit\Core;
 use Media_Credit\Template_Tags;
 use Media_Credit\Data_Storage\Options;
+use Media_Credit\Settings;
 
 /**
  * The public-facing functionality of the plugin.
@@ -154,35 +155,30 @@ class Frontend implements \Media_Credit\Component {
 			return $content; // abort.
 		}
 
-		// Look at the plugin options.
-		$include_default_credit = empty( $this->settings['no_default_credit'] );
-		$include_post_thumbnail = ! empty( $this->settings['post_thumbnail_credit'] );
-
 		// Find the attachment_IDs of all media used in $content.
-		if ( ! \preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $images ) && ! $include_post_thumbnail ) {
-			return $content; // no images found.
+		\preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $images );
+		$images = $images[1];
+
+		// Optionally include post thumbnail credit.
+		if ( ! empty( $this->settings[ Settings::FEATURED_IMAGE_CREDIT ] ) ) {
+			$post_thumbnail_id = \get_post_thumbnail_id();
+
+			if ( ! empty( $post_thumbnail_id ) ) {
+				\array_unshift( $images, $post_thumbnail_id );
+			}
 		}
 
 		// Get a list of credits for the page.
 		$credit_unique = [];
-		foreach ( $images[1] as $image_id ) {
-			$credit = Template_Tags::get_media_credit_html( $image_id, $include_default_credit );
-
-			if ( ! empty( $credit ) ) {
-				$credit_unique[] = $credit;
+		foreach ( $images as $image_id ) {
+			$attachment = \get_post( $image_id );
+			if ( ! $attachment instanceof \WP_Post ) {
+				continue;
 			}
-		}
 
-		// Optionally include post thumbnail credit.
-		if ( $include_post_thumbnail ) {
-			$post_thumbnail_id = \get_post_thumbnail_id();
-
-			if ( '' !== $post_thumbnail_id ) {
-				$credit = Template_Tags::get_media_credit_html( (int) $post_thumbnail_id, $include_default_credit );
-
-				if ( ! empty( $credit ) ) {
-					\array_unshift( $credit_unique, $credit );
-				}
+			$credit = $this->core->get_media_credit_json( $attachment );
+			if ( ! empty( $credit['rendered'] ) ) {
+				$credit_unique[] = $credit['rendered'];
 			}
 		}
 
