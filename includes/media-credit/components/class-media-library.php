@@ -28,6 +28,7 @@
 namespace Media_Credit\Components;
 
 use Media_Credit\Core;
+use Media_Credit\Settings;
 use Media_Credit\Template_Tags;
 use Media_Credit\Data_Storage\Options;
 
@@ -242,46 +243,42 @@ class Media_Library implements \Media_Credit\Component {
 	}
 
 	/**
-	 * Add custom media credit fields to Edit Media screens.
+	 * Adds custom media credit fields to Edit Media screens.
 	 *
-	 * @param array        $fields The custom fields.
-	 * @param int|\WP_Post $post   Post object or ID.
-	 * @return array               The list of fields.
+	 * @param array    $fields     An array of attachment form fields.
+	 * @param \WP_Post $attachment The \WP_Post attachment object.
+	 *
+	 * @return array               The filtered fields.
 	 */
-	public function add_media_credit_fields( $fields, $post ) {
-		$options   = $this->core->get_settings();
-		$credit    = Template_Tags::get_media_credit( $post );
-		$value     = 'value';
-		$author_id = '' === Template_Tags::get_freeform_media_credit( $post ) ? $post->post_author : '';
+	public function add_media_credit_fields( $fields, \WP_Post $attachment ) {
+
+		$data      = $this->core->get_media_credit_json( $attachment );
+		$author_id = '' === $data['raw']['freeform'] ? $data['raw']['user_id'] : '';
 
 		// Use placeholders instead of value if no freeform credit is set with `no_default_credit` enabled.
-		if ( ! empty( $options['no_default_credit'] ) && ! empty( $author_id ) ) {
-			$value = 'placeholder';
-		}
+		$s     = $this->core->get_settings();
+		$value = ( ! empty( $s[ Settings::NO_DEFAULT_CREDIT ] ) && ! empty( $author_id ) ) ? 'value' : 'placeholder';
 
 		// Set up credit input field.
 		$fields['media-credit'] = [
 			'label'         => __( 'Credit', 'media-credit' ),
 			'input'         => 'html',
-			'html'          => "<input id='attachments[$post->ID][media-credit]' class='media-credit-input' size='30' $value='$credit' name='attachments[$post->ID][media-credit]' />",
+			'html'          => "<input id='attachments[{$attachment->ID}][media-credit]' class='media-credit-input' size='30' {$value}='{$data['plaintext']}' name='attachments[{$attachment->ID}][media-credit]' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
 		];
 
 		// Set up credit URL field.
-		$url = Template_Tags::get_media_credit_url( $post );
-
 		$fields['media-credit-url'] = [
 			'label'         => __( 'Credit URL', 'media-credit' ),
 			'input'         => 'html',
-			'html'          => "<input id='attachments[$post->ID][media-credit-url]' class='media-credit-input' type='url' size='30' value='$url' name='attachments[$post->ID][media-credit-url]' />",
+			'html'          => "<input id='attachments[{$attachment->ID}][media-credit-url]' class='media-credit-input' type='url' size='30' value='{$data['raw']['url']}' name='attachments[{$attachment->ID}][media-credit-url]' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
 		];
 
 		// Set up nofollow checkbox.
-		$data = Template_Tags::get_media_credit_data( $post );
-		$html = "<label><input id='attachments[$post->ID][media-credit-nofollow]' class='media-credit-input' type='checkbox' value='1' name='attachments[$post->ID][media-credit-nofollow]' " . checked( ! empty( $data['nofollow'] ), true, false ) . '/>' . __( 'Add <code>rel="nofollow"</code>.', 'media-credit' ) . '</label>';
+		$html = "<label><input id='attachments[{$attachment->ID}][media-credit-nofollow]' class='media-credit-input' type='checkbox' value='1' name='attachments[{$attachment->ID}][media-credit-nofollow]' " . \checked( ! empty( $data['raw']['flags']['nofollow'] ), true, false ) . '/>' . __( 'Add <code>rel="nofollow"</code>.', 'media-credit' ) . '</label>';
 
 		$fields['media-credit-data'] = [
 			'label'         => '', // necessary for HTML type fields.
@@ -292,13 +289,12 @@ class Media_Library implements \Media_Credit\Component {
 		];
 
 		// Set up hidden field as a container for additional data.
-		$author_display = Template_Tags::get_media_credit( $post );
-		$nonce          = wp_create_nonce( 'media_credit_author_names' );
+		$nonce = \wp_create_nonce( 'media_credit_author_names' );
 
 		$fields['media-credit-hidden'] = [
 			'label'         => '', // necessary for HTML type fields.
 			'input'         => 'html',
-			'html'          => "<input name='attachments[$post->ID][media-credit-hidden]' id='attachments[$post->ID][media-credit-hidden]' type='hidden' value='$author_id' class='media-credit-hidden' data-author-id='{$post->post_author}' data-post-id='$post->ID' data-author-display='$author_display' data-nonce='$nonce' />",
+			'html'          => "<input name='attachments[{$attachment->ID}][media-credit-hidden]' id='attachments[{$attachment->ID}][media-credit-hidden]' type='hidden' value='$author_id' class='media-credit-hidden' data-author-id='{$attachment->post_author}' data-post-id='{$attachment->ID}' data-author-display='{$data['plaintext']}' data-nonce='{$nonce}' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
 		];
