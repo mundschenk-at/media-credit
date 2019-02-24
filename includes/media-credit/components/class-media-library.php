@@ -180,7 +180,24 @@ class Media_Library implements \Media_Credit\Component {
 		}
 
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
-		add_filter( 'the_author', [ Template_Tags::class, 'get_media_credit' ] );
+		add_filter( 'the_author', [ $this, 'filter_the_author' ], 10, 1 );
+	}
+
+	/**
+	 * Filters the author name to properly display custom credits.
+	 *
+	 * @param  string $display_name The author's display name.
+	 *
+	 * @return string
+	 */
+	public function filter_the_author( $display_name ) {
+		$attachment = \get_post();
+		if ( $attachment instanceof \WP_Post && 'attachment' === $attachment->post_type ) {
+			$fields       = $this->core->get_media_credit_json( $attachment );
+			$display_name = $fields['plaintext'];
+		}
+
+		return $display_name;
 	}
 
 	/**
