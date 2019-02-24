@@ -258,7 +258,7 @@ class Shortcodes implements \Media_Credit\Component {
 		// If present, use the user ID.
 		if ( $atts['id'] > 0 ) {
 			$credit        = \get_the_author_meta( 'display_name', $atts['id'] );
-			$credit_suffix = empty( $atts['link'] ) ? \get_author_posts_url( $atts['id'] ) : $atts['link'];
+			$credit_suffix = $this->core->get_organization_suffix();
 			$url           = $url ?: \get_author_posts_url( $atts['id'] );
 		}
 
