@@ -212,36 +212,13 @@ class REST_API implements \Media_Credit\Component {
 	 * @param  string           $field_name  The field name.
 	 * @param  \WP_REST_Request $request     The REST request.
 	 *
-	 * @return array
+	 * @return array|void
 	 */
 	public function prepare_media_credit_fields( $post, $field_name, \WP_REST_Request $request ) {
-		return $this->get_media_credit_json( $post['id'], $post['author'] );
-	}
-
-	/**
-	 * Prepares the JSON data for the given attachment's media credit.
-	 *
-	 * @param  int $attachment_id The post ID of the media item.
-	 * @param  int $author_id     The author ID of the media item.
-	 *
-	 * @return array
-	 */
-	protected function get_media_credit_json( $attachment_id, $author_id ) {
-		// Prepare helper objects.
-		$post_object = \get_post( $attachment_id );
-		$flags       = $this->core->get_media_credit_data( $attachment_id );
-
-		// Return media credit data.
-		return [
-			'rendered'  => Template_Tags::get_media_credit_html( $post_object, true ),
-			'plaintext' => Template_Tags::get_media_credit( $post_object, true ),
-			'user_id'   => $author_id,
-			'freeform'  => $this->core->get_media_credit_freeform_text( $attachment_id ),
-			'url'       => $this->core->get_media_credit_url( $attachment_id ),
-			'flags'     => [
-				'nofollow' => ! empty( $flags['nofollow'] ),
-			],
-		];
+		$attachment = \get_post( $post['id'] );
+		if ( $attachment instanceof \WP_Post ) {
+			return $this->core->get_media_credit_json( $attachment );
+		}
 	}
 
 	/**
@@ -255,11 +232,10 @@ class REST_API implements \Media_Credit\Component {
 	 * @return bool
 	 */
 	public function update_media_credit_fields( $value, \WP_Post $post, $field_name, \WP_REST_Request $request ) {
-
 		$success = true;
 
 		// Saved fields.
-		$previous = $this->get_media_credit_json( $post->ID, (int) $post->post_author );
+		$previous = $this->core->get_media_credit_json( $post );
 		$previous = $previous['raw'] ?: [];
 
 		// New fields.

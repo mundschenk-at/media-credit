@@ -218,18 +218,16 @@ class Media_Library implements \Media_Credit\Component {
 	 */
 	public function prepare_attachment_media_credit_for_js( array $response, \WP_Post $attachment ) {
 
-		$credit    = Template_Tags::get_media_credit( $attachment );
-		$url       = $this->core->get_media_credit_url( $attachment->ID );
-		$data      = $this->core->get_media_credit_data( $attachment->ID );
-		$author_id = '' === Template_Tags::get_freeform_media_credit( $attachment ) ? $attachment->post_author : '';
-		$options   = $this->core->get_settings();
+		// Load data and settings.
+		$credit  = $this->core->get_media_credit_json( $attachment );
+		$options = $this->core->get_settings();
 
 		// Set up Media Credit model data (not as an array because data-settings code in View can't deal with it.
-		$response['mediaCreditText']          = $credit;
-		$response['mediaCreditLink']          = $url;
-		$response['mediaCreditAuthorID']      = $author_id;
-		$response['mediaCreditAuthorDisplay'] = $author_id ? $credit : '';
-		$response['mediaCreditNoFollow']      = ! empty( $data['nofollow'] ) ? '1' : '0';
+		$response['mediaCreditText']          = $credit['plaintext'];
+		$response['mediaCreditLink']          = $credit['raw']['url'];
+		$response['mediaCreditAuthorID']      = $credit['raw']['user_id'];
+		$response['mediaCreditAuthorDisplay'] = $credit['raw']['user_id'] ? $credit['plaintext'] : '';
+		$response['mediaCreditNoFollow']      = ! empty( $credit['raw']['flags']['nofollow'] ) ? '1' : '0';
 
 		// Add some nonces.
 		$response['nonces']['mediaCredit']['update']  = wp_create_nonce( "save-attachment-{$response['id']}-media-credit" );

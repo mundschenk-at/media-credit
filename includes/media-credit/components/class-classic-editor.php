@@ -192,11 +192,11 @@ class Classic_Editor implements \Media_Credit\Component {
 	/**
 	 * Add media credit information to media using shortcode notation before sending to editor.
 	 *
-	 * @param string $html          The image HTML markup to send.
-	 * @param int    $attachment_id The attachment id.
-	 * @param string $caption       The image caption.
-	 * @param string $title         The image title.
-	 * @param string $align         The image alignment.
+	 * @param  string $html          The image HTML markup to send.
+	 * @param  int    $attachment_id The attachment id.
+	 * @param  string $caption       The image caption.
+	 * @param  string $title         The image title.
+	 * @param  string $align         The image alignment.
 	 *
 	 * @return string
 	 */
@@ -204,31 +204,32 @@ class Classic_Editor implements \Media_Credit\Component {
 		// Get the attachment object.
 		$attachment = \get_post( $attachment_id );
 
-		// Are default credits (= WordPress users) allowed?
-		$options     = $this->core->get_settings();
-		$no_defaults = ! empty( $options['no_default_credit'] );
+		// Bail if we don't have a valid attachment.
+		if ( ! $attachment instanceof \WP_Post ) {
+			return $html;
+		}
+
+		// Retrieve credit for image.
+		$credit = $this->core->get_media_credit_json( $attachment );
 
 		// Set freeform or site user credit.
-		$freeform = \get_post_meta( $attachment_id, Core::POSTMETA_KEY, true );
-		if ( Core::EMPTY_META_STRING === $freeform || ( empty( $freeform ) && $no_defaults ) ) {
+		if ( Core::EMPTY_META_STRING === $credit['raw']['freeform'] || empty( $credit['plaintext'] ) ) {
 			// No credit to add.
 			return $html;
-		} elseif ( ! empty( $freeform ) ) {
+		} elseif ( ! empty( $credit['raw']['freeform'] ) ) {
 			// Add the freeform credit.
-			$shortcode_arguments = "name='{$freeform}'";
+			$shortcode_arguments = "name='{$credit['raw']['freeform']}'";
 		} else {
 			// Add the user credit.
-			$shortcode_arguments = "id={$attachment->post_author}";
+			$shortcode_arguments = "id={$credit['raw']['user_id']}";
 		}
 
 		// Add link URL.
-		$url = Template_Tags::get_media_credit_url( $attachment );
-		if ( ! empty( $url ) ) {
-			$shortcode_arguments .= " link='{$url}'";
+		if ( ! empty( $credit['raw']['url'] ) ) {
+			$shortcode_arguments .= " link='{$credit['raw']['url']}'";
 
 			// Optionally add "nofollow" parameter.
-			$data = Template_Tags::get_media_credit_data( $attachment );
-			if ( ! empty( $data['nofollow'] ) ) {
+			if ( ! empty( $credit['raw']['flags']['nofollow'] ) ) {
 				$shortcode_arguments .= ' nofollow=1';
 			}
 		}

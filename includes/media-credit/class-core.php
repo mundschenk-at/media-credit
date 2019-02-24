@@ -71,6 +71,24 @@ class Core {
 	const DATA_POSTMETA_KEY = '_media_credit_data';
 
 	/**
+	 * An array of empty media credit fields.
+	 *
+	 * @var array
+	 */
+	const INVALID_MEDIA_CREDIT = [
+		'rendered'  => '',
+		'plaintext' => '',
+		'raw'       => [
+			'user_id'  => 0,
+			'freeform' => '',
+			'url'      => '',
+			'flags'    => [
+				'nofollow' => 0,
+			],
+		],
+	];
+
+	/**
 	 * The singleton instance.
 	 *
 	 * @var Core
@@ -306,14 +324,7 @@ class Core {
 	 * @return string            The freeform credit (or the empty string).
 	 */
 	public function get_media_credit_freeform_text( $attachment_id ) {
-
-		$result = \get_post_meta( $attachment_id, self::POSTMETA_KEY, true );
-
-		if ( empty( $result ) ) {
-			$result = '';
-		}
-
-		return $result;
+		return (string) \get_post_meta( $attachment_id, self::POSTMETA_KEY, true );
 	}
 
 	/**
@@ -324,14 +335,7 @@ class Core {
 	 * @return string            The credit URL (or the empty string if none is set).
 	 */
 	public function get_media_credit_url( $attachment_id ) {
-
-		$result = \get_post_meta( $attachment_id, self::URL_POSTMETA_KEY, true );
-
-		if ( empty( $result ) ) {
-			$result = '';
-		}
-
-		return $result;
+		return (string) \get_post_meta( $attachment_id, self::URL_POSTMETA_KEY, true );
 	}
 
 	/**
@@ -345,11 +349,135 @@ class Core {
 
 		$result = \get_post_meta( $attachment_id, self::DATA_POSTMETA_KEY, true );
 
-		// Always return an array.
-		if ( empty( $result ) ) {
-			$result = [];
+		// Always return an array (it shouldn't be a scalar, but we want to be certain).
+		return ( $result ? (array) $result : [] );
+	}
+
+	/**
+	 * Retrieves the organization suffix (separator and organization name) for
+	 * crediting registered WordPress users.
+	 *
+	 * @return string
+	 */
+	public function get_organization_suffix() {
+		$s = $this->get_settings();
+
+		return "{$s[ Settings::SEPARATOR ]}{$s[ Settings::ORGANIZATION ]}";
+	}
+
+	/**
+	 * Renders the media credit as HTML (i.e. with a link to the author page or
+	 * custom URL).
+	 *
+	 * @param int    $user_id  Optional. The ID of the media item author. Default 0 (invalid).
+	 * @param string $freeform Optional. The media credit string (if $user_id is not used). Default ''.
+	 * @param string $url      Optional. A URL the credit should link to. Default ''.
+	 * @param array  $flags {
+	 *     Optional. An array of flags to modify the rendering of the media credit. Default [].
+	 *
+	 *     @type bool $nofollow Optional. A flag indicating that `rel=nofollow` should be added to the link. Default false.
+	 * }
+	 *
+	 * @return string                             The media credit HTML (or the empty string if no credit is set).
+	 */
+	protected function render_media_credit_html( $user_id = 0, $freeform = '', $url = '', array $flags = [] ) {
+
+		// The plugin settings are needed to render the credit.
+		$s = $this->get_settings();
+
+		// Start building the credit markup.
+		$credit = '';
+		$name   = $freeform;
+		$suffix = '';
+
+		if ( '' === $freeform && ! empty( $user_id ) && empty( $s[ Settings::NO_DEFAULT_CREDIT ] ) ) {
+			$name   = \get_the_author_meta( 'display_name', $user_id );
+			$url    = $url ?: \get_author_posts_url( $user_id );
+			$suffix = $this->get_organization_suffix();
 		}
 
-		return $result;
+		if ( ! empty( $url ) ) {
+			$attributes = ! empty( $flags['nofollow'] ) ? ' rel="nofollow"' : '';
+			$credit     = '<a href="' . \esc_url( $url ) . '"' . "{$attributes}>" . \esc_html( $name ) . '</a>';
+		} else {
+			$credit = \esc_html( $name );
+		}
+
+		// The suffix should not contain any markup (the credit might).
+		return $credit . \esc_html( $suffix );
+	}
+
+	/**
+	 * Renders the media credit as HTML (i.e. with a link to the author page or
+	 * custom URL).
+	 *
+	 * @param int    $user_id  Optional. The ID of the media item author. Default 0 (invalid).
+	 * @param string $freeform Optional. The media credit string (if $user_id is not used). Default ''.
+	 *
+	 * @return string                             The media credit HTML (or the empty string if no credit is set).
+	 */
+	protected function render_media_credit_plaintext( $user_id = 0, $freeform = '' ) {
+
+		// The plugin settings are needed to render the credit.
+		$s = $this->get_settings();
+
+		// Start building the credit markup.
+		$name   = $freeform;
+		$suffix = '';
+
+		if ( '' === $freeform && ! empty( $user_id ) && empty( $s[ Settings::NO_DEFAULT_CREDIT ] ) ) {
+			$name   = \get_the_author_meta( 'display_name', $user_id );
+			$suffix = $this->get_organization_suffix();
+		}
+
+		// The suffix should not contain any markup (the credit might).
+		return "{$name}{$suffix}";
+	}
+
+	/**
+	 * Prepares the JSON data for the given attachment's media credit.
+	 *
+	 * @param  \WP_Post $attachment The attachment \WP_Post object.
+	 *
+	 * @return array {
+	 *     An array ready for conversion to JSON.
+	 *
+	 *     @type string $rendered  The HTML representation of the credit (i.e. including links).
+	 *     @type string $plaintext The plain text representation of the credit (i.e. without any markup).
+	 *     @type array  $raw {
+	 *         The raw data used to store the media credit. On error, an empty array is returned.
+	 *
+	 *         @type int    $user_id  Optional. The ID of the media item author. Default 0 (invalid).
+	 *         @type string $freeform Optional. The media credit string (if $user_id is not used). Default ''.
+	 *         @type string $url      Optional. A URL the credit should link to. Default ''.
+	 *         @type array  $flags {
+	 *             Optional. An array of flags to modify the rendering of the media credit. Default [].
+	 *
+	 *             @type bool $nofollow Optional. A flag indicating that `rel=nofollow` should be added to the link. Default false.
+	 *         }
+	 *     }
+	 * }
+	 */
+	public function get_media_credit_json( \WP_Post $attachment ) {
+
+		// Retrieve the fields.
+		$user_id  = (int) $attachment->post_author;
+		$freeform = $this->get_media_credit_freeform_text( $attachment->ID );
+		$url      = $this->get_media_credit_url( $attachment->ID );
+		$flags    = $this->get_media_credit_data( $attachment->ID );
+
+		// Return media credit data.
+		return [
+			'rendered'  => $this->render_media_credit_html( $user_id, $freeform, $url, $flags ),
+			'plaintext' => $this->render_media_credit_plaintext( $user_id, $freeform ),
+			'raw'       => [
+				'user_id'   => $user_id,
+				'freeform'  => $freeform,
+				'url'       => $url,
+				'flags'     => [
+					'nofollow' => ! empty( $flags['nofollow'] ),
+				],
+			],
+		];
 	}
 }
