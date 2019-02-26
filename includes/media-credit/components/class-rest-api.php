@@ -237,54 +237,14 @@ class REST_API implements \Media_Credit\Component {
 	 * @return bool
 	 */
 	public function update_media_credit_fields( $value, \WP_Post $post, $field_name, \WP_REST_Request $request ) {
-		$success = true;
-
-		// Saved fields.
-		$previous = $this->core->get_media_credit_json( $post );
-		$previous = $previous['raw'] ?: [];
-
-		// New fields.
-		$value = $value['raw'] ?: [];
-
-		$freeform   = isset( $value['freeform'] ) ? \wp_kses( $value['freeform'], [ 'a' => [ 'href', 'rel' ] ] ) : $previous['freeform'];
-		$url        = isset( $value['url'] ) ? \esc_url_raw( $value['url'] ) : $previous['url'];
-		$wp_user_id = isset( $value['user_id'] ) ? \absint( $value['user_id'] ) : $previous['user_id'];
-		$nofollow   = isset( $value['flags']['nofollow'] ) ? \filter_var( $value['flags']['nofollow'], FILTER_VALIDATE_BOOLEAN ) : $previous['flags']['nofollow'];
-
-		if ( isset( $value['url'] ) ) {
-			// We need to update the credit URL.
-			$success = $success && \update_post_meta( $post->ID, Core::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
+		if ( empty( $value['raw'] ) ) {
+			return false;
 		}
 
-		if ( isset( $value['flags']['nofollow'] ) ) {
-			$previous['flags']['nofollow'] = $nofollow;
-			$success                       = $success && \update_post_meta( $post->ID, Core::DATA_POSTMETA_KEY, $previous['flags'] ); // insert '_media_credit_data' metadata field.
-		}
+		// Save fields.
+		$this->core->update_media_credit_json( $post, $value['raw'] );
 
-		if ( isset( $value['freeform'] ) || isset( $value['user_id'] ) ) {
-			if ( ! empty( $wp_user_id ) && \get_the_author_meta( 'display_name', (int) $wp_user_id ) === $freeform ) {
-				// A valid WP user was selected, and the display name matches the free-form
-				// the final conditional is necessary for the case when a valid user is selected, filling in the hidden
-				// field, then free-form text is entered after that. if so, the free-form text is what should be used.
-				$success = $success && \wp_update_post(
-					[
-						'ID'          => $post->ID,
-						'post_author' => $wp_user_id,
-					]
-				);
-
-				$success = $success && \delete_post_meta( $post->ID, Core::POSTMETA_KEY ); // delete any residual metadata from a free-form field (as inserted below).
-				$this->core->update_media_credit_in_post( $post->ID, '', $url );
-			} else {
-				// Free-form text was entered, insert postmeta with credit.
-				// if free-form text is blank, insert a single space in postmeta.
-				$freeform = $freeform ?: Core::EMPTY_META_STRING;
-				$success  = $success && \update_post_meta( $post->ID, Core::POSTMETA_KEY, $freeform ); // insert '_media_credit' metadata field for image with free-form text.
-				$this->core->update_media_credit_in_post( $post->ID, $freeform, $url );
-			}
-		}
-
-		return $success;
+		return true;
 	}
 
 	/**
