@@ -27,6 +27,7 @@
 
 namespace Media_Credit;
 
+use Media_Credit\Data_Storage\Cache;
 use Media_Credit\Data_Storage\Options;
 
 /**
@@ -104,6 +105,13 @@ class Core {
 	private $version;
 
 	/**
+	 * The object cache handler.
+	 *
+	 * @var Cache
+	 */
+	private $cache;
+
+	/**
 	 * The options handler.
 	 *
 	 * @var Options
@@ -128,11 +136,13 @@ class Core {
 	 * Creates a new instance.
 	 *
 	 * @param string   $version           The plugin version string (e.g. "3.0.0-beta.2").
+	 * @param Cache    $cache             The object cache handler.
 	 * @param Options  $options           The options handler.
 	 * @param Settings $settings_template The default settings template.
 	 */
-	public function __construct( $version, Options $options, Settings $settings_template ) {
+	public function __construct( $version, Cache $cache, Options $options, Settings $settings_template ) {
 		$this->version           = $version;
+		$this->cache             = $cache;
 		$this->options           = $options;
 		$this->settings_template = $settings_template;
 	}
