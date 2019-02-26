@@ -232,8 +232,8 @@ class Media_Library implements \Media_Credit\Component {
 		// Set up Media Credit model data (not as an array because data-settings code in View can't deal with it.
 		$response['mediaCreditText']          = $credit['plaintext'];
 		$response['mediaCreditLink']          = $credit['raw']['url'];
-		$response['mediaCreditAuthorID']      = $credit['raw']['user_id'];
-		$response['mediaCreditAuthorDisplay'] = $credit['raw']['user_id'] ? $credit['plaintext'] : '';
+		$response['mediaCreditAuthorID']      = empty( $credit['raw']['freeform'] ) ? $credit['raw']['user_id'] : '';
+		$response['mediaCreditAuthorDisplay'] = $response['mediaCreditAuthorID'] ? \get_the_author_meta( 'display_name',  /* @scrutinizer ignore-type */ $response['mediaCreditAuthorID'] ) : '';
 		$response['mediaCreditNoFollow']      = ! empty( $credit['raw']['flags']['nofollow'] ) ? '1' : '0';
 
 		// Add some nonces.
@@ -262,14 +262,17 @@ class Media_Library implements \Media_Credit\Component {
 		$author_id = '' === $data['raw']['freeform'] ? $data['raw']['user_id'] : '';
 
 		// Use placeholders instead of value if no freeform credit is set with `no_default_credit` enabled.
-		$s     = $this->core->get_settings();
-		$value = ( ! empty( $s[ Settings::NO_DEFAULT_CREDIT ] ) && ! empty( $author_id ) ) ? 'value' : 'placeholder';
+		$value_or_placeholder = "value='{$data['plaintext']}'";
+		if ( ! empty( $this->core->get_settings()[ Settings::NO_DEFAULT_CREDIT ] ) && ! empty( $author_id ) ) {
+			$display_name         = \esc_attr( \get_the_author_meta( 'display_name', /* @scrutinizer ignore-type */ $author_id ) );
+			$value_or_placeholder = "placeholder='{$display_name}'";
+		}
 
 		// Set up credit input field.
 		$fields['media-credit'] = [
 			'label'         => __( 'Credit', 'media-credit' ),
 			'input'         => 'html',
-			'html'          => "<input id='attachments[{$attachment->ID}][media-credit]' class='media-credit-input' size='30' {$value}='{$data['plaintext']}' name='attachments[{$attachment->ID}][media-credit]' />",
+			'html'          => "<input id='attachments[{$attachment->ID}][media-credit]' class='media-credit-input' size='30' {$value_or_placeholder}' name='attachments[{$attachment->ID}][media-credit]' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
 		];
