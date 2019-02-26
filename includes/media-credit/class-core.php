@@ -27,6 +27,7 @@
 
 namespace Media_Credit;
 
+use Media_Credit\Data_Storage\Cache;
 use Media_Credit\Data_Storage\Options;
 
 /**
@@ -104,6 +105,13 @@ class Core {
 	private $version;
 
 	/**
+	 * The object cache handler.
+	 *
+	 * @var Cache
+	 */
+	private $cache;
+
+	/**
 	 * The options handler.
 	 *
 	 * @var Options
@@ -128,11 +136,13 @@ class Core {
 	 * Creates a new instance.
 	 *
 	 * @param string   $version           The plugin version string (e.g. "3.0.0-beta.2").
+	 * @param Cache    $cache             The object cache handler.
 	 * @param Options  $options           The options handler.
 	 * @param Settings $settings_template The default settings template.
 	 */
-	public function __construct( $version, Options $options, Settings $settings_template ) {
+	public function __construct( $version, Cache $cache, Options $options, Settings $settings_template ) {
 		$this->version           = $version;
+		$this->cache             = $cache;
 		$this->options           = $options;
 		$this->settings_template = $settings_template;
 	}
@@ -190,25 +200,29 @@ class Core {
 	}
 
 	/**
-	 * If the given media is attached to a post, edit the media-credit info in the attached (parent) post.
+	 * Updates the shortcodes in the attachments parent post to match the arguments.
 	 *
-	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
-	 * @param string       $freeform   Credit for attachment with freeform string. Empty if attachment should be credited to the attachment author.
-	 * @param string       $url        Credit URL for linking. Empty means default link for user of this blog, no link for freeform credit.
+	 * @param  \WP_Post $attachment The attachment \WP_Post object.
+	 * @param  int      $user_id  Optional. The new ID of the media item author. Default 0.
+	 * @param  string   $freeform Optional. The new free-fomr credit string (if $user_id is not used). Default ''.
+	 * @param  string   $url      Optional. The new URL the credit should link to. Default ''.
+	 * @param  array    $flags {
+	 *     Optional. An array of flags to modify the rendering of the media credit. Default [].
+	 *
+	 *     @type bool $nofollow Optional. A flag indicating that `rel=nofollow` should be added to the link. Default false.
+	 * }
 	 */
-	public function update_media_credit_in_post( $attachment, $freeform = '', $url = '' ) {
-
-		// Make sure we are dealing with a post object.
-		if ( ! $attachment instanceof \WP_Post ) {
-			$attachment = \get_post( $attachment );
-		}
+	public function update_shortcodes_in_parent_post( \WP_Post $attachment, $user_id = 0, $freeform = '', $url = '', array $flags = [] ) {
 
 		if ( ! empty( $attachment->post_parent ) ) {
 			// Get the parent post of the attachment.
 			$post = \get_post( $attachment->post_parent );
 
+			// Extract flags.
+			$nofollow = ! empty( $flags['nofollow'] );
+
 			// Filter the post's content.
-			$post->post_content = $this->filter_changed_media_credits( $post->post_content, $attachment->ID, (int) $attachment->post_author, $freeform, $url );
+			$post->post_content = $this->filter_changed_media_credits( $post->post_content, $attachment->ID, $user_id, $freeform, $url, $nofollow );
 
 			// Save the filtered content in the database.
 			\wp_update_post( $post );
@@ -222,11 +236,12 @@ class Core {
 	 * @param int    $image_id  The attachment ID.
 	 * @param int    $author_id The author ID.
 	 * @param string $freeform  The freeform credit.
-	 * @param string $url       The credit URL. Optional. Default ''.
+	 * @param string $url       The credit URL.
+	 * @param bool   $nofollow  The "rel=nofollow" flag.
 	 *
 	 * @return string           The filtered post content.
 	 */
-	public function filter_changed_media_credits( $content, $image_id, $author_id, $freeform, $url = '' ) {
+	public function filter_changed_media_credits( $content, $image_id, $author_id, $freeform, $url, $nofollow ) {
 
 		// Get the image source URL.
 		$src = \wp_get_attachment_image_src( $image_id );
@@ -273,6 +288,13 @@ class Core {
 				$attr['link'] = $url;
 			} else {
 				unset( $attr['link'] );
+			}
+
+			// Update nofollow attribute.
+			if ( ! empty( $url ) && ! empty( $nofollow ) ) {
+				$attr['nofollow'] = true;
+			} else {
+				unset( $attr['nofollow'] );
 			}
 
 			// Start reconstructing the shortcode.
@@ -481,25 +503,188 @@ class Core {
 	 */
 	public function get_media_credit_json( \WP_Post $attachment ) {
 
-		// Retrieve the fields.
-		$user_id  = (int) $attachment->post_author;
-		$freeform = $this->get_media_credit_freeform_text( $attachment->ID );
-		$url      = $this->get_media_credit_url( $attachment->ID );
-		$flags    = $this->get_media_credit_data( $attachment->ID );
+		$key  = "json_{$attachment->ID}";
+		$json = $this->cache->get( $key );
 
-		// Return media credit data.
-		return [
-			'rendered'  => $this->render_media_credit_html( $user_id, $freeform, $url, $flags ),
-			'plaintext' => $this->render_media_credit_plaintext( $user_id, $freeform ),
-			'fancy'     => $this->render_media_credit_fancy( $user_id, $freeform ),
-			'raw'       => [
-				'user_id'   => $user_id,
-				'freeform'  => $freeform,
-				'url'       => $url,
-				'flags'     => [
-					'nofollow' => ! empty( $flags['nofollow'] ),
+		if ( ! \is_array( $json ) ) {
+			// Retrieve the fields.
+			$user_id  = (int) $attachment->post_author;
+			$freeform = $this->get_media_credit_freeform_text( $attachment->ID );
+			$url      = $this->get_media_credit_url( $attachment->ID );
+			$flags    = $this->get_media_credit_data( $attachment->ID );
+
+			// Build media credit data.
+			$json = [
+				'rendered'  => $this->render_media_credit_html( $user_id, $freeform, $url, $flags ),
+				'plaintext' => $this->render_media_credit_plaintext( $user_id, $freeform ),
+				'fancy'     => $this->render_media_credit_fancy( $user_id, $freeform ),
+				'raw'       => [
+					'user_id'   => $user_id,
+					'freeform'  => $freeform,
+					'url'       => $url,
+					'flags'     => [
+						'nofollow' => ! empty( $flags['nofollow'] ),
+					],
 				],
-			],
+			];
+
+			// Save our efforts for next time.
+			$this->cache->set( $key, $json );
+		}
+
+		return $json;
+	}
+
+	/**
+	 * Updates the media credit fields from a JSON response and fixes the shortcodes
+	 * in the attachments parent post.
+	 *
+	 * @param  \WP_Post $attachment The attachment \WP_Post object.
+	 * @param  array    $fields {
+	 *     The raw data used to store the media credit. May be wrapped in an
+	 *     additional outer array with the 'raw' index.
+	 *
+	 *     @type int|null    $user_id  Optional. The ID of the media item author. Default null.
+	 *     @type string|null $freeform Optional. The media credit string (if $user_id is not used). Default null.
+	 *     @type string|null $url      Optional. A URL the credit should link to. Default null.
+	 *     @type array|null  $flags {
+	 *         Optional. An array of flags to modify the rendering of the media credit. Default null.
+	 *
+	 *         @type bool $nofollow Optional. A flag indicating that `rel=nofollow` should be added to the link. Default false.
+	 *     }
+	 * }
+	 */
+	public function update_media_credit_json( \WP_Post $attachment, array $fields ) {
+
+		// Allow direct use of REST API response.
+		if ( isset( $fields['raw'] ) && \is_array( $fields['raw'] ) ) {
+			$fields = $fields['raw'];
+		}
+
+		// Extract values from the fields.
+		$user_id  = isset( $fields['user_id'] ) ? $this->validate_user_id( $fields['user_id'] ) : null;
+		$freeform = isset( $fields['freeform'] ) ? $fields['freeform'] : null;
+		$url      = isset( $fields['url'] ) ? $fields['url'] : null;
+		$flags    = isset( $fields['flags'] ) ? $fields['flags'] : null;
+
+		// Modify the media credit fields and retrieve the new values.
+		$new = $this->set_media_credit_fields( $attachment, $user_id, $freeform, $url, $flags );
+
+		// Invalidate the cache.
+		$this->cache->delete( "json_{$attachment->ID}" );
+
+		// Update the shortcodes in the parent post of the attachment.
+		$this->update_shortcodes_in_parent_post( $attachment, $new['freeform'], $new['url'] );
+	}
+
+	/**
+	 * Updates the media credit fields.
+	 *
+	 * @internal
+	 *
+	 * @param  \WP_Post    $attachment The attachment \WP_Post object.
+	 * @param  int|null    $user_id  Optional. The ID of the media item author. Default null.
+	 * @param  string|null $freeform Optional. The media credit string (if $user_id is not used). Default null.
+	 * @param  string|null $url      Optional. A URL the credit should link to. Default null.
+	 * @param  array|null  $flags {
+	 *     Optional. An array of flags to modify the rendering of the media credit. Default null.
+	 *
+	 *     @type bool $nofollow Optional. A flag indicating that `rel=nofollow` should be added to the link. Default false.
+	 * }
+	 *
+	 * @return array {
+	 *     The new values for the media credit fields.
+	 *
+	 *     @type int    $user_id  The ID of the media item author.
+	 *     @type string $freeform The media credit string (if $user_id is not used).
+	 *     @type string $url      A URL the credit should link to.
+	 *     @type array  $flags {
+	 *         An array of flags to modify the rendering of the media credit.
+	 *
+	 *         @type bool $nofollow A flag indicating that `rel=nofollow` should be added to the link.
+	 *     }
+	 * }
+	 */
+	protected function set_media_credit_fields( \WP_Post $attachment, $user_id = null, $freeform = null, $url = null, $flags = null ) {
+
+		// Retrieve the current media credit fields for the attachemnt.
+		$current = $this->get_media_credit_json( $attachment )['raw'];
+
+		// Check if either the free-form credit or the author credit need to be updated.
+		if ( isset( $freeform ) || isset( $user_id ) ) {
+			if ( ! empty( $user_id ) && ( empty( $freeform ) || \get_the_author_meta( 'display_name', $user_id ) === $freeform ) ) {
+
+				// A valid WordPress user was selected, and the display name matches
+				// the free-form credit (or empty). The final conditional is necessary
+				// for the case when a valid user is selected, filling in the hidden
+				// field, then free-form text is entered after that. if so, the
+				// free-form text is what should be used.
+				$this->set_post_author_credit( $attachment, $user_id );
+
+				// The freeform string does not exist anymore.
+				$freeform = '';
+			} else {
+
+				// Free-form text was entered, insert postmeta with credit.
+				// if free-form text is blank, insert a single space in postmeta.
+				$freeform = $freeform ?: self::EMPTY_META_STRING;
+				\update_post_meta( $attachment->ID, self::POSTMETA_KEY, $freeform );
+			}
+		}
+
+		// Check if we need to update the URL.
+		if ( isset( $url ) ) {
+			\update_post_meta( $attachment->ID, self::URL_POSTMETA_KEY, $url );
+		} else {
+			$url = $current['url'];
+		}
+
+		// Check if we need to update the flags.
+		if ( isset( $flags ) ) {
+			// Merge current and updated fflags.
+			$flags = \wp_parse_args( $flags, $current['flags'] );
+
+			// Store the new flags array.
+			\update_post_meta( $attachment->ID, self::DATA_POSTMETA_KEY, $flags );
+		} else {
+			$flags = $current['flags'];
+		}
+
+		return [
+			'user_id'  => $user_id,
+			'freeform' => $freeform,
+			'url'      => $url,
+			'flags'    => $flags,
 		];
+	}
+
+	/**
+	 * Sets a new post author media credit and deletes any existing free-form credit.
+	 *
+	 * @param \WP_Post $attachment The attachment \WP_Post object.
+	 * @param int      $user_id    A valid user ID.
+	 */
+	protected function set_post_author_credit( \WP_Post $attachment, $user_id ) {
+		$fields = [
+			'ID'          => $attachment->ID,
+			'post_author' => $user_id,
+		];
+		\wp_update_post( $fields );
+
+		// Delete any residual metadata from a free-form field (as inserted below).
+		\delete_post_meta( $attachment->ID, self::POSTMETA_KEY );
+	}
+
+	/**
+	 * Validates a putative user ID against the database.
+	 *
+	 * @param  mixed $user_id A supposed user ID.
+	 *
+	 * @return int|null
+	 */
+	protected function validate_user_id( $user_id ) {
+		$user_id = \absint( $user_id );
+
+		return false !== \get_user_by( 'id', $user_id ) ? $user_id : null;
 	}
 }

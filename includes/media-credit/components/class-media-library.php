@@ -232,8 +232,8 @@ class Media_Library implements \Media_Credit\Component {
 		// Set up Media Credit model data (not as an array because data-settings code in View can't deal with it.
 		$response['mediaCreditText']          = $credit['plaintext'];
 		$response['mediaCreditLink']          = $credit['raw']['url'];
-		$response['mediaCreditAuthorID']      = $credit['raw']['user_id'];
-		$response['mediaCreditAuthorDisplay'] = $credit['raw']['user_id'] ? $credit['plaintext'] : '';
+		$response['mediaCreditAuthorID']      = empty( $credit['raw']['freeform'] ) ? $credit['raw']['user_id'] : '';
+		$response['mediaCreditAuthorDisplay'] = $response['mediaCreditAuthorID'] ? \get_the_author_meta( 'display_name',  /* @scrutinizer ignore-type */ $response['mediaCreditAuthorID'] ) : '';
 		$response['mediaCreditNoFollow']      = ! empty( $credit['raw']['flags']['nofollow'] ) ? '1' : '0';
 
 		// Add some nonces.
@@ -262,14 +262,17 @@ class Media_Library implements \Media_Credit\Component {
 		$author_id = '' === $data['raw']['freeform'] ? $data['raw']['user_id'] : '';
 
 		// Use placeholders instead of value if no freeform credit is set with `no_default_credit` enabled.
-		$s     = $this->core->get_settings();
-		$value = ( ! empty( $s[ Settings::NO_DEFAULT_CREDIT ] ) && ! empty( $author_id ) ) ? 'value' : 'placeholder';
+		$value_or_placeholder = "value='{$data['plaintext']}'";
+		if ( ! empty( $this->core->get_settings()[ Settings::NO_DEFAULT_CREDIT ] ) && ! empty( $author_id ) ) {
+			$display_name         = \esc_attr( \get_the_author_meta( 'display_name', /* @scrutinizer ignore-type */ $author_id ) );
+			$value_or_placeholder = "placeholder='{$display_name}'";
+		}
 
 		// Set up credit input field.
 		$fields['media-credit'] = [
 			'label'         => __( 'Credit', 'media-credit' ),
 			'input'         => 'html',
-			'html'          => "<input id='attachments[{$attachment->ID}][media-credit]' class='media-credit-input' size='30' {$value}='{$data['plaintext']}' name='attachments[{$attachment->ID}][media-credit]' />",
+			'html'          => "<input id='attachments[{$attachment->ID}][media-credit]' class='media-credit-input' size='30' {$value_or_placeholder}' name='attachments[{$attachment->ID}][media-credit]' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
 		];
@@ -309,53 +312,20 @@ class Media_Library implements \Media_Credit\Component {
 	}
 
 	/**
-	 * Change the post_author to the entered media credit from add_media_credit() above.
+	 * Saves media credit fields edited in the old attachment view.
 	 *
-	 * @param object $post Object of attachment containing all fields from get_post().
-	 * @param object $attachment Object of attachment containing few fields, unused in this method.
+	 * @param array $post       An array of post data.
+	 * @param array $attachment An array of attachment metadata (including the custom fields).
 	 */
-	public function save_media_credit_fields( $post, $attachment ) {
-		$wp_user_id    = $attachment['media-credit-hidden'];
-		$freeform_name = $attachment['media-credit'];
-		$url           = $attachment['media-credit-url'];
-		$nofollow      = $attachment['media-credit-nofollow'];
-		$options       = $this->core->get_settings();
+	public function save_media_credit_fields( array $post, array $attachment ) {
+		$fields = [
+			'user_id'  => $attachment['media-credit-hidden'],
+			'freeform' => $attachment['media-credit'],
+			'url'      => $attachment['media-credit-url'],
+			'nofollow' => ! empty( $attachment['media-credit-nofollow'] ),
+		];
 
-		// We need to update the credit URL in any case.
-		update_post_meta( $post['ID'], Core::URL_POSTMETA_KEY, $url ); // insert '_media_credit_url' metadata field.
-
-		// Update optional data array with nofollow.
-		update_post_meta( $post['ID'], Core::DATA_POSTMETA_KEY, wp_parse_args( [ 'nofollow' => $nofollow ], $this->core->get_media_credit_data( $post['ID'] ) ) );
-
-		/**
-		 * A valid WP user was selected, and the display name matches the free-form. The final conditional is
-		 * necessary for the case when a valid user is selected, filling in the hidden field, then free-form
-		 * text is entered after that. if so, the free-form text is what should be used.
-		 *
-		 * @internal 3.1.0 Also check for `no_default_credit` option to prevent unnecessary `EMPTY_META_STRING` uses.
-		 */
-		if ( ! empty( $wp_user_id ) && ( $options['no_default_credit'] || get_the_author_meta( 'display_name', $wp_user_id ) === $freeform_name ) ) {
-			// Update post_author with the chosen user.
-			$post['post_author'] = $wp_user_id;
-
-			// Delete any residual metadata from a free-form field.
-			delete_post_meta( $post['ID'], Core::POSTMETA_KEY );
-
-			// Update media credit shortcodes in the current post.
-			$this->core->update_media_credit_in_post( $post, '', $url );
-		} else {
-			/**
-			 * Free-form text was entered, insert postmeta with credit. If free-form text is blank, insert
-			 * a single space in postmeta.
-			 */
-			$freeform = empty( $freeform_name ) ? Core::EMPTY_META_STRING : $freeform_name;
-
-			// Insert '_media_credit' metadata field for image with free-form text.
-			update_post_meta( $post['ID'], Core::POSTMETA_KEY, $freeform );
-
-			// Update media credit shortcodes in the current post.
-			$this->core->update_media_credit_in_post( $post, $freeform, $url );
-		}
+		$this->core->update_media_credit_json( \get_post( $post['ID'] ), $fields );
 
 		return $post;
 	}
