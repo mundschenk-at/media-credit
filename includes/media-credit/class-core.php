@@ -222,11 +222,12 @@ class Core {
 	 * @param int    $image_id  The attachment ID.
 	 * @param int    $author_id The author ID.
 	 * @param string $freeform  The freeform credit.
-	 * @param string $url       The credit URL. Optional. Default ''.
+	 * @param string $url       The credit URL.
+	 * @param bool   $nofollow  The "rel=nofollow" flag.
 	 *
 	 * @return string           The filtered post content.
 	 */
-	public function filter_changed_media_credits( $content, $image_id, $author_id, $freeform, $url = '' ) {
+	public function filter_changed_media_credits( $content, $image_id, $author_id, $freeform, $url, $nofollow ) {
 
 		// Get the image source URL.
 		$src = \wp_get_attachment_image_src( $image_id );
@@ -273,6 +274,13 @@ class Core {
 				$attr['link'] = $url;
 			} else {
 				unset( $attr['link'] );
+			}
+
+			// Update nofollow attribute.
+			if ( ! empty( $url ) && ! empty( $nofollow ) ) {
+				$attr['nofollow'] = true;
+			} else {
+				unset( $attr['nofollow'] );
 			}
 
 			// Start reconstructing the shortcode.

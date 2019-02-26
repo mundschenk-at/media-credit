@@ -306,7 +306,8 @@ class REST_API implements \Media_Credit\Component {
 				$params['attachment_id'],
 				$params['author_id'],
 				$params['freeform'],
-				$params['url']
+				$params['url'],
+				$params['nofollow']
 			)
 		);
 
