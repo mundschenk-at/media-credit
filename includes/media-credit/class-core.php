@@ -503,26 +503,36 @@ class Core {
 	 */
 	public function get_media_credit_json( \WP_Post $attachment ) {
 
-		// Retrieve the fields.
-		$user_id  = (int) $attachment->post_author;
-		$freeform = $this->get_media_credit_freeform_text( $attachment->ID );
-		$url      = $this->get_media_credit_url( $attachment->ID );
-		$flags    = $this->get_media_credit_data( $attachment->ID );
+		$key  = "json_{$attachment->ID}";
+		$json = $this->cache->get( $key );
 
-		// Return media credit data.
-		return [
-			'rendered'  => $this->render_media_credit_html( $user_id, $freeform, $url, $flags ),
-			'plaintext' => $this->render_media_credit_plaintext( $user_id, $freeform ),
-			'fancy'     => $this->render_media_credit_fancy( $user_id, $freeform ),
-			'raw'       => [
-				'user_id'   => $user_id,
-				'freeform'  => $freeform,
-				'url'       => $url,
-				'flags'     => [
-					'nofollow' => ! empty( $flags['nofollow'] ),
+		if ( ! \is_array( $json ) ) {
+			// Retrieve the fields.
+			$user_id  = (int) $attachment->post_author;
+			$freeform = $this->get_media_credit_freeform_text( $attachment->ID );
+			$url      = $this->get_media_credit_url( $attachment->ID );
+			$flags    = $this->get_media_credit_data( $attachment->ID );
+
+			// Build media credit data.
+			$json = [
+				'rendered'  => $this->render_media_credit_html( $user_id, $freeform, $url, $flags ),
+				'plaintext' => $this->render_media_credit_plaintext( $user_id, $freeform ),
+				'fancy'     => $this->render_media_credit_fancy( $user_id, $freeform ),
+				'raw'       => [
+					'user_id'   => $user_id,
+					'freeform'  => $freeform,
+					'url'       => $url,
+					'flags'     => [
+						'nofollow' => ! empty( $flags['nofollow'] ),
+					],
 				],
-			],
-		];
+			];
+
+			// Save our efforts for next time.
+			$this->cache->set( $key, $json );
+		}
+
+		return $json;
 	}
 
 	/**
@@ -559,6 +569,9 @@ class Core {
 
 		// Modify the media credit fields and retrieve the new values.
 		$new = $this->set_media_credit_fields( $attachment, $user_id, $freeform, $url, $flags );
+
+		// Invalidate the cache.
+		$this->cache->delete( "json_{$attachment->ID}" );
 
 		// Update the shortcodes in the parent post of the attachment.
 		$this->update_shortcodes_in_parent_post( $attachment, $new['freeform'], $new['url'] );
