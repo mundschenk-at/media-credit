@@ -190,25 +190,29 @@ class Core {
 	}
 
 	/**
-	 * If the given media is attached to a post, edit the media-credit info in the attached (parent) post.
+	 * Updates the shortcodes in the attachments parent post to match the arguments.
 	 *
-	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
-	 * @param string       $freeform   Credit for attachment with freeform string. Empty if attachment should be credited to the attachment author.
-	 * @param string       $url        Credit URL for linking. Empty means default link for user of this blog, no link for freeform credit.
+	 * @param  \WP_Post $attachment The attachment \WP_Post object.
+	 * @param  int      $user_id  Optional. The new ID of the media item author. Default 0.
+	 * @param  string   $freeform Optional. The new free-fomr credit string (if $user_id is not used). Default ''.
+	 * @param  string   $url      Optional. The new URL the credit should link to. Default ''.
+	 * @param  array    $flags {
+	 *     Optional. An array of flags to modify the rendering of the media credit. Default [].
+	 *
+	 *     @type bool $nofollow Optional. A flag indicating that `rel=nofollow` should be added to the link. Default false.
+	 * }
 	 */
-	public function update_media_credit_in_post( $attachment, $freeform = '', $url = '' ) {
-
-		// Make sure we are dealing with a post object.
-		if ( ! $attachment instanceof \WP_Post ) {
-			$attachment = \get_post( $attachment );
-		}
+	public function update_shortcodes_in_parent_post( \WP_Post $attachment, $user_id = 0, $freeform = '', $url = '', array $flags = [] ) {
 
 		if ( ! empty( $attachment->post_parent ) ) {
 			// Get the parent post of the attachment.
 			$post = \get_post( $attachment->post_parent );
 
+			// Extract flags.
+			$nofollow = ! empty( $flags['nofollow'] );
+
 			// Filter the post's content.
-			$post->post_content = $this->filter_changed_media_credits( $post->post_content, $attachment->ID, (int) $attachment->post_author, $freeform, $url );
+			$post->post_content = $this->filter_changed_media_credits( $post->post_content, $attachment->ID, $user_id, $freeform, $url, $nofollow );
 
 			// Save the filtered content in the database.
 			\wp_update_post( $post );
