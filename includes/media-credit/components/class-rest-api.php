@@ -205,7 +205,7 @@ class REST_API implements \Media_Credit\Component {
 	 *
 	 * @return string
 	 */
-	public function sanitize_text_field( $param, \WP_REST_Request $request, $key ) {
+	public function sanitize_text_field( $param, /* @scrutinizer ignore-unused */ \WP_REST_Request $request, /* @scrutinizer ignore-unused */ $key ) {
 		return \sanitize_text_field( $param );
 	}
 
@@ -219,7 +219,7 @@ class REST_API implements \Media_Credit\Component {
 	 *
 	 * @return array|void
 	 */
-	public function prepare_media_credit_fields( $post, $field_name, \WP_REST_Request $request ) {
+	public function prepare_media_credit_fields( $post, /* @scrutinizer ignore-unused */ $field_name, /* @scrutinizer ignore-unused */ \WP_REST_Request $request ) {
 		$attachment = \get_post( $post['id'] );
 		if ( $attachment instanceof \WP_Post ) {
 			return $this->core->get_media_credit_json( $attachment );
@@ -236,7 +236,7 @@ class REST_API implements \Media_Credit\Component {
 	 *
 	 * @return bool
 	 */
-	public function update_media_credit_fields( $value, \WP_Post $post, $field_name, \WP_REST_Request $request ) {
+	public function update_media_credit_fields( $value, \WP_Post $post, /* @scrutinizer ignore-unused */ $field_name, /* @scrutinizer ignore-unused */ \WP_REST_Request $request ) {
 		if ( empty( $value['raw'] ) ) {
 			return false;
 		}
