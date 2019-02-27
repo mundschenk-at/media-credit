@@ -35,7 +35,7 @@ use Mundschenk\UI\Controls;
  *
  * @internal
  *
- * @since 3.3.0
+ * @since 4.0.0
  *
  * @author Peter Putzer <github@mundschenk.at>
  */

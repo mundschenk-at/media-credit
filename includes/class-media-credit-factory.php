@@ -34,7 +34,7 @@ use Mundschenk\Data_Storage;
 /**
  * A factory for creating Media_Credit instances via dependency injection.
  *
- * @since 3.3.0
+ * @since 4.0.0
  *
  * @author Peter Putzer <github@mundschenk.at>
  */

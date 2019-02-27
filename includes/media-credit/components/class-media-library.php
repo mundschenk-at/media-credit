@@ -33,7 +33,7 @@ use Media_Credit\Settings;
 /**
  * The component handling the integration with the WordPress Media Library.
  *
- * @since 3.3.0 Renamed to Media_Credit\Components\Media_Library
+ * @since 4.0.0 Renamed to Media_Credit\Components\Media_Library
  */
 class Media_Library implements \Media_Credit\Component {
 
@@ -75,7 +75,7 @@ class Media_Library implements \Media_Credit\Component {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    3.0.0
-	 * @since    3.3.0 Parameter $options added.
+	 * @since    4.0.0 Parameter $options added.
 	 *
 	 * @param string $version     The plugin version.
 	 * @param Core   $core        The core plugin API.
@@ -216,7 +216,7 @@ class Media_Library implements \Media_Credit\Component {
 	 * Add media credit information to wp.media.model.Attachment.
 	 *
 	 * @since 3.1.0
-	 * @since 3.3.0 Removed unused parameter $meta.
+	 * @since 4.0.0 Removed unused parameter $meta.
 	 *
 	 * @param array    $response   Array of prepared attachment data.
 	 * @param \WP_Post $attachment Attachment object.

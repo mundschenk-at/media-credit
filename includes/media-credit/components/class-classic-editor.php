@@ -32,7 +32,7 @@ use Media_Credit\Core;
 /**
  * The component handling the integration with the Classic Editor (i.e. TinyMCE).
  *
- * @since 3.3.0
+ * @since 4.0.0
  */
 class Classic_Editor implements \Media_Credit\Component {
 

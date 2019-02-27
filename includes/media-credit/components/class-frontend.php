@@ -37,7 +37,7 @@ use Media_Credit\Settings;
  * enqueue the admin-specific stylesheet and JavaScript.
  *
  * @since 3.0.0
- * @since 3.3.0 Shortcodes moved to Media_Credit\Components\Shortcodes class.
+ * @since 4.0.0 Shortcodes moved to Media_Credit\Components\Shortcodes class.
  */
 class Frontend implements \Media_Credit\Component {
 
