@@ -35,7 +35,7 @@ use Media_Credit\Data_Storage\Options;
  * Handles plugin activation and deactivation.
  *
  * @since 3.0.0
- * @since 3.3.0 Moved to \Media_Credit\Components\Setup
+ * @since 4.0.0 Moved to \Media_Credit\Components\Setup
  */
 class Setup implements \Media_Credit\Component {
 
@@ -185,7 +185,7 @@ class Setup implements \Media_Credit\Component {
 	/**
 	 * Sets up the meta fields with proper authorization and sanitization callbacks.
 	 *
-	 * @since 3.3.0
+	 * @since 4.0.0
 	 */
 	public function register_meta_fields() {
 		\register_meta(

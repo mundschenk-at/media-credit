@@ -37,7 +37,7 @@ use Media_Credit\Data_Storage\Options;
  * The class provides access to the plugin settings and utility methods for manipulating
  * the postmeta data making up the credit information for individual attachments.
  *
- * @since 3.3.0
+ * @since 4.0.0
  *
  * @author Peter Putzer <github@mundschenk.at>
  */

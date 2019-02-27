@@ -37,7 +37,7 @@ use Media_Credit\Components\Shortcodes;
 /**
  * Initializes the Media Credit plugin.
  *
- * @since 3.3.0
+ * @since 4.0.0
  */
 class Plugin {
 

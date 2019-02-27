@@ -31,7 +31,7 @@ use Media_Credit\Core;
 /**
  * Combines the WordPress REST API with Media Credit.
  *
- * @since 3.3.0
+ * @since 4.0.0
  */
 class REST_API implements \Media_Credit\Component {
 

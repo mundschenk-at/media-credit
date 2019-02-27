@@ -34,7 +34,7 @@ use Media_Credit\Data_Storage\Options;
  * The component providing the `[media-credit]` shortcode and patching `[caption]`
  * and `[wp_caption]`.
  *
- * @since 3.3.0
+ * @since 4.0.0
  */
 class Shortcodes implements \Media_Credit\Component {
 

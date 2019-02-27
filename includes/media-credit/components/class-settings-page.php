@@ -36,7 +36,7 @@ use Mundschenk\UI\Controls;
 /**
  * Handles additions to the "Media" settings page.
  *
- * @since 3.3.0
+ * @since 4.0.0
  */
 class Settings_Page implements \Media_Credit\Component {
 

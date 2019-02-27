@@ -32,7 +32,7 @@ namespace Media_Credit;
  * plugin's template tags.
  *
  * @since 3.0.0
- * @since 3.3.0 Renamed to Media_Credit\Template_Tags
+ * @since 4.0.0 Renamed to Media_Credit\Template_Tags
  */
 class Template_Tags {
 
