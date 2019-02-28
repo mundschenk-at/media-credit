@@ -236,7 +236,10 @@ class Media_Library implements \Media_Credit\Component {
 		$response['mediaCreditAuthorDisplay'] = $response['mediaCreditAuthorID'] ? \get_the_author_meta( 'display_name',  /* @scrutinizer ignore-type */ $response['mediaCreditAuthorID'] ) : '';
 		$response['mediaCreditNoFollow']      = ! empty( $credit['raw']['flags']['nofollow'] ) ? '1' : '0';
 
-		// Add some nonces.
+		// Additional data that's not directly related to the fields.
+		$response['mediaCredit']['placeholder'] = $this->get_placeholder_text( $attachment );
+
+		// We need some nonces as well.
 		$response['nonces']['mediaCredit']['update']  = wp_create_nonce( "save-attachment-{$response['id']}-media-credit" );
 		$response['nonces']['mediaCredit']['content'] = wp_create_nonce( "update-attachment-{$response['id']}-media-credit-in-editor" );
 
@@ -328,5 +331,28 @@ class Media_Library implements \Media_Credit\Component {
 		$this->core->update_media_credit_json( \get_post( $post['ID'] ), $fields );
 
 		return $post;
+	}
+
+	/**
+	 * Retrieves the placeholder text to use for the given attachemnt.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @param  \WP_Post $attachment The attachment \WP_Post object.
+	 *
+	 * @return string
+	 */
+	protected function get_placeholder_text( \WP_Post $attachment ) {
+
+		// The default placeholder for credit input fields.
+		$placeholder = \__( 'e.g. Jane Doe', 'media-credit' );
+
+		/**
+		 * Filters the placeholder text for the credit input field.
+		 *
+		 * @param string   $placeholder The placeholder text.
+		 * @param \WP_Post $attachment  The attachment \WP_Post object.
+		 */
+		return \apply_filters( 'media_credit_placeholder_text', $placeholder, $attachment );
 	}
 }
