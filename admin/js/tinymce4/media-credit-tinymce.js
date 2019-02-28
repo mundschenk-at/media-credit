@@ -1,5 +1,5 @@
 /**
- * Adapted from https://core.trac.wordpress.org/browser/trunk/src/wp-includes/js/tinymce/plugins/wpeditimage/plugin.js
+ * Adapted from https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/vendor/tinymce/plugins/wpeditimage/plugin.js?rev=43309
  */
 
 /* globals tinymce, $mediaCredit, wp, _ */
