@@ -225,9 +225,8 @@ class Media_Library implements \Media_Credit\Component {
 	 */
 	public function prepare_attachment_media_credit_for_js( array $response, \WP_Post $attachment ) {
 
-		// Load data and settings.
-		$credit  = $this->core->get_media_credit_json( $attachment );
-		$options = $this->core->get_settings();
+		// Load data.
+		$credit = $this->core->get_media_credit_json( $attachment );
 
 		// Set up Media Credit model data (not as an array because data-settings code in View can't deal with it.
 		$response['mediaCreditText']          = $credit['plaintext'];
@@ -242,11 +241,6 @@ class Media_Library implements \Media_Credit\Component {
 		// We need some nonces as well.
 		$response['nonces']['mediaCredit']['update']  = wp_create_nonce( "save-attachment-{$response['id']}-media-credit" );
 		$response['nonces']['mediaCredit']['content'] = wp_create_nonce( "update-attachment-{$response['id']}-media-credit-in-editor" );
-
-		// And the Media Credit options.
-		$response['mediaCreditOptions']['noDefaultCredit']     = $options['no_default_credit'];
-		$response['mediaCreditOptions']['creditAtEnd']         = $options['credit_at_end'];
-		$response['mediaCreditOptions']['postThumbnailCredit'] = $options['post_thumbnail_credit'];
 
 		return $response;
 	}
@@ -264,18 +258,18 @@ class Media_Library implements \Media_Credit\Component {
 		$data      = $this->core->get_media_credit_json( $attachment );
 		$author_id = '' === $data['raw']['freeform'] ? $data['raw']['user_id'] : '';
 
-		// Use placeholders instead of value if no freeform credit is set with `no_default_credit` enabled.
-		$value_or_placeholder = "value='{$data['plaintext']}'";
-		if ( ! empty( $this->core->get_settings()[ Settings::NO_DEFAULT_CREDIT ] ) && ! empty( $author_id ) ) {
-			$display_name         = \esc_attr( \get_the_author_meta( 'display_name', /* @scrutinizer ignore-type */ $author_id ) );
-			$value_or_placeholder = "placeholder='{$display_name}'";
+		// Use placeholders with `no_default_credit` enabled.
+		$placeholder = '';
+		if ( ! empty( $this->core->get_settings()[ Settings::NO_DEFAULT_CREDIT ] ) ) {
+			$placeholder = \esc_attr( $this->get_placeholder_text( $attachment ) );
+			$placeholder = "placeholder='{$placeholder}'";
 		}
 
 		// Set up credit input field.
 		$fields['media-credit'] = [
 			'label'         => __( 'Credit', 'media-credit' ),
 			'input'         => 'html',
-			'html'          => "<input id='attachments[{$attachment->ID}][media-credit]' class='media-credit-input' size='30' {$value_or_placeholder}' name='attachments[{$attachment->ID}][media-credit]' />",
+			'html'          => "<input id='attachments[{$attachment->ID}][media-credit]' class='media-credit-input' size='30' {$placeholder} value='{$data['plaintext']}' name='attachments[{$attachment->ID}][media-credit]' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
 		];

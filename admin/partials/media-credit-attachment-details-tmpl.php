@@ -14,12 +14,12 @@
 ?><script type="text/html" id="tmpl-media-credit-attachment-details">
 	<label class="setting" data-setting="mediaCreditText">
 		<span class="name"><?php esc_html_e( 'Credit', 'media-credit' ); ?></span>
-		<input type="text" class="media-credit-input" <#
-		if ( data.mediaCreditAuthorID && data.mediaCreditOptions.noDefaultCredit ) {
-			#>placeholder<#
-		} else {
-			#>value<#
-		} #>="{{ data.mediaCreditText }}" />
+		<input type="text" class="media-credit-input"
+			<# if ( $mediaCredit.noDefaultCredit ) { #>
+				placeholder="{{ data.mediaCredit.placeholder }}"
+			<# } #>
+			value="{{ data.mediaCreditText }}"
+		/>
 	</label>
 	<label class="setting" data-setting="mediaCreditLink">
 		<span class="name"><?php esc_html_e( 'Credit URL', 'media-credit' ); ?></span>

@@ -99,7 +99,7 @@ jQuery( function( $ ) {
 				}
 
 				// Re-set placeholder.
-				$input.val( '' ).attr( 'placeholder', view.model.get( 'mediaCreditAuthorDisplay' ) );
+				$input.val( '' ).attr( 'placeholder', view.model.get( 'mediaCredit.placeholder' ) );
 
 				event.stopImmediatePropagation();
 				event.preventDefault();
@@ -140,7 +140,7 @@ jQuery( function( $ ) {
 
 					// Re-set placeholder.
 					if ( '' !== this.model.get( 'mediaCreditAuthorID' ) ) {
-						$input.val( '' ).attr( 'placeholder', this.model.get( 'mediaCreditAuthorDisplay' ) );
+						$input.val( '' ).attr( 'placeholder', this.model.get( 'mediaCredit.placeholder' ) );
 					}
 				} else {
 					$input.autocomplete( 'enable' );
