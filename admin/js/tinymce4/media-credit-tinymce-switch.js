@@ -1,7 +1,7 @@
 /**
- * Extend editor formatting when switching between HTML and Visual mode.
+ * Extends editor formatting when switching between HTML and Visual mode.
  *
- * Based on revision @42574 of https://core.trac.wordpress.org/log/trunk/src/wp-admin/js/editor.js (removep)
+ * Based on revision @44649 of https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/wp/editor/base.js (removep)
  *
  */
 
@@ -10,13 +10,27 @@
 
   $( function() {
 		/* eslint-disable camelcase, yoda */
+		/**
+		 * Replaces <p> tags with two line breaks. "Opposite" of wpautop().
+		 *
+		 * Replaces <p> tags with two line breaks except where the <p> has attributes.
+		 * Unifies whitespace.
+		 * Indents <li>, <dt> and <dd> for better readability.
+		 *
+		 * @since 2.5.0
+		 *
+		 * @memberof switchEditors
+		 *
+		 * @param {string} html The content from the editor.
+		 * @return {string} The content with stripped paragraph tags.
+		 */
 		window.wp.editor.removep = window.switchEditors._wp_Nop = function( html ) {
 			var blocklist = 'blockquote|ul|ol|li|dl|dt|dd|table|thead|tbody|tfoot|tr|th|td|h[1-6]|fieldset|figure',
-			blocklist1 = blocklist + '|div|p',
-			blocklist2 = blocklist + '|pre',
-			preserve_linebreaks = false,
-			preserve_br = false,
-			preserve = [];
+					blocklist1 = blocklist + '|div|p',
+					blocklist2 = blocklist + '|pre',
+					preserve_linebreaks = false,
+					preserve_br = false,
+					preserve = [];
 
 			if ( ! html ) {
 				return '';
@@ -83,6 +97,7 @@
 			html = html.replace( /caption\]\n\n+\[caption/g, 'caption]\n\n[caption' );
 
 			// BEGIN MODIFICATION
+
 			// Also handle media-credit shortcode
 			html = html.replace( /\s*\[media-credit([^\[]+)\[\/media-credit\]\s*/gi, '\n\n[media-credit$1[/media-credit]\n\n' );
 
