@@ -99,6 +99,7 @@ class Media_Library implements \Media_Credit\Component {
 		\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		\add_action( 'print_media_templates', [ $this, 'attachment_details_template' ] );
 		\add_action( 'admin_init',            [ $this, 'admin_init' ] );
+		\add_action( 'add_attachment',        [ $this, 'add_default_media_credit_for_attachment' ], 10, 1 );
 
 		// Filter hooks.
 		\add_filter( 'wp_prepare_attachment_for_js',    [ $this, 'prepare_attachment_media_credit_for_js' ], 10, 2 );
@@ -348,5 +349,47 @@ class Media_Library implements \Media_Credit\Component {
 		 * @param \WP_Post $attachment  The attachment \WP_Post object.
 		 */
 		return \apply_filters( 'media_credit_placeholder_text', $placeholder, $attachment );
+	}
+
+	/**
+	 * Saves the default media credit for newly uploaded attachments.
+	 *
+	 * @param int $post_id Attachment ID.
+	 */
+	public function add_default_media_credit_for_attachment( $post_id ) {
+		// Retrieve the attachemnt object.
+		$attachment = \get_post( $post_id );
+		if ( ! $attachment instanceof \WP_Post ) {
+			return;
+		}
+
+		// Get the filtered default value.
+		$default = $this->get_default_credit( $attachment );
+
+		if ( ! empty( $default ) ) {
+			$this->core->update_media_credit_json( $attachment, [ 'freeform' => $default ] );
+		}
+	}
+
+	/**
+	 * Retrieves and filters the custom default credit string for new attachments.
+	 *
+	 * @param  \WP_Post $attachment The attachment \WP_Post object.
+	 *
+	 * @return string
+	 */
+	protected function get_default_credit( \WP_Post $attachment ) {
+		$s = $this->core->get_settings();
+
+		$default = ! empty( $s[ Settings::CUSTOM_DEFAULT_CREDIT ] ) ? \trim( $s[ Settings::CUSTOM_DEFAULT_CREDIT ] ) : '';
+
+		/**
+		 * Filters the default credit for new attachments. An empty string means
+		 * no default credit will be set.
+		 *
+		 * @param string   $default    The custom default media credit set in the plugin settings.
+		 * @param \WP_Post $attachment The attachment.
+		 */
+		return \apply_filters( 'media_credit_new_attachment_default', $default, $attachment );
 	}
 }
