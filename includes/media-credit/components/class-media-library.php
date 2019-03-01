@@ -38,6 +38,19 @@ use Media_Credit\Settings;
 class Media_Library implements \Media_Credit\Component {
 
 	/**
+	 * The parameters for querying the list of authors.
+	 *
+	 * @var array
+	 */
+	const AUTHORS_QUERY = [
+		'who'    => 'authors',
+		'fields' => [
+			'ID',
+			'display_name',
+		],
+	];
+
+	/**
 	 * The version of this plugin.
 	 *
 	 * @since 3.0.0
@@ -150,10 +163,11 @@ class Media_Library implements \Media_Credit\Component {
 	 * Add our global variable for the TinyMCE plugin.
 	 */
 	public function admin_head() {
+		// Retrieve the plugin settings.
 		$options = $this->core->get_settings();
 
 		$authors = [];
-		foreach ( get_users( [ 'who' => 'authors' ] ) as $author ) {
+		foreach ( \get_users( self::AUTHORS_QUERY ) as $author ) {
 			$authors[ $author->ID ] = $author->display_name;
 		}
 
@@ -166,7 +180,7 @@ class Media_Library implements \Media_Credit\Component {
 
 		?>
 		<script type='text/javascript'>
-			var $mediaCredit = <?php echo /* @scrutinizer ignore-type */ wp_json_encode( $media_credit ); ?>;
+			var $mediaCredit = <?php echo /* @scrutinizer ignore-type */ \wp_json_encode( $media_credit ); ?>;
 		</script>
 		<?php
 	}
