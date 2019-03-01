@@ -109,16 +109,24 @@ class Media_Library implements \Media_Credit\Component {
 		$url    = \plugin_dir_url( MEDIA_CREDIT_PLUGIN_FILE );
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
+		// Pre-register the media scripts.
+		\wp_register_script( 'media-credit-legacy-autocomplete', "{$url}/admin/js/media-credit-legacy-autocomplete{$suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
+		\wp_register_script( 'media-credit-attachment-details', "{$url}/admin/js/media-credit-attachment-details{$suffix}.js", [ 'jquery', 'jquery-ui-autocomplete', 'wp-api' ], $this->version, true );
+
+		// And some styles.
+		\wp_register_style( 'media-credit-legacy-edit-media-style', "{$url}/admin/css/media-credit-legacy-edit-media{$suffix}.css", [], $this->version, 'screen' );
+		\wp_register_style( 'media-credit-attachment-details-style', "{$url}/admin/css/media-credit-attachment-details{$suffix}.css", [], $this->version, 'screen' );
+
 		// Autocomplete when editing media via the legacy form...
 		if ( $this->is_legacy_media_edit_page() ) {
-			\wp_enqueue_script( 'media-credit-legacy-autocomplete', "{$url}/admin/js/media-credit-legacy-autocomplete{$suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
-			\wp_enqueue_style( 'media-credit-legacy-edit-media-style', "{$url}/admin/css/media-credit-legacy-edit-media{$suffix}.css", [], $this->version, 'screen' );
+			\wp_enqueue_script( 'media-credit-legacy-autocomplete' );
+			\wp_enqueue_style( 'media-credit-legacy-edit-media-style' );
 		}
 
 		// ... and for when the new JavaScript Media API is used.
 		if ( \did_action( 'wp_enqueue_media' ) ) {
-			\wp_enqueue_script( 'media-credit-attachment-details', "{$url}/admin/js/media-credit-attachment-details{$suffix}.js", [ 'jquery', 'jquery-ui-autocomplete', 'wp-api' ], $this->version, true );
-			\wp_enqueue_style( 'media-credit-attachment-details-style', "{$url}/admin/css/media-credit-attachment-details{$suffix}.css", [], $this->version, 'screen' );
+			\wp_enqueue_script( 'media-credit-attachment-details' );
+			\wp_enqueue_style( 'media-credit-attachment-details-style' );
 		}
 	}
 
