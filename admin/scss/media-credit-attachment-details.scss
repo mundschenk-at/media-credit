@@ -37,15 +37,3 @@ label[data-setting="mediaCreditNoFollow"].setting {
 		}
 	}
 }
-
-#poststuff table.compat-attachment-fields {
-  width: 100%;
-
-  td.field {
-    width: 80%;
-
-    input.media-credit-input:not([type="checkbox"]) {
-      width: 100%;
-		}
-	}
-}

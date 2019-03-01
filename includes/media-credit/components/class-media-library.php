@@ -108,8 +108,7 @@ class Media_Library implements \Media_Credit\Component {
 		$this->url    = \plugin_dir_url( MEDIA_CREDIT_PLUGIN_FILE );
 		$this->suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
-		\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts_and_styles' ] );
 		\add_action( 'print_media_templates', [ $this, 'attachment_details_template' ] );
 		\add_action( 'admin_init',            [ $this, 'admin_init' ] );
 		\add_action( 'add_attachment',        [ $this, 'add_default_media_credit_for_attachment' ], 10, 1 );
@@ -122,31 +121,22 @@ class Media_Library implements \Media_Credit\Component {
 	}
 
 	/**
-	 * Register the stylesheets for the admin area.
-	 *
-	 * @since    3.0.0
-	 */
-	public function enqueue_styles() {
-		// Style placeholders when editing media.
-		if ( $this->is_legacy_media_edit_page() || did_action( 'wp_enqueue_media' ) ) {
-			wp_enqueue_style( 'media-credit-attachment-details-style', "{$this->url}/admin/css/media-credit-attachment-details{$this->suffix}.css", [], $this->version, 'screen' );
-		}
-	}
-
-	/**
 	 * Register the JavaScript for the admin area.
 	 *
-	 * @since    3.0.0
+	 * @since 3.0.0
+	 * @since 4.0.0 Renamed to enqueue_scripts_and_stylees.
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts_and_styles() {
 		// Autocomplete when editing media via the legacy form...
 		if ( $this->is_legacy_media_edit_page() ) {
 			\wp_enqueue_script( 'media-credit-legacy-autocomplete', "{$this->url}/admin/js/media-credit-legacy-autocomplete{$this->suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
+			\wp_enqueue_style( 'media-credit-legacy-edit-media-style', "{$this->url}/admin/css/media-credit-legacy-edit-media{$this->suffix}.css", [], $this->version, 'screen' );
 		}
 
 		// ... and for when the new JavaScript Media API is used.
 		if ( \did_action( 'wp_enqueue_media' ) ) {
 			\wp_enqueue_script( 'media-credit-attachment-details', "{$this->url}/admin/js/media-credit-attachment-details{$this->suffix}.js", [ 'jquery', 'jquery-ui-autocomplete', 'wp-api' ], $this->version, true );
+			\wp_enqueue_style( 'media-credit-attachment-details-style', "{$this->url}/admin/css/media-credit-attachment-details{$this->suffix}.css", [], $this->version, 'screen' );
 		}
 	}
 
