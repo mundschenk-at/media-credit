@@ -46,6 +46,7 @@ class Settings {
 	const ORGANIZATION          = 'organization';
 	const CREDIT_AT_END         = 'credit_at_end';
 	const NO_DEFAULT_CREDIT     = 'no_default_credit';
+	const CUSTOM_DEFAULT_CREDIT = 'custom_default_credit';
 	const FEATURED_IMAGE_CREDIT = 'post_thumbnail_credit';
 	const SCHEMA_ORG_MARKUP     = 'schema_org_markup';
 
@@ -82,14 +83,14 @@ class Settings {
 					'section'        => self::SETTINGS_SECTION,
 					'elements'       => [], // Will be later.
 					'short'          => \__( 'Preview', 'media-credit' ),
-					'help_text'      => __( 'This is what media credits will look like with your current settings.', 'media-credit' ),
+					'help_text'      => \__( 'This is what media credits will look like with your current settings.', 'media-credit' ),
 				],
 				self::SEPARATOR                 => [
 					'ui'             => Controls\Text_Input::class,
 					'tab_id'         => '', // Will be added to the 'media' page.
 					'section'        => self::SETTINGS_SECTION,
-					'short'          => __( 'Separator', 'media-credit' ),
-					'help_text'      => __( 'Text used to separate author names from organization when crediting media to users of this blog.', 'media-credit' ),
+					'short'          => \__( 'Separator', 'media-credit' ),
+					'help_text'      => \__( 'Text used to separate author names from organization when crediting media to users of this blog.', 'media-credit' ),
 					'attributes'     => [ 'class' => 'small-text' ],
 					'default'        => self::DEFAULT_SEPARATOR,
 				],
@@ -97,8 +98,8 @@ class Settings {
 					'ui'             => Controls\Text_Input::class,
 					'tab_id'         => '', // Will be added to the 'media' page.
 					'section'        => self::SETTINGS_SECTION,
-					'short'          => __( 'Organization', 'media-credit' ),
-					'help_text'      => __( 'Organization used when crediting media to users of this blog.', 'media-credit' ),
+					'short'          => \__( 'Organization', 'media-credit' ),
+					'help_text'      => \__( 'Organization used when crediting media to users of this blog.', 'media-credit' ),
 					'attributes'     => [ 'class' => 'regular-text' ],
 					'default'        => \get_bloginfo( 'name', 'display' ),
 				],
@@ -109,10 +110,10 @@ class Settings {
 					'short'            => \__( 'Credit position', 'media-credit' ),
 					/* translators: 1: checkbox HTML */
 					'label'            => \__( '%1$s Display credit after posts.', 'media-credit' ),
-					'help_text'        => __(
+					'help_text'        => \__(
 						'Display media credit for all the images attached to a post after the post content. Style with CSS class <code>media-credit-end</code>.',
 						'media-credit'
-					) . ' <br><strong>' . __( 'Warning', 'media-credit' ) . '</strong>: ' . __(
+					) . ' <br><strong>' . \__( 'Warning', 'media-credit' ) . '</strong>: ' . \__(
 						'This will cause credit for all images in all posts to display at the bottom of every post on this blog.',
 						'media-credit'
 					),
@@ -134,9 +135,18 @@ class Settings {
 					'section'          => self::SETTINGS_SECTION,
 					'short'            => \__( 'Default credit', 'media-credit' ),
 					/* translators: 1: checkbox HTML */
-					'label'            => \__( '%1$s Do not display default credit.', 'media-credit' ),
-					'help_text'        => \__( 'Do not display the attachment author as default credit if it has not been set explicitly (= freeform credits only).', 'media-credit' ),
+					'label'            => \__( '%1$s Do not credit images to WordPress users.', 'media-credit' ),
+					'help_text'        => \__( 'Do not use the attachment author as the default credit.', 'media-credit' ),
 					'default'          => 0,
+				],
+				self::CUSTOM_DEFAULT_CREDIT     => [
+					'ui'               => Controls\Text_Input::class,
+					'tab_id'           => '',
+					'section'          => self::SETTINGS_SECTION,
+					'help_text'        => \__( 'Use this custom default credit for new images.', 'media-credit' ),
+					'grouped_with'     => self::NO_DEFAULT_CREDIT,
+					'attributes'       => [ 'class' => 'regular-text' ],
+					'default'          => '',
 				],
 				self::SCHEMA_ORG_MARKUP         => [
 					'ui'               => Controls\Checkbox_Input::class,
