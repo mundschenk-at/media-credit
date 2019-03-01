@@ -310,12 +310,10 @@ class Media_Library implements \Media_Credit\Component {
 		];
 
 		// Set up hidden field as a container for additional data.
-		$nonce = \wp_create_nonce( 'media_credit_author_names' );
-
 		$fields['media-credit-hidden'] = [
 			'label'         => '', // necessary for HTML type fields.
 			'input'         => 'html',
-			'html'          => "<input name='attachments[{$attachment->ID}][media-credit-hidden]' id='attachments[{$attachment->ID}][media-credit-hidden]' type='hidden' value='$author_id' class='media-credit-hidden' data-author-id='{$attachment->post_author}' data-post-id='{$attachment->ID}' data-author-display='{$data['plaintext']}' data-nonce='{$nonce}' />",
+			'html'          => "<input name='attachments[{$attachment->ID}][media-credit-hidden]' id='attachments[{$attachment->ID}][media-credit-hidden]' type='hidden' value='$author_id' class='media-credit-hidden' data-author-id='{$attachment->post_author}' data-post-id='{$attachment->ID}' data-author-display='{$data['plaintext']}' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
 		];
