@@ -46,6 +46,7 @@ class Settings {
 	const ORGANIZATION          = 'organization';
 	const CREDIT_AT_END         = 'credit_at_end';
 	const NO_DEFAULT_CREDIT     = 'no_default_credit';
+	const CUSTOM_DEFAULT_CREDIT = 'custom_default_credit';
 	const FEATURED_IMAGE_CREDIT = 'post_thumbnail_credit';
 	const SCHEMA_ORG_MARKUP     = 'schema_org_markup';
 
@@ -134,9 +135,18 @@ class Settings {
 					'section'          => self::SETTINGS_SECTION,
 					'short'            => \__( 'Default credit', 'media-credit' ),
 					/* translators: 1: checkbox HTML */
-					'label'            => \__( '%1$s Do not display default credit.', 'media-credit' ),
-					'help_text'        => \__( 'Do not display the attachment author as default credit if it has not been set explicitly (= freeform credits only).', 'media-credit' ),
+					'label'            => \__( '%1$s Do not credit images to WordPress users.', 'media-credit' ),
+					'help_text'        => \__( 'Do not use the attachment author as the default credit.', 'media-credit' ),
 					'default'          => 0,
+				],
+				self::CUSTOM_DEFAULT_CREDIT     => [
+					'ui'               => Controls\Text_Input::class,
+					'tab_id'           => '',
+					'section'          => self::SETTINGS_SECTION,
+					'help_text'        => \__( 'Use this custom default credit for new images.', 'media-credit' ),
+					'grouped_with'     => self::NO_DEFAULT_CREDIT,
+					'attributes'       => [ 'class' => 'regular-text' ],
+					'default'          => '',
 				],
 				self::SCHEMA_ORG_MARKUP         => [
 					'ui'               => Controls\Checkbox_Input::class,
