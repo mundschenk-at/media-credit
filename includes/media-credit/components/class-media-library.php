@@ -172,9 +172,9 @@ class Media_Library implements \Media_Credit\Component {
 		}
 
 		$media_credit = [
-			'separator'       => $options['separator'],
-			'organization'    => $options['organization'],
-			'noDefaultCredit' => $options['no_default_credit'],
+			'separator'       => $options[ Settings::SEPARATOR ],
+			'organization'    => $options[ Settings::ORGANIZATION ],
+			'noDefaultCredit' => $options[ Settings::NO_DEFAULT_CREDIT ],
 			'id'              => $authors,
 		];
 
