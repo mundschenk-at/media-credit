@@ -141,12 +141,12 @@ class Media_Library implements \Media_Credit\Component {
 	public function enqueue_scripts() {
 		// Autocomplete when editing media via the legacy form...
 		if ( $this->is_legacy_media_edit_page() ) {
-			wp_enqueue_script( 'media-credit-legacy-autocomplete', "{$this->url}/admin/js/media-credit-legacy-autocomplete{$this->suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
+			\wp_enqueue_script( 'media-credit-legacy-autocomplete', "{$this->url}/admin/js/media-credit-legacy-autocomplete{$this->suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
 		}
 
 		// ... and for when the new JavaScript Media API is used.
-		if ( did_action( 'wp_enqueue_media' ) ) {
-			wp_enqueue_script( 'media-credit-attachment-details', "{$this->url}/admin/js/media-credit-attachment-details{$this->suffix}.js", [ 'jquery', 'jquery-ui-autocomplete', 'wp-api' ], $this->version, true );
+		if ( \did_action( 'wp_enqueue_media' ) ) {
+			\wp_enqueue_script( 'media-credit-attachment-details', "{$this->url}/admin/js/media-credit-attachment-details{$this->suffix}.js", [ 'jquery', 'jquery-ui-autocomplete', 'wp-api' ], $this->version, true );
 		}
 	}
 
@@ -190,12 +190,12 @@ class Media_Library implements \Media_Credit\Component {
 	 */
 	public function admin_init() {
 		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages.
-		if ( ( current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) ) {
-			add_action( 'admin_head', [ $this, 'admin_head' ] );
+		if ( ( \current_user_can( 'edit_posts' ) || \current_user_can( 'edit_pages' ) ) ) {
+			\add_action( 'admin_head', [ $this, 'admin_head' ] );
 		}
 
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
-		add_filter( 'the_author', [ $this, 'filter_the_author' ], 10, 1 );
+		\add_filter( 'the_author', [ $this, 'filter_the_author' ], 10, 1 );
 	}
 
 	/**
@@ -222,7 +222,7 @@ class Media_Library implements \Media_Credit\Component {
 	 * @access private
 	 */
 	private function is_legacy_media_edit_page() {
-		$screen = get_current_screen();
+		$screen = \get_current_screen();
 
 		return ! empty( $screen ) && 'post' === $screen->base && 'attachment' === $screen->id;
 	}
@@ -254,8 +254,8 @@ class Media_Library implements \Media_Credit\Component {
 		$response['mediaCredit']['placeholder'] = $this->get_placeholder_text( $attachment );
 
 		// We need some nonces as well.
-		$response['nonces']['mediaCredit']['update']  = wp_create_nonce( "save-attachment-{$response['id']}-media-credit" );
-		$response['nonces']['mediaCredit']['content'] = wp_create_nonce( "update-attachment-{$response['id']}-media-credit-in-editor" );
+		$response['nonces']['mediaCredit']['update']  = \wp_create_nonce( "save-attachment-{$response['id']}-media-credit" );
+		$response['nonces']['mediaCredit']['content'] = \wp_create_nonce( "update-attachment-{$response['id']}-media-credit-in-editor" );
 
 		return $response;
 	}
