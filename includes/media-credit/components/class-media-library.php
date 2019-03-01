@@ -354,6 +354,8 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Saves the default media credit for newly uploaded attachments.
 	 *
+	 * @since 4.0.0
+	 *
 	 * @param int $post_id Attachment ID.
 	 */
 	public function add_default_media_credit_for_attachment( $post_id ) {
@@ -373,6 +375,8 @@ class Media_Library implements \Media_Credit\Component {
 
 	/**
 	 * Retrieves and filters the custom default credit string for new attachments.
+	 *
+	 * @since 4.0.0
 	 *
 	 * @param  \WP_Post $attachment The attachment \WP_Post object.
 	 *
