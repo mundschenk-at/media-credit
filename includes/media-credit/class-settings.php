@@ -82,14 +82,14 @@ class Settings {
 					'section'        => self::SETTINGS_SECTION,
 					'elements'       => [], // Will be later.
 					'short'          => \__( 'Preview', 'media-credit' ),
-					'help_text'      => __( 'This is what media credits will look like with your current settings.', 'media-credit' ),
+					'help_text'      => \__( 'This is what media credits will look like with your current settings.', 'media-credit' ),
 				],
 				self::SEPARATOR                 => [
 					'ui'             => Controls\Text_Input::class,
 					'tab_id'         => '', // Will be added to the 'media' page.
 					'section'        => self::SETTINGS_SECTION,
-					'short'          => __( 'Separator', 'media-credit' ),
-					'help_text'      => __( 'Text used to separate author names from organization when crediting media to users of this blog.', 'media-credit' ),
+					'short'          => \__( 'Separator', 'media-credit' ),
+					'help_text'      => \__( 'Text used to separate author names from organization when crediting media to users of this blog.', 'media-credit' ),
 					'attributes'     => [ 'class' => 'small-text' ],
 					'default'        => self::DEFAULT_SEPARATOR,
 				],
@@ -97,8 +97,8 @@ class Settings {
 					'ui'             => Controls\Text_Input::class,
 					'tab_id'         => '', // Will be added to the 'media' page.
 					'section'        => self::SETTINGS_SECTION,
-					'short'          => __( 'Organization', 'media-credit' ),
-					'help_text'      => __( 'Organization used when crediting media to users of this blog.', 'media-credit' ),
+					'short'          => \__( 'Organization', 'media-credit' ),
+					'help_text'      => \__( 'Organization used when crediting media to users of this blog.', 'media-credit' ),
 					'attributes'     => [ 'class' => 'regular-text' ],
 					'default'        => \get_bloginfo( 'name', 'display' ),
 				],
@@ -109,10 +109,10 @@ class Settings {
 					'short'            => \__( 'Credit position', 'media-credit' ),
 					/* translators: 1: checkbox HTML */
 					'label'            => \__( '%1$s Display credit after posts.', 'media-credit' ),
-					'help_text'        => __(
+					'help_text'        => \__(
 						'Display media credit for all the images attached to a post after the post content. Style with CSS class <code>media-credit-end</code>.',
 						'media-credit'
-					) . ' <br><strong>' . __( 'Warning', 'media-credit' ) . '</strong>: ' . __(
+					) . ' <br><strong>' . \__( 'Warning', 'media-credit' ) . '</strong>: ' . \__(
 						'This will cause credit for all images in all posts to display at the bottom of every post on this blog.',
 						'media-credit'
 					),
