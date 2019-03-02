@@ -28,6 +28,8 @@ namespace Media_Credit\Components;
 
 use Media_Credit\Core;
 
+use Media_Credit\Tools\Shortcodes_Filter;
+
 /**
  * Combines the WordPress REST API with Media Credit.
  *
@@ -117,12 +119,21 @@ class REST_API implements \Media_Credit\Component {
 	private $core;
 
 	/**
+	 * The shortcodes filter.
+	 *
+	 * @var Shortcodes_Filter
+	 */
+	private $shortcodes_filter;
+
+	/**
 	 * Creates a new instance of the REST API handler.
 	 *
-	 * @param Core $core The core plugin API.
+	 * @param Core              $core The core plugin API.
+	 * @param Shortcodes_Filter $shortcodes_filter The shortcodes filter.
 	 */
-	public function __construct( Core $core ) {
-		$this->core = $core;
+	public function __construct( Core $core, Shortcodes_Filter $shortcodes_filter ) {
+		$this->core              = $core;
+		$this->shortcodes_filter = $shortcodes_filter;
 	}
 
 	/**
@@ -261,7 +272,7 @@ class REST_API implements \Media_Credit\Component {
 
 		// Return the filtered post content in a response object.
 		$response = new \WP_REST_Response(
-			$this->core->filter_changed_media_credits(
+			$this->shortcodes_filter->update_changed_media_credits(
 				$params['content'],
 				$params['attachment_id'],
 				$params['author_id'],

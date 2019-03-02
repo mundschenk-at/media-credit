@@ -1,0 +1,12 @@
+#poststuff table.compat-attachment-fields {
+  width: 100%;
+}
+
+#poststuff table.compat-attachment-fields td.field {
+  width: 80%;
+}
+
+#poststuff table.compat-attachment-fields td.field input.media-credit-input:not([type="checkbox"]) {
+  width: 100%;
+}
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFkbWluL3Njc3MvbWVkaWEtY3JlZGl0LWxlZ2FjeS1lZGl0LW1lZGlhLnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxZQUFXO0NBU1o7O0FBVkQ7RUFJSSxXQUFVO0NBS1o7O0FBVEY7RUFPTSxZQUFXO0NBQ2QiLCJmaWxlIjoibWVkaWEtY3JlZGl0LWxlZ2FjeS1lZGl0LW1lZGlhLmNzcyJ9 */

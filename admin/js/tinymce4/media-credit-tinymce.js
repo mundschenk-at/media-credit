@@ -2,7 +2,7 @@
  * Adapted from https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/vendor/tinymce/plugins/wpeditimage/plugin.js?rev=43309
  */
 
-/* globals tinymce, $mediaCredit, wp, _ */
+/* global: tinymce, wp, _, mundschenk */
 
 /* eslint-disable yoda, lines-around-comment */
 
@@ -284,7 +284,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				width += 10;
 			}
 
-			credit = '' + ( name ? name : ( $mediaCredit.id[id] + $mediaCredit.separator + $mediaCredit.organization ) );
+			credit = '' + ( name ? name : ( mundschenk.mediaCredit.id[id] + mundschenk.mediaCredit.options.separator + mundschenk.mediaCredit.options.organization ) );
 			credit = credit.replace( /<[^>]+>(.*)<\/[^>]+>/g, '$1' ); // Basic sanitation.
 
 			out = img + wp.html.string( {

@@ -38,6 +38,19 @@ use Media_Credit\Settings;
 class Media_Library implements \Media_Credit\Component {
 
 	/**
+	 * The parameters for querying the list of authors.
+	 *
+	 * @var array
+	 */
+	const AUTHORS_QUERY = [
+		'who'    => 'authors',
+		'fields' => [
+			'ID',
+			'display_name',
+		],
+	];
+
+	/**
 	 * The version of this plugin.
 	 *
 	 * @since 3.0.0
@@ -45,24 +58,6 @@ class Media_Library implements \Media_Credit\Component {
 	 * @var string
 	 */
 	private $version;
-
-	/**
-	 * The base URL for loading resources.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @var string
-	 */
-	private $url;
-
-	/**
-	 * The file suffix for loading ressources.
-	 *
-	 * @since 3.2.0
-	 *
-	 * @var string
-	 */
-	private $suffix;
 
 	/**
 	 * The core API.
@@ -91,12 +86,7 @@ class Media_Library implements \Media_Credit\Component {
 	 * @return void
 	 */
 	public function run() {
-		// Set up resource files.
-		$this->url    = \plugin_dir_url( MEDIA_CREDIT_PLUGIN_FILE );
-		$this->suffix = SCRIPT_DEBUG ? '' : '.min';
-
-		\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
-		\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts_and_styles' ] );
 		\add_action( 'print_media_templates', [ $this, 'attachment_details_template' ] );
 		\add_action( 'admin_init',            [ $this, 'admin_init' ] );
 		\add_action( 'add_attachment',        [ $this, 'add_default_media_credit_for_attachment' ], 10, 1 );
@@ -109,31 +99,38 @@ class Media_Library implements \Media_Credit\Component {
 	}
 
 	/**
-	 * Register the stylesheets for the admin area.
-	 *
-	 * @since    3.0.0
-	 */
-	public function enqueue_styles() {
-		// Style placeholders when editing media.
-		if ( $this->is_legacy_media_edit_page() || did_action( 'wp_enqueue_media' ) ) {
-			wp_enqueue_style( 'media-credit-attachment-details-style', "{$this->url}/admin/css/media-credit-attachment-details{$this->suffix}.css", [], $this->version, 'screen' );
-		}
-	}
-
-	/**
 	 * Register the JavaScript for the admin area.
 	 *
-	 * @since    3.0.0
+	 * @since 3.0.0
+	 * @since 4.0.0 Renamed to enqueue_scripts_and_stylees.
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts_and_styles() {
+		// Set up resource files.
+		$url    = \plugin_dir_url( MEDIA_CREDIT_PLUGIN_FILE );
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		// Pre-register the media scripts.
+		\wp_register_script( 'media-credit-bootstrap',           "{$url}/admin/js/media-credit-bootstrap{$suffix}.js",           [],                                                                         $this->version, true );
+		\wp_register_script( 'media-credit-legacy-autocomplete', "{$url}/admin/js/media-credit-legacy-autocomplete{$suffix}.js", [ 'media-credit-bootstrap', 'jquery', 'jquery-ui-autocomplete' ],           $this->version, true );
+		\wp_register_script( 'media-credit-attachment-details',  "{$url}/admin/js/media-credit-attachment-details{$suffix}.js",  [ 'media-credit-bootstrap', 'jquery', 'jquery-ui-autocomplete', 'wp-api' ], $this->version, true );
+
+		// And some styles.
+		\wp_register_style( 'media-credit-legacy-edit-media-style',  "{$url}/admin/css/media-credit-legacy-edit-media{$suffix}.css",  [], $this->version, 'screen' );
+		\wp_register_style( 'media-credit-attachment-details-style', "{$url}/admin/css/media-credit-attachment-details{$suffix}.css", [], $this->version, 'screen' );
+
+		// Now add inline script data.
+		$this->add_inline_script_data();
+
 		// Autocomplete when editing media via the legacy form...
 		if ( $this->is_legacy_media_edit_page() ) {
-			wp_enqueue_script( 'media-credit-legacy-autocomplete', "{$this->url}/admin/js/media-credit-legacy-autocomplete{$this->suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
+			\wp_enqueue_script( 'media-credit-legacy-autocomplete' );
+			\wp_enqueue_style( 'media-credit-legacy-edit-media-style' );
 		}
 
 		// ... and for when the new JavaScript Media API is used.
-		if ( did_action( 'wp_enqueue_media' ) ) {
-			wp_enqueue_script( 'media-credit-attachment-details', "{$this->url}/admin/js/media-credit-attachment-details{$this->suffix}.js", [ 'jquery', 'jquery-ui-autocomplete', 'wp-api' ], $this->version, true );
+		if ( \did_action( 'wp_enqueue_media' ) ) {
+			\wp_enqueue_script( 'media-credit-attachment-details' );
+			\wp_enqueue_style( 'media-credit-attachment-details-style' );
 		}
 	}
 
@@ -147,41 +144,36 @@ class Media_Library implements \Media_Credit\Component {
 	}
 
 	/**
-	 * Add our global variable for the TinyMCE plugin.
+	 * Adds our global data for the JavaScript modules.
 	 */
-	public function admin_head() {
-		$options = $this->core->get_settings();
-
+	public function add_inline_script_data() {
+		// Retrieve list of authors.
 		$authors = [];
-		foreach ( get_users( [ 'who' => 'authors' ] ) as $author ) {
+		foreach ( \get_users( self::AUTHORS_QUERY ) as $author ) {
 			$authors[ $author->ID ] = $author->display_name;
 		}
 
-		$media_credit = [
-			'separator'       => $options['separator'],
-			'organization'    => $options['organization'],
-			'noDefaultCredit' => $options['no_default_credit'],
-			'id'              => $authors,
+		// Retrieve the plugin settings.
+		$options  = $this->core->get_settings();
+		$settings = [
+			'separator'       => $options[ Settings::SEPARATOR ],
+			'organization'    => $options[ Settings::ORGANIZATION ],
+			'noDefaultCredit' => $options[ Settings::NO_DEFAULT_CREDIT ],
 		];
 
-		?>
-		<script type='text/javascript'>
-			var $mediaCredit = <?php echo /* @scrutinizer ignore-type */ wp_json_encode( $media_credit ); ?>;
-		</script>
-		<?php
+		$script  = 'var mundschenk=window.mundschenk||{},mediaCredit=mundschenk.mediaCredit||{};';
+		$script .= 'mediaCredit.options=' . /* @scrutinizer ignore-type */ \wp_json_encode( $settings ) . ';';
+		$script .= 'mediaCredit.id=' . /* @scrutinizer ignore-type */ \wp_json_encode( $authors ) . ';';
+
+		\wp_add_inline_script( 'media-credit-bootstrap', $script, 'after' );
 	}
 
 	/**
 	 * Initialize settings.
 	 */
 	public function admin_init() {
-		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages.
-		if ( ( current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) ) {
-			add_action( 'admin_head', [ $this, 'admin_head' ] );
-		}
-
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
-		add_filter( 'the_author', [ $this, 'filter_the_author' ], 10, 1 );
+		\add_filter( 'the_author', [ $this, 'filter_the_author' ], 10, 1 );
 	}
 
 	/**
@@ -208,7 +200,7 @@ class Media_Library implements \Media_Credit\Component {
 	 * @access private
 	 */
 	private function is_legacy_media_edit_page() {
-		$screen = get_current_screen();
+		$screen = \get_current_screen();
 
 		return ! empty( $screen ) && 'post' === $screen->base && 'attachment' === $screen->id;
 	}
@@ -240,8 +232,8 @@ class Media_Library implements \Media_Credit\Component {
 		$response['mediaCredit']['placeholder'] = $this->get_placeholder_text( $attachment );
 
 		// We need some nonces as well.
-		$response['nonces']['mediaCredit']['update']  = wp_create_nonce( "save-attachment-{$response['id']}-media-credit" );
-		$response['nonces']['mediaCredit']['content'] = wp_create_nonce( "update-attachment-{$response['id']}-media-credit-in-editor" );
+		$response['nonces']['mediaCredit']['update']  = \wp_create_nonce( "save-attachment-{$response['id']}-media-credit" );
+		$response['nonces']['mediaCredit']['content'] = \wp_create_nonce( "update-attachment-{$response['id']}-media-credit-in-editor" );
 
 		return $response;
 	}
@@ -296,12 +288,10 @@ class Media_Library implements \Media_Credit\Component {
 		];
 
 		// Set up hidden field as a container for additional data.
-		$nonce = \wp_create_nonce( 'media_credit_author_names' );
-
 		$fields['media-credit-hidden'] = [
 			'label'         => '', // necessary for HTML type fields.
 			'input'         => 'html',
-			'html'          => "<input name='attachments[{$attachment->ID}][media-credit-hidden]' id='attachments[{$attachment->ID}][media-credit-hidden]' type='hidden' value='$author_id' class='media-credit-hidden' data-author-id='{$attachment->post_author}' data-post-id='{$attachment->ID}' data-author-display='{$data['plaintext']}' data-nonce='{$nonce}' />",
+			'html'          => "<input name='attachments[{$attachment->ID}][media-credit-hidden]' id='attachments[{$attachment->ID}][media-credit-hidden]' type='hidden' value='$author_id' class='media-credit-hidden' data-author-id='{$attachment->post_author}' data-post-id='{$attachment->ID}' data-author-display='{$data['plaintext']}' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
 		];
@@ -354,6 +344,8 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Saves the default media credit for newly uploaded attachments.
 	 *
+	 * @since 4.0.0
+	 *
 	 * @param int $post_id Attachment ID.
 	 */
 	public function add_default_media_credit_for_attachment( $post_id ) {
@@ -373,6 +365,8 @@ class Media_Library implements \Media_Credit\Component {
 
 	/**
 	 * Retrieves and filters the custom default credit string for new attachments.
+	 *
+	 * @since 4.0.0
 	 *
 	 * @param  \WP_Post $attachment The attachment \WP_Post object.
 	 *

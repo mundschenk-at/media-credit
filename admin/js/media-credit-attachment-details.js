@@ -1,13 +1,13 @@
 /**
  *  Properly handle editing credits in the media modal.
  *
- *  global: tinymce, wp, _
+ *  global: tinymce, wp, _, mundschenk
  */
 
 jQuery( function( $ ) {
 	'use strict';
 
-	var mediaCredit = window.$mediaCredit || {};
+	var mediaCredit = mundschenk.mediaCredit || {};
 
 	/**
      * Install autoselect on given view.
@@ -85,7 +85,7 @@ jQuery( function( $ ) {
 		.change( function( event ) {
 			var $input = $( this ),
 				credit = $input.val(),
-				noDefaultCredit = mediaCredit.noDefaultCredit || false;
+				noDefaultCredit = mediaCredit.options.noDefaultCredit || false;
 
 			if ( noDefaultCredit && '' === credit && '' === view.model.get( 'mediaCreditAuthorID' ) ) {
 				view.model.set( {
@@ -129,7 +129,7 @@ jQuery( function( $ ) {
 
 			render: function() {
 				var $input,
-					noDefaultCredit = mediaCredit.noDefaultCredit || false;
+						noDefaultCredit = mediaCredit.options.noDefaultCredit || false;
 
 				wp.media.view.Attachment.prototype.render.apply( this, [] );
 
@@ -221,7 +221,7 @@ jQuery( function( $ ) {
 				if ( 'update' === method && model.hasChanged() ) {
 
 					// Handle placeholders gracefully.
-					if ( mediaCredit.noDefaultCredit && '' === model.changed.mediaCreditText && '' !== model.get( 'mediaCreditAuthorID' ) ) {
+					if ( mediaCredit.options.noDefaultCredit && '' === model.changed.mediaCreditText && '' !== model.get( 'mediaCreditAuthorID' ) ) {
 
 						// FIXME: Issue when default credits are off.
 						delete model.changed.mediaCreditText;

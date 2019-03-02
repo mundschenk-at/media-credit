@@ -28,6 +28,7 @@ use Dice\Dice;
 
 use Media_Credit\Core;
 use Media_Credit\Components;
+use Media_Credit\Tools;
 
 use Mundschenk\Data_Storage;
 
@@ -58,14 +59,9 @@ abstract class Media_Credit_Factory {
 	public static function get( $full_plugin_path ) {
 		if ( ! isset( self::$factory ) ) {
 			// Load version from plugin data.
-			if ( ! function_exists( 'get_plugin_data' ) ) {
+			if ( ! \function_exists( 'get_plugin_data' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
-
-			// Dynamic rules' helpers.
-			$full_path_rule = [
-				'constructParams' => [ $full_plugin_path ],
-			];
 
 			// The plugin version.
 			$version = \get_plugin_data( $full_plugin_path, false, false )['Version'];
@@ -93,6 +89,7 @@ abstract class Media_Credit_Factory {
 				Data_Storage\Site_Transients::class => self::SHARED,
 				Data_Storage\Options::class         => self::SHARED,
 				Data_Storage\Network_Options::class => self::SHARED,
+				Tools\Shortcodes_Filter::class      => self::SHARED,
 
 				// Components.
 				Components\Classic_Editor::class    => $version_shared_rule,
@@ -101,7 +98,6 @@ abstract class Media_Credit_Factory {
 				Components\REST_API::class          => self::SHARED,
 				Components\Settings_Page::class     => $version_shared_rule,
 				Components\Setup::class             => $version_shared_rule,
-				Components\Uninstallation::class    => $full_path_rule,
 			];
 
 			// Create factory.

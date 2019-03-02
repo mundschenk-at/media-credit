@@ -111,10 +111,10 @@ class Template_Tags {
 	 */
 	public static function get_media_credit_html_by_user_id( $id ) {
 
-		$credit_wp_author = get_the_author_meta( 'display_name', $id );
+		$credit_wp_author = \get_the_author_meta( 'display_name', $id );
 		$options          = Core::get_instance()->get_settings();
 
-		return '<a href="' . get_author_posts_url( $id ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
+		return '<a href="' . \get_author_posts_url( $id ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 	}
 
 	/**
@@ -147,7 +147,7 @@ class Template_Tags {
 	 */
 	public static function author_media_and_posts( $author_id, $include_posts = true, $limit = 0, $exclude_unattached = true ) {
 		$cache_key = "author_media_and_posts_{$author_id}_i" . ( $include_posts ? '1' : '0' ) . "_l{$limit}_e" . ( $exclude_unattached ? '1' : '0' );
-		$results   = wp_cache_get( $cache_key, 'media-credit' );
+		$results   = \wp_cache_get( $cache_key, 'media-credit' );
 
 		if ( false === $results ) {
 			global $wpdb;
@@ -199,7 +199,7 @@ class Template_Tags {
 			$results = $wpdb->get_results( $wpdb->prepare( $sql_query, $query_vars ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 			// Cache results for a short time.
-			wp_cache_set( $cache_key, $results, 'media-credit', MINUTE_IN_SECONDS );
+			\wp_cache_set( $cache_key, $results, 'media-credit', MINUTE_IN_SECONDS );
 		}
 
 		return $results;
