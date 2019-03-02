@@ -92,6 +92,7 @@ abstract class Media_Credit_Factory {
 				Tools\Shortcodes_Filter::class      => self::SHARED,
 
 				// Components.
+				Components\Block_Editor::class      => $version_shared_rule,
 				Components\Classic_Editor::class    => $version_shared_rule,
 				Components\Frontend::class          => $version_shared_rule,
 				Components\Media_Library::class     => $version_shared_rule,
