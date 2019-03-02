@@ -123,7 +123,7 @@ class Setup implements \Media_Credit\Component {
 		}
 
 		// Upgrade plugin to 1.0.1.
-		if ( version_compare( $installed_options['version'], '1.0.1', '<' ) ) {
+		if ( \version_compare( $installed_options['version'], '1.0.1', '<' ) ) {
 			// Update all media-credit postmeta keys to _media_credit.
 			global $wpdb;
 
@@ -132,17 +132,17 @@ class Setup implements \Media_Credit\Component {
 		}
 
 		// Upgrade plugin to 2.2.0.
-		if ( version_compare( $installed_options['version'], '2.2.0', '<' ) ) {
+		if ( \version_compare( $installed_options['version'], '2.2.0', '<' ) ) {
 			$installed_options['no_default_credit'] = $default_options['no_default_credit'];
 		}
 
 		// Upgrade plugin to 3.0.0.
-		if ( version_compare( $installed_options['version'], '3.0.0', '<' ) ) {
+		if ( \version_compare( $installed_options['version'], '3.0.0', '<' ) ) {
 			$installed_options['post_thumbnail_credit'] = $default_options['post_thumbnail_credit'];
 		}
 
 		// Upgrade plugin to 3.1.0.
-		if ( version_compare( $installed_options['version'], '3.1.0', '<' ) ) {
+		if ( \version_compare( $installed_options['version'], '3.1.0', '<' ) ) {
 			$installed_options['schema_org_markup'] = $default_options['schema_org_markup'];
 		}
 

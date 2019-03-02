@@ -27,7 +27,7 @@
 
 use Media_Credit\Template_Tags;
 
-if ( ! function_exists( 'get_media_credit' ) ) {
+if ( ! \function_exists( 'get_media_credit' ) ) {
 	/**
 	 * Template tag to return the media credit as plain text for some media attachment.
 	 *
@@ -38,7 +38,7 @@ if ( ! function_exists( 'get_media_credit' ) ) {
 	}
 }
 
-if ( ! function_exists( 'the_media_credit' ) ) {
+if ( ! \function_exists( 'the_media_credit' ) ) {
 	/**
 	 * Template tag to print the media credit as plain text for some media attachment.
 	 *
@@ -49,7 +49,7 @@ if ( ! function_exists( 'the_media_credit' ) ) {
 	}
 }
 
-if ( ! function_exists( 'get_media_credit_url' ) ) {
+if ( ! \function_exists( 'get_media_credit_url' ) ) {
 	/**
 	 * Template tag to return the media credit URL as plain text for some media attachment.
 	 *
@@ -60,14 +60,14 @@ if ( ! function_exists( 'get_media_credit_url' ) ) {
 	}
 }
 
-if ( ! function_exists( 'the_media_credit_url' ) ) {
+if ( ! \function_exists( 'the_media_credit_url' ) ) {
 	/**
 	 * Template tag to print the media credit URL as plain text for some media attachment.
 	 *
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function the_media_credit_url( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		echo esc_url_raw( get_media_credit_url( $post ) );
+		echo \esc_url_raw( \get_media_credit_url( $post ) );
 	}
 }
 
@@ -83,18 +83,18 @@ if ( ! function_exists( 'get_media_credit_html' ) ) {
 	}
 }
 
-if ( ! function_exists( 'the_media_credit_html' ) ) {
+if ( ! \function_exists( 'the_media_credit_html' ) ) {
 	/**
 	 * Template tag to print the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function the_media_credit_html( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		echo get_media_credit_html( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped.
+		echo \get_media_credit_html( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped.
 	}
 }
 
-if ( ! function_exists( 'get_media_credit_html_by_user_id' ) ) {
+if ( ! \function_exists( 'get_media_credit_html_by_user_id' ) ) {
 	/**
 	 * Template tag to return the media credit as HTML with a link to the author page if one exists for a WordPress user.
 	 *
@@ -105,18 +105,18 @@ if ( ! function_exists( 'get_media_credit_html_by_user_id' ) ) {
 	}
 }
 
-if ( ! function_exists( 'the_media_credit_html_by_user_id' ) ) {
+if ( ! \function_exists( 'the_media_credit_html_by_user_id' ) ) {
 	/**
 	 * Template tag to print the media credit as HTML with a link to the author page if one exists for a WordPress user.
 	 *
 	 * @param int $id User ID of a WordPress user.
 	 */
 	function the_media_credit_html_by_user_id( $id ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		echo get_media_credit_html_by_user_id( $id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped.
+		echo \get_media_credit_html_by_user_id( $id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped.
 	}
 }
 
-if ( ! function_exists( 'get_freeform_media_credit' ) ) {
+if ( ! \function_exists( 'get_freeform_media_credit' ) ) {
 	/**
 	 * Retrieve the freeform emdia credit for a given post/attachment.
 	 *
@@ -127,13 +127,13 @@ if ( ! function_exists( 'get_freeform_media_credit' ) ) {
 	 */
 	function get_freeform_media_credit( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 
-		_deprecated_function( __FUNCTION__, '3.0.0' );
+		\_deprecated_function( __FUNCTION__, '3.0.0' );
 
 		return Template_Tags::get_freeform_media_credit( $post );
 	}
 }
 
-if ( ! function_exists( 'display_author_media' ) ) {
+if ( ! \function_exists( 'display_author_media' ) ) {
 	/**
 	 * Template tag to display the recently added media attachments for given author.
 	 *
@@ -149,7 +149,7 @@ if ( ! function_exists( 'display_author_media' ) ) {
 	}
 }
 
-if ( ! function_exists( 'author_media_and_posts' ) ) {
+if ( ! \function_exists( 'author_media_and_posts' ) ) {
 	/**
 	 * Template tag to return the recently added media attachments and posts for a given author.
 	 *
@@ -163,7 +163,7 @@ if ( ! function_exists( 'author_media_and_posts' ) ) {
 	}
 }
 
-if ( ! function_exists( 'author_media' ) ) {
+if ( ! \function_exists( 'author_media' ) ) {
 	/**
 	 * Returns the recently added media attachments for a given author.
 	 *

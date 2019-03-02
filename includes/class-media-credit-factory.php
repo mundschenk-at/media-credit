@@ -58,7 +58,7 @@ abstract class Media_Credit_Factory {
 	public static function get( $full_plugin_path ) {
 		if ( ! isset( self::$factory ) ) {
 			// Load version from plugin data.
-			if ( ! function_exists( 'get_plugin_data' ) ) {
+			if ( ! \function_exists( 'get_plugin_data' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
 
