@@ -346,7 +346,7 @@ class Core {
 	 *
 	 * @return string            The freeform credit (or the empty string).
 	 */
-	public function get_media_credit_freeform_text( $attachment_id ) {
+	protected function get_media_credit_freeform_text( $attachment_id ) {
 		return (string) \get_post_meta( $attachment_id, self::POSTMETA_KEY, true );
 	}
 
@@ -357,7 +357,7 @@ class Core {
 	 *
 	 * @return string            The credit URL (or the empty string if none is set).
 	 */
-	public function get_media_credit_url( $attachment_id ) {
+	protected function get_media_credit_url( $attachment_id ) {
 		return (string) \get_post_meta( $attachment_id, self::URL_POSTMETA_KEY, true );
 	}
 
@@ -368,7 +368,7 @@ class Core {
 	 *
 	 * @return array             The data array.
 	 */
-	public function get_media_credit_data( $attachment_id ) {
+	protected function get_media_credit_data( $attachment_id ) {
 
 		$result = \get_post_meta( $attachment_id, self::DATA_POSTMETA_KEY, true );
 
