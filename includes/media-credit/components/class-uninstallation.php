@@ -40,13 +40,6 @@ use Mundschenk\Data_Storage\Transients;
 class Uninstallation implements \Media_Credit\Component {
 
 	/**
-	 * The full path to the main plugin file.
-	 *
-	 * @var string
-	 */
-	private $plugin_file;
-
-	/**
 	 * The options handler.
 	 *
 	 * @var Options
@@ -63,14 +56,12 @@ class Uninstallation implements \Media_Credit\Component {
 	/**
 	 * Creates a new Setup instance.
 	 *
-	 * @param string     $plugin_file   The full path to the base plugin file.
-	 * @param Options    $options       The options handler.
-	 * @param Transients $transients    The transients handler.
+	 * @param Options    $options    The options handler.
+	 * @param Transients $transients The transients handler.
 	 */
-	public function __construct( $plugin_file, Options $options, Transients $transients ) {
-		$this->plugin_file = $plugin_file;
-		$this->options     = $options;
-		$this->transients  = $transients;
+	public function __construct( Options $options, Transients $transients ) {
+		$this->options    = $options;
+		$this->transients = $transients;
 	}
 
 	/**

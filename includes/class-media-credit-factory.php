@@ -63,11 +63,6 @@ abstract class Media_Credit_Factory {
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
 
-			// Dynamic rules' helpers.
-			$full_path_rule = [
-				'constructParams' => [ $full_plugin_path ],
-			];
-
 			// The plugin version.
 			$version = \get_plugin_data( $full_plugin_path, false, false )['Version'];
 
@@ -103,7 +98,6 @@ abstract class Media_Credit_Factory {
 				Components\REST_API::class          => self::SHARED,
 				Components\Settings_Page::class     => $version_shared_rule,
 				Components\Setup::class             => $version_shared_rule,
-				Components\Uninstallation::class    => $full_path_rule,
 			];
 
 			// Create factory.
