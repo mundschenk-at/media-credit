@@ -1,2 +1,0 @@
-pputzer = Der Mundschenk & Compagnie <github@mundschenk.at>
-sbressler = Scott Bressler <scott@scottbressler.com>
