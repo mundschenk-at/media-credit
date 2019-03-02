@@ -9,6 +9,12 @@
   a {
     font-weight: normal;
   }
+
+  // Gutenberg
+  .wp-block-image figcaption > & {
+    margin: -0.5em 0 0;
+    font-size: 0.8em;
+  }
 }
 
 .post-thumbnail .media-credit {
