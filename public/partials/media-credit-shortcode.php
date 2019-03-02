@@ -32,29 +32,22 @@ $style = $width > 0 ? ' style="width: ' . (int) $width . 'px"' : '';
 $wrap = $atts['standalone'] && $html5;
 
 // Optional schema.org markup.
-$schema_org        = '';
-$figure_schema_org = '';
-if ( ! empty( $this->settings['schema_org_markup'] ) ) {
-	$schema_org        = ' itemprop="copyrightHolder"';
-	$figure_schema_org = ' itemscope itemtype="http://schema.org/ImageObject"';
+$schema_org        = ! empty( $this->settings['schema_org_markup'] );
+$schema_org_markup = '';
+if ( $schema_org ) {
+	$schema_org_markup = ' itemscope itemtype="http://schema.org/ImageObject"';
 
 	if ( ! \preg_match( '/\bitemprop\s*=/S', $content ) ) {
 		$content = \preg_replace( '/<img\b/S', '<img itemprop="contentUrl"', $content );
 	}
 }
 
-$credit_line = \esc_html( $credit );
-if ( $url ) {
-	$credit_line = '<a href="' . \esc_url( $url ) . '"' . ( ! empty( $atts['nofollow'] ) ? ' rel="nofollow"' : '' ) . '>' . $credit_line . '</a>';
-}
-$credit_line .= \esc_html( $credit_suffix );
-
 ?>
 <?php if ( $wrap ) : ?>
-<figure class="wp-caption <?php echo \esc_attr( $atts['align'] ); ?>" <?php echo $style, $figure_schema_org; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<figure class="wp-caption <?php echo \esc_attr( $atts['align'] ); ?>" <?php echo $style, $schema_org_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 <?php endif; ?>
 	<div class="media-credit-container <?php echo \esc_attr( $atts['align'] ); ?>" <?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><span class="media-credit" <?php echo $schema_org; ?>><?php echo $credit_line; ?></span>
+		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo $this->inline_media_credit( $atts, $schema_org ); ?>
 	</div>
 <?php if ( $wrap ) : ?>
 </figure>
