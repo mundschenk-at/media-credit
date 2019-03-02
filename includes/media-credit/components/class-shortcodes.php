@@ -314,7 +314,31 @@ class Shortcodes implements \Media_Credit\Component {
 		}
 		$credit_line .= \esc_html( $credit_suffix );
 
-		return "<span class=\"media-credit\" {$schema_org}>{$credit_line}</span>";
+		$markup = "<span class=\"media-credit\" {$schema_org}>{$credit_line}</span>";
+
+		/**
+		 * Filters the inline markup used for the credit line part of the `media-credit` shortcode.
+		 *
+		 * @since 4.0.0
+		 *
+		 * @param string $markup The inline part of the shortcode markup.
+		 * @param array $attr {
+		 *     The `[media-credit]` shortcode attributes.
+		 *
+		 *     @type int    $id         Optional. A user ID. Default 0.
+		 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
+		 *     @type string $link       Optional. A URL used for linking the credit.
+		 *     @type bool   $standalone Optional. A flag indicating that the shortcode
+		 *                              was used without an enclosing `[caption]`. Default true.
+		 *     @type string $align      Optional. The alignment to use for the image/figure
+		 *                              (if used without `[caption]`). Default 'alignnone'.
+		 *     @type int    $width      Optional. The width of the image/figure. Default 0.
+		 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
+		 *                              attribute should be added to the link tag.
+		 * }
+		 * @param bool  $include_schema_org Optional. Include schema.org markup. Default false.
+		 */
+		return \apply_filters( 'media_credit_shortcode_inline_markup', $markup, $attr, $include_schema_org );
 	}
 
 	/**
