@@ -27,6 +27,8 @@
 
 namespace Media_Credit;
 
+use Media_Credit\Tools\Shortcodes_Filter;
+
 use Media_Credit\Data_Storage\Cache;
 use Media_Credit\Data_Storage\Options;
 
@@ -133,18 +135,27 @@ class Core {
 	private $settings;
 
 	/**
+	 * The shortcodes filter.
+	 *
+	 * @var Shortcodes_Filter
+	 */
+	private $shortcodes_filter;
+
+	/**
 	 * Creates a new instance.
 	 *
-	 * @param string   $version           The plugin version string (e.g. "3.0.0-beta.2").
-	 * @param Cache    $cache             The object cache handler.
-	 * @param Options  $options           The options handler.
-	 * @param Settings $settings_template The default settings template.
+	 * @param string            $version           The plugin version string (e.g. "3.0.0-beta.2").
+	 * @param Cache             $cache             The object cache handler.
+	 * @param Options           $options           The options handler.
+	 * @param Settings          $settings_template The default settings template.
+	 * @param Shortcodes_Filter $shortcodes_filter The shortcodes filter.
 	 */
-	public function __construct( $version, Cache $cache, Options $options, Settings $settings_template ) {
+	public function __construct( $version, Cache $cache, Options $options, Settings $settings_template, Shortcodes_Filter $shortcodes_filter ) {
 		$this->version           = $version;
 		$this->cache             = $cache;
 		$this->options           = $options;
 		$this->settings_template = $settings_template;
+		$this->shortcodes_filter = $shortcodes_filter;
 	}
 
 	/**
@@ -222,112 +233,11 @@ class Core {
 			$nofollow = ! empty( $flags['nofollow'] );
 
 			// Filter the post's content.
-			$post->post_content = $this->filter_changed_media_credits( $post->post_content, $attachment->ID, $user_id, $freeform, $url, $nofollow );
+			$post->post_content = $this->shortcodes_filter->update_changed_media_credits( $post->post_content, $attachment->ID, $user_id, $freeform, $url, $nofollow );
 
 			// Save the filtered content in the database.
 			\wp_update_post( $post );
 		}
-	}
-
-	/**
-	 * Filters post content for changed media credits.
-	 *
-	 * @param string $content   The current post content.
-	 * @param int    $image_id  The attachment ID.
-	 * @param int    $author_id The author ID.
-	 * @param string $freeform  The freeform credit.
-	 * @param string $url       The credit URL.
-	 * @param bool   $nofollow  The "rel=nofollow" flag.
-	 *
-	 * @return string           The filtered post content.
-	 */
-	public function filter_changed_media_credits( $content, $image_id, $author_id, $freeform, $url, $nofollow ) {
-
-		// Get the image source URL.
-		$src = \wp_get_attachment_image_src( $image_id );
-		if ( empty( $src[0] ) ) {
-			// Invalid image ID.
-			return $content;
-		}
-
-		// Extract the image basename without the size for use in a regular expression.
-		$filename = \preg_quote( $this->get_image_filename_from_full_url( $src[0] ), '/' );
-
-		// Look at every matching shortcode.
-		\preg_match_all( '/' . \get_shortcode_regex( [ 'media-credit' ] ) . '/Ss', $content, $matches, PREG_SET_ORDER );
-
-		foreach ( $matches as $shortcode ) {
-
-			// Grab the shortcode attributes ...
-			$attr = \shortcode_parse_atts( $shortcode[3] );
-			$attr = $attr ?: [];
-
-			// ... and the contained <img> tag.
-			$img = $shortcode[5];
-
-			if ( ! \preg_match( "/src=([\"'])(?:(?!\1).)*{$filename}/S", $img ) || ! \preg_match( "/wp-image-{$image_id}/S", $img ) ) {
-				// This shortcode is for another image.
-				continue;
-			}
-
-			// Check for credit type.
-			if ( $author_id > 0 ) {
-				// The new credit should use the ID.
-				$id_or_name = "id={$author_id}";
-			} else {
-				// No valid ID, so use the freeform credit.
-				$id_or_name = "name=\"{$freeform}\"";
-			}
-
-			// Drop the old id/name attributes (if any).
-			unset( $attr['id'] );
-			unset( $attr['name'] );
-
-			// Update link attribute.
-			if ( ! empty( $url ) ) {
-				$attr['link'] = $url;
-			} else {
-				unset( $attr['link'] );
-			}
-
-			// Update nofollow attribute.
-			if ( ! empty( $url ) && ! empty( $nofollow ) ) {
-				$attr['nofollow'] = true;
-			} else {
-				unset( $attr['nofollow'] );
-			}
-
-			// Start reconstructing the shortcode.
-			$new_shortcode = "[media-credit {$id_or_name}";
-
-			// Add the rest of the attributes.
-			foreach ( $attr as $name => $value ) {
-				$new_shortcode .= " {$name}=\"{$value}\"";
-			}
-
-			// Finish up with the closing bracket and the <img> content.
-			$new_shortcode .= ']' . $img . '[/media-credit]';
-
-			// Replace the old shortcode with then new one.
-			$content = \str_replace( $shortcode[0], $new_shortcode, $content );
-		}
-
-		return $content;
-	}
-
-	/**
-	 * Returns the filename of an image in the wp_content directory (normally, could be any dir really) given the full URL to the image, ignoring WP sizes.
-	 * E.g.:
-	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-150x150.jpg, returns ParksTrip2010_100706_1487 (ignores size at end of string)
-	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-thumb.jpg, return ParksTrip2010_100706_1487-thumb
-	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-1.jpg, return ParksTrip2010_100706_1487-1
-	 *
-	 * @param  string $image Full URL to an image.
-	 * @return string        The filename of the image excluding any size or extension, as given in the example above.
-	 */
-	protected function get_image_filename_from_full_url( $image ) {
-		// Drop "-{$width}x{$height}".
-		return \preg_replace( '/(.*?)(\-\d+x\d+)?\.\w+/S', '$1', \wp_basename( $image ) );
 	}
 
 	/**

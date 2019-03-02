@@ -28,6 +28,7 @@ use Dice\Dice;
 
 use Media_Credit\Core;
 use Media_Credit\Components;
+use Media_Credit\Tools;
 
 use Mundschenk\Data_Storage;
 
@@ -93,6 +94,7 @@ abstract class Media_Credit_Factory {
 				Data_Storage\Site_Transients::class => self::SHARED,
 				Data_Storage\Options::class         => self::SHARED,
 				Data_Storage\Network_Options::class => self::SHARED,
+				Tools\Shortcodes_Filter::class      => self::SHARED,
 
 				// Components.
 				Components\Classic_Editor::class    => $version_shared_rule,
