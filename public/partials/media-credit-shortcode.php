@@ -32,10 +32,12 @@ $style = $width > 0 ? ' style="width: ' . (int) $width . 'px"' : '';
 $wrap = $atts['standalone'] && $html5;
 
 // Optional schema.org markup.
-$schema_org        = ! empty( $this->settings['schema_org_markup'] );
-$schema_org_markup = '';
+$schema_org            = ! empty( $this->settings['schema_org_markup'] );
+$schema_org_figure     = '';
+$schema_org_figcaption = '';
 if ( $schema_org ) {
-	$schema_org_markup = ' itemscope itemtype="http://schema.org/ImageObject"';
+	$schema_org_markup     = ' itemscope itemtype="http://schema.org/ImageObject"';
+	$schema_org_figcaption = ' itemprop="caption"';
 
 	if ( ! \preg_match( '/\bitemprop\s*=/S', $content ) ) {
 		$content = \preg_replace( '/<img\b/S', '<img itemprop="contentUrl"', $content );
@@ -44,11 +46,18 @@ if ( $schema_org ) {
 
 ?>
 <?php if ( $wrap ) : ?>
-<figure class="wp-caption <?php echo \esc_attr( $atts['align'] ); ?>" <?php echo $style, $schema_org_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<figure class="wp-caption <?php echo \esc_attr( $atts['align'] ); ?>" <?php echo $style, $schema_org_figure; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 <?php endif; ?>
-	<div class="media-credit-container <?php echo \esc_attr( $atts['align'] ); ?>" <?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo $this->inline_media_credit( $atts, $schema_org ); ?>
-	</div>
+	<?php if ( ! $html5 ) : ?>
+		<div class="media-credit-container <?php echo \esc_attr( $atts['align'] ); ?>" <?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo $this->inline_media_credit( $atts, $schema_org ); ?>
+		</div>
+	<?php else : ?>
+		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<figcaption class="wp-caption-text" <?php echo $schema_org_figcaption; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+			<?php echo $this->inline_media_credit( $atts, $schema_org ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		</figcaption>
+	<?php endif; ?>
 <?php if ( $wrap ) : ?>
 </figure>
 <?php endif; ?>
