@@ -122,14 +122,30 @@ class Shortcodes implements \Media_Credit\Component {
 	 * @return string The enriched caption markup.
 	 */
 	public function caption_shortcode( $attr, $content = null ) {
+		// Options influencing the markup.
+		$html5       = \current_theme_supports( 'html5', 'caption' );
+		$schema_org  = ! empty( $this->settings['schema_org_markup'] );
+		$show_credit = empty( $this->settings['credit_at_end'] );
+
 		// New-style shortcode with the caption inside the shortcode with the link and image tags.
 		if ( ! isset( $attr['caption'] ) ) {
 			if ( \preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#Sis', $content, $matches ) ) {
 				$content         = $matches[1];
 				$attr['caption'] = \trim( $matches[2] );
 
-				// Add attribute "standalone=0" to [media-credit] shortcode if present.
-				$content = \preg_replace( '#\[media-credit([^]]+)\]#S', '[media-credit standalone=0$1]', $content );
+				if ( ! $html5 ) {
+					// Add attribute "standalone=0" to [media-credit] shortcode if present.
+					$content = \preg_replace( '#\[media-credit([^]]+)\]#S', '[media-credit standalone=0$1]', $content );
+				} elseif ( \preg_match( '#\[media-credit([^]]+)\]#S', $content, $matches ) ) {
+					// Use improved HTML5 mode.
+					$shortcode = $matches[0];
+					$content   = \str_replace( [ $shortcode, '[/media-credit]' ], '', $content );
+
+					if ( $show_credit ) {
+						$credit_attr      = $this->sanitize_attributes( (array) \shortcode_parse_atts( $matches[1] ) );
+						$attr['caption'] .= ' ' . $this->inline_media_credit( $credit_attr, $schema_org );
+					}
+				}
 			}
 		}
 
@@ -137,7 +153,7 @@ class Shortcodes implements \Media_Credit\Component {
 		$caption = \img_caption_shortcode( $attr, $content );
 
 		// Optionally add schema.org markup.
-		if ( ! empty( $this->settings['schema_org_markup'] ) && empty( $this->settings['credit_at_end'] ) ) {
+		if ( $show_credit && $schema_org ) {
 			// Inject schema.org markup for figure.
 			if ( ! \preg_match( '/<figure[^>]*\bitemscope\b/S', $caption ) ) {
 				$caption = \preg_replace( '/<figure\b/S', '<figure itemscope itemtype="http://schema.org/ImageObject"', $caption );
@@ -184,17 +200,7 @@ class Shortcodes implements \Media_Credit\Component {
 			return \do_shortcode( $content );
 		}
 
-		// Merge default shortcode attributes.
-		$atts = \shortcode_atts( self::MEDIA_CREDIT_DEFAULTS, $atts, 'media-credit' );
-
-		// Sanitize attribute values.
-		$atts['id']         = \absint( $atts['id'] );
-		$atts['name']       = \sanitize_text_field( $atts['name'] );
-		$atts['link']       = \esc_url_raw( $atts['link'] );
-		$atts['standalone'] = \filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
-		$atts['align']      = \sanitize_html_class( $atts['align'] );
-		$atts['width']      = \absint( $atts['width'] );
-		$atts['nofollow']   = \filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
+		$atts = $this->sanitize_attributes( $atts );
 
 		/**
 		 * Filters the `[media-credit]` shortcode to allow plugins and themes to
@@ -250,18 +256,6 @@ class Shortcodes implements \Media_Credit\Component {
 		 */
 		$width = \apply_filters( 'img_caption_shortcode_width', $width, $atts, $content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
-		// The default credit and link.
-		$credit        = $atts['name'];
-		$credit_suffix = '';
-		$url           = $atts['link'];
-
-		// If present, use the user ID.
-		if ( $atts['id'] > 0 ) {
-			$credit        = \get_the_author_meta( 'display_name', $atts['id'] );
-			$credit_suffix = $this->core->get_organization_suffix();
-			$url           = $url ?: \get_author_posts_url( $atts['id'] );
-		}
-
 		// Prepare media content (nested shortcodes).
 		$content = \do_shortcode( $content );
 
@@ -273,5 +267,113 @@ class Shortcodes implements \Media_Credit\Component {
 
 		// Retrieve buffer.
 		return \ob_get_clean();
+	}
+
+	/**
+	 * Renders inline part of the shortcode (prepared for output).
+	 *
+	 * @param array $attr {
+	 *     The `[media-credit]` shortcode attributes.
+	 *
+	 *     @type int    $id         Optional. A user ID. Default 0.
+	 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
+	 *     @type string $link       Optional. A URL used for linking the credit.
+	 *     @type bool   $standalone Optional. A flag indicating that the shortcode
+	 *                              was used without an enclosing `[caption]`. Default true.
+	 *     @type string $align      Optional. The alignment to use for the image/figure
+	 *                              (if used without `[caption]`). Default 'alignnone'.
+	 *     @type int    $width      Optional. The width of the image/figure. Default 0.
+	 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
+	 *                              attribute should be added to the link tag.
+	 * }
+	 * @param bool  $include_schema_org Optional. Include schema.org markup. Default false.
+	 *
+	 * @return string
+	 */
+	protected function inline_media_credit( array $attr, $include_schema_org = false ) {
+
+		// The default credit and link.
+		$credit        = $attr['name'];
+		$credit_suffix = '';
+		$url           = $attr['link'];
+
+		// If present, use the user ID.
+		if ( $attr['id'] > 0 ) {
+			$credit        = \get_the_author_meta( 'display_name', $attr['id'] );
+			$credit_suffix = $this->core->get_organization_suffix();
+			$url           = $url ?: \get_author_posts_url( $attr['id'] );
+		}
+
+		// Optional schema.org markup.
+		$schema_org = $include_schema_org ? ' itemprop="copyrightHolder"' : '';
+
+		// Construct the credit line.
+		$credit_line = \esc_html( $credit );
+		if ( $url ) {
+			$credit_line = '<a href="' . \esc_url( $url ) . '"' . ( ! empty( $attr['nofollow'] ) ? ' rel="nofollow"' : '' ) . '>' . $credit_line . '</a>';
+		}
+		$credit_line .= \esc_html( $credit_suffix );
+
+		$markup = "<span class=\"media-credit\" {$schema_org}>{$credit_line}</span>";
+
+		/**
+		 * Filters the inline markup used for the credit line part of the `media-credit` shortcode.
+		 *
+		 * @since 4.0.0
+		 *
+		 * @param string $markup The inline part of the shortcode markup.
+		 * @param array $attr {
+		 *     The `[media-credit]` shortcode attributes.
+		 *
+		 *     @type int    $id         Optional. A user ID. Default 0.
+		 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
+		 *     @type string $link       Optional. A URL used for linking the credit.
+		 *     @type bool   $standalone Optional. A flag indicating that the shortcode
+		 *                              was used without an enclosing `[caption]`. Default true.
+		 *     @type string $align      Optional. The alignment to use for the image/figure
+		 *                              (if used without `[caption]`). Default 'alignnone'.
+		 *     @type int    $width      Optional. The width of the image/figure. Default 0.
+		 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
+		 *                              attribute should be added to the link tag.
+		 * }
+		 * @param bool  $include_schema_org Optional. Include schema.org markup. Default false.
+		 */
+		return \apply_filters( 'media_credit_shortcode_inline_markup', $markup, $attr, $include_schema_org );
+	}
+
+	/**
+	 * Ensures all required attributes are present and sanitized.
+	 *
+	 * @param array $atts {
+	 *     The `[media-credit]` shortcode attributes.
+	 *
+	 *     @type int    $id         Optional. A user ID. Default 0.
+	 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
+	 *     @type string $link       Optional. A URL used for linking the credit.
+	 *     @type bool   $standalone Optional. A flag indicating that the shortcode
+	 *                              was used without an enclosing `[caption]`. Default true.
+	 *     @type string $align      Optional. The alignment to use for the image/figure
+	 *                              (if used without `[caption]`). Default 'alignnone'.
+	 *     @type int    $width      Optional. The width of the image/figure. Default 0.
+	 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
+	 *                              attribute should be added to the link tag.
+	 * }
+	 *
+	 * @return array
+	 */
+	protected function sanitize_attributes( array $atts ) {
+		// Merge default shortcode attributes.
+		$atts = \shortcode_atts( self::MEDIA_CREDIT_DEFAULTS, $atts, 'media-credit' );
+
+		// Sanitize attribute values.
+		$atts['id']         = \absint( $atts['id'] );
+		$atts['name']       = \sanitize_text_field( $atts['name'] );
+		$atts['link']       = \esc_url_raw( $atts['link'] );
+		$atts['standalone'] = \filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
+		$atts['align']      = \sanitize_html_class( $atts['align'] );
+		$atts['width']      = \absint( $atts['width'] );
+		$atts['nofollow']   = \filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
+
+		return $atts;
 	}
 }
