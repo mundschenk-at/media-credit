@@ -27,6 +27,7 @@
 namespace Media_Credit\Components;
 
 use Media_Credit\Core;
+use Media_Credit\Settings;
 
 /**
  * The component handling the integration with the Block Editor (i.e. Gutenberg).
@@ -77,8 +78,11 @@ class Block_Editor implements \Media_Credit\Component {
 	 */
 	public function add_media_credit_to_image_blocks( $block_content, array $block ) {
 
-		// We only target standard images.
-		if ( 'core/image' !== $block['blockName'] ) {
+		// Access the plugin settings.
+		$s = $this->core->get_settings();
+
+		// We only target standard images, and only when the credits are not displayed after the post content.
+		if ( 'core/image' !== $block['blockName'] || ! empty( $s[ Settings::CREDIT_AT_END ] ) ) {
 			return $block_content;
 		}
 
