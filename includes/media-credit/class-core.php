@@ -484,7 +484,7 @@ class Core {
 		$this->cache->delete( "json_{$attachment->ID}" );
 
 		// Update the shortcodes in the parent post of the attachment.
-		$this->update_shortcodes_in_parent_post( $attachment, $new['freeform'], $new['url'] );
+		$this->update_shortcodes_in_parent_post( $attachment, $new['user_id'], $new['freeform'], $new['url'], $new['flags'] );
 	}
 
 	/**
