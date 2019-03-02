@@ -200,17 +200,7 @@ class Shortcodes implements \Media_Credit\Component {
 			return \do_shortcode( $content );
 		}
 
-		// Merge default shortcode attributes.
-		$atts = \shortcode_atts( self::MEDIA_CREDIT_DEFAULTS, $atts, 'media-credit' );
-
-		// Sanitize attribute values.
-		$atts['id']         = \absint( $atts['id'] );
-		$atts['name']       = \sanitize_text_field( $atts['name'] );
-		$atts['link']       = \esc_url_raw( $atts['link'] );
-		$atts['standalone'] = \filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
-		$atts['align']      = \sanitize_html_class( $atts['align'] );
-		$atts['width']      = \absint( $atts['width'] );
-		$atts['nofollow']   = \filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
+		$atts = $this->sanitize_attributes( $atts );
 
 		/**
 		 * Filters the `[media-credit]` shortcode to allow plugins and themes to
@@ -325,5 +315,41 @@ class Shortcodes implements \Media_Credit\Component {
 		$credit_line .= \esc_html( $credit_suffix );
 
 		return "<span class=\"media-credit\" {$schema_org}>{$credit_line}</span>";
+	}
+
+	/**
+	 * Ensures all required attributes are present and sanitized.
+	 *
+	 * @param array $atts {
+	 *     The `[media-credit]` shortcode attributes.
+	 *
+	 *     @type int    $id         Optional. A user ID. Default 0.
+	 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
+	 *     @type string $link       Optional. A URL used for linking the credit.
+	 *     @type bool   $standalone Optional. A flag indicating that the shortcode
+	 *                              was used without an enclosing `[caption]`. Default true.
+	 *     @type string $align      Optional. The alignment to use for the image/figure
+	 *                              (if used without `[caption]`). Default 'alignnone'.
+	 *     @type int    $width      Optional. The width of the image/figure. Default 0.
+	 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
+	 *                              attribute should be added to the link tag.
+	 * }
+	 *
+	 * @return array
+	 */
+	protected function sanitize_attributes( array $atts ) {
+		// Merge default shortcode attributes.
+		$atts = \shortcode_atts( self::MEDIA_CREDIT_DEFAULTS, $atts, 'media-credit' );
+
+		// Sanitize attribute values.
+		$atts['id']         = \absint( $atts['id'] );
+		$atts['name']       = \sanitize_text_field( $atts['name'] );
+		$atts['link']       = \esc_url_raw( $atts['link'] );
+		$atts['standalone'] = \filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
+		$atts['align']      = \sanitize_html_class( $atts['align'] );
+		$atts['width']      = \absint( $atts['width'] );
+		$atts['nofollow']   = \filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
+
+		return $atts;
 	}
 }
