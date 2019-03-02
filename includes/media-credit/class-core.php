@@ -223,7 +223,7 @@ class Core {
 	 *     @type bool $nofollow Optional. A flag indicating that `rel=nofollow` should be added to the link. Default false.
 	 * }
 	 */
-	public function update_shortcodes_in_parent_post( \WP_Post $attachment, $user_id = 0, $freeform = '', $url = '', array $flags = [] ) {
+	protected function update_shortcodes_in_parent_post( \WP_Post $attachment, $user_id = 0, $freeform = '', $url = '', array $flags = [] ) {
 
 		if ( ! empty( $attachment->post_parent ) ) {
 			// Get the parent post of the attachment.
