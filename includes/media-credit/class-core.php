@@ -250,6 +250,33 @@ class Core {
 	}
 
 	/**
+	 * Sanitizes the freeform media credit meta field.
+	 *
+	 * @param  mixed  $meta_value  Meta value to sanitize.
+	 * @param  string $meta_key    Meta key.
+	 * @param  string $object_type Object type ('post', 'user' etc.).
+	 *
+	 * @return mixed
+	 */
+	public function sanitize_media_credit_meta_field( $meta_value, $meta_key, /* @scrutinizer ignore-unused */ $object_type ) {
+		switch ( $meta_key ) {
+			case self::POSTMETA_KEY:
+				$meta_value = \sanitize_text_field( $meta_value );
+				break;
+
+			case self::URL_POSTMETA_KEY:
+				$meta_value = \esc_url_raw( $meta_value );
+				break;
+
+			case self::DATA_POSTMETA_KEY:
+				$meta_value = \is_array( $meta_value ) ? $meta_value : [];
+				break;
+		}
+
+		return $meta_value;
+	}
+
+	/**
 	 * Returns the freeform media credit for a given attachment.
 	 *
 	 * @param int $attachment_id An attachment ID.
