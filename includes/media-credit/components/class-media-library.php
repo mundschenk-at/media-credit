@@ -110,12 +110,16 @@ class Media_Library implements \Media_Credit\Component {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		// Pre-register the media scripts.
-		\wp_register_script( 'media-credit-legacy-autocomplete', "{$url}/admin/js/media-credit-legacy-autocomplete{$suffix}.js", [ 'jquery', 'jquery-ui-autocomplete' ], $this->version, true );
-		\wp_register_script( 'media-credit-attachment-details', "{$url}/admin/js/media-credit-attachment-details{$suffix}.js", [ 'jquery', 'jquery-ui-autocomplete', 'wp-api' ], $this->version, true );
+		\wp_register_script( 'media-credit-bootstrap',           "{$url}/admin/js/media-credit-bootstrap{$suffix}.js",           [],                                                                         $this->version, true );
+		\wp_register_script( 'media-credit-legacy-autocomplete', "{$url}/admin/js/media-credit-legacy-autocomplete{$suffix}.js", [ 'media-credit-bootstrap', 'jquery', 'jquery-ui-autocomplete' ],           $this->version, true );
+		\wp_register_script( 'media-credit-attachment-details',  "{$url}/admin/js/media-credit-attachment-details{$suffix}.js",  [ 'media-credit-bootstrap', 'jquery', 'jquery-ui-autocomplete', 'wp-api' ], $this->version, true );
 
 		// And some styles.
-		\wp_register_style( 'media-credit-legacy-edit-media-style', "{$url}/admin/css/media-credit-legacy-edit-media{$suffix}.css", [], $this->version, 'screen' );
+		\wp_register_style( 'media-credit-legacy-edit-media-style',  "{$url}/admin/css/media-credit-legacy-edit-media{$suffix}.css",  [], $this->version, 'screen' );
 		\wp_register_style( 'media-credit-attachment-details-style', "{$url}/admin/css/media-credit-attachment-details{$suffix}.css", [], $this->version, 'screen' );
+
+		// Now add inline script data.
+		$this->add_inline_script_data();
 
 		// Autocomplete when editing media via the legacy form...
 		if ( $this->is_legacy_media_edit_page() ) {
@@ -140,40 +144,34 @@ class Media_Library implements \Media_Credit\Component {
 	}
 
 	/**
-	 * Add our global variable for the TinyMCE plugin.
+	 * Adds our global data for the JavaScript modules.
 	 */
-	public function admin_head() {
-		// Retrieve the plugin settings.
-		$options = $this->core->get_settings();
-
+	public function add_inline_script_data() {
+		// Retrieve list of authors.
 		$authors = [];
 		foreach ( \get_users( self::AUTHORS_QUERY ) as $author ) {
 			$authors[ $author->ID ] = $author->display_name;
 		}
 
-		$media_credit = [
+		// Retrieve the plugin settings.
+		$options  = $this->core->get_settings();
+		$settings = [
 			'separator'       => $options[ Settings::SEPARATOR ],
 			'organization'    => $options[ Settings::ORGANIZATION ],
 			'noDefaultCredit' => $options[ Settings::NO_DEFAULT_CREDIT ],
-			'id'              => $authors,
 		];
 
-		?>
-		<script type='text/javascript'>
-			var $mediaCredit = <?php echo /* @scrutinizer ignore-type */ \wp_json_encode( $media_credit ); ?>;
-		</script>
-		<?php
+		$script  = 'var mundschenk=window.mundschenk||{},mediaCredit=mundschenk.mediaCredit||{};';
+		$script .= 'mediaCredit.options=' . /* @scrutinizer ignore-type */ \wp_json_encode( $settings ) . ';';
+		$script .= 'mediaCredit.id=' . /* @scrutinizer ignore-type */ \wp_json_encode( $authors ) . ';';
+
+		\wp_add_inline_script( 'media-credit-bootstrap', $script, 'after' );
 	}
 
 	/**
 	 * Initialize settings.
 	 */
 	public function admin_init() {
-		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages.
-		if ( ( \current_user_can( 'edit_posts' ) || \current_user_can( 'edit_pages' ) ) ) {
-			\add_action( 'admin_head', [ $this, 'admin_head' ] );
-		}
-
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
 		\add_filter( 'the_author', [ $this, 'filter_the_author' ], 10, 1 );
 	}

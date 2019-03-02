@@ -1,7 +1,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2014-2018 Peter Putzer.
+ * Copyright 2014-2019 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License,
@@ -23,13 +23,13 @@
  * @package    Media_Credit
  * @subpackage Media_Credit/admin
  *
- * global: wp
+ * global: wp, mundschenk
  */
-( function( $, wp ) {
+( function( $, wp, mundschenk ) {
 	'use strict';
 
 	var MediaCreditImagePropertiesView, frame,
-			mediaCredit = window.$mediaCredit || {};
+			mediaCredit = mundschenk.mediaCredit || {};
 
 	// Sanity check.
 	if ( ! wp.media.events ) {
@@ -162,4 +162,4 @@
 		}
 	} );
 
-} ( jQuery, wp ) );
+} ( jQuery, wp, mundschenk ) );

@@ -1,13 +1,13 @@
 /*
  * Properly handle editing credits in the media modal.
  *
- * global: _
+ * global: _, wp, mundschenk
  */
 
 jQuery( function( $ ) {
 	'use strict';
 
-	var mediaCredit = window.$mediaCredit || {};
+	var mediaCredit = mundschenk.mediaCredit || {};
 
 	/**
    * Install autoselect on the given input fields.
@@ -72,7 +72,7 @@ jQuery( function( $ ) {
 			var credit = $input.val(),
 				authorID = $hidden.attr( 'data-author-id' );
 
-			if ( mediaCredit.noDefaultCredit && '' === credit && '' === $hidden.val() ) {
+			if ( mediaCredit.options.noDefaultCredit && '' === credit && '' === $hidden.val() ) {
 				$hidden.val( authorID );
 				$hidden.attr( 'data-author-display', mediaCredit.id[ authorID ] );
 

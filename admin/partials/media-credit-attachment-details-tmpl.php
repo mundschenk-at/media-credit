@@ -15,7 +15,7 @@
 	<label class="setting" data-setting="mediaCreditText">
 		<span class="name"><?php esc_html_e( 'Credit', 'media-credit' ); ?></span>
 		<input type="text" class="media-credit-input"
-			<# if ( $mediaCredit.noDefaultCredit ) { #>
+			<# if ( mundschenk.mediaCredit.options.noDefaultCredit ) { #>
 				placeholder="{{ data.mediaCredit.placeholder }}"
 			<# } #>
 			value="{{ data.mediaCreditText }}"
