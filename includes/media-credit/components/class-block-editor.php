@@ -92,14 +92,30 @@ class Block_Editor implements \Media_Credit\Component {
 			return $block_content;
 		}
 
+		$include_schema_org = ! empty( $s[ Settings::SCHEMA_ORG_MARKUP ] );
+		$schema_org         = $include_schema_org ? ' itemprop="copyrightHolder"' : '';
+
 		// Load the media credit for the attachment.
 		$credit = $this->core->get_media_credit_json( $attachment );
-		$markup = "<span class='media-credit'>{$credit['rendered']}</span>";
+		$markup = "<span class='media-credit'{$schema_org}>{$credit['rendered']}</span>";
 
 		if ( \preg_match( '#(<figcaption[^>]*>)(.*)</figcaption>#S', $block_content, $matches ) ) {
 			$block_content = \str_replace( $matches[0], "{$matches[1]}{$markup} {$matches[2]}</figcaption>", $block_content );
 		} else {
 			$block_content = \str_replace( '</figure>', "<figcaption>{$markup}</figcaption></figure>", $block_content );
+		}
+
+		// Inject additional schema.org markup.
+		if ( $include_schema_org ) {
+			// <figure> markup.
+			if ( ! \preg_match( '/<figure[^>]*\bitemscope\b/S', $block_content ) ) {
+				$block_content = \preg_replace( '/<figure\b/S', '<figure itemscope itemtype="http://schema.org/ImageObject"', $block_content );
+			}
+
+			// <figcaption> markup.
+			if ( ! \preg_match( '/<figcaption[^>]*\bitemprop\s*=\b/S', $block_content ) ) {
+				$block_content = \preg_replace( '/<figcaption\b/S', '<figcaption itemprop="caption"', $block_content );
+			}
 		}
 
 		return $block_content;
