@@ -165,11 +165,7 @@ class Media_Credit {
 	 * @return string
 	 */
 	public static function get_html_by_user_id( $id ) {
-
-		$credit_wp_author = \get_the_author_meta( 'display_name', $id );
-		$options          = Core::get_instance()->get_settings();
-
-		return '<a href="' . \get_author_posts_url( $id ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
+		return Core::get_instance()->render_media_credit_html( $id );
 	}
 
 	/**
