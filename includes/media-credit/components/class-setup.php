@@ -192,36 +192,39 @@ class Setup implements \Media_Credit\Component {
 			'post',
 			Core::POSTMETA_KEY,
 			[
-				'object_subtype' => 'attachment',
-				'type'           => 'string',
-				'description'    => 'The copyright line itself (if not overridden by the `user_id`)',
-				'single'         => true,
-				'auth_callback'  => [ $this->core, 'authorized_to_edit_media_credit' ],
-				'show_in_rest'   => false,
+				'object_subtype'    => 'attachment',
+				'type'              => 'string',
+				'description'       => 'The copyright line itself (if not overridden by the `user_id`)',
+				'single'            => true,
+				'sanitize_callback' => [ $this->core, 'sanitize_media_credit_meta_field' ],
+				'auth_callback'     => [ $this->core, 'authorized_to_edit_media_credit' ],
+				'show_in_rest'      => false,
 			]
 		);
 		\register_meta(
 			'post',
 			Core::URL_POSTMETA_KEY,
 			[
-				'object_subtype' => 'attachment',
-				'type'           => 'string',
-				'description'    => 'A URL to link from the copyright information (overriding the default link to author pages)',
-				'single'         => true,
-				'auth_callback'  => [ $this->core, 'authorized_to_edit_media_credit' ],
-				'show_in_rest'   => false,
+				'object_subtype'    => 'attachment',
+				'type'              => 'string',
+				'description'       => 'A URL to link from the copyright information (overriding the default link to author pages)',
+				'single'            => true,
+				'sanitize_callback' => [ $this->core, 'sanitize_media_credit_meta_field' ],
+				'auth_callback'     => [ $this->core, 'authorized_to_edit_media_credit' ],
+				'show_in_rest'      => false,
 			]
 		);
 		\register_meta(
 			'post',
 			Core::DATA_POSTMETA_KEY,
 			[
-				'object_subtype' => 'attachment',
-				'type'           => 'array',
-				'description'    => 'Optional flags for the copyright information (or the link)',
-				'single'         => true,
-				'auth_callback'  => [ $this->core, 'authorized_to_edit_media_credit' ],
-				'show_in_rest'   => false,
+				'object_subtype'    => 'attachment',
+				'type'              => 'array',
+				'description'       => 'Optional flags for the copyright information (or the link)',
+				'single'            => true,
+				'sanitize_callback' => [ $this->core, 'sanitize_media_credit_meta_field' ],
+				'auth_callback'     => [ $this->core, 'authorized_to_edit_media_credit' ],
+				'show_in_rest'      => false,
 			]
 		);
 	}
