@@ -43,7 +43,7 @@ if ( ! \function_exists( 'the_media_credit' ) ) {
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function the_media_credit( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		echo \esc_html( \get_media_credit( $post ) );
+		Media_Credit::plaintext( $post );
 	}
 }
 
@@ -88,7 +88,7 @@ if ( ! \function_exists( 'the_media_credit_html' ) ) {
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function the_media_credit_html( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		echo \get_media_credit_html( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped.
+		Media_Credit::html( $post );
 	}
 }
 
@@ -110,7 +110,7 @@ if ( ! \function_exists( 'the_media_credit_html_by_user_id' ) ) {
 	 * @param int $id User ID of a WordPress user.
 	 */
 	function the_media_credit_html_by_user_id( $id ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		echo \get_media_credit_html_by_user_id( $id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped.
+		Media_Credit::html_by_user_id( $id );
 	}
 }
 

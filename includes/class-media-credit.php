@@ -58,6 +58,17 @@ class Media_Credit {
 	}
 
 	/**
+	 * Outputs the media credit as plain text for some media attachment.
+	 *
+	 * @param  int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
+	 * @param  bool         $fancy      Optional. Fancy output (<user> <separator> <organization>)
+	 *                                  for local user credits. Optional. Default false.
+	 */
+	public static function plaintext( $attachment, $fancy = false ) {
+		echo \esc_html( self::get_plaintext( $attachment, $fancy ) );
+	}
+
+	/**
 	 * Returns the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
 	 * @param  int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
@@ -70,6 +81,15 @@ class Media_Credit {
 		$credit = self::get_fields( $attachment );
 
 		return $credit['rendered'];
+	}
+
+	/**
+	 * Outputs the media credit as HTML with a link to the author page if one exists for some media attachment.
+	 *
+	 * @param  int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
+	 */
+	public static function html( $attachment ) {
+		echo self::get_html( $attachment );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data is safe for output.
 	}
 
 	/**
@@ -151,6 +171,16 @@ class Media_Credit {
 
 		return '<a href="' . \get_author_posts_url( $id ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 	}
+
+	/**
+	 * Outputs the media credit as HTML with a link to the author page if one exists for a WordPress user.
+	 *
+	 * @param  int $id User ID of a WordPress user.
+	 */
+	public static function html_by_user_id( $id ) {
+		echo self::get_html_by_user_id( $id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data is safe for output.
+	}
+
 
 	/**
 	 * Returns the recently added media attachments and posts for a given author.
