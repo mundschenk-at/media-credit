@@ -25,16 +25,19 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace Media_Credit;
+use Media_Credit\Core;
 
 /**
- * A container of static functions implementing the internals of the
- * plugin's template tags.
+ * A collection of static methods making up the Media Credit template tags API.
+ *
+ * While the legacy global functions-based API will continue to work for now, they
+ * have been collectively deprecated and will be removed in the next major version.
+ * The new API reduces the global namespace pollution and allows autoloading.
  *
  * @since 3.0.0
- * @since 4.0.0 Renamed to Media_Credit\Template_Tags
+ * @since 4.0.0 Renamed to Media_Credit
  */
-class Template_Tags {
+class Media_Credit {
 
 	/**
 	 * Returns the media credit as plain text for some media attachment.
