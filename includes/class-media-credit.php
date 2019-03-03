@@ -181,10 +181,10 @@ class Media_Credit {
 	/**
 	 * Returns the recently added media attachments and posts for a given author.
 	 *
-	 * @param int     $author_id          The user ID of the author.
-	 * @param boolean $include_posts      Optional. Default true.
-	 * @param int     $limit              Optional. Default 0.
-	 * @param boolean $exclude_unattached Optional. Default true.
+	 * @param int  $author_id          The user ID of the author.
+	 * @param bool $include_posts      Optional. Default true.
+	 * @param int  $limit              Optional. Default 0.
+	 * @param bool $exclude_unattached Optional. Default true.
 	 */
 	public static function author_media_and_posts( $author_id, $include_posts = true, $limit = 0, $exclude_unattached = true ) {
 		$cache_key = "author_media_and_posts_{$author_id}_i" . ( $include_posts ? '1' : '0' ) . "_l{$limit}_e" . ( $exclude_unattached ? '1' : '0' );
@@ -249,12 +249,12 @@ class Media_Credit {
 	/**
 	 * Displays the recently added media attachments for given author.
 	 *
-	 * @param int     $author_id           The user ID of the author.
-	 * @param boolean $sidebar             Display as sidebar or inline. Optional. Default true.
-	 * @param int     $limit               Optional. Default 10.
-	 * @param boolean $link_without_parent Optional. Default false.
-	 * @param string  $header              HTML-formatted heading. Optional. Default <h3>Recent Media</h3> (translated).
-	 * @param boolean $exclude_unattached  Optional. Default true.
+	 * @param int    $author_id           The user ID of the author.
+	 * @param bool   $sidebar             Display as sidebar or inline. Optional. Default true.
+	 * @param int    $limit               Optional. Default 10.
+	 * @param bool   $link_without_parent Optional. Default false.
+	 * @param string $header              HTML-formatted heading. Optional. Default <h3>Recent Media</h3> (translated).
+	 * @param bool   $exclude_unattached  Optional. Default true.
 	 */
 	public static function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = null, $exclude_unattached = true ) {
 
