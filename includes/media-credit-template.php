@@ -116,23 +116,6 @@ if ( ! \function_exists( 'the_media_credit_html_by_user_id' ) ) {
 	}
 }
 
-if ( ! \function_exists( 'get_freeform_media_credit' ) ) {
-	/**
-	 * Retrieve the freeform emdia credit for a given post/attachment.
-	 *
-	 * @deprecated since 3.0.0
-	 *
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
-	 * @return string The freeform credit (or the empty string).
-	 */
-	function get_freeform_media_credit( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-
-		\_deprecated_function( __FUNCTION__, '3.0.0' );
-
-		return Template_Tags::get_freeform_media_credit( $post );
-	}
-}
-
 if ( ! \function_exists( 'display_author_media' ) ) {
 	/**
 	 * Template tag to display the recently added media attachments for given author.

@@ -1,5 +1,9 @@
 # Changelog #
 
+## 4.0.0 (unreleased) ##
+*   _Change_: The deprecated template function `get_freeform_media_credit` has
+    been removed.
+
 ## 3.2.0 (Feb. 21, 2018) ##
 *   Use minified stylesheets and JavaScript files if running in a production
     environment.
