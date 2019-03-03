@@ -48,7 +48,7 @@ class Media_Credit {
 	 *
 	 * @return string                   The media credit in plaintext format.
 	 */
-	public static function get_media_credit( $attachment, $fancy = false ) {
+	public static function get_plaintext( $attachment, $fancy = false ) {
 
 		// Get all the media credit fields.
 		$credit = self::get_media_credit_fields( $attachment );
@@ -58,46 +58,13 @@ class Media_Credit {
 	}
 
 	/**
-	 * Returns the media credit URL as plain text for some media attachment.
-	 *
-	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
-	 *
-	 * @return string                  The credit URL (or the empty string if none is set).
-	 */
-	public static function get_media_credit_url( $attachment ) {
-
-		// Get all the media credit fields.
-		$credit = self::get_media_credit_fields( $attachment );
-
-		return $credit['raw']['url'];
-	}
-
-	/**
-	 * Returns the optional media credit data array for a media attachment.
-	 *
-	 * @since 3.1.0
-	 *
-	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
-	 *
-	 * @return array                   The data array.
-	 */
-	public static function get_media_credit_data( $attachment ) {
-
-		// Get all the media credit fields.
-		$credit = self::get_media_credit_fields( $attachment );
-
-		return $credit['raw']['flags'];
-	}
-
-	/**
 	 * Returns the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
 	 * @param  int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
-	 * @param  bool         $deprecated Optional. Argument is ignored. Default true.
 	 *
 	 * @return string                   The media credit HTML (or the empty string if no credit is set).
 	 */
-	public static function get_media_credit_html( $attachment, $deprecated = true ) {
+	public static function get_html( $attachment ) {
 
 		// Get all the media credit fields.
 		$credit = self::get_media_credit_fields( $attachment );
@@ -106,28 +73,16 @@ class Media_Credit {
 	}
 
 	/**
-	 * Returns the media credit as HTML with a link to the author page if one exists for a WordPress user.
-	 *
-	 * @param  int $id User ID of a WordPress user.
-	 *
-	 * @return string
-	 */
-	public static function get_media_credit_html_by_user_id( $id ) {
-
-		$credit_wp_author = \get_the_author_meta( 'display_name', $id );
-		$options          = Core::get_instance()->get_settings();
-
-		return '<a href="' . \get_author_posts_url( $id ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
-	}
-
-	/**
 	 * Returns the freeform media credit for a given post/attachment.
+	 *
+	 * Preferably, you should use the `Media_Credit::get_plaintext` or
+	 * `Media_Credit::get_html``methods instead.
 	 *
 	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
 	 *
 	 * @return string                  The freeform credit (or the empty string).
 	 */
-	public static function get_freeform_media_credit( $attachment ) {
+	public static function get_freeform( $attachment ) {
 
 		// Get all the media credit fields.
 		$credit = self::get_media_credit_fields( $attachment );
@@ -138,6 +93,63 @@ class Media_Credit {
 		}
 
 		return $credit['raw']['freeform'];
+	}
+
+	/**
+	 * Returns the media credit URL as plain text for some media attachment.
+	 *
+	 * Preferably, you should use the `Media_Credit::get_plaintext` or
+	 * `Media_Credit::get_html``methods instead.
+	 *
+	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
+	 *
+	 * @return string                  The credit URL (or the empty string if none is set).
+	 */
+	public static function get_url( $attachment ) {
+
+		// Get all the media credit fields.
+		$credit = self::get_media_credit_fields( $attachment );
+
+		return $credit['raw']['url'];
+	}
+
+	/**
+	 * Returns the optional media credit flags for a media attachment.
+	 *
+	 * Preferably, you should use the `Media_Credit::get_plaintext` or
+	 * `Media_Credit::get_html``methods instead.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
+	 *
+	 * @return array {
+	 *     The optional flags stored for the media credit. Default [].
+	 *
+	 *     @type bool $nofollow Optional. Whether `rel=nofollow` should be added to the link. Default unset.
+	 * }
+	 */
+	public static function get_flags( $attachment ) {
+
+		// Get all the media credit fields.
+		$credit = self::get_media_credit_fields( $attachment );
+
+		return $credit['raw']['flags'];
+	}
+
+	/**
+	 * Returns the media credit as HTML with a link to the author page if one exists for a WordPress user.
+	 *
+	 * @param  int $id User ID of a WordPress user.
+	 *
+	 * @return string
+	 */
+	public static function get_html_by_user_id( $id ) {
+
+		$credit_wp_author = \get_the_author_meta( 'display_name', $id );
+		$options          = Core::get_instance()->get_settings();
+
+		return '<a href="' . \get_author_posts_url( $id ) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
 	}
 
 	/**
