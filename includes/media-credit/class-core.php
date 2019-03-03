@@ -329,6 +329,8 @@ class Core {
 	 * Renders the media credit as HTML (i.e. with a link to the author page or
 	 * custom URL).
 	 *
+	 * @internal
+	 *
 	 * @param int    $user_id  Optional. The ID of the media item author. Default 0 (invalid).
 	 * @param string $freeform Optional. The media credit string (if $user_id is not used). Default ''.
 	 * @param string $url      Optional. A URL the credit should link to. Default ''.
@@ -340,7 +342,7 @@ class Core {
 	 *
 	 * @return string                             The media credit HTML (or the empty string if no credit is set).
 	 */
-	protected function render_media_credit_html( $user_id = 0, $freeform = '', $url = '', array $flags = [] ) {
+	public function render_media_credit_html( $user_id = 0, $freeform = '', $url = '', array $flags = [] ) {
 
 		// The plugin settings are needed to render the credit.
 		$s = $this->get_settings();
