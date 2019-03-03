@@ -51,7 +51,7 @@ class Media_Credit {
 	public static function get_plaintext( $attachment, $fancy = false ) {
 
 		// Get all the media credit fields.
-		$credit = self::get_media_credit_fields( $attachment );
+		$credit = self::get_fields( $attachment );
 
 		// We want the credit string in plain text format (but possibly "fancy").
 		return $fancy ? $credit['fancy'] : $credit['plaintext'];
@@ -67,7 +67,7 @@ class Media_Credit {
 	public static function get_html( $attachment ) {
 
 		// Get all the media credit fields.
-		$credit = self::get_media_credit_fields( $attachment );
+		$credit = self::get_fields( $attachment );
 
 		return $credit['rendered'];
 	}
@@ -85,7 +85,7 @@ class Media_Credit {
 	public static function get_freeform( $attachment ) {
 
 		// Get all the media credit fields.
-		$credit = self::get_media_credit_fields( $attachment );
+		$credit = self::get_fields( $attachment );
 
 		// Don't display our special "empty" string.
 		if ( Core::EMPTY_META_STRING === $credit['raw']['freeform'] ) {
@@ -108,7 +108,7 @@ class Media_Credit {
 	public static function get_url( $attachment ) {
 
 		// Get all the media credit fields.
-		$credit = self::get_media_credit_fields( $attachment );
+		$credit = self::get_fields( $attachment );
 
 		return $credit['raw']['url'];
 	}
@@ -132,7 +132,7 @@ class Media_Credit {
 	public static function get_flags( $attachment ) {
 
 		// Get all the media credit fields.
-		$credit = self::get_media_credit_fields( $attachment );
+		$credit = self::get_fields( $attachment );
 
 		return $credit['raw']['flags'];
 	}
@@ -242,9 +242,13 @@ class Media_Credit {
 	}
 
 	/**
+	 * Retrieves the complete set of media credit fields.
+	 *
 	 * Ensures a valid post object and returns the media credit data fields for
 	 * use in template methods. In case of an invalid attachment ID, all fields
 	 * be empty or 0.
+	 *
+	 * @since 4.0.0
 	 *
 	 * @param int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
 	 *
@@ -267,7 +271,7 @@ class Media_Credit {
 	 *     }
 	 * }
 	 */
-	private static function get_media_credit_fields( $attachment ) {
+	public static function get_fields( $attachment ) {
 
 		// Load the attachment data if handed an ID.
 		if ( ! $attachment instanceof \WP_Post ) {
