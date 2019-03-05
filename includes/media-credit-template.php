@@ -127,7 +127,19 @@ if ( ! \function_exists( 'display_author_media' ) ) {
 	 * @param boolean $exclude_unattached  Optional. Default true.
 	 */
 	function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = null, $exclude_unattached = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		Media_Credit::display_author_media( $author_id, $sidebar, $limit, $link_without_parent, $header, $exclude_unattached );
+		$args = [
+			// Non-query variables.
+			'sidebar'             => $sidebar,
+			'link_without_parent' => $link_without_parent,
+			'header'              => $header,
+
+			// Query variables.
+			'author_id'           => $author_id,
+			'number'              => $limit > 0 ? $limit : null,
+			'exclude_unattached'  => $exclude_unattached,
+		];
+
+		Media_Credit::display_author_media( $args );
 	}
 }
 
@@ -135,13 +147,22 @@ if ( ! \function_exists( 'author_media_and_posts' ) ) {
 	/**
 	 * Template tag to return the recently added media attachments and posts for a given author.
 	 *
-	 * @param int     $author_id          The user ID of the author.
-	 * @param boolean $include_posts      Optional. Default true.
-	 * @param int     $limit              Optional. Default 0.
-	 * @param boolean $exclude_unattached Optional. Default true.
+	 * @param  int  $author_id          A user ID.
+	 * @param  bool $include_posts      Optional. A flag indicating whether posts (as well as attachments) should be included in the results. Default false.
+	 * @param  int  $limit              Optional. The maximum number of objects to retrieve. Default 0 (unlimited).
+	 * @param  bool $exclude_unattached Optional. A flag indicating whether media items not currently attached to a parent post should be excluded from the results. Default true.
+	 *
+	 * @return array
 	 */
 	function author_media_and_posts( $author_id, $include_posts = true, $limit = 0, $exclude_unattached = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		return Media_Credit::author_media_and_posts( $author_id, $include_posts, $limit, $exclude_unattached );
+		$args = [
+			'author_id'          => $author_id,
+			'number'             => $limit > 0 ? $limit : null,
+			'include_posts'      => $include_posts,
+			'exclude_unattached' => $exclude_unattached,
+		];
+
+		return Media_Credit::author_media_and_posts( $args );
 	}
 }
 
@@ -149,13 +170,20 @@ if ( ! \function_exists( 'author_media' ) ) {
 	/**
 	 * Returns the recently added media attachments for a given author.
 	 *
-	 * @param  int  $author_id          The user ID of the author.
+	 * @param  int  $author_id          A user ID.
 	 * @param  int  $limit              Optional. The upper limit to the number of returned posts. Default 0 (no limit).
 	 * @param  bool $exclude_unattached Optional. Flag indicating if media not attached to a post should be included. Default true.
 	 *
 	 * @return array
 	 */
 	function author_media( $author_id, $limit = 0, $exclude_unattached = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
-		return Media_Credit::author_media_and_posts( $author_id, false, $limit, $exclude_unattached );
+		$args = [
+			'author_id'          => $author_id,
+			'number'             => $limit > 0 ? $limit : null,
+			'include_posts'      => false,
+			'exclude_unattached' => $exclude_unattached,
+		];
+
+		return Media_Credit::author_media_and_posts( $args );
 	}
 }

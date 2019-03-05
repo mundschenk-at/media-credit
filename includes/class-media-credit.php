@@ -177,91 +177,90 @@ class Media_Credit {
 		echo self::get_html_by_user_id( $id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data is safe for output.
 	}
 
-
 	/**
 	 * Returns the recently added media attachments and posts for a given author.
 	 *
-	 * @param int  $author_id          The user ID of the author.
-	 * @param bool $include_posts      Optional. Default true.
-	 * @param int  $limit              Optional. Default 0.
-	 * @param bool $exclude_unattached Optional. Default true.
+	 * @param array $query {
+	 *    Optional. The query variables.
+	 *
+	 *    @type int    $author_id          A user ID. Default current user.
+	 *    @type int    $offset             Number of attachment/posts to offset
+	 *                                     in retrieved results. Can be used in
+	 *                                     conjunction with pagination. Default 0.
+	 *    @type int    $number             Number of users to limit the query for.
+	 *                                     Can be used in conjunction with pagination.
+	 *                                     Value -1 (all) is supported, but should
+	 *                                     be used with caution on larger sites.
+	 *                                     Default empty (all attachments/posts).
+	 *    @type int    $paged              When used with number, defines the page
+	 *                                     of results to return. Default 1.
+	 *    @type bool   $include_posts      A flag indicating whether posts (as well
+	 *                                     as attachments) should be included in the
+	 *                                     results. Default false.
+	 *    @type bool   $exclude_unattached A flag indicating whether media items
+	 *                                     not currently attached to a parent post
+	 *                                     should be excluded from the results.
+	 *                                     Default true.
+	 * }
+	 *
+	 * @return array
 	 */
-	public static function author_media_and_posts( $author_id, $include_posts = true, $limit = 0, $exclude_unattached = true ) {
-		$cache_key = "author_media_and_posts_{$author_id}_i" . ( $include_posts ? '1' : '0' ) . "_l{$limit}_e" . ( $exclude_unattached ? '1' : '0' );
-		$results   = \wp_cache_get( $cache_key, 'media-credit' );
-
-		if ( false === $results ) {
-			global $wpdb;
-
-			$posts_query = '';
-			$attached    = '';
-			$date_query  = '';
-			$limit_query = '';
-			$query_vars  = array( $author_id ); // always the first parameter.
-
-			// Optionally include published posts as well.
-			if ( $include_posts ) {
-				$posts_query = "OR (post_type = 'post' AND post_parent = '0' AND post_status = 'publish')";
-			}
-
-			// Optionally exclude "unattached" attachments.
-			if ( $exclude_unattached ) {
-				$attached = " AND post_parent != '0' AND post_parent IN (SELECT id FROM {$wpdb->posts} WHERE post_status='publish')";
-			}
-
-			// Exclude attachments from before the install date of the Media Credit plugin.
-			$options = Core::get_instance()->get_settings();
-			if ( isset( $options['install_date'] ) ) {
-				$start_date = $options['install_date'];
-
-				if ( $start_date ) {
-					$date_query   = ' AND post_date >= %s';
-					$query_vars[] = $start_date; // second parameter.
-				}
-			}
-
-			// We always need to include the meta key in our query.
-			$query_vars[] = Core::POSTMETA_KEY;
-
-			// Optionally set limit.
-			if ( $limit > 0 ) {
-				$limit_query  = ' LIMIT %d';
-				$query_vars[] = $limit; // always the last parameter.
-			}
-
-			// Construct our query.
-			$sql_query = "SELECT * FROM {$wpdb->posts}
-				 		  WHERE post_author = %d {$date_query}
-				 		  AND ( ( post_type = 'attachment' {$attached} ) {$posts_query} )
-				 		  AND ID NOT IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s )
-				 		  GROUP BY ID ORDER BY post_date DESC {$limit_query}";
-
-			// Prepare and execute query.
-			$results = $wpdb->get_results( $wpdb->prepare( $sql_query, $query_vars ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-
-			// Cache results for a short time.
-			\wp_cache_set( $cache_key, $results, 'media-credit', MINUTE_IN_SECONDS );
-		}
-
-		return $results;
+	public static function author_media_and_posts( $query ) {
+		return Core::get_instance()->get_author_media_and_posts( $query );
 	}
 
 	/**
 	 * Displays the recently added media attachments for given author.
 	 *
-	 * @param int    $author_id           The user ID of the author.
-	 * @param bool   $sidebar             Display as sidebar or inline. Optional. Default true.
-	 * @param int    $limit               Optional. Default 10.
-	 * @param bool   $link_without_parent Optional. Default false.
-	 * @param string $header              HTML-formatted heading. Optional. Default <h3>Recent Media</h3> (translated).
-	 * @param bool   $exclude_unattached  Optional. Default true.
+	 * @param array $args {
+	 *    Optional. The arguments.
+	 *
+	 *    @type int    $author_id          A user ID. Default current user.
+	 *    @type bool   $sidebar            A flag indicating the media should be
+	 *                                     displayed as a sidebar or inline. Default true.
+	 *    @type int    $offset             Number of attachment/posts to offset
+	 *                                     in retrieved results. Can be used in
+	 *                                     conjunction with pagination. Default 0.
+	 *    @type int    $number             Number of users to limit the query for.
+	 *                                     Can be used in conjunction with pagination.
+	 *                                     Value -1 (all) is supported, but should
+	 *                                     be used with caution on larger sites.
+	 *                                     Default 10.
+	 *    @type int    $paged              When used with number, defines the page
+	 *                                     of results to return. Default 1.
+	 *    @type bool   $exclude_unattached A flag indicating whether media items
+	 *                                     not currently attached to a parent post
+	 *                                     should be excluded from the results.
+	 *                                     Default true.
+	 * }
 	 */
-	public static function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = null, $exclude_unattached = true ) {
+	public static function display_author_media( array $args = [] ) {
 
-		$media = self::author_media_and_posts( $author_id, false, $limit, $exclude_unattached );
+		// Ensure default values.
+		$defaults = [
+			// Non-query variables.
+			'sidebar'             => true,
+			'link_without_parent' => false,
+			'header'              => null,
+
+			// Query variables.
+			'number'              => 10,
+			'exclude_unattached'  => true,
+		];
+		$args     = \wp_parse_args( $args, $defaults );
+
+		// No posts!
+		$args['include_posts'] = false;
+
+		$media = self::author_media_and_posts( $args );
 		if ( empty( $media ) ) {
 			return; // abort.
 		}
+
+		// Extract variables for template.
+		$sidebar             = $args['sidebar'];
+		$link_without_parent = $args['link_without_parent'];
+		$header              = $args['header'];
 
 		// Load the template part.
 		require \dirname( MEDIA_CREDIT_PLUGIN_FILE ) . '/public/partials/author-media.php';
