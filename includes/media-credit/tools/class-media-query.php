@@ -28,6 +28,8 @@
 namespace Media_Credit\Tools;
 
 use Media_Credit\Core;
+use Media_Credit\Data_Storage\Cache;
+
 /**
  * A utility class for querying media.
  *
@@ -36,6 +38,23 @@ use Media_Credit\Core;
  * @author Peter Putzer <github@mundschenk.at>
  */
 class Media_Query {
+
+	/**
+	 * The object cache handler.
+	 *
+	 * @var Cache
+	 */
+	private $cache;
+
+	/**
+	 * Creates a new instance.
+	 *
+	 * @param Cache $cache The object cache handler.
+	 */
+	public function __construct( Cache $cache ) {
+		$this->cache = $cache;
+	}
+
 	/**
 	 * Returns the recently added media attachments and posts for a given author.
 	 *
@@ -78,8 +97,17 @@ class Media_Query {
 		];
 		$query    = \wp_parse_args( $query, $defaults );
 
-		$cache_key = "author_media_and_posts_{$query['author_id']}_i" . ( $query['include_posts'] ? '1' : '0' ) . "_l{$query['number']}_e" . ( $query['exclude_unattached'] ? '1' : '0' );
-		$results   = \wp_cache_get( $cache_key, 'media-credit' );
+		// Pre-calculate offset and limit for caching.
+		$limit_key = 'all';
+		if ( isset( $query['number'] ) && $query['number'] > 0 ) {
+			$offset = $query['offset'] ? $query['offset'] : $query['number'] * ( $query['paged'] - 1 );
+			$limit  = $query['number'];
+
+			$limit_key = "{$limit}+{$offset}";
+		}
+
+		$cache_key = "author_media_{$query['author_id']}_i" . ( $query['include_posts'] ? '1' : '0' ) . "_{$limit_key}_e" . ( $query['exclude_unattached'] ? '1' : '0' );
+		$results   = $this->cache->get( $cache_key );
 
 		if ( false === $results ) {
 			global $wpdb;
@@ -109,17 +137,11 @@ class Media_Query {
 			// We always need to include the meta key in our query.
 			$query_vars[] = Core::POSTMETA_KEY;
 
-			// Optionally set limit.
-			if ( isset( $query['number'] ) && $query['number'] > 0 ) {
-				$limit_query = ' LIMIT %d, %d';
-
-				if ( $query['offset'] ) {
-					$query_vars[] = $query['offset'];
-					$query_vars[] = $query['number'];
-				} else {
-					$query_vars[] = $query['number'] * ( $query['paged'] - 1 );
-					$query_vars[] = $query['number'];
-				}
+			// Optionally set limit (we pre-calculated the offset above).
+			if ( ! empty( $limit ) && isset( $offset ) ) {
+				$limit_query  = ' LIMIT %d, %d';
+				$query_vars[] = $offset;
+				$query_vars[] = $limit;
 			}
 
 			// Construct our query.
@@ -130,10 +152,10 @@ class Media_Query {
 				 		  GROUP BY ID ORDER BY post_date DESC {$limit_query}";
 
 			// Prepare and execute query.
-			$results = $wpdb->get_results( $wpdb->prepare( $sql_query, $query_vars ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$results = $wpdb->get_results( $wpdb->prepare( $sql_query, $query_vars ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			// Cache results for a short time.
-			\wp_cache_set( $cache_key, $results, 'media-credit', MINUTE_IN_SECONDS );
+			$this->cache->set( $cache_key, $results, MINUTE_IN_SECONDS );
 		}
 
 		return $results;
