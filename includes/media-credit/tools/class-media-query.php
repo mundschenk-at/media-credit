@@ -100,64 +100,92 @@ class Media_Query {
 		// Pre-calculate offset and limit for caching.
 		$limit_key = 'all';
 		if ( isset( $query['number'] ) && $query['number'] > 0 ) {
-			$offset = $query['offset'] ? $query['offset'] : $query['number'] * ( $query['paged'] - 1 );
-			$limit  = $query['number'];
-
-			$limit_key = "{$limit}+{$offset}";
+			$query['offset'] = $query['offset'] ? $query['offset'] : $query['number'] * ( $query['paged'] - 1 );
+			$limit_key       = "{$query['number']}+{$query['offset']}";
 		}
 
 		$cache_key = "author_media_{$query['author_id']}_i" . ( $query['include_posts'] ? '1' : '0' ) . "_{$limit_key}_e" . ( $query['exclude_unattached'] ? '1' : '0' );
 		$results   = $this->cache->get( $cache_key );
 
 		if ( false === $results ) {
-			global $wpdb;
-
-			$posts_query    = '';
-			$attached_query = '';
-			$date_query     = '';
-			$limit_query    = '';
-			$query_vars     = [ $query['author_id'] ]; // always the first parameter.
-
-			// Optionally include published posts as well.
-			if ( $query['include_posts'] ) {
-				$posts_query = "OR (post_type = 'post' AND post_parent = '0' AND post_status = 'publish')";
-			}
-
-			// Optionally exclude "unattached" attachments.
-			if ( $query['exclude_unattached'] ) {
-				$attached_query = " AND post_parent != '0' AND post_parent IN (SELECT id FROM {$wpdb->posts} WHERE post_status='publish')";
-			}
-
-			// Exclude attachments from before the install date of the Media Credit plugin.
-			if ( ! empty( $query['since'] ) ) {
-				$date_query   = ' AND post_date >= %s';
-				$query_vars[] = $query['since']; // second parameter.
-			}
-
-			// We always need to include the meta key in our query.
-			$query_vars[] = Core::POSTMETA_KEY;
-
-			// Optionally set limit (we pre-calculated the offset above).
-			if ( ! empty( $limit ) && isset( $offset ) ) {
-				$limit_query  = ' LIMIT %d, %d';
-				$query_vars[] = $offset;
-				$query_vars[] = $limit;
-			}
-
-			// Construct our query.
-			$sql_query = "SELECT * FROM {$wpdb->posts}
-				 		  WHERE post_author = %d {$date_query}
-				 		  AND ( ( post_type = 'attachment' {$attached_query} ) {$posts_query} )
-				 		  AND ID NOT IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s )
-				 		  GROUP BY ID ORDER BY post_date DESC {$limit_query}";
-
-			// Prepare and execute query.
-			$results = $wpdb->get_results( $wpdb->prepare( $sql_query, $query_vars ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$results = $this->query( $query );
 
 			// Cache results for a short time.
 			$this->cache->set( $cache_key, $results, MINUTE_IN_SECONDS );
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Builds and executes the query the recently added media attachments and posts for a given author.
+	 *
+	 * @param array $query {
+	 *    The query variables (already filled with defaults if necessary).
+	 *
+	 *    @type int    $author_id          A user ID. Default current user.
+	 *    @type int    $offset             Number of attachment/posts to offset
+	 *                                     in retrieved results. Can be used in
+	 *                                     conjunction with pagination. Default 0.
+	 *    @type int    $number             Number of users to limit the query for.
+	 *                                     Can be used in conjunction with pagination.
+	 *                                     Value -1 (all) is supported, but should
+	 *                                     be used with caution on larger sites.
+	 *                                     Default empty (all attachments/posts).
+	 *    @type bool   $include_posts      A flag indicating whether posts (as well
+	 *                                     as attachments) should be included in the
+	 *                                     results. Default false.
+	 *    @type bool   $exclude_unattached A flag indicating whether media items
+	 *                                     not currently attached to a parent post
+	 *                                     should be excluded from the results.
+	 *                                     Default true.
+	 *    @type string $since              If set, only attachments and posts younger
+	 *                                     than this date will be returned. Default empty.
+	 * }
+	 */
+	protected function query( array $query = [] ) {
+		global $wpdb;
+
+		$posts_query    = '';
+		$attached_query = '';
+		$date_query     = '';
+		$limit_query    = '';
+		$query_vars     = [ $query['author_id'] ]; // always the first parameter.
+
+		// Optionally include published posts as well.
+		if ( $query['include_posts'] ) {
+			$posts_query = "OR (post_type = 'post' AND post_parent = '0' AND post_status = 'publish')";
+		}
+
+		// Optionally exclude "unattached" attachments.
+		if ( $query['exclude_unattached'] ) {
+			$attached_query = " AND post_parent != '0' AND post_parent IN (SELECT id FROM {$wpdb->posts} WHERE post_status='publish')";
+		}
+
+		// Exclude attachments from before the install date of the Media Credit plugin.
+		if ( ! empty( $query['since'] ) ) {
+			$date_query   = ' AND post_date >= %s';
+			$query_vars[] = $query['since']; // second parameter.
+		}
+
+		// We always need to include the meta key in our query.
+		$query_vars[] = Core::POSTMETA_KEY;
+
+		// Optionally set limit (we pre-calculated the offset above).
+		if ( ! empty( $query['number'] ) ) {
+			$limit_query  = ' LIMIT %d, %d';
+			$query_vars[] = $query['offset'];
+			$query_vars[] = $query['number'];
+		}
+
+		// Construct our query.
+		$sql_query = "SELECT * FROM {$wpdb->posts}
+			 		  WHERE post_author = %d {$date_query}
+			 		  AND ( ( post_type = 'attachment' {$attached_query} ) {$posts_query} )
+			 		  AND ID NOT IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s )
+			 		  GROUP BY ID ORDER BY post_date DESC {$limit_query}";
+
+		// Prepare and execute query.
+		return $wpdb->get_results( $wpdb->prepare( $sql_query, $query_vars ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 }
