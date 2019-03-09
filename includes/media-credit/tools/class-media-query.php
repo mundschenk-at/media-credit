@@ -104,7 +104,7 @@ class Media_Query {
 			$limit_key       = "{$query['number']}+{$query['offset']}";
 		}
 
-		$cache_key = "author_media_{$query['author_id']}_i" . ( $query['include_posts'] ? '1' : '0' ) . "_{$limit_key}_e" . ( $query['exclude_unattached'] ? '1' : '0' );
+		$cache_key = "author_media_{$query['author_id']}_i" . ( $query['include_posts'] ? '1' : '0' ) . '_e' . ( $query['exclude_unattached'] ? '1' : '0' ) . "_{$limit_key}_s{$query['since']}";
 		$results   = $this->cache->get( $cache_key );
 
 		if ( false === $results ) {
