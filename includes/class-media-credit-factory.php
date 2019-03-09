@@ -89,6 +89,7 @@ abstract class Media_Credit_Factory {
 				Data_Storage\Site_Transients::class => self::SHARED,
 				Data_Storage\Options::class         => self::SHARED,
 				Data_Storage\Network_Options::class => self::SHARED,
+				Tools\Media_Query::class            => self::SHARED,
 				Tools\Shortcodes_Filter::class      => self::SHARED,
 
 				// Components.

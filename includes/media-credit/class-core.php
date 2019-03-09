@@ -27,6 +27,7 @@
 
 namespace Media_Credit;
 
+use Media_Credit\Tools\Media_Query;
 use Media_Credit\Tools\Shortcodes_Filter;
 
 use Media_Credit\Data_Storage\Cache;
@@ -142,6 +143,13 @@ class Core {
 	private $shortcodes_filter;
 
 	/**
+	 * The media query handler.
+	 *
+	 * @var Media_Query
+	 */
+	private $media_query;
+
+	/**
 	 * Creates a new instance.
 	 *
 	 * @param string            $version           The plugin version string (e.g. "3.0.0-beta.2").
@@ -149,12 +157,14 @@ class Core {
 	 * @param Options           $options           The options handler.
 	 * @param Settings          $settings_template The default settings template.
 	 * @param Shortcodes_Filter $shortcodes_filter The shortcodes filter.
+	 * @param Media_Query       $media_query       The media query handler.
 	 */
-	public function __construct( $version, Cache $cache, Options $options, Settings $settings_template, Shortcodes_Filter $shortcodes_filter ) {
+	public function __construct( $version, Cache $cache, Options $options, Settings $settings_template, Shortcodes_Filter $shortcodes_filter, Media_Query $media_query ) {
 		$this->version           = $version;
 		$this->cache             = $cache;
 		$this->options           = $options;
 		$this->settings_template = $settings_template;
+		$this->media_query       = $media_query;
 		$this->shortcodes_filter = $shortcodes_filter;
 	}
 
@@ -329,6 +339,8 @@ class Core {
 	 * Renders the media credit as HTML (i.e. with a link to the author page or
 	 * custom URL).
 	 *
+	 * @internal
+	 *
 	 * @param int    $user_id  Optional. The ID of the media item author. Default 0 (invalid).
 	 * @param string $freeform Optional. The media credit string (if $user_id is not used). Default ''.
 	 * @param string $url      Optional. A URL the credit should link to. Default ''.
@@ -340,7 +352,7 @@ class Core {
 	 *
 	 * @return string                             The media credit HTML (or the empty string if no credit is set).
 	 */
-	protected function render_media_credit_html( $user_id = 0, $freeform = '', $url = '', array $flags = [] ) {
+	public function render_media_credit_html( $user_id = 0, $freeform = '', $url = '', array $flags = [] ) {
 
 		// The plugin settings are needed to render the credit.
 		$s = $this->get_settings();
@@ -623,5 +635,44 @@ class Core {
 		$user_id = \absint( $user_id );
 
 		return false !== \get_user_by( 'id', $user_id ) ? $user_id : null;
+	}
+
+	/**
+	 * Returns the recently added media attachments and posts for a given author.
+	 *
+	 * @param array $query {
+	 *    Optional. The query variables.
+	 *
+	 *    @type int    $author_id          A user ID. Default current user.
+	 *    @type int    $offset             Number of attachment/posts to offset
+	 *                                     in retrieved results. Can be used in
+	 *                                     conjunction with pagination. Default 0.
+	 *    @type int    $number             Number of users to limit the query for.
+	 *                                     Can be used in conjunction with pagination.
+	 *                                     Value -1 (all) is supported, but should
+	 *                                     be used with caution on larger sites.
+	 *                                     Default empty (all attachments/posts).
+	 *    @type int    $paged              When used with number, defines the page
+	 *                                     of results to return. Default 1.
+	 *    @type bool   $include_posts      A flag indicating whether posts (as well
+	 *                                     as attachments) should be included in the
+	 *                                     results. Default false.
+	 *    @type bool   $exclude_unattached A flag indicating whether media items
+	 *                                     not currently attached to a parent post
+	 *                                     should be excluded from the results.
+	 *                                     Default true.
+	 * }
+	 *
+	 * @return array
+	 */
+	public function get_author_media_and_posts( array $query = [] ) {
+
+		// Limit query to attachments/posts published since the first plugin activation.
+		$settings = $this->get_settings();
+		if ( ! empty( $settings[ Settings::INSTALL_DATE ] ) ) {
+			$query['since'] = $settings[ Settings::INSTALL_DATE ];
+		}
+
+		return $this->media_query->get_author_media_and_posts( $query );
 	}
 }
