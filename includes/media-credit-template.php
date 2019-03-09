@@ -32,6 +32,8 @@ if ( ! \function_exists( 'get_media_credit' ) ) {
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function get_media_credit( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
+		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_plaintext' );
+
 		return Media_Credit::get_plaintext( $post );
 	}
 }
@@ -43,6 +45,8 @@ if ( ! \function_exists( 'the_media_credit' ) ) {
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function the_media_credit( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
+		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::plaintext' );
+
 		Media_Credit::plaintext( $post );
 	}
 }
@@ -54,6 +58,8 @@ if ( ! \function_exists( 'get_media_credit_url' ) ) {
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function get_media_credit_url( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
+		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_url' );
+
 		return Media_Credit::get_url( $post );
 	}
 }
@@ -65,6 +71,8 @@ if ( ! \function_exists( 'the_media_credit_url' ) ) {
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function the_media_credit_url( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
+		_deprecated_function( __FUNCTION__, '4.0.0' );
+
 		echo \esc_url_raw( \get_media_credit_url( $post ) );
 	}
 }
@@ -77,6 +85,8 @@ if ( ! function_exists( 'get_media_credit_html' ) ) {
 	 * @param bool       $deprecated Optional. Deprecated argument. Default true.
 	 */
 	function get_media_credit_html( $post = null, /* @scrutinizer ignore-unused */ $deprecated = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
+		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_html' );
+
 		return Media_Credit::get_html( $post );
 	}
 }
@@ -88,6 +98,8 @@ if ( ! \function_exists( 'the_media_credit_html' ) ) {
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 */
 	function the_media_credit_html( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
+		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::html' );
+
 		Media_Credit::html( $post );
 	}
 }
@@ -99,6 +111,8 @@ if ( ! \function_exists( 'get_media_credit_html_by_user_id' ) ) {
 	 * @param int $id User ID of a WordPress user.
 	 */
 	function get_media_credit_html_by_user_id( $id ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
+		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_html_by_user_id' );
+
 		return Media_Credit::get_html_by_user_id( $id );
 	}
 }
@@ -110,6 +124,8 @@ if ( ! \function_exists( 'the_media_credit_html_by_user_id' ) ) {
 	 * @param int $id User ID of a WordPress user.
 	 */
 	function the_media_credit_html_by_user_id( $id ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
+		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::html_by_user_id' );
+
 		Media_Credit::html_by_user_id( $id );
 	}
 }
@@ -127,6 +143,8 @@ if ( ! \function_exists( 'display_author_media' ) ) {
 	 * @param boolean $exclude_unattached  Optional. Default true.
 	 */
 	function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = null, $exclude_unattached = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
+		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::display_author_media' );
+
 		$args = [
 			// Non-query variables.
 			'sidebar'             => $sidebar,
@@ -155,6 +173,8 @@ if ( ! \function_exists( 'author_media_and_posts' ) ) {
 	 * @return array
 	 */
 	function author_media_and_posts( $author_id, $include_posts = true, $limit = 0, $exclude_unattached = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
+		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::author_media_and_posts' );
+
 		$args = [
 			'author_id'          => $author_id,
 			'number'             => $limit > 0 ? $limit : null,
@@ -177,6 +197,8 @@ if ( ! \function_exists( 'author_media' ) ) {
 	 * @return array
 	 */
 	function author_media( $author_id, $limit = 0, $exclude_unattached = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
+		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::author_media_and_posts' );
+
 		$args = [
 			'author_id'          => $author_id,
 			'number'             => $limit > 0 ? $limit : null,
