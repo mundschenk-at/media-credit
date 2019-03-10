@@ -123,9 +123,8 @@ class Shortcodes implements \Media_Credit\Component {
 	 */
 	public function caption_shortcode( $attr, $content = null ) {
 		// Options influencing the markup.
-		$html5       = \current_theme_supports( 'html5', 'caption' );
-		$schema_org  = ! empty( $this->settings['schema_org_markup'] );
-		$show_credit = empty( $this->settings['credit_at_end'] );
+		$html5      = \current_theme_supports( 'html5', 'caption' );
+		$schema_org = ! empty( $this->settings['schema_org_markup'] );
 
 		// New-style shortcode with the caption inside the shortcode with the link and image tags.
 		if ( ! isset( $attr['caption'] ) ) {
@@ -141,7 +140,7 @@ class Shortcodes implements \Media_Credit\Component {
 					$shortcode = $matches[0];
 					$content   = \str_replace( [ $shortcode, '[/media-credit]' ], '', $content );
 
-					if ( $show_credit ) {
+					if ( empty( $this->settings['credit_at_end'] ) ) {
 						$credit_attr      = $this->sanitize_attributes( (array) \shortcode_parse_atts( $matches[1] ) );
 						$attr['caption'] .= ' ' . $this->inline_media_credit( $credit_attr, $schema_org );
 					}
@@ -153,7 +152,7 @@ class Shortcodes implements \Media_Credit\Component {
 		$caption = \img_caption_shortcode( $attr, $content );
 
 		// Optionally add schema.org markup.
-		if ( $show_credit && $schema_org ) {
+		if ( $schema_org ) {
 			// Inject schema.org markup for figure.
 			if ( ! \preg_match( '/<figure[^>]*\bitemscope\b/S', $caption ) ) {
 				$caption = \preg_replace( '/<figure\b/S', '<figure itemscope itemtype="http://schema.org/ImageObject"', $caption );
