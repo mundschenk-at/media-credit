@@ -675,4 +675,27 @@ class Core {
 
 		return $this->media_query->get_author_media_and_posts( $query );
 	}
+
+	/**
+	 * Wraps the credit in HTML tags and allows the result to be filtered.
+	 *
+	 * @internal
+	 *
+	 * @param  string $credit             The credit (including optional link).
+	 * @param  bool   $include_schema_org A flag indicating whether schema.org markup should be included.
+	 *
+	 * @return string
+	 */
+	public function wrap_media_credit_markup( $credit, $include_schema_org = false ) {
+			$markup = '<span class="media-credit"' . ( $include_schema_org ? ' itemprop="copyrightHolder"' : '' ) . ">{$credit}</span>";
+
+			/**
+			 * Filters the wrapped media credit markup.
+			 *
+			 * @param string $markup             The credit wrapped in additional markup.
+			 * @param string $credit             The credit (including optional link).
+			 * @param bool   $include_schema_org A flag indicating whether schema.org markup should be included.
+			 */
+			return \apply_filters( 'media_credit_wrapper', $markup, $credit, $include_schema_org );
+	}
 }

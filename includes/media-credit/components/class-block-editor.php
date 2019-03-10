@@ -93,11 +93,10 @@ class Block_Editor implements \Media_Credit\Component {
 		}
 
 		$include_schema_org = ! empty( $s[ Settings::SCHEMA_ORG_MARKUP ] );
-		$schema_org         = $include_schema_org ? ' itemprop="copyrightHolder"' : '';
 
 		// Load the media credit for the attachment.
 		$credit = $this->core->get_media_credit_json( $attachment );
-		$markup = "<span class='media-credit'{$schema_org}>{$credit['rendered']}</span>";
+		$markup = $this->core->wrap_media_credit_markup( $credit['rendered'], $include_schema_org );
 
 		if ( \preg_match( '#(<figcaption[^>]*>)(.*)</figcaption>#S', $block_content, $matches ) ) {
 			$block_content = \str_replace( $matches[0], "{$matches[1]}{$markup} {$matches[2]}</figcaption>", $block_content );

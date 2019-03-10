@@ -334,9 +334,6 @@ class Shortcodes implements \Media_Credit\Component {
 			$url           = $url ?: \get_author_posts_url( $attr['id'] );
 		}
 
-		// Optional schema.org markup.
-		$schema_org = $include_schema_org ? ' itemprop="copyrightHolder"' : '';
-
 		// Construct the credit line.
 		$credit_line = \esc_html( $credit );
 		if ( $url ) {
@@ -344,7 +341,8 @@ class Shortcodes implements \Media_Credit\Component {
 		}
 		$credit_line .= \esc_html( $credit_suffix );
 
-		$markup = "<span class=\"media-credit\" {$schema_org}>{$credit_line}</span>";
+		// Wrap the credit in a container <span>.
+		$markup = $this->core->wrap_media_credit_markup( $credit_line, $include_schema_org );
 
 		/**
 		 * Filters the inline markup used for the credit line part of the `media-credit` shortcode.
