@@ -98,11 +98,8 @@ class Block_Editor implements \Media_Credit\Component {
 		$credit = $this->core->get_media_credit_json( $attachment );
 		$markup = $this->core->wrap_media_credit_markup( $credit['rendered'], $include_schema_org );
 
-		if ( \preg_match( '#(<figcaption[^>]*>)(.*)</figcaption>#S', $block_content, $matches ) ) {
-			$block_content = \str_replace( $matches[0], "{$matches[1]}{$markup} {$matches[2]}</figcaption>", $block_content );
-		} else {
-			$block_content = \str_replace( '</figure>', "<figcaption>{$markup}</figcaption></figure>", $block_content );
-		}
+		// Inject the (modified) caption markup.
+		$block_content = $this->inject_credit_into_caption( $block_content, $markup );
 
 		// Inject additional schema.org markup.
 		if ( $include_schema_org ) {
@@ -118,5 +115,50 @@ class Block_Editor implements \Media_Credit\Component {
 		}
 
 		return $block_content;
+	}
+
+	/**
+	 * Injects the credit into the caption markup of a `core/image` block.
+	 *
+	 * @param  string $block_content The block content.
+	 * @param  string $credit        The credit markup.
+	 *
+	 * @return string
+	 */
+	protected function inject_credit_into_caption( $block_content, $credit ) {
+
+		// Default injection pattern and replacement parts.
+		$pattern     = '</figure>';
+		$open        = '<figcaption>';
+		$old_caption = '';
+		$close       = '</figcaption></figure>';
+
+		if ( \preg_match( '#(<figcaption[^>]*>)(.*)</figcaption>#S', $block_content, $matches ) ) {
+			$pattern     = $matches[0];
+			$open        = $matches[1];
+			$old_caption = $matches[2];
+			$close       = '</figcaption>';
+		}
+
+		// Prepare the default caption value.
+		$caption = \trim( "{$credit} {$old_caption}" );
+
+		/**
+		 * Filters the Block Editor caption including the credit byline.
+		 *
+		 * @since 4.0.0
+		 *
+		 * @param string $caption       The caption including the credit. Default
+		 *                              credit followed by captoin text with a
+		 *                              seperating space, or just the credit if
+		 *                              the caption text is empty.
+		 * @param string $old_caption   The caption text.
+		 * @param string $credit        The credit byline (including markup).
+		 * @param string $block_content The original block content.
+		 */
+		$caption = \apply_filters( 'media_credit_block_editor_caption', $caption, $old_caption, $credit, $block_content );
+
+		// Inject the (modified) caption markup.
+		return \str_replace( $pattern, "{$open}{$caption}{$close}", $block_content );
 	}
 }
