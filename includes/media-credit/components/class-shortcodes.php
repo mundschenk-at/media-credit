@@ -141,8 +141,39 @@ class Shortcodes implements \Media_Credit\Component {
 					$content   = \str_replace( [ $shortcode, '[/media-credit]' ], '', $content );
 
 					if ( empty( $this->settings['credit_at_end'] ) ) {
-						$credit_attr      = $this->sanitize_attributes( (array) \shortcode_parse_atts( $matches[1] ) );
-						$attr['caption'] .= ' ' . $this->inline_media_credit( $credit_attr, $schema_org );
+						// The byline.
+						$credit_attr = $this->sanitize_attributes( (array) \shortcode_parse_atts( $matches[1] ) );
+						$credit      = $this->inline_media_credit( $credit_attr, $schema_org );
+
+						// The original caption.
+						$caption = $attr['caption'];
+
+						/**
+						 * Filters the HTML5 caption including the credit byline.
+						 *
+						 * @since 4.0.0
+						 *
+						 * @param string $caption     The caption including the credit.
+						 *                            Default caption text followed by
+						 *                            credit with a seprating space.
+						 * @param string $old_caption The caption text.
+						 * @param string $credit      The credit byline (including markup).
+						 * @param array  $attr {
+						 *     An array of shortcode attributes.
+						 *
+						 *     @type int    $id         Optional. A user ID. Default 0.
+						 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
+						 *     @type string $link       Optional. A URL used for linking the credit.
+						 *     @type bool   $standalone Optional. A flag indicating that the shortcode
+						 *                              was used without an enclosing `[caption]`. Default true.
+						 *     @type string $align      Optional. The alignment to use for the image/figure
+						 *                              (if used without `[caption]`). Default 'alignnone'.
+						 *     @type int    $width      Optional. The width of the image/figure. Default 0.
+						 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
+						 *                              attribute should be added to the link tag.
+						 * }
+						 */
+						$attr['caption'] = \apply_filters( 'media_credit_shortcode_html5_caption', "{$caption} {$credit}", $caption, $credit, $credit_attr );
 					}
 				}
 			}
