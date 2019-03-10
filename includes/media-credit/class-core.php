@@ -684,11 +684,14 @@ class Core {
 	 * @param  string $credit             The credit (including optional link).
 	 * @param  bool   $include_schema_org Optional. A flag indicating whether schema.org
 	 *                                    markup should be included. Default false.
+	 * @param  string $extra_attributes   Optional. Additional HTML attributes to
+	 *                                    add to the wrapping tag. Default ''.
 	 *
 	 * @return string
 	 */
-	public function wrap_media_credit_markup( $credit, $include_schema_org = false ) {
-			$markup = '<span class="media-credit"' . ( $include_schema_org ? ' itemprop="copyrightHolder"' : '' ) . ">{$credit}</span>";
+	public function wrap_media_credit_markup( $credit, $include_schema_org = false, $extra_attributes = '' ) {
+			$extra_attributes = \rtrim( ( $include_schema_org ? ' itemprop="copyrightHolder" ' : ' ' ) . $extra_attributes );
+			$markup           = "<span class=\"media-credit\"{$extra_attributes}>{$credit}</span>";
 
 			/**
 			 * Filters the wrapped media credit markup.
