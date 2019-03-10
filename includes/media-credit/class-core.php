@@ -682,7 +682,8 @@ class Core {
 	 * @internal
 	 *
 	 * @param  string $credit             The credit (including optional link).
-	 * @param  bool   $include_schema_org A flag indicating whether schema.org markup should be included.
+	 * @param  bool   $include_schema_org Optional. A flag indicating whether schema.org
+	 *                                    markup should be included. Default false.
 	 *
 	 * @return string
 	 */
