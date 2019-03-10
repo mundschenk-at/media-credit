@@ -36,7 +36,7 @@ $schema_org            = ! empty( $this->settings['schema_org_markup'] );
 $schema_org_figure     = '';
 $schema_org_figcaption = '';
 if ( $schema_org ) {
-	$schema_org_markup     = ' itemscope itemtype="http://schema.org/ImageObject"';
+	$schema_org_figure     = ' itemscope itemtype="http://schema.org/ImageObject"';
 	$schema_org_figcaption = ' itemprop="caption"';
 
 	if ( ! \preg_match( '/\bitemprop\s*=/S', $content ) ) {

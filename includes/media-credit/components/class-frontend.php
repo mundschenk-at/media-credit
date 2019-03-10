@@ -277,7 +277,7 @@ class Frontend implements \Media_Credit\Component {
 			$style = ' style="width: ' . (int) $credit_width . 'px"';
 		}
 
-		// Return styled credit mark-up.
-		return $html . '<span class="media-credit"' . $style . '>' . $credit . '</span>';
+		// Return styled & wrapped credit markup.
+		return $html . $this->core->wrap_media_credit_markup( $credit, false, $style );
 	}
 }

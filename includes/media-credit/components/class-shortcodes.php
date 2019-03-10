@@ -123,9 +123,8 @@ class Shortcodes implements \Media_Credit\Component {
 	 */
 	public function caption_shortcode( $attr, $content = null ) {
 		// Options influencing the markup.
-		$html5       = \current_theme_supports( 'html5', 'caption' );
-		$schema_org  = ! empty( $this->settings['schema_org_markup'] );
-		$show_credit = empty( $this->settings['credit_at_end'] );
+		$html5      = \current_theme_supports( 'html5', 'caption' );
+		$schema_org = ! empty( $this->settings['schema_org_markup'] );
 
 		// New-style shortcode with the caption inside the shortcode with the link and image tags.
 		if ( ! isset( $attr['caption'] ) ) {
@@ -141,9 +140,40 @@ class Shortcodes implements \Media_Credit\Component {
 					$shortcode = $matches[0];
 					$content   = \str_replace( [ $shortcode, '[/media-credit]' ], '', $content );
 
-					if ( $show_credit ) {
-						$credit_attr      = $this->sanitize_attributes( (array) \shortcode_parse_atts( $matches[1] ) );
-						$attr['caption'] .= ' ' . $this->inline_media_credit( $credit_attr, $schema_org );
+					if ( empty( $this->settings['credit_at_end'] ) ) {
+						// The byline.
+						$credit_attr = $this->sanitize_attributes( (array) \shortcode_parse_atts( $matches[1] ) );
+						$credit      = $this->inline_media_credit( $credit_attr, $schema_org );
+
+						// The original caption.
+						$caption = $attr['caption'];
+
+						/**
+						 * Filters the HTML5 caption including the credit byline.
+						 *
+						 * @since 4.0.0
+						 *
+						 * @param string $caption     The caption including the credit.
+						 *                            Default caption text followed by
+						 *                            credit with a seprating space.
+						 * @param string $old_caption The caption text.
+						 * @param string $credit      The credit byline (including markup).
+						 * @param array  $attr {
+						 *     An array of shortcode attributes.
+						 *
+						 *     @type int    $id         Optional. A user ID. Default 0.
+						 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
+						 *     @type string $link       Optional. A URL used for linking the credit.
+						 *     @type bool   $standalone Optional. A flag indicating that the shortcode
+						 *                              was used without an enclosing `[caption]`. Default true.
+						 *     @type string $align      Optional. The alignment to use for the image/figure
+						 *                              (if used without `[caption]`). Default 'alignnone'.
+						 *     @type int    $width      Optional. The width of the image/figure. Default 0.
+						 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
+						 *                              attribute should be added to the link tag.
+						 * }
+						 */
+						$attr['caption'] = \apply_filters( 'media_credit_shortcode_html5_caption', "{$caption} {$credit}", $caption, $credit, $credit_attr );
 					}
 				}
 			}
@@ -153,7 +183,7 @@ class Shortcodes implements \Media_Credit\Component {
 		$caption = \img_caption_shortcode( $attr, $content );
 
 		// Optionally add schema.org markup.
-		if ( $show_credit && $schema_org ) {
+		if ( $schema_org ) {
 			// Inject schema.org markup for figure.
 			if ( ! \preg_match( '/<figure[^>]*\bitemscope\b/S', $caption ) ) {
 				$caption = \preg_replace( '/<figure\b/S', '<figure itemscope itemtype="http://schema.org/ImageObject"', $caption );
@@ -304,9 +334,6 @@ class Shortcodes implements \Media_Credit\Component {
 			$url           = $url ?: \get_author_posts_url( $attr['id'] );
 		}
 
-		// Optional schema.org markup.
-		$schema_org = $include_schema_org ? ' itemprop="copyrightHolder"' : '';
-
 		// Construct the credit line.
 		$credit_line = \esc_html( $credit );
 		if ( $url ) {
@@ -314,7 +341,8 @@ class Shortcodes implements \Media_Credit\Component {
 		}
 		$credit_line .= \esc_html( $credit_suffix );
 
-		$markup = "<span class=\"media-credit\" {$schema_org}>{$credit_line}</span>";
+		// Wrap the credit in a container <span>.
+		$markup = $this->core->wrap_media_credit_markup( $credit_line, $include_schema_org );
 
 		/**
 		 * Filters the inline markup used for the credit line part of the `media-credit` shortcode.
