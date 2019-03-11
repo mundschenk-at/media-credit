@@ -402,6 +402,11 @@ class Shortcodes implements \Media_Credit\Component {
 		$atts['width']      = \absint( $atts['width'] );
 		$atts['nofollow']   = \filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
 
+		// Strip 'align' prefix from legacy alignment values.
+		if ( 'align' === \substr( $atts['align'], 0, 5 ) ) {
+			$atts['align'] = \substr_replace( $atts['align'], '', 0, 5 );
+		}
+
 		return $atts;
 	}
 }
