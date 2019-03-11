@@ -34,35 +34,35 @@ function ignore_media_credit_shortcode( $atts, $content = null ) {
 	return $content;
 }
 global $shortcode_tags;
-if ( !array_key_exists( 'media-credit', $shortcode_tags ) )
-	add_shortcode('media-credit', 'ignore_media_credit_shortcode' );
+if ( ! array_key_exists( 'media-credit', $shortcode_tags ) )
+	add_shortcode( 'media-credit', 'ignore_media_credit_shortcode' );
 ?>`
 
 Also, I'd really appreciate it if you gave us [some feedback](https://wordpress.org/support/plugin/media-credit/#postform) as to why you disabled the plugin and how it could have better suited your needs.
 
 = Can I display all or recent media credited to a given author? =
 
-Indeed, just call the template tag `<?php display_author_media($author_id); ?>` in your theme's author.php (or elsewhere, if you want). The template tag has optional parameters if you want to customize the CSS or text. The default options will display thumbnails of the 10 most recent media items credited to the given user floated to the right with a width of `150px` and a header of `<h3>Recent Media</h3>`.
+Indeed, just call the template tag `<?php \Media_Credit::display_author_media( $author_id ); ?>` in your theme's author.php (or elsewhere, if you want). The template tag has optional parameters if you want to customize the CSS or text. The default options will display thumbnails of the 10 most recent media items credited to the given user floated to the right with a width of `150px` and a header of `<h3>Recent Media</h3>`.
 
-These options can be changed with a more verbose call to the function: `<?php display_author_media($author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = "<h3>Recent Media</h3>", $exclude_unattached = true); ?>`. This will make only the 10 most recent media items that are attached to a post display with the given header taking up the maximum width it's afforded. Each image will link to the post in which it appears, or the attachment page if it has no parent post (unless `$link_without_parent` is set to `false`). If you don't care about whether the media is attached to a post, change `$exclude_unattached` to `false`. This function as a whole will only display media uploaded and credited to a user after this plugin was installed.
+These options can be changed with a more verbose call to the function: `<?php \Media_Credit::display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = "<h3>Recent Media</h3>", $exclude_unattached = true ); ?>`. This will make only the 10 most recent media items that are attached to a post display with the given header taking up the maximum width it's afforded. Each image will link to the post in which it appears, or the attachment page if it has no parent post (unless `$link_without_parent` is set to `false`). If you don't care about whether the media is attached to a post, change `$exclude_unattached` to `false`. This function as a whole will only display media uploaded and credited to a user after this plugin was installed.
 
 = More generally, can I insert media credit information into my themes with a template tag, for instance on category pages? =
 
-I'm so glad you asked; you certainly can! Just call `<?php get_media_credit_html($post); ?>` with an attachment id (`int`) or `WP_Post` object for an attachment to get the media credit, including a link to the author page. To echo the results, call `<?php the_media_credit_html($post); ?>`.
+I'm so glad you asked; you certainly can! Just call `<?php \Media_Credit::get_html( $attachment ); ?>` with an attachment id (`int`) or `WP_Post` object for an attachment to get the media credit, including a link to the author page. To echo the results, call `<?php \Media_Credit::html( $attachment ); ?>`.
 
 = Is there a template tag that just gives plain text rather than a link to the author page for users of my blog? =
 
-Yep! If you would prefer plain-text rather than a link for all media credit (and leaving out the separator and organization), call `<?php get_media_credit($post); ?>` which uses the same parameter as above. To echo the results, call `<?php the_media_credit($post); ?>`.
+Yep! If you would prefer plain-text rather than a link for all media credit (and leaving out the separator and organization), call `<?php \Media_Credit::get_plaintext( $attachment ); ?>` which uses the same parameter as above. To echo the results, call `<?php \Media_Credit::plaintext( $attachment ); ?>`.
 
 = Can I link to an artist inside a media credit field? =
 
 You sure can. Just add the link attribute in the media-credit shortcode, found in HTML view for a post, or directly when adding an image. For example, if your post contains:
 
-`[media-credit name="Artist" align="alignleft" width="300"]<img src="http://www.mysite.com/files/2010/09/image.jpg" width="300" height="450" class="size-300 wp-image-2" />[/media-credit]`
+`[media-credit name="Artist" align="left" width="300"]<img src="https://www.mysite.com/files/2010/09/image.jpg" width="300" height="450" class="size-300 wp-image-2" />[/media-credit]`
 
 change it to:
 
-`[media-credit name="Artist" link="http://www.artistwebsite.com/" align="alignleft" width="300"]<img src="http://www.mysite.com/files/2010/09/image.jpg" width="300" height="450" class="size-300 wp-image-2" />[/media-credit]`
+`[media-credit name="Artist" link="https://www.artistwebsite.com/" align="left" width="300"]<img src="https://www.mysite.com/files/2010/09/image.jpg" width="300" height="450" class="size-300 wp-image-2" />[/media-credit]`
 
 Note the link to `www.artistwebsite.com` above.
 
