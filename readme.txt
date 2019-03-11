@@ -86,50 +86,23 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
+= 4.0.0 (Mar. 11, 2019) =
+*   _Feature_: Full REST API support (reading and writing).
+*   _Feature_: A custom default credit for new attachments can be set via the GUI or the new filter hook `media_credit_new_attachment_default`.
+*   _Feature_: Placeholder texts can be customized via the new filter hook `media_credit_placeholder_text`.
+*   _Feature_: Images added via the Block Editor (Gutenberg) will be displayed with their credit.
+*   _Feature_: New autoload-friendly template tag API based on the `Media_Credit` class. The old function-based API has been deprecated.
+*   _Change_: The previously deprecated template function `get_freeform_media_credit` has been removed.
+*   _Change_: In HTML5 mode, the credit has been moved inside the `<figcaption>`.
+*   _Change_: PHP minimum version increased to 5.6.0.
+*   _Bugfix_: When default credits are disabled, the display name of a user can be used as a freeform credit again.
+
 = 3.2.0 (Feb. 21, 2018) =
 *   Use minified stylesheets and JavaScript files if running in a production environment.
 *   "Display credit after posts" now works with pages as well as regular posts (and custom post types).
 *   "Include schema.org structured data" can switched off again after first being enabled.
 *   General code clean-up.
 *   TinyMCE components updated.
-
-= 3.1.7 (Feb. 24, 2017) =
-*   JavaScript components should be slightly more fault tolerant now.
-*   The plugin does not depend on the visual editor being enabled anymore. Props karinamendonca29.
-
-= 3.1.6 (Feb. 4, 2017) =
-*   Return `''` (the empty string) when retrieving empty freeform credits.
-*   Honor "Do not display default credit" for featured images.
-
-= 3.1.5 (Jan. 29, 2017) =
-*   Prevent invalid link nesting in featured image credits. This means that by default, no `<a>` tags are printed for featured image credits. The old behavior can be restored by including `add_filter( 'media_credit_post_thumbnail_include_links', __return_true );` in the theme's `functions.php`.
-*   "Display credit after posts" is now restricted to the proper single post view (and not every usage of `the_content` hook).
-*   "Display credit after posts" is honored when used together with "Display credit for featured images".
-
-= 3.1.4 (Jan. 1, 2017) =
-*   Properly sync models when editing image details.
-
-= 3.1.3 (Dec. 21, 2016) =
-*   Removed non-existent customizer callback (props @rboulet).
-
-= 3.1.2 (Dec. 11, 2016) =
-*   Fixed conflict between WPBakery Visual Composer 4.x and Media Credit.
-*   Updated TinyMCE components.
-
-= 3.1.1 (Aug. 15, 2016) =
-*   Fixed JavaScript error in media uploaded directly from Edit Post (`wp_prepare_attachment_for_js` only gets called after the upload finishes in 4.5.x).
-
-= 3.1.0 (Aug. 13, 2016) =
-*   Optional no-follow attribute added.
-*   Optional schema.org markup added.
-*   Use HTML5 placeholders instead of default text when "no default credits" is set.
-*   Settings have been updated & streamlined.
-*   Added caching for backend queries.
-*   Updated TinyMCE components.
-*   Switched to the new Media API based on Backbone.js introduced in WordPress 3.5 for a snappier and more consistent user experience.
-*   Several security fixes and a general code clean-up have been applied due to automatic enforcement of WordPress coding standards.
-*   Fixed conflict between "no default credits" and featured image credits.
-
 
 == Other Notes ==
 **Options**
