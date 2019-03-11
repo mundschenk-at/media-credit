@@ -60,6 +60,8 @@ module.exports = function( grunt ) {
 					nonull: true,
 					src: [
 						'readme.txt',
+						'CHANGELOG.md',
+						'LICENSE.md',
 						'*.php',
 						'admin/**',
 						'public/**',
