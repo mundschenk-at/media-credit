@@ -1,5 +1,8 @@
 # Changelog #
 
+## 4.0.1 (Mar. 11, 2019) ##
+*   _Bugfix_: Uploads via the Edit Post or New Post screens should work again.
+
 ## 4.0.0 (Mar. 11, 2019) ##
 *   _Feature_: Full REST API support (reading and writing).
 *   _Feature_: A custom default credit for new attachments can be set via the GUI
