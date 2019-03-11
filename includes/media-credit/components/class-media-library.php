@@ -313,6 +313,11 @@ class Media_Library implements \Media_Credit\Component {
 			'nofollow' => ! empty( $attachment['media-credit-nofollow'] ),
 		];
 
+		// Only clear the post author if we've been setting a user credit.
+		if ( ! empty( $fields['user_id'] ) ) {
+			unset( $post['post_author'] );
+		}
+
 		$this->core->update_media_credit_json( \get_post( $post['ID'] ), $fields );
 
 		return $post;
