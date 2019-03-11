@@ -4,7 +4,7 @@ Tags: media, image, images, credit, byline, author, user
 Requires at least: 5.0
 Requires PHP: 5.6
 Tested up to: 5.1
-Stable tag: 3.2.0
+Stable tag: 4.0.0
 License: GPLv2 or later
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
