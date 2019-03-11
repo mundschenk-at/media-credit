@@ -28,6 +28,9 @@
 // Apply credit width via style attribute.
 $style = $width > 0 ? ' style="width: ' . (int) $width . 'px"' : '';
 
+// Alignment class.
+$align_class = "align{$atts['align']}";
+
 // Wrap output in <figure> if HTML5 is supported & the shortcode is a standalone one.
 $wrap = $atts['standalone'] && $html5;
 
@@ -46,10 +49,10 @@ if ( $schema_org ) {
 
 ?>
 <?php if ( $wrap ) : ?>
-<figure class="wp-caption <?php echo \esc_attr( $atts['align'] ); ?>" <?php echo $style, $schema_org_figure; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<figure class="wp-caption <?php echo \esc_attr( $align_class ); ?>" <?php echo $style, $schema_org_figure; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 <?php endif; ?>
 	<?php if ( ! $html5 ) : ?>
-		<div class="media-credit-container <?php echo \esc_attr( $atts['align'] ); ?>" <?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+		<div class="media-credit-container <?php echo \esc_attr( $align_class ); ?>" <?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 			<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo $this->inline_media_credit( $atts, $schema_org ); ?>
 		</div>
 	<?php else : ?>
