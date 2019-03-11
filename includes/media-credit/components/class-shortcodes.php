@@ -48,7 +48,7 @@ class Shortcodes implements \Media_Credit\Component {
 		'name'       => '',
 		'link'       => '',
 		'standalone' => true,
-		'align'      => 'alignnone',
+		'align'      => 'none',
 		'width'      => 0,
 		'nofollow'   => false,
 	];
@@ -167,7 +167,7 @@ class Shortcodes implements \Media_Credit\Component {
 						 *     @type bool   $standalone Optional. A flag indicating that the shortcode
 						 *                              was used without an enclosing `[caption]`. Default true.
 						 *     @type string $align      Optional. The alignment to use for the image/figure
-						 *                              (if used without `[caption]`). Default 'alignnone'.
+						 *                              (if used without `[caption]`). Default 'none'.
 						 *     @type int    $width      Optional. The width of the image/figure. Default 0.
 						 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
 						 *                              attribute should be added to the link tag.
@@ -203,8 +203,8 @@ class Shortcodes implements \Media_Credit\Component {
 	 * by either specifying the ID of a WordPress user or with a raw string for the name assigned credit.
 	 * If an ID is present, it will take precedence over a name.
 	 *
-	 * Usage: `[media-credit id=1 align="aligncenter" width="300"]` or
-	 *        `[media-credit name="Another User" align="aligncenter" width="300"]`
+	 * Usage: `[media-credit id=1 align="center" width="300"]` or
+	 *        `[media-credit name="Another User" align="center" width="300"]`
 	 *
 	 * @param array  $atts {
 	 *     An array of shortcode attributes.
@@ -215,7 +215,7 @@ class Shortcodes implements \Media_Credit\Component {
 	 *     @type bool   $standalone Optional. A flag indicating that the shortcode
 	 *                              was used without an enclosing `[caption]`. Default true.
 	 *     @type string $align      Optional. The alignment to use for the image/figure
-	 *                              (if used without `[caption]`). Default 'alignnone'.
+	 *                              (if used without `[caption]`). Default 'none'.
 	 *     @type int    $width      Optional. The width of the image/figure. Default 0.
 	 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
 	 *                              attribute should be added to the link tag.
@@ -249,7 +249,7 @@ class Shortcodes implements \Media_Credit\Component {
 		 *     @type bool   $standalone Optional. A flag indicating that the shortcode
 		 *                              was used without an enclosing `[caption]`. Default true.
 		 *     @type string $align      Optional. The alignment to use for the image/figure
-		 *                              (if used without `[caption]`). Default 'alignnone'.
+		 *                              (if used without `[caption]`). Default 'none'.
 		 *     @type int    $width      Optional. The width of the image/figure. Default 0.
 		 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
 		 *                              attribute should be added to the link tag.
@@ -311,7 +311,7 @@ class Shortcodes implements \Media_Credit\Component {
 	 *     @type bool   $standalone Optional. A flag indicating that the shortcode
 	 *                              was used without an enclosing `[caption]`. Default true.
 	 *     @type string $align      Optional. The alignment to use for the image/figure
-	 *                              (if used without `[caption]`). Default 'alignnone'.
+	 *                              (if used without `[caption]`). Default 'none'.
 	 *     @type int    $width      Optional. The width of the image/figure. Default 0.
 	 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
 	 *                              attribute should be added to the link tag.
@@ -359,7 +359,7 @@ class Shortcodes implements \Media_Credit\Component {
 		 *     @type bool   $standalone Optional. A flag indicating that the shortcode
 		 *                              was used without an enclosing `[caption]`. Default true.
 		 *     @type string $align      Optional. The alignment to use for the image/figure
-		 *                              (if used without `[caption]`). Default 'alignnone'.
+		 *                              (if used without `[caption]`). Default 'none'.
 		 *     @type int    $width      Optional. The width of the image/figure. Default 0.
 		 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
 		 *                              attribute should be added to the link tag.
@@ -381,7 +381,7 @@ class Shortcodes implements \Media_Credit\Component {
 	 *     @type bool   $standalone Optional. A flag indicating that the shortcode
 	 *                              was used without an enclosing `[caption]`. Default true.
 	 *     @type string $align      Optional. The alignment to use for the image/figure
-	 *                              (if used without `[caption]`). Default 'alignnone'.
+	 *                              (if used without `[caption]`). Default 'none'.
 	 *     @type int    $width      Optional. The width of the image/figure. Default 0.
 	 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
 	 *                              attribute should be added to the link tag.
