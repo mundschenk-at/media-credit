@@ -42,26 +42,6 @@ module.exports = function( grunt ) {
         }
     },
 
-		wp_readme_to_markdown: {
-			readme: {
-				files: {
-					'README.md': 'readme.txt',
-				},
-			},
-			options: {
-				screenshot_url: 'wp-assets/{screenshot}.png',
-			}
-		},
-
-		copy: {
-			build: {
-				files: [
-					{ expand: true, nonull: true, src: ['readme.txt', 'CHANGELOG.md','*.php'], dest: 'build/' },
-					{ expand: true, nonull: true, src: ['admin/**','public/**','includes/**', '!**/scss/**'], dest: 'build/' },
-				],
-			}
-		},
-
 		copy: {
 			main: {
 				files: [ {
@@ -69,6 +49,8 @@ module.exports = function( grunt ) {
 					nonull: true,
 					src: [
 						'readme.txt',
+						'CHANGELOG.md',
+						'LICENSE.md',
 						'*.php',
 						'admin/**',
 						'public/**',
@@ -269,7 +251,6 @@ module.exports = function( grunt ) {
 
 
 	grunt.registerTask( 'default', [
-			'newer:wp_readme_to_markdown',
 			'newer:eslint',
 			'newer:phpcs',
 			'newer:sass:dev',
@@ -277,7 +258,6 @@ module.exports = function( grunt ) {
 	] );
 
 	grunt.registerTask( 'build', [
-			'newer:wp_readme_to_markdown',
 			'clean:build',
 			'newer:sass:dist',
 			'newer:postcss:dist',
@@ -319,7 +299,6 @@ module.exports = function( grunt ) {
 	] );
 
 	grunt.registerTask('trunk', [
-			'wp_readme_to_markdown',
 			'phpcs',
 			'eslint',
 			'build',

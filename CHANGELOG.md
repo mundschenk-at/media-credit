@@ -1,8 +1,21 @@
 # Changelog #
 
-## 4.0.0 (unreleased) ##
-*   _Change_: The deprecated template function `get_freeform_media_credit` has
-    been removed.
+## 4.0.0 (Mar. 11, 2019) ##
+*   _Feature_: Full REST API support (reading and writing).
+*   _Feature_: A custom default credit for new attachments can be set via the GUI
+    or the new filter hook `media_credit_new_attachment_default`.
+*   _Feature_: Placeholder texts can be customized via the new filter hook
+    `media_credit_placeholder_text`.
+*   _Feature_: Images added via the Block Editor (Gutenberg) will be displayed
+    with their credit.
+*   _Feature_: New autoload-friendly template tag API based on the `Media_Credit`
+    class. The old function-based API has been deprecated.
+*   _Change_: The previously deprecated template function `get_freeform_media_credit`
+    has been removed.
+*   _Change_: In HTML5 mode, the credit has been moved inside the `<figcaption>`.
+*   _Change_: PHP minimum version increased to 5.6.0.
+*   _Bugfix_: When default credits are disabled, the display name of a user can be
+    used as a freeform credit again.
 
 ## 3.2.0 (Feb. 21, 2018) ##
 *   Use minified stylesheets and JavaScript files if running in a production
