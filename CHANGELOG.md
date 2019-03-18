@@ -1,5 +1,11 @@
 # Changelog #
 
+## 4.0.2 (Mar. 18, 2019) ##
+*   _Bugfix_: Don't whitescreen when the shortcode handler is called with an empty
+    string instead of argument array.
+*   _Bugfix_: Featured images can be set normally again when
+    `Do not credit images to WordPress users` is enabled.
+
 ## 4.0.1 (Mar. 11, 2019) ##
 *   _Bugfix_: Uploads via the Edit Post or New Post screens should work again.
 
