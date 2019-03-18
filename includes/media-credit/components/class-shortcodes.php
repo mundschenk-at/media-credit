@@ -230,7 +230,8 @@ class Shortcodes implements \Media_Credit\Component {
 			return \do_shortcode( $content );
 		}
 
-		$atts = $this->sanitize_attributes( $atts );
+		// Make sure that $atts really is an array, might be an empty string in some edge cases.
+		$atts = $this->sanitize_attributes( empty( $atts ) ? [] : $atts );
 
 		/**
 		 * Filters the `[media-credit]` shortcode to allow plugins and themes to
