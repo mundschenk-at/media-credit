@@ -274,7 +274,7 @@ class Frontend implements \Media_Credit\Component {
 		// Set optional style attribute.
 		$style = '';
 		if ( ! empty( $credit_width ) ) {
-			$style = ' style="width: ' . (int) $credit_width . 'px"';
+			$style = ' style="max-width: ' . (int) $credit_width . 'px"';
 		}
 
 		// Return styled & wrapped credit markup.

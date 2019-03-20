@@ -26,7 +26,7 @@
  */
 
 // Apply credit width via style attribute.
-$style = $width > 0 ? ' style="width: ' . (int) $width . 'px"' : '';
+$style = $width > 0 ? ' style="max-width: ' . (int) $width . 'px"' : '';
 
 // Alignment class.
 $align_class = "align{$atts['align']}";
