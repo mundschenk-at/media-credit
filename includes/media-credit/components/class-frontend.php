@@ -234,7 +234,7 @@ class Frontend implements \Media_Credit\Component {
 		}
 
 		// Retrieve the attachment.
-		$attachment = \get_post( $post_id );
+		$attachment = \get_post( $post_thumbnail_id );
 
 		// Abort if the post ID does not correspond to a valid attachment.
 		if ( ! $attachment instanceof \WP_Post ) {
@@ -274,7 +274,7 @@ class Frontend implements \Media_Credit\Component {
 		// Set optional style attribute.
 		$style = '';
 		if ( ! empty( $credit_width ) ) {
-			$style = ' style="width: ' . (int) $credit_width . 'px"';
+			$style = ' style="max-width: ' . (int) $credit_width . 'px"';
 		}
 
 		// Return styled & wrapped credit markup.
