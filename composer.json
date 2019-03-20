@@ -45,6 +45,13 @@
         "files": ["includes/media-credit-template.php"]
     },
 
+    "config": {
+        "classmap-authoritative": false,
+        "classloader-suffix": "MediaCredit",
+        "autoloader-suffix": "MediaCredit",
+        "process-timeout": 0
+    },
+
     "minimum-stability": "dev",
     "prefer-stable": true,
 
