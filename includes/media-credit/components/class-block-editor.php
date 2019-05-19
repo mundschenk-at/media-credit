@@ -82,7 +82,7 @@ class Block_Editor implements \Media_Credit\Component {
 		$s = $this->core->get_settings();
 
 		// We only target standard images, and only when the credits are not displayed after the post content.
-		if ( 'core/image' !== $block['blockName'] || ! empty( $s[ Settings::CREDIT_AT_END ] ) ) {
+		if ( 'core/image' !== $block['blockName'] || ! empty( $s[ Settings::CREDIT_AT_END ] ) || ! isset( $block['attrs']['id'] ) ) {
 			return $block_content;
 		}
 
