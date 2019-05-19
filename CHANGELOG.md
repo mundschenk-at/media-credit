@@ -1,8 +1,11 @@
 # Changelog #
 
+## 4.0.4 (May 19, 2019) ##
+*   _Bugfix_: Prevent PHP warning for incomplete `core/image` blocks.
+
 ## 4.0.3 (Mar. 20, 2019) ##
 *   _Bugfix_: Print credit for featured images, not for the parent post.
-*   _Bugfix_: Slightly improved compatibility with responsive themes (by using 
+*   _Bugfix_: Slightly improved compatibility with responsive themes (by using
     `max-width` instead of `width`).
 
 ## 4.0.2 (Mar. 18, 2019) ##
