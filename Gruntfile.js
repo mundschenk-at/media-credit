@@ -5,9 +5,11 @@ module.exports = function( grunt ) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON( 'package.json' ),
 
+		wpversion: grunt.file.read( 'media-credit.php' ).toString().match(/Version:\s*([0-9](?:\w|\.|\-)*)\s|\Z/)[1],
+
 		clean: {
-			build: [ "build/*" ],
-			autoloader: [ "build/tests", "build/composer.*", "build/vendor/composer/*.json", "build/vendor/mundschenk-at/composer-for-wordpress/**" ]
+			build: [ "build/**/*" ],
+			autoloader: [ "build/tests", "build/composer.*", "build/vendor-scoped/composer/*.json", "build/vendor-scoped/scoper-autoload.php", "build/vendor-scoped/mundschenk-at/composer-for-wordpress/**" ]
 		},
 
 		composer: {
@@ -28,7 +30,7 @@ module.exports = function( grunt ) {
 		"string-replace": {
         autoloader: {
             files: {
-                "build/": "build/vendor/composer/autoload_{classmap,psr4,static}.php",
+                "build/": "build/vendor-scoped/composer/autoload_{classmap,psr4,static}.php",
             },
             options: {
                 replacements: [{
@@ -39,8 +41,67 @@ module.exports = function( grunt ) {
                     replacement: ''
                 }]
             }
-        }
+        },
+				"composer-vendor-dir": {
+						options: {
+								replacements: [{
+										pattern: /"vendor-dir":\s*"vendor"/g,
+										replacement: '"vendor-dir": "vendor-scoped"'
+								}],
+						},
+						files: [{
+								expand: true,
+								flatten: false,
+								src: ['build/composer.json'],
+								dest: '',
+						}]
+				},
+				"vendor-dir": {
+						options: {
+								replacements: [{
+										pattern: /vendor\//g,
+										replacement: 'vendor-scoped/'
+								}],
+						},
+						files: [{
+								expand: true,
+								flatten: false,
+								src: ['build/**/*.php'],
+								dest: '',
+						}]
+				}
     },
+
+		replace: {
+				fix_dice_namespace: {
+						options: {
+								patterns: [ {
+										match: /use Dice\\Dice;/g,
+										replacement: 'use Media_Credit\\Vendor\\Dice\\Dice;'
+								} ],
+						},
+						files: [ {
+								expand: true,
+								flatten: false,
+								src: ['build/includes/class-media-credit-factory.php'],
+								dest: '',
+						} ]
+				},
+				fix_mundschenk_namespace: {
+						options: {
+								patterns: [ {
+										match: /(\b\\?)(Mundschenk\\[\w_]+)/g,
+										replacement: '$1Media_Credit\\Vendor\\$2'
+								} ],
+						},
+						files: [ {
+								expand: true,
+								flatten: false,
+								src: ['build/includes/**/*.php'],
+								dest: '',
+						} ]
+				}
+		},
 
 		copy: {
 			main: {
@@ -52,22 +113,15 @@ module.exports = function( grunt ) {
 						'CHANGELOG.md',
 						'LICENSE.md',
 						'*.php',
-						'admin/**',
-						'public/**',
 						'includes/**',
+						'admin/**',
 						'!**/scss/**',
-						'composer.*',
-						'vendor/composer/**',
-						'vendor/mundschenk-at/check-wp-requirements/*.php',
-						'vendor/mundschenk-at/check-wp-requirements/partials/*.php',
-						'vendor/mundschenk-at/wp-data-storage/src/**/*.php',
-						'vendor/mundschenk-at/wp-settings-ui/src/**/*.php',
-						'vendor/mundschenk-at/wp-settings-ui/partials/**/*.php',
-						'vendor/level-2/dice/**/*.php',
-						'!**/scss/**',
-						'!**/tests/**'
+						'vendor/**/partials/**',
 					],
-					dest: 'build/'
+					dest: 'build/',
+					rename: function(dest, src) {
+						return dest + src.replace( /\bvendor\b/, 'vendor-scoped');
+					}
 				}	],
 			},
 			meta: {
@@ -81,9 +135,21 @@ module.exports = function( grunt ) {
 						'vendor/{composer,mundschenk-at,level-2}/**/COPYING*',
 						'vendor/{composer,mundschenk-at,level-2}/**/CHANGE*',
 					],
-					dest: 'build/'
+					dest: 'build/',
+					rename: function(dest, src) {
+							return dest + src.replace( /\bvendor\b/, 'vendor-scoped');
+					}
 				} ],
 			}
+		},
+
+		rename: {
+				vendor: {
+						files: [{
+								src: "build/vendor",
+								dest: "build/vendor-scoped"
+						}]
+				}
 		},
 
 		wp_deploy: {
@@ -258,16 +324,28 @@ module.exports = function( grunt ) {
 	] );
 
 	grunt.registerTask( 'build', [
-			'clean:build',
-			'newer:sass:dist',
-			'newer:postcss:dist',
-			'newer:minify',
-			'copy:main',
-			'copy:meta',
-			'composer:build:build-wordpress',
-			'composer:build:dump-autoload:classmap-authoritative:no-dev',
-			'clean:autoloader',
-			'string-replace:autoloader',
+		// Clean house
+		'clean:build',
+		// Scope dependencies
+		'composer:dev:scope-dependencies',
+		// Rename vendor directory
+		'string-replace:composer-vendor-dir',
+		'rename:vendor',
+		// Generate stylesheets
+		'newer:sass:dist',
+		'newer:postcss:dist',
+		'newer:minify',
+		// Copy other files
+		'copy:main',
+		'copy:meta',
+		// Use scoped dependencies
+		'replace:fix_dice_namespace',
+		'replace:fix_mundschenk_namespace',
+		'composer:build:build-wordpress',
+		'clean:autoloader',
+		'string-replace:vendor-dir',
+		'string-replace:autoloader',
+	] );
 	] );
 
 	// dynamically generate uglify targets
