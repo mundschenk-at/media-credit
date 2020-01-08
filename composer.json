@@ -37,7 +37,8 @@
         "wp-coding-standards/wpcs": "^2.0",
         "phpcompatibility/phpcompatibility-wp": "^2.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.5",
-        "roave/security-advisories": "dev-master"
+        "roave/security-advisories": "dev-master",
+        "humbug/php-scoper": "^0.12.4"
     },
 
     "autoload": {
@@ -49,7 +50,8 @@
         "classmap-authoritative": false,
         "classloader-suffix": "MediaCredit",
         "autoloader-suffix": "MediaCredit",
-        "process-timeout": 0
+        "process-timeout": 0,
+        "vendor-dir": "vendor"
     },
 
     "minimum-stability": "dev",
@@ -59,9 +61,13 @@
         "phpcs": [
             "phpcs -p -s includes/ admin/ public/ --extensions=php"
         ],
+        "scope-dependencies": [
+            "@php vendor/bin/php-scoper add-prefix --config=.scoper.inc.php --force --quiet"
+        ],
         "build-wordpress": [
             "@composer require mundschenk-at/composer-for-wordpress=dev-master --no-update",
-            "@composer update --no-dev"
+            "@composer update --no-dev",
+            "@composer dump-autoload --classmap-authoritative --no-dev"
         ]
     }
 }
