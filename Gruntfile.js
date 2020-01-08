@@ -310,6 +310,22 @@ module.exports = function( grunt ) {
 				})
 			},
 		},
+
+		compress: {
+			beta: {
+				options: {
+					mode: 'zip',
+					archive: '<%= pkg.name %>-<%= wpversion %>.zip'
+				},
+				files: [{
+						expand: true,
+						cwd: 'build/',
+						src: [ '**/*' ],
+						dest: '<%= pkg.name %>/',
+				}],
+			}
+		},
+
 	});
 
 	// load all tasks
@@ -346,6 +362,10 @@ module.exports = function( grunt ) {
 		'string-replace:vendor-dir',
 		'string-replace:autoloader',
 	] );
+
+	grunt.registerTask( 'build-beta', [
+			'build',
+			'compress:beta',
 	] );
 
 	// dynamically generate uglify targets
