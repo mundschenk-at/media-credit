@@ -96,7 +96,7 @@ class Setup implements \Media_Credit\Component {
 		// The default plugin options.
 		$default_options = [
 			'version'               => $this->version,
-			'install_date'          => \date( 'Y-m-d' ),
+			'install_date'          => \gmdate( 'Y-m-d' ),
 			'separator'             => Settings::DEFAULT_SEPARATOR,
 			'organization'          => \get_bloginfo( 'name', 'display' ),
 			'credit_at_end'         => false,
