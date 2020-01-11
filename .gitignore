@@ -1,10 +1,12 @@
 # tmp files
 *~
 
+# Atom
+.serenata
+
 # Composer
 vendor/*
 composer.lock
-
 
 # Node.js/Grunt
 node_modules/*
