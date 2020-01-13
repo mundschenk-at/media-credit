@@ -89,6 +89,7 @@ class Block_Editor implements \Media_Credit\Component {
 		// Retrieve image.
 		$attachment = \get_post( $block['attrs']['id'] );
 		if ( ! $attachment instanceof \WP_Post ) {
+			// Not a valid attachment, let's bail.
 			return $block_content;
 		}
 
@@ -96,9 +97,13 @@ class Block_Editor implements \Media_Credit\Component {
 
 		// Load the media credit for the attachment.
 		$credit = $this->core->get_media_credit_json( $attachment );
-		$markup = $this->core->wrap_media_credit_markup( $credit['rendered'], $include_schema_org );
+		if ( empty( $credit['rendered'] ) ) {
+			// No credit to display, let's bail.
+			return $block_content;
+		}
 
 		// Inject the (modified) caption markup.
+		$markup        = $this->core->wrap_media_credit_markup( $credit['rendered'], $include_schema_org );
 		$block_content = $this->inject_credit_into_caption( $block_content, $markup );
 
 		// Inject additional schema.org markup.
