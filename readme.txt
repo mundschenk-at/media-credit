@@ -86,6 +86,9 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
+= 4.1.0 (unreleased) =
+* _Bugfix_: No markup is added to `core/image` blocks when no credit is set.
+
 = 4.0.4 (May 19, 2019) =
 * _Bugfix_: Prevent PHP warning for incomplete `core/image` blocks.
 
