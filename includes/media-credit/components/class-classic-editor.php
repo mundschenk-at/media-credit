@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2020 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -194,7 +194,7 @@ class Classic_Editor implements \Media_Credit\Component {
 		$attachment = \get_post( $attachment_id );
 
 		// Bail if we don't have a valid attachment.
-		if ( ! $attachment instanceof \WP_Post ) {
+		if ( empty( $attachment ) ) {
 			return $html;
 		}
 

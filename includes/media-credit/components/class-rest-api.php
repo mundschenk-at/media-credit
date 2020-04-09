@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2020 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -232,7 +232,7 @@ class REST_API implements \Media_Credit\Component {
 	 */
 	public function prepare_media_credit_fields( $post, /* @scrutinizer ignore-unused */ $field_name, /* @scrutinizer ignore-unused */ \WP_REST_Request $request ) {
 		$attachment = \get_post( $post['id'] );
-		if ( $attachment instanceof \WP_Post ) {
+		if ( ! empty( $attachment ) ) {
 			return $this->core->get_media_credit_json( $attachment );
 		}
 	}
