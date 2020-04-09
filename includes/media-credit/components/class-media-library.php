@@ -123,8 +123,8 @@ class Media_Library implements \Media_Credit\Component {
 	 */
 	public function enqueue_scripts_and_styles() {
 		// Set up resource files.
-		$url    = \plugin_dir_url( MEDIA_CREDIT_PLUGIN_FILE );
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
+		$url    = \plugin_dir_url( \MEDIA_CREDIT_PLUGIN_FILE );
+		$suffix = \SCRIPT_DEBUG ? '' : '.min';
 
 		// Pre-register the media scripts.
 		\wp_register_script( 'media-credit-bootstrap',           "{$url}/admin/js/media-credit-bootstrap{$suffix}.js",           [],                                                                         $this->version, true );

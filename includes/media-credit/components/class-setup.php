@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2020 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -80,7 +80,7 @@ class Setup implements \Media_Credit\Component {
 	 */
 	public function run() {
 		// Register deactivation hook. Activation is handled by the update check instead.
-		\register_deactivation_hook( MEDIA_CREDIT_PLUGIN_FILE, [ $this, 'deactivate' ] );
+		\register_deactivation_hook( \MEDIA_CREDIT_PLUGIN_FILE, [ $this, 'deactivate' ] );
 
 		// Update settings and database if necessary.
 		\add_action( 'plugins_loaded', [ $this, 'update_check' ] );

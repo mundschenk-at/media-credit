@@ -116,8 +116,8 @@ class Frontend implements \Media_Credit\Component {
 	 */
 	public function enqueue_styles() {
 		// Set up file suffix.
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		$url    = \plugin_dir_url( MEDIA_CREDIT_PLUGIN_FILE );
+		$suffix = \SCRIPT_DEBUG ? '' : '.min';
+		$url    = \plugin_dir_url( \MEDIA_CREDIT_PLUGIN_FILE );
 
 		// Do not display inline media credit if media credit is displayed at end of posts.
 		if ( ! empty( $this->settings['credit_at_end'] ) ) {

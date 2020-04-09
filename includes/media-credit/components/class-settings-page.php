@@ -104,7 +104,7 @@ class Settings_Page implements \Media_Credit\Component {
 			\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts_and_styles' ] );
 
 			// Add settings link to plugins page.
-			$basename = \plugin_basename( MEDIA_CREDIT_PLUGIN_FILE );
+			$basename = \plugin_basename( \MEDIA_CREDIT_PLUGIN_FILE );
 			\add_filter( "plugin_action_links_{$basename}", [ $this, 'add_action_links' ] );
 		}
 	}
@@ -168,8 +168,8 @@ class Settings_Page implements \Media_Credit\Component {
 		}
 
 		// Set up resource file information.
-		$url    = \plugin_dir_url( MEDIA_CREDIT_PLUGIN_FILE );
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
+		$url    = \plugin_dir_url( \MEDIA_CREDIT_PLUGIN_FILE );
+		$suffix = \SCRIPT_DEBUG ? '' : '.min';
 
 		// Style the preview area of the settings page.
 		\wp_enqueue_style( 'media-credit-preview-style', "{$url}/admin/css/media-credit-preview{$suffix}.css", [], $this->version, 'screen' );
