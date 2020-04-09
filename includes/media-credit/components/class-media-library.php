@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2020 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -86,16 +86,18 @@ class Media_Library implements \Media_Credit\Component {
 	 * @return void
 	 */
 	public function run() {
-		\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts_and_styles' ] );
-		\add_action( 'print_media_templates', [ $this, 'attachment_details_template' ] );
+		// Initialize admin-only parts.
 		\add_action( 'admin_init',            [ $this, 'admin_init' ] );
-		\add_action( 'add_attachment',        [ $this, 'add_default_media_credit_for_attachment' ], 10, 1 );
+		\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts_and_styles' ] );
 
-		// Filter hooks.
-		\add_filter( 'wp_prepare_attachment_for_js',    [ $this, 'prepare_attachment_media_credit_for_js' ], 10, 2 );
-		\add_filter( 'attachment_fields_to_edit',       [ $this, 'add_media_credit_fields' ],                10, 2 );
-		\add_filter( 'attachment_fields_to_save',       [ $this, 'save_media_credit_fields' ],               10, 2 );
+		// Add default credit to new attachments.
+		\add_action( 'add_attachment', [ $this, 'add_default_media_credit_for_attachment' ], 10, 1 );
 
+		// Handle editing attachment details.
+		\add_action( 'print_media_templates',        [ $this, 'attachment_details_template' ] );
+		\add_filter( 'wp_prepare_attachment_for_js', [ $this, 'prepare_attachment_media_credit_for_js' ], 10, 2 );
+		\add_filter( 'attachment_fields_to_edit',    [ $this, 'add_media_credit_fields' ],                10, 2 );
+		\add_filter( 'attachment_fields_to_save',    [ $this, 'save_media_credit_fields' ],               10, 2 );
 	}
 
 	/**
@@ -169,7 +171,7 @@ class Media_Library implements \Media_Credit\Component {
 	}
 
 	/**
-	 * Initialize settings.
+	 * Ensures that proper attachment credits are shown on the admin side of WordPress.
 	 */
 	public function admin_init() {
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
