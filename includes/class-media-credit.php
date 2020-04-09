@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2020 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -304,7 +304,7 @@ class Media_Credit {
 		}
 
 		// Make sure this is a valid attachment object.
-		if ( ! $attachment instanceof \WP_Post ) {
+		if ( empty( $attachment ) ) {
 			return Core::INVALID_MEDIA_CREDIT;
 		}
 

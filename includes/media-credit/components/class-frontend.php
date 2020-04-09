@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2020 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -161,7 +161,7 @@ class Frontend implements \Media_Credit\Component {
 		$credit_unique = [];
 		foreach ( $images as $image_id ) {
 			$attachment = \get_post( $image_id );
-			if ( ! $attachment instanceof \WP_Post ) {
+			if ( empty( $attachment ) ) {
 				continue;
 			}
 

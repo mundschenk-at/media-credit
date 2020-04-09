@@ -202,7 +202,7 @@ class Media_Library implements \Media_Credit\Component {
 	 */
 	public function filter_the_author( $display_name ) {
 		$attachment = \get_post();
-		if ( $attachment instanceof \WP_Post && 'attachment' === $attachment->post_type ) {
+		if ( ! empty( $attachment ) && 'attachment' === $attachment->post_type ) {
 			$fields       = $this->core->get_media_credit_json( $attachment );
 			$display_name = $fields['plaintext'];
 		}

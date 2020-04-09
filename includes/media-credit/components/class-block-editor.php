@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019 Peter Putzer.
+ * Copyright 2019-2020 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -88,7 +88,7 @@ class Block_Editor implements \Media_Credit\Component {
 
 		// Retrieve image.
 		$attachment = \get_post( $block['attrs']['id'] );
-		if ( ! $attachment instanceof \WP_Post ) {
+		if ( empty( $attachment ) ) {
 			// Not a valid attachment, let's bail.
 			return $block_content;
 		}
