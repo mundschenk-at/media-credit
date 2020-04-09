@@ -67,6 +67,15 @@ class Media_Library implements \Media_Credit\Component {
 	private $core;
 
 	/**
+	 * The post ID of the original attachment when cropping images.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @var int|null
+	 */
+	private $cropped_parent_id = null;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    3.0.0
@@ -98,6 +107,12 @@ class Media_Library implements \Media_Credit\Component {
 		\add_filter( 'wp_prepare_attachment_for_js', [ $this, 'prepare_attachment_media_credit_for_js' ], 10, 2 );
 		\add_filter( 'attachment_fields_to_edit',    [ $this, 'add_media_credit_fields' ],                10, 2 );
 		\add_filter( 'attachment_fields_to_save',    [ $this, 'save_media_credit_fields' ],               10, 2 );
+
+		// Handle image cropping in the customizer.
+		\add_action( 'wp_ajax_crop_image_pre_save',         [ $this, 'store_cropped_image_parent' ],                 10, 2 );
+		\add_filter( 'wp_ajax_cropped_attachment_metadata', [ $this, 'add_credit_to_cropped_attachment_metadata' ],  10, 1 );
+		\add_filter( 'wp_header_image_attachment_metadata', [ $this, 'add_credit_to_cropped_header_metadata' ],      10, 1 );
+		\add_filter( 'wp_update_attachment_metadata',       [ $this, 'update_cropped_image_credit' ],                10, 2 );
 	}
 
 	/**
@@ -392,5 +407,110 @@ class Media_Library implements \Media_Credit\Component {
 		 * @param \WP_Post $attachment The attachment.
 		 */
 		return \apply_filters( 'media_credit_new_attachment_default', $default, $attachment );
+	}
+
+	/**
+	 * Stores the parent attachment ID for a cropped image.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @param string $context       The Customizer control requesting the cropped image.
+	 * @param int    $attachment_id The attachment ID of the original image.
+	 */
+	public function store_cropped_image_parent( $context, $attachment_id ) {
+		$this->cropped_parent_id = $attachment_id;
+	}
+
+	/**
+	 * Adds the media credit information from the original attachment for cropped
+	 * header images.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @param  array $data Attachment meta data.
+	 *
+	 * @return array       The filtered meta data.
+	 */
+	public function add_credit_to_cropped_header_metadata( array $data ) {
+		if ( ! empty( $data['attachment_parent'] ) ) {
+			$data = $this->add_credit_to_metadata( $data, $data['attachment_parent'] );
+		}
+
+		// Nothing to see here.
+		return $data;
+	}
+
+	/**
+	 * Adds the media credit information from the original attachment for cropped
+	 * images (other than header images).
+	 *
+	 * @since 4.1.0
+	 *
+	 * @param  array $data Attachment meta data.
+	 *
+	 * @return array       The filtered meta data.
+	 */
+	public function add_credit_to_cropped_attachment_metadata( array $data ) {
+		if ( ! empty( $this->cropped_parent_id ) ) {
+			$data                    = $this->add_credit_to_metadata( $data, $this->cropped_parent_id );
+			$this->cropped_parent_id = null;
+		}
+
+		// Nothing to see here.
+		return $data;
+	}
+
+	/**
+	 * Adds the media credit information from the parent to the meta data array.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @param  array $data      Attachment meta data.
+	 * @param  int   $parent_id Attachment parent post ID.
+	 *
+	 * @return array            The enriched meta data.
+	 */
+	protected function add_credit_to_metadata( array $data, $parent_id ) {
+		$parent = \get_post( $parent_id );
+
+		if ( ! empty( $parent ) ) {
+			$credit = $this->core->get_media_credit_json( $parent );
+
+			if ( ! empty( $credit['raw'] ) ) {
+				$data['media_credit'] = $credit['raw'];
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Updates the media credit information and removes the field from the image
+	 * meta data array.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @param  array $data          Attachment meta data.
+	 * @param  int   $attachment_id Attachment post ID.
+	 *
+	 * @return array                The filtered meta data.
+	 */
+	public function update_cropped_image_credit( array $data, $attachment_id ) {
+		if ( isset( $data['media_credit'] ) ) {
+			$attachment = \get_post( $attachment_id );
+
+			if ( ! empty( $attachment )
+				&& ! empty( $data['media_credit'] )
+				&& \is_array( $data['media_credit'] )
+			) {
+				$this->core->update_media_credit_json( $attachment, $data['media_credit'] );
+			}
+
+			// Remove media credit data from meta data array.
+			unset( $data['media_credit'] );
+		}
+
+		// We are done here.
+		return $data;
 	}
 }
