@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2020 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -44,6 +44,9 @@ if ( ! defined( 'ABSPATH' ) || ! defined( 'WPINC' ) ) {
 // Make plugin file path available globally.
 if ( ! defined( 'MEDIA_CREDIT_PLUGIN_FILE' ) ) {
 	define( 'MEDIA_CREDIT_PLUGIN_FILE', __FILE__ );
+}
+if ( ! defined( 'MEDIA_CREDIT_PLUGIN_PATH' ) ) {
+	define( 'MEDIA_CREDIT_PLUGIN_PATH', dirname( __FILE__ ) );
 }
 
 // Load requirements class in a PHP 5.2 compatible manner.

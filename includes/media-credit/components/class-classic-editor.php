@@ -175,7 +175,7 @@ class Classic_Editor implements \Media_Credit\Component {
 	 * Template for setting Media Credit in image properties.
 	 */
 	public function image_properties_template() {
-		include \dirname( MEDIA_CREDIT_PLUGIN_FILE ) . '/admin/partials/media-credit-image-properties-tmpl.php';
+		include \MEDIA_CREDIT_PLUGIN_PATH . '/admin/partials/media-credit-image-properties-tmpl.php';
 	}
 
 	/**

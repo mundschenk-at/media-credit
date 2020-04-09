@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019 Peter Putzer.
+ * Copyright 2019-2020 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,14 @@
 // Don't do anything if called directly.
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	die();
+}
+
+// Make plugin file path available globally (even if we probably don't need it during uninstallaton).
+if ( ! defined( 'MEDIA_CREDIT_PLUGIN_FILE' ) ) {
+	define( 'MEDIA_CREDIT_PLUGIN_FILE', dirname( __FILE__ ) . '/media-credit.php' );
+}
+if ( ! defined( 'MEDIA_CREDIT_PLUGIN_PATH' ) ) {
+	define( 'MEDIA_CREDIT_PLUGIN_PATH', dirname( __FILE__ ) );
 }
 
 // Load requirements class in a PHP 5.2 compatible manner.

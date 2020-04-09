@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2020 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -294,7 +294,7 @@ class Shortcodes implements \Media_Credit\Component {
 		\ob_start();
 
 		// Require partial.
-		require \dirname( MEDIA_CREDIT_PLUGIN_FILE ) . '/public/partials/media-credit-shortcode.php';
+		require \MEDIA_CREDIT_PLUGIN_PATH . '/public/partials/media-credit-shortcode.php';
 
 		// Retrieve buffer.
 		return \ob_get_clean();

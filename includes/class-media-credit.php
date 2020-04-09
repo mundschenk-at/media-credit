@@ -263,7 +263,7 @@ class Media_Credit {
 		$header              = $args['header'];
 
 		// Load the template part.
-		require \dirname( MEDIA_CREDIT_PLUGIN_FILE ) . '/public/partials/author-media.php';
+		require \MEDIA_CREDIT_PLUGIN_PATH . '/public/partials/author-media.php';
 	}
 
 	/**
