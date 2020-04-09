@@ -1,6 +1,7 @@
 # Changelog #
 
 ## 4.1.0 (unreleased) ##
+*   _Feature_: Images cropped in the Customizer inherit the credit from the original image.
 *   _Bugfix_: No markup is added to `core/image` blocks when no credit is set.
 *   _Bugfix_: Attachment details input fields are set to read-only when the user
     lacks write permissions for the image.
