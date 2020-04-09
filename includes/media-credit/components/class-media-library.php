@@ -157,7 +157,7 @@ class Media_Library implements \Media_Credit\Component {
 	 * @since 3.1.0
 	 */
 	public function attachment_details_template() {
-		include \dirname( MEDIA_CREDIT_PLUGIN_FILE ) . '/admin/partials/media-credit-attachment-details-tmpl.php';
+		include \MEDIA_CREDIT_PLUGIN_PATH . '/admin/partials/media-credit-attachment-details-tmpl.php';
 	}
 
 	/**

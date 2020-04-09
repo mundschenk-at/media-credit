@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019 Peter Putzer.
+ * Copyright 2019-2020 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -151,7 +151,7 @@ class Settings_Page implements \Media_Credit\Component {
 		$options = $this->options->get( Options::OPTION, [] );
 
 		// Require partial.
-		require \dirname( MEDIA_CREDIT_PLUGIN_FILE ) . '/admin/partials/settings/preview.php';
+		require \MEDIA_CREDIT_PLUGIN_PATH . '/admin/partials/settings/preview.php';
 
 		// Retrieve buffer.
 		return \ob_get_clean();
@@ -219,7 +219,7 @@ class Settings_Page implements \Media_Credit\Component {
 	 * @param array $args The argument array.
 	 */
 	public function print_settings_section( $args ) {
-		require \dirname( MEDIA_CREDIT_PLUGIN_FILE ) . '/admin/partials/settings/section.php';
+		require \MEDIA_CREDIT_PLUGIN_PATH . '/admin/partials/settings/section.php';
 	}
 
 	/**
