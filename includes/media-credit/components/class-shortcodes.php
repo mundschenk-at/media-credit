@@ -398,10 +398,10 @@ class Shortcodes implements \Media_Credit\Component {
 		$atts['id']         = \absint( $atts['id'] );
 		$atts['name']       = \sanitize_text_field( $atts['name'] );
 		$atts['link']       = \esc_url_raw( $atts['link'] );
-		$atts['standalone'] = \filter_var( $atts['standalone'], FILTER_VALIDATE_BOOLEAN );
+		$atts['standalone'] = \filter_var( $atts['standalone'], \FILTER_VALIDATE_BOOLEAN );
 		$atts['align']      = \sanitize_html_class( $atts['align'] );
 		$atts['width']      = \absint( $atts['width'] );
-		$atts['nofollow']   = \filter_var( $atts['nofollow'], FILTER_VALIDATE_BOOLEAN );
+		$atts['nofollow']   = \filter_var( $atts['nofollow'], \FILTER_VALIDATE_BOOLEAN );
 
 		// Strip 'align' prefix from legacy alignment values.
 		if ( 'align' === \substr( $atts['align'], 0, 5 ) ) {
