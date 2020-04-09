@@ -69,14 +69,11 @@ module.exports = function( grunt ) {
 								src: ['build/**/*.php'],
 								dest: '',
 						}]
-				}
-    },
-
-		replace: {
+				},
 				fix_dice_namespace: {
 						options: {
-								patterns: [ {
-										match: /use Dice\\Dice;/g,
+								replacements: [ {
+										pattern: /use Dice\\Dice;/g,
 										replacement: 'use Media_Credit\\Vendor\\Dice\\Dice;'
 								} ],
 						},
@@ -89,8 +86,8 @@ module.exports = function( grunt ) {
 				},
 				fix_mundschenk_namespace: {
 						options: {
-								patterns: [ {
-										match: /(\b\\?)(Mundschenk\\[\w_]+)/g,
+								replacements: [ {
+										pattern: /(\b\\?)(Mundschenk\\[\w_]+)/g,
 										replacement: '$1Media_Credit\\Vendor\\$2'
 								} ],
 						},
@@ -101,7 +98,8 @@ module.exports = function( grunt ) {
 								dest: '',
 						} ]
 				}
-		},
+
+    },
 
 		copy: {
 			main: {
@@ -355,8 +353,8 @@ module.exports = function( grunt ) {
 		'copy:main',
 		'copy:meta',
 		// Use scoped dependencies
-		'replace:fix_dice_namespace',
-		'replace:fix_mundschenk_namespace',
+		'string-replace:fix_dice_namespace',
+		'string-replace:fix_mundschenk_namespace',
 		'composer:build:build-wordpress',
 		'clean:autoloader',
 		'string-replace:vendor-dir',
