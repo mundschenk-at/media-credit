@@ -77,7 +77,7 @@ function media_credit_run() {
 		require_once __DIR__ . '/vendor/autoload.php'; // phpcs:ignore PHPCompatibility.Keywords.NewKeywords.t_dirFound
 
 		// Create and start the plugin.
-		$plugin = Media_Credit_Factory::get( __FILE__ )->create( 'Media_Credit\Plugin' );
+		$plugin = Media_Credit_Factory::get()->create( 'Media_Credit\Controller' );
 		$plugin->run();
 	}
 }

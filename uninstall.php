@@ -61,7 +61,7 @@ function media_credit_uninstall() {
 		require_once __DIR__ . '/vendor/autoload.php'; // phpcs:ignore PHPCompatibility.Keywords.NewKeywords.t_dirFound
 
 		// Create and start the uninstallation handler.
-		$uninstaller = Media_Credit_Factory::get( __FILE__ )->create( 'Media_Credit\Components\Uninstallation' );
+		$uninstaller = Media_Credit_Factory::get()->create( 'Media_Credit\Components\Uninstallation' );
 		$uninstaller->run();
 	}
 }
