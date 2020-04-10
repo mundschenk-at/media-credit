@@ -5,6 +5,10 @@
 *   _Bugfix_: No markup is added to `core/image` blocks when no credit is set.
 *   _Bugfix_: Attachment details input fields are set to read-only when the user
     lacks write permissions for the image.
+*   _Bugfix_: Some error messages were not getting translated because of a
+    [WP.org infrastructure change](https://make.wordpress.org/core/2018/11/09/new-javascript-i18n-support-in-wordpress/).
+*   _Change_: All external PHP dependencies have been moved to the namespace
+    `Media_Credit\Vendor` to reduce the chance of conflicts with other plugins.
 
 ## 4.0.4 (May 19, 2019) ##
 *   _Bugfix_: Prevent PHP warning for incomplete `core/image` blocks.
