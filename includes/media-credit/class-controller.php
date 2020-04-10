@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019 Peter Putzer.
+ * Copyright 2019-2020 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,56 +26,52 @@
 
 namespace Media_Credit;
 
-use Media_Credit\Components\Block_Editor;
-use Media_Credit\Components\Classic_Editor;
-use Media_Credit\Components\Frontend;
-use Media_Credit\Components\Media_Library;
-use Media_Credit\Components\REST_API;
-use Media_Credit\Components\Setup;
-use Media_Credit\Components\Settings_Page;
-use Media_Credit\Components\Shortcodes;
+use Media_Credit\Component;
 
 /**
- * Initializes the Media Credit plugin.
+ * Initializes Media Credit plugin.
  *
- * @since 4.0.0
+ * @since 4.1.0 Renamed to `Media_Credit\Controller`
+ *
+ * @author Peter Putzer <github@mundschenk.at>
  */
 class Controller {
 
 	/**
 	 * The settings page handler.
 	 *
-	 * @var Media_Credit\Component[]
+	 * @var Component[]
 	 */
 	private $components = [];
 
 	/**
+	 * The core plugin API.
+	 *
+	 * @var Core
+	 */
+	private $core;
+
+	/**
 	 * Creates an instance of the plugin controller.
 	 *
-	 * @param Setup          $setup          The (de-)activation handling.
-	 * @param Frontend       $frontend       The frontend.
-	 * @param Shortcodes     $shortcodes     The shortcodes handler.
-	 * @param Block_Editor   $block_editor   The Block Editor integration.
-	 * @param Classic_Editor $classic_editor The Classic Editor integration.
-	 * @param Media_Library  $library        The Media Library integration.
-	 * @param Settings_Page  $media_settings The Media settings page.
-	 * @param REST_API       $rest_api       The REST API integration.
+	 * @since 4.1.0 Parameter `$core` added and `Component` parameters replaced
+	 *              with factory-configured array.
+	 *
+	 * @param Core        $core       The core API.
+	 * @param Component[] $components An array of plugin components.
 	 */
-	public function __construct( Setup $setup, Frontend $frontend, Shortcodes $shortcodes, Block_Editor $block_editor, Classic_Editor $classic_editor, Media_Library $library, Settings_Page $media_settings, REST_API $rest_api ) {
-		$this->components[] = $setup;
-		$this->components[] = $frontend;
-		$this->components[] = $shortcodes;
-		$this->components[] = $block_editor;
-		$this->components[] = $classic_editor;
-		$this->components[] = $library;
-		$this->components[] = $media_settings;
-		$this->components[] = $rest_api;
+	public function __construct( Core $core, array $components ) {
+		$this->core       = $core;
+		$this->components = $components;
 	}
 
 	/**
 	 * Starts the plugin for real.
 	 */
 	public function run() {
+		// Set up API singleton.
+		$this->core->make_singleton();
+
 		foreach ( $this->components as $component ) {
 			$component->run();
 		}
