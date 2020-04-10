@@ -37,13 +37,6 @@ use Media_Credit\Settings;
 class Block_Editor implements \Media_Credit\Component {
 
 	/**
-	 * The version of this plugin.
-	 *
-	 * @var string
-	 */
-	private $version;
-
-	/**
 	 * The core API.
 	 *
 	 * @var Core
@@ -53,12 +46,12 @@ class Block_Editor implements \Media_Credit\Component {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @param string $version     The plugin version.
-	 * @param Core   $core    The core plugin API.
+	 * @since 4.1.0 Parameter $version removed.
+	 *
+	 * @param Core $core The core plugin API.
 	 */
-	public function __construct( $version, Core $core ) {
-		$this->version = $version;
-		$this->core    = $core;
+	public function __construct( Core $core ) {
+		$this->core = $core;
 	}
 
 	/**
