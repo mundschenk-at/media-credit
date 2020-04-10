@@ -40,7 +40,7 @@ use Media_Credit\Components\Shortcodes;
  *
  * @since 4.0.0
  */
-class Plugin {
+class Controller {
 
 	/**
 	 * The settings page handler.
