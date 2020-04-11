@@ -1,5 +1,5 @@
 /**
- * Adapted from https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/vendor/tinymce/plugins/wpeditimage/plugin.js?rev=44695
+ * Adapted from https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/vendor/tinymce/plugins/wpeditimage/plugin.js?rev=47122
  */
 
 /* global: tinymce, wp, _, mundschenk */
@@ -27,7 +27,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	} );
 
 	editor.addButton( 'wp_img_edit', {
-		tooltip: 'Edit|button', // '|button' is not displayed, only used for context
+		tooltip: 'Edit|button', // '|button' is not displayed, only used for context.
 		icon: 'dashicon dashicons-edit',
 		onclick: function() {
 			editImage( editor.selection.getNode() );
@@ -164,7 +164,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				img = trim( img[1] );
 			} else {
 
-				// Old captions shortcode style
+				// Old captions shortcode style.
 				caption = trim( b ).replace( /caption=['"]/, '' ).replace( /['"]$/, '' );
 				img = c;
 			}
@@ -549,7 +549,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		metadata.extraClasses = extraClasses.join( ' ' );
 		metadata.captionClassName = captionClassName.join( ' ' );
 
-		// Extract caption
+		// Extract caption.
 		captionBlock = dom.getParents( imageNode, '.wp-caption' );
 
 		if ( captionBlock.length ) {
@@ -573,7 +573,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			}
 		}
 
-		// Extract linkTo
+		// Extract linkTo.
 		if ( imageNode.parentNode && imageNode.parentNode.nodeName === 'A' ) {
 			link = imageNode.parentNode;
 			metadata.linkUrl = dom.getAttrib( link, 'href' );
@@ -604,7 +604,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		return node && !! ( node.textContent || node.innerText ).replace( /\ufeff/g, '' );
 	}
 
-	// Verify HTML in captions
+	// Verify HTML in captions.
 	function verifyHTML( caption ) {
 		if ( ! caption || ( caption.indexOf( '<' ) === -1 && caption.indexOf( '>' ) === -1 ) ) {
 			return caption;
@@ -688,7 +688,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		};
 
 		if ( imageNode.parentNode && imageNode.parentNode.nodeName === 'A' && ! hasTextContent( imageNode.parentNode ) ) {
-			// Update or remove an existing link wrapped around the image
+			// Update or remove an existing link wrapped around the image.
 			if ( imageData.linkUrl ) {
 				dom.setAttribs( imageNode.parentNode, linkAttrs );
 			} else {
@@ -697,11 +697,11 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		} else if ( imageData.linkUrl ) {
 			if ( linkNode = dom.getParent( imageNode, 'a' ) ) { // eslint-disable-line no-cond-assign
 				// The image is inside a link together with other nodes,
-				// or is nested in another node, move it out
+				// or is nested in another node, move it out.
 				dom.insertAfter( imageNode, linkNode );
 			}
 
-			// Add link wrapped around the image
+			// Add link wrapped around the image.
 			linkNode = dom.create( 'a', linkAttrs );
 			imageNode.parentNode.insertBefore( linkNode, imageNode );
 			linkNode.appendChild( imageNode );
@@ -709,7 +709,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 		captionNode = editor.dom.getParent( imageNode, '.mceTemp' );
 
-		// Set up "special" width if we are not using HTML5 captions
+		// Set up "special" width if we are not using HTML5 captions.
 		width = parseInt( width, 10 );
 		if ( ! editor.getParam( 'wpeditimage_html5_captions' ) ) {
 			width += 10;
@@ -787,7 +787,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 			if ( captionNode ) {
 
-				// Remove the caption wrapper and place the image in new media-credit wrapper or a new paragraph
+				// Remove the caption wrapper and place the image in new media-credit wrapper or a new paragraph.
 				mediaCreditNode = dom.getNext( node, '.mceMediaCreditTemp' );
 
 				if ( mediaCreditNode && ! removeCreditNode ) {
@@ -868,8 +868,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		// Mark the image node so we can select it later.
 		editor.$( img ).attr( 'data-wp-editing', 1 );
 
-		// Manipulate the metadata by reference that is fed into
-		// the PostImage model used in the media modal
+		// Manipulate the metadata by reference that is fed into the PostImage model used in the media modal.
 		wp.media.events.trigger( 'editor:image-edit', {
 			editor: editor,
 			metadata: metadata,
@@ -897,9 +896,11 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			editor.focus();
 			frame.detach();
 
-			// `close` fires first...
-			// To be able to update the image node, we need to find it here,
-			// and use it in the callback.
+			/*
+			 * `close` fires first...
+			 * To be able to update the image node, we need to find it here,
+			 * and use it in the callback.
+			 */
 			imageNode = editor.$( 'img[data-wp-editing]' );
 			imageNode.removeAttr( 'data-wp-editing' );
 		} );
@@ -938,13 +939,13 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 		dom.addClass( editor.getBody(), captionClass );
 
-		// Prevent IE11 from making dl.wp-caption resizable
+		// Prevent IE11 from making dl.wp-caption resizable.
 		if ( tinymce.Env.ie && tinymce.Env.ie > 10 ) {
 
-			// The 'mscontrolselect' event is supported only in IE11+
+			// The 'mscontrolselect' event is supported only in IE11+.
 			dom.bind( editor.getBody(), 'mscontrolselect', function( event ) {
 				if ( event.target.nodeName === 'IMG' && dom.getParent( event.target, '.wp-caption' ) ) {
-					// Hide the thick border with resize handles around dl.wp-caption
+					// Hide the thick border with resize handles around dl.wp-caption.
 					editor.getBody().focus(); // :(
 				} else if ( event.target.nodeName === 'DL' && dom.hasClass( event.target, 'wp-caption' ) ) {
 					// Trigger the thick border with resize handles...
@@ -1034,22 +1035,28 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				if ( cmd === 'mceInsertContent' ) {
 					if ( pasteInCaption ) {
 						pasteInCaption = false;
-						// We are in the caption element, and in 'paste' context,
-						// and the pasted HTML was cleaned up on 'pastePostProcess' above.
-						// Let it be pasted in the caption.
+						/*
+						 * We are in the caption element, and in 'paste' context,
+						 * and the pasted HTML was cleaned up on 'pastePostProcess' above.
+						 * Let it be pasted in the caption.
+						 */
 						return;
 					}
 
-					// The paste is somewhere else in the caption DL element.
-					// Prevent pasting in there as it will break the caption.
-					// Make new paragraph under the caption DL and move the caret there.
+					/*
+					 * The paste is somewhere else in the caption DL element.
+					 * Prevent pasting in there as it will break the caption.
+					 * Make new paragraph under the caption DL and move the caret there.
+					 */
 					p = dom.create( 'p' );
 					dom.insertAfter( p, captionParent );
 					editor.selection.setCursorLocation( p, 0 );
 
-					// If the image is selected and the user pastes "over" it,
-					// replace both the image and the caption elements with the pasted content.
-					// This matches the behavior when pasting over non-caption images.
+					/*
+					 * If the image is selected and the user pastes "over" it,
+					 * replace both the image and the caption elements with the pasted content.
+					 * This matches the behavior when pasting over non-caption images.
+					 */
 					if ( node.nodeName === 'IMG' ) {
 						editor.$( captionParent ).remove();
 					}
@@ -1120,7 +1127,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 		if ( keyCode === VK.ENTER ) {
 
-			// When pressing Enter inside a caption move the caret to a new parapraph under it
+			// When pressing Enter inside a caption move the caret to a new parapraph under it.
 			node = selection.getNode();
 			wrap = dom.getParent( node, 'div.mceTemp' );
 
@@ -1198,9 +1205,11 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		}
 	} );
 
-	// After undo/redo FF seems to set the image height very slowly when it is set to 'auto' in the CSS.
-	// This causes image.getBoundingClientRect() to return wrong values and the resize handles are shown in wrong places.
-	// Collapse the selection to remove the resize handles.
+	/*
+	 * After undo/redo FF seems to set the image height very slowly when it is set to 'auto' in the CSS.
+	 * This causes image.getBoundingClientRect() to return wrong values and the resize handles are shown in wrong places.
+	 * Collapse the selection to remove the resize handles.
+	 */
 	if ( tinymce.Env.gecko ) {
 		editor.on( 'undo redo', function() {
 			if ( editor.selection.getNode().nodeName === 'IMG' ) {
@@ -1274,7 +1283,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		} );
 	} () );
 
-	// Add to editor.wp
+	// Add to editor.wp.
 	editor.wp = editor.wp || {};
 	editor.wp.isPlaceholder = isPlaceholder;
 
