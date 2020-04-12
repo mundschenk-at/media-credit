@@ -29,26 +29,15 @@ namespace Media_Credit\Components;
 
 use Media_Credit\Core;
 use Media_Credit\Settings;
+use Media_Credit\Tools\Author_Query;
 
 /**
  * The component handling the integration with the WordPress Media Library.
  *
  * @since 4.0.0 Renamed to Media_Credit\Components\Media_Library
+ * @since 4.1.0 Constant AUTHORS_QUERY removed, property $author_query added.
  */
 class Media_Library implements \Media_Credit\Component {
-
-	/**
-	 * The parameters for querying the list of authors.
-	 *
-	 * @var array
-	 */
-	const AUTHORS_QUERY = [
-		'who'    => 'authors',
-		'fields' => [
-			'ID',
-			'display_name',
-		],
-	];
 
 	/**
 	 * The version of this plugin.
@@ -76,17 +65,29 @@ class Media_Library implements \Media_Credit\Component {
 	private $cropped_parent_id = null;
 
 	/**
+	 * The author query helper.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @var Author_Query
+	 */
+	private $author_query;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    3.0.0
 	 * @since    4.0.0 Parameter $options added.
+	 * @since    4.1.0 Parameter $author_query added.
 	 *
-	 * @param string $version     The plugin version.
-	 * @param Core   $core        The core plugin API.
+	 * @param string       $version      The plugin version.
+	 * @param Core         $core         The core plugin API.
+	 * @param Author_Query $author_query The author query helper.
 	 */
-	public function __construct( $version, Core $core ) {
-		$this->version = $version;
-		$this->core    = $core;
+	public function __construct( $version, Core $core, Author_Query $author_query ) {
+		$this->version      = $version;
+		$this->core         = $core;
+		$this->author_query = $author_query;
 	}
 
 	/**
@@ -166,7 +167,7 @@ class Media_Library implements \Media_Credit\Component {
 	public function add_inline_script_data() {
 		// Retrieve list of authors.
 		$authors = [];
-		foreach ( \get_users( self::AUTHORS_QUERY ) as $author ) {
+		foreach ( $this->author_query->get_authors() as $author ) {
 			$authors[ $author->ID ] = $author->display_name;
 		}
 
