@@ -115,17 +115,6 @@ class Author_Query {
 		$query['count_total'] = false;
 		$query['fields']      = [ 'ID', 'display_name' ];
 
-		$query_hash = \md5( /* @scrutinizer ignore-type */ \wp_json_encode( $query ) );
-		$cache_key  = "author_list_{$query_hash}";
-		$results    = $this->cache->get( $cache_key );
-
-		if ( ! \is_array( $results ) ) {
-			$results = \get_users( $query );
-
-			// Cache results for a short time.
-			$this->cache->set( $cache_key, $results, MINUTE_IN_SECONDS );
-		}
-
-		return $results;
+		return $query;
 	}
 }
