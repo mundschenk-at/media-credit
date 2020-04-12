@@ -117,4 +117,68 @@ class Author_Query {
 
 		return $query;
 	}
+
+	/**
+	 * Retrieves a media author by name or email. The search is case-insensitive.
+	 *
+	 * @param  string $name The name or email address to search for.
+	 *
+	 * @return int|false    The user ID (or false).
+	 */
+	public function get_author_by_name( $name ) {
+		// Default search columns.
+		$search_columns = [
+			'display_name',
+			'user_email',
+			'user_login',
+			'user_nicename',
+		];
+
+		/**
+		 * Filters the columns to search for the author name. Matching is case-insensitive.
+		 * The order of columns is relevant for matching if there's more than one result.
+		 *
+		 * @since 4.1.0
+		 *
+		 * @param string[] $search_columns The columns. Default `[ 'display_name', 'user_email', 'user_login', 'user_nicename' ]`.
+		 * @param string   $name           The author name to look up.
+		 */
+		$search_columns = \apply_filters( 'media_credit_author_name_search_columns', $search_columns, $name );
+
+		// Build the basic author list query.
+		$query = $this->get_author_list_query();
+
+		// Add search parameters.
+		$query['search']         = $name;
+		$query['search_columns'] = $search_columns;
+
+		// Add additional fields.
+		foreach ( $search_columns as $column ) {
+			if ( 'display_name' === $column ) {
+				continue;
+			}
+
+			$query['fields'][] = $column;
+		}
+
+		// Retrieve list of candidate authors.
+		$candidates = \get_users( $query );
+
+		// Look for full case-sensitive match.
+		foreach ( $search_columns as $column ) {
+			foreach ( $candidates as $user ) {
+				if ( $name === $user->$column ) {
+					return $user->ID;
+				}
+			}
+		}
+
+		// Fall back to the first result.
+		if ( ! empty( $candidates[0] ) ) {
+			return $candidates[0]->ID;
+		}
+
+		// We didn't find anything.
+		return false;
+	}
 }

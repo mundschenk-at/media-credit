@@ -114,6 +114,9 @@ class Media_Library implements \Media_Credit\Component {
 		\add_filter( 'wp_ajax_cropped_attachment_metadata', [ $this, 'add_credit_to_cropped_attachment_metadata' ],  10, 1 );
 		\add_filter( 'wp_header_image_attachment_metadata', [ $this, 'add_credit_to_cropped_header_metadata' ],      10, 1 );
 
+		// Handle credits in EXIF meta data.
+		\add_filter( 'wp_generate_attachment_metadata', [ $this, 'maybe_add_credit_from_exif_metadata' ], 10, 3 );
+
 		// Update image credit if necessary.
 		\add_filter( 'wp_update_attachment_metadata', [ $this, 'maybe_update_image_credit' ], 10, 2 );
 	}
@@ -488,8 +491,49 @@ class Media_Library implements \Media_Credit\Component {
 	}
 
 	/**
-	 * Updates the media credit information and removes the field from the image
-	 * meta data array.
+	 * Adds a credit for the image if one is set in the EXIF data.
+	 *
+	 * If the name exactly matches a user (and default credits are not disabled),
+	 * the ID of the user will be used, otherwise a freeform credit will be generated.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @param array  $data          An array of attachment meta data.
+	 * @param int    $attachment_id Current attachment ID.
+	 * @param string $context       Optional (only available on WordPress 5.3+). Additional context. Can be 'create' when metadata was initially created for new attachment
+	 *                              or 'update' when the metadata was updated. Default 'create'.
+	 *
+	 * @return array
+	 */
+	public function maybe_add_credit_from_exif_metadata( array $data, $attachment_id, $context = 'create' ) {
+		if ( 'create' !== $context ) {
+			// We are only doing this on the initial call.
+			return $data;
+		}
+
+		$credit = '';
+		if ( ! empty( $data['image_meta']['credit'] ) ) {
+			$credit = \trim( $data['image_meta']['credit'] );
+		} elseif ( ! empty( $data['image_meta']['copyright'] ) ) {
+			$credit = \trim( $data['image_meta']['copyright'] );
+		}
+
+		if ( ! empty( $credit ) ) {
+			$user_id = $this->author_query->get_author_by_name( $credit );
+
+			if ( ! empty( $user_id ) ) {
+				$data['media_credit']['user_id'] = $user_id;
+			} else {
+				$data['media_credit']['freeform'] = $credit;
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Updates the media credit information when possible. (The `media_credit` key
+	 * is removed from the meta data array afterwards.)
 	 *
 	 * @since 4.1.0
 	 *
