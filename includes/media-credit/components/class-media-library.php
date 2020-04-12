@@ -113,7 +113,9 @@ class Media_Library implements \Media_Credit\Component {
 		\add_action( 'wp_ajax_crop_image_pre_save',         [ $this, 'store_cropped_image_parent' ],                 10, 2 );
 		\add_filter( 'wp_ajax_cropped_attachment_metadata', [ $this, 'add_credit_to_cropped_attachment_metadata' ],  10, 1 );
 		\add_filter( 'wp_header_image_attachment_metadata', [ $this, 'add_credit_to_cropped_header_metadata' ],      10, 1 );
-		\add_filter( 'wp_update_attachment_metadata',       [ $this, 'update_cropped_image_credit' ],                10, 2 );
+
+		// Update image credit if necessary.
+		\add_filter( 'wp_update_attachment_metadata', [ $this, 'maybe_update_image_credit' ], 10, 2 );
 	}
 
 	/**
@@ -496,7 +498,7 @@ class Media_Library implements \Media_Credit\Component {
 	 *
 	 * @return array                The filtered meta data.
 	 */
-	public function update_cropped_image_credit( array $data, $attachment_id ) {
+	public function maybe_update_image_credit( array $data, $attachment_id ) {
 		if ( isset( $data['media_credit'] ) ) {
 			$attachment = \get_post( $attachment_id );
 
