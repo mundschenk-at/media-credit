@@ -13,7 +13,6 @@
 	<rule ref="WordPress">
 		<exclude name="Generic.Functions.FunctionCallArgumentSpacing" />
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax" />
-		<exclude name="WordPress.PHP.DisallowShortTernary.Found" />
 	</rule>
 	<rule ref="WordPress-Docs" />
 	<rule ref="WordPress-Extra" />
