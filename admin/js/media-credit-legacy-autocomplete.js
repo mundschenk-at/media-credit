@@ -10,11 +10,11 @@ jQuery( function( $ ) {
 	var mediaCredit = mundschenk.mediaCredit || {};
 
 	/**
-   * Install autoselect on the given input fields.
-   *
-   * @param $input  A jQuery object for the input field.
-   * @param $hidden A jQuery object for the hidden field.
-   */
+	 * Install autoselect on the given input fields.
+	 *
+	 * @param {jQuery} $input  A jQuery object for the input field.
+	 * @param {jQuery} $hidden A jQuery object for the hidden field.
+	 */
 	mediaCredit.autoCompleteLegacy = function( $input, $hidden ) {
 		var updateFreeformCredit = function( credit ) {
 			$hidden.attr( 'value', '' );

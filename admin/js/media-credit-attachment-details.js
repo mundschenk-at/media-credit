@@ -10,12 +10,12 @@ jQuery( function( $ ) {
 	var mediaCredit = mundschenk.mediaCredit || {};
 
 	/**
-     * Install autoselect on given view.
-     *
-     * @param view      A Backbone.View.
-     * @param input     A jQuery selector string targetting the input element.
-     * @param saveModel Whether the model should be saved after changes.
-     */
+	 * Install autoselect on given view.
+	 *
+	 * @param {Backbone.View} view      A view.
+	 * @param {string}        input     A jQuery selector string targetting the input element.
+	 * @param {boolean}       saveModel Whether the model should be saved after changes.
+	 */
 	mediaCredit.autoComplete = function( view, input, saveModel ) {
 		var updateFreeformCredit = function( credit ) {
 			view.model.set( {
