@@ -332,7 +332,7 @@ class Shortcodes implements \Media_Credit\Component {
 		if ( $attr['id'] > 0 ) {
 			$credit        = \get_the_author_meta( 'display_name', $attr['id'] );
 			$credit_suffix = $this->core->get_organization_suffix();
-			$url           = $url ?: \get_author_posts_url( $attr['id'] );
+			$url           = $url ?: \get_author_posts_url( $attr['id'] ); // phpcs:ignore WordPress.PHP.DisallowShortTernary
 		}
 
 		// Construct the credit line.
