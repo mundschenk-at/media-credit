@@ -446,10 +446,10 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	/**
 	 * Parse attributes.
 	 *
-	 * content - the snippet to parse
-	 * attr - the name of the attribute
-	 * pattern - a regexp for the result
-	 * unquoted - whether quotes are necessary (default)
+	 * @param {string}  content  The snippet to parse.
+	 * @param {string}  attr     The attribute name.
+	 * @param {string}  pattern  A regex pattern matching the result.
+	 * @param {boolean} unquoted Whether quotes are necessary (default).
 	 */
 	function parseAttribute( content, attr, pattern, unquoted ) {
 		var result = null,
