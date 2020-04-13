@@ -6,9 +6,9 @@
  */
 
 ( function( $ ) {
-  'use strict';
+	'use strict';
 
-  $( function() {
+	$( function() {
 		/* eslint-disable camelcase, yoda */
 		/**
 		 * Replaces <p> tags with two line breaks. "Opposite" of wpautop().
@@ -26,11 +26,11 @@
 		 */
 		window.wp.editor.removep = window.switchEditors._wp_Nop = function( html ) {
 			var blocklist = 'blockquote|ul|ol|li|dl|dt|dd|table|thead|tbody|tfoot|tr|th|td|h[1-6]|fieldset|figure',
-					blocklist1 = blocklist + '|div|p',
-					blocklist2 = blocklist + '|pre',
-					preserve_linebreaks = false,
-					preserve_br = false,
-					preserve = [];
+				blocklist1 = blocklist + '|div|p',
+				blocklist2 = blocklist + '|pre',
+				preserve_linebreaks = false,
+				preserve_br = false,
+				preserve = [];
 
 			if ( ! html ) {
 				return '';

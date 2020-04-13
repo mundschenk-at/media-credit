@@ -1,8 +1,8 @@
 /*
  * Properly handle editing credits in the media modal.
- *
- * global: _, wp, mundschenk
  */
+
+/* global: _, mundschenk */ // Scrutinizer-CI
 
 jQuery( function( $ ) {
 	'use strict';
@@ -16,7 +16,6 @@ jQuery( function( $ ) {
    * @param $hidden A jQuery object for the hidden field.
    */
 	mediaCredit.autoCompleteLegacy = function( $input, $hidden ) {
-
 		var updateFreeformCredit = function( credit ) {
 			$hidden.attr( 'value', '' );
 			$hidden.attr( 'data-author-display', credit );
@@ -27,72 +26,71 @@ jQuery( function( $ ) {
 		return $input
 
 		// Add autocomplete.
-		.autocomplete( {
-			autoFocus: true,
-			minLength: 2,
+			.autocomplete( {
+				autoFocus: true,
+				minLength: 2,
 
-			source: mediaCredit.names || ( mediaCredit.names = _.map( mediaCredit.id, function( value, key ) {
-				return { id: key, value: value, label: value };
-			} ) ),
+				source: mediaCredit.names || ( mediaCredit.names = _.map( mediaCredit.id, function( value, key ) {
+					return { id: key, value: value, label: value };
+				} ) ),
 
-			select: function( event, ui ) {
-				$hidden.attr( 'value', ui.item.id );
-				$hidden.attr( 'data-author-display', ui.item.value );
-				$input.attr( 'value', ui.item.value );
+				select: function( event, ui ) {
+					$hidden.attr( 'value', ui.item.id );
+					$hidden.attr( 'data-author-display', ui.item.value );
+					$input.attr( 'value', ui.item.value );
 
-				return false;
-			},
+					return false;
+				},
 
-			response: function( event, ui ) {
-				var credit;
+				response: function( event, ui ) {
+					var credit;
 
-				if ( 0 === ui.content.length ) {
-					credit = $( this ).val();
+					if ( 0 === ui.content.length ) {
+						credit = $( this ).val();
 
-					if ( credit !== $hidden.attr( 'data-display-author' ) ) {
-						updateFreeformCredit( credit );
+						if ( credit !== $hidden.attr( 'data-display-author' ) ) {
+							updateFreeformCredit( credit );
+						}
 					}
-				}
-			},
+				},
 
-			open: function() {
-				$( this ).autocomplete( 'widget' ).css( 'z-index', 2000000 );
+				open: function() {
+					$( this ).autocomplete( 'widget' ).css( 'z-index', 2000000 );
 
-				return false;
-			}
-		} )
+					return false;
+				},
+			} )
 
 		// Select input field value on click.
-		.click( function() {
-			this.select();
-		} )
+			.click( function() {
+				this.select();
+			} )
 
 		// Handle tab while still loading suggestion.
-		.change( function( event ) {
-			var credit = $input.val(),
-				authorID = $hidden.attr( 'data-author-id' );
+			.change( function( event ) {
+				var credit = $input.val(),
+					authorID = $hidden.attr( 'data-author-id' );
 
-			if ( mediaCredit.options.noDefaultCredit && '' === credit && '' === $hidden.val() ) {
-				$hidden.val( authorID );
-				$hidden.attr( 'data-author-display', mediaCredit.id[ authorID ] );
+				if ( mediaCredit.options.noDefaultCredit && '' === credit && '' === $hidden.val() ) {
+					$hidden.val( authorID );
+					$hidden.attr( 'data-author-display', mediaCredit.id[ authorID ] );
 
-				// Re-set placeholder.
-				$input.val( '' ).attr( 'placeholder', $hidden.attr( 'data-author-display' ) );
+					// Re-set placeholder.
+					$input.val( '' ).attr( 'placeholder', $hidden.attr( 'data-author-display' ) );
 
-				event.stopImmediatePropagation();
-				event.preventDefault();
-			} else if ( credit !== $hidden.attr( 'data-author-display' ) ) {
-				updateFreeformCredit( credit );
+					event.stopImmediatePropagation();
+					event.preventDefault();
+				} else if ( credit !== $hidden.attr( 'data-author-display' ) ) {
+					updateFreeformCredit( credit );
 
-				event.stopImmediatePropagation();
-				event.preventDefault();
-			}
-		} );
+					event.stopImmediatePropagation();
+					event.preventDefault();
+				}
+			} );
 	};
 
-	mediaCredit.data   = $( '.media-credit-hidden' ).data();
-	mediaCredit.input  = $( '#attachments\\[' + mediaCredit.data.postId + '\\]\\[media-credit\\]' );
+	mediaCredit.data = $( '.media-credit-hidden' ).data();
+	mediaCredit.input = $( '#attachments\\[' + mediaCredit.data.postId + '\\]\\[media-credit\\]' );
 	mediaCredit.hidden = $( '#attachments\\[' + mediaCredit.data.postId + '\\]\\[media-credit-hidden\\]' );
 	mediaCredit.autoCompleteLegacy( mediaCredit.input, mediaCredit.hidden );
-
 } );
