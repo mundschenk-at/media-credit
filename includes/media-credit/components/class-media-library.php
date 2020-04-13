@@ -379,7 +379,7 @@ class Media_Library implements \Media_Credit\Component {
 	public function add_default_media_credit_for_attachment( $post_id ) {
 		// Retrieve the attachemnt object.
 		$attachment = \get_post( $post_id );
-		if ( ! $attachment instanceof \WP_Post ) {
+		if ( empty( $attachment ) ) {
 			return;
 		}
 

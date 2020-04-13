@@ -237,7 +237,7 @@ class Frontend implements \Media_Credit\Component {
 		$attachment = \get_post( $post_thumbnail_id );
 
 		// Abort if the post ID does not correspond to a valid attachment.
-		if ( ! $attachment instanceof \WP_Post ) {
+		if ( empty( $attachment ) ) {
 			return $html;
 		}
 
