@@ -113,6 +113,7 @@ module.exports = function( grunt ) {
 						'*.php',
 						'includes/**',
 						'admin/**',
+						'public/**',
 						'!**/scss/**',
 						'vendor/**/partials/**',
 					],
