@@ -1,13 +1,16 @@
 {
-  "extends": "wordpress",
-  "rules": {
-    "space-in-parens": [
-      "error",
-      "always", {
-        "exceptions": [
-          "empty"
-        ]
-      }
-    ]
+  "extends": [
+    "plugin:@wordpress/eslint-plugin/es5",
+    "plugin:@wordpress/eslint-plugin/custom",
+    "plugin:@wordpress/eslint-plugin/jsdoc"
+  ],
+  "globals": {
+    "window": "readonly",
+    "jQuery": "readonly",
+    "Backbone": "readonly",
+    "_": "readonly",
+    "wp": "readonly",
+    "tinymce": "readonly",
+    "mundschenk": "writable"
   }
 }
