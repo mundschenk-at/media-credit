@@ -22,14 +22,15 @@
  *
  * @package    Media_Credit
  * @subpackage Media_Credit/admin
- *
- * global: wp, mundschenk
  */
+
+/* global: wp, mundschenk */ // Scrutinizer-CI
+
 ( function( $, wp, mundschenk ) {
 	'use strict';
 
 	var MediaCreditImagePropertiesView, frame,
-			mediaCredit = mundschenk.mediaCredit || {};
+		mediaCredit = mundschenk.mediaCredit || {};
 
 	// Sanity check.
 	if ( ! wp.media.events ) {
@@ -57,7 +58,7 @@
 		render: function() {
 			wp.Backbone.View.prototype.render.apply( this, arguments );
 			return this;
-		}
+		},
 	} );
 
 	/**
@@ -79,7 +80,7 @@
 	 * Set media credit to author's display name if the ID attribute is used.
 	 */
 	wp.media.events.on( 'editor:image-edit', function( options ) {
-		if (  '' === options.metadata.mediaCreditText && '' !== options.metadata.mediaCreditAuthorID ) {
+		if ( '' === options.metadata.mediaCreditText && '' !== options.metadata.mediaCreditAuthorID ) {
 			options.metadata.mediaCreditText = mediaCredit.id[ options.metadata.mediaCreditAuthorID ];
 		}
 	} );
@@ -90,14 +91,14 @@
 	wp.media.events.on( 'editor:image-update', function( options ) {
 		var editor = options.editor,
 			dom = editor.dom,
-			image  = options.image,
-			model  = frame.content.get().model,
-			align  = model.get( 'align' ),
-			width  = model.get( 'width' ),
+			image = options.image,
+			model = frame.content.get().model,
+			align = model.get( 'align' ),
+			width = model.get( 'width' ),
 			credit,
-			mediaCreditText     = model.get( 'mediaCreditText' ),
+			mediaCreditText = model.get( 'mediaCreditText' ),
 			mediaCreditAuthorID = model.get( 'mediaCreditAuthorID' ),
-			mediaCreditLink     = model.get( 'mediaCreditLink' ),
+			mediaCreditLink = model.get( 'mediaCreditLink' ),
 			mediaCreditNoFollow = model.get( 'mediaCreditNoFollow' ),
 			mediaCreditBlock,
 			mediaCreditWrapper;
@@ -119,15 +120,14 @@
 
 		// No current media credit block.
 		if ( null === mediaCreditBlock && ( mediaCreditText || mediaCreditAuthorID ) ) {
-
 			// Create new representation for media-credit.
 			mediaCreditBlock = dom.create( 'span', {
-				'class': 'mceMediaCreditTemp mceNonEditable',
+				class: 'mceMediaCreditTemp mceNonEditable',
 				'data-media-credit-author-id': mediaCreditAuthorID,
 				'data-media-credit-text': mediaCreditText,
 				'data-media-credit-align': align,
 				'data-media-credit-link': mediaCreditLink,
-				'data-media-credit-nofollow': mediaCreditNoFollow
+				'data-media-credit-nofollow': mediaCreditNoFollow,
 			}, credit );
 
 			if ( image.parentNode && 'A' === image.parentNode.nodeName ) {
@@ -138,14 +138,12 @@
 		}
 
 		if ( mediaCreditBlock ) {
-
 			// Check for media-credit nested inside caption.
 			if ( ! dom.getParent( mediaCreditBlock, 'dl.wp-caption' ) ) {
-
 				// Standalone [media-credit].
 				mediaCreditWrapper = dom.create( 'div', {
-					'class': 'mceMediaCreditOuterTemp ' + align,
-					'style': 'width: ' + ( parseInt( width, 10 ) + 10 ) + 'px'
+					class: 'mceMediaCreditOuterTemp ' + align,
+					style: 'width: ' + ( parseInt( width, 10 ) + 10 ) + 'px',
 				} );
 
 				// Swap existing parent with our new wrapper.
@@ -154,12 +152,11 @@
 				dom.remove( mediaCreditBlock.parentNode, true );
 			}
 
-			dom.setAttrib( mediaCreditBlock, 'data-media-credit-text',      mediaCreditText );
+			dom.setAttrib( mediaCreditBlock, 'data-media-credit-text', mediaCreditText );
 			dom.setAttrib( mediaCreditBlock, 'data-media-credit-author-id', mediaCreditAuthorID );
-			dom.setAttrib( mediaCreditBlock, 'data-media-credit-link',      mediaCreditLink );
-			dom.setAttrib( mediaCreditBlock, 'data-media-credit-nofollow',  mediaCreditNoFollow );
+			dom.setAttrib( mediaCreditBlock, 'data-media-credit-link', mediaCreditLink );
+			dom.setAttrib( mediaCreditBlock, 'data-media-credit-nofollow', mediaCreditNoFollow );
 			dom.setHTML( mediaCreditBlock, credit );
 		}
 	} );
-
-} ( jQuery, wp, mundschenk ) );
+}( jQuery, wp, mundschenk ) );
