@@ -364,7 +364,7 @@ class Core {
 
 		if ( '' === $freeform && ! empty( $user_id ) && empty( $s[ Settings::NO_DEFAULT_CREDIT ] ) ) {
 			$name   = \get_the_author_meta( 'display_name', $user_id );
-			$url    = $url ?: \get_author_posts_url( $user_id );
+			$url    = $url ?: \get_author_posts_url( $user_id ); // phpcs:ignore WordPress.PHP.DisallowShortTernary
 			$suffix = $this->get_organization_suffix();
 		}
 
@@ -576,7 +576,7 @@ class Core {
 
 				// Free-form text was entered, insert postmeta with credit.
 				// if free-form text is blank, insert a single space in postmeta.
-				$freeform = $freeform ?: self::EMPTY_META_STRING;
+				$freeform = $freeform ?: self::EMPTY_META_STRING; // phpcs:ignore WordPress.PHP.DisallowShortTernary
 				\update_post_meta( $attachment->ID, self::POSTMETA_KEY, $freeform );
 			}
 		}

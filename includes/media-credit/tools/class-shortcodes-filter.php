@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019 Peter Putzer.
+ * Copyright 2019-2020 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -66,7 +66,7 @@ class Shortcodes_Filter {
 
 			// Grab the shortcode attributes ...
 			$attr = \shortcode_parse_atts( $shortcode[3] );
-			$attr = $attr ?: [];
+			$attr = $attr ?: []; // phpcs:ignore WordPress.PHP.DisallowShortTernary
 
 			// ... and the contained <img> tag.
 			$img = $shortcode[5];
