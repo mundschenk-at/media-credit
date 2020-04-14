@@ -1,4 +1,28 @@
 /**
+ * This file is part of Media Credit.
+ *
+ * Copyright (C) 2014-2020 Peter Putzer.
+ * Copyright (C) 1999-2017 Ephox Corp.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License,
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ * ***
+ *
+ * This file includes work covered by the following copyright and
+ * permission notice:
+ *
  * Plugin.js
  *
  * Released under LGPL License.
@@ -6,9 +30,14 @@
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
+ *
+ * ***
+ *
+ * @file   This file handles autocomplete in the legacy media library list view.
+ * @author Peter Putzer <github@mundschenk.at>
+ * @author Ephox Corp.
+ * @since  0.5.1
  */
-
-// Modified for use with WordPress (c) 2019 Peter Putzer
 
 ( function( tinymce ) {
 	'use strict';

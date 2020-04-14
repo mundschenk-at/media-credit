@@ -1,11 +1,37 @@
 /**
- * Adapted from https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/vendor/tinymce/plugins/wpeditimage/plugin.js?rev=47122
+ * This file is part of Media Credit.
+ *
+ * Copyright 2013-2020 Peter Putzer.
+ * Copyright 2010-2011 Scott Bressler.
+ * Copyright 2003-2020 The WordPress contributors.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License,
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ * @file   Handles Media Credit shortcodes in Visual Editor (TinyMCE).
+ * @author Peter Putzer <github@mundschenk.at>
+ * @author Scott Bressler
+ * @since  1.1.0
  */
 
 /* global: wp, _, tinymce, mundschenk, */ // Scrutinizer-CI
 
 /* eslint-disable yoda, lines-around-comment */
 
+/**
+ * Adapted from https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/vendor/tinymce/plugins/wpeditimage/plugin.js?rev=47122
+ */
 tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	'use strict';
 
