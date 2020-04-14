@@ -27,8 +27,6 @@
 
 /* global: wp, _, tinymce, mundschenk, */ // Scrutinizer-CI
 
-/* eslint-disable yoda, lines-around-comment */
-
 /**
  * Adapted from https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/vendor/tinymce/plugins/wpeditimage/plugin.js?rev=47122
  */
