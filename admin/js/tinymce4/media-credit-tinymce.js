@@ -633,7 +633,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		var classes, className, node, html, parent, wrap, linkNode, imageNode,
 			captionNode, dd, dl, id, attrs, linkAttrs, width, height, align,
 			mediaCreditNode, mediaCreditWrapper, removeCreditNode,
-			$imageNode, srcset, src,
+			/* $imageNode, */ srcset, src,
 			dom = editor.dom;
 
 		if ( ! $imageNode || ! $imageNode.length ) {
@@ -968,7 +968,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		if ( node.nodeName === 'IMG' ) {
 			editor.undoManager.transact( function() {
 				var parent, width,
-					node = event.target,
+					/* node = event.target, */
 					dom = editor.dom;
 
 				if ( node.nodeName === 'IMG' ) {
