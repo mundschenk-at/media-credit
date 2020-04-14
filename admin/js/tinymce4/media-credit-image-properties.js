@@ -1,7 +1,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2014-2019 Peter Putzer.
+ * Copyright 2014-2020 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License,
@@ -17,11 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  *
- * @link       https://mundschenk.at
- * @since      2.3.0
- *
- * @package    Media_Credit
- * @subpackage Media_Credit/admin
+ * @file   This file defines MediaCreditImagePropertiesView Backbone view and
+ *         associated event handlers.
+ * @author Peter Putzer <github@mundschenk.at>
+ * @since  2.3.0
  */
 
 /* global: wp, mundschenk */ // Scrutinizer-CI

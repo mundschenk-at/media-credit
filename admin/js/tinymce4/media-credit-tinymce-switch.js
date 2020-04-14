@@ -1,15 +1,38 @@
 /**
- * Extends editor formatting when switching between HTML and Visual mode.
+ * This file is part of Media Credit.
  *
- * Based on revision @44649 of https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/wp/editor/base.js (removep)
+ * Copyright 2013-2020 Peter Putzer.
+ * Copyright 2003-2020 The WordPress contributors.
  *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License,
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ * @file   Extends editor formatting when switching between HTML and Visual mode.
+ * @author Peter Putzer <github@mundschenk.at>
+ * @since  2.4.1
  */
 
+/**
+ * Based on revision @47579 of https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/wp/editor/base.js (removep)
+ *
+ * The version number in the "@since" tags below mean WordPress versions.
+ */
 ( function( $ ) {
 	'use strict';
 
+	/* eslint-disable camelcase, yoda */
 	$( function() {
-		/* eslint-disable camelcase, yoda */
 		/**
 		 * Replaces <p> tags with two line breaks. "Opposite" of wpautop().
 		 *
