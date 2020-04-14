@@ -237,8 +237,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		}
 
 		return content.replace( pattern, function( a, b, c ) {
-			var id, align, w, img, width, out, link, name, credit, nofollow,
-				trim = tinymce.trim;
+			var id, align, w, img, width, out, link, name, credit, nofollow;
 
 			id = b.match( /id=['"]?([0-9]+)['"]? ?/ );
 			if ( id ) {
