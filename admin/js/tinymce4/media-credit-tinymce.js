@@ -191,7 +191,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				img = c;
 			}
 
-			img = parseMediaCreditShortcode( img );
+			img = parseMediaCreditShortcode( img, false );
 
 			id = ( id && id[1] ) ? id[1].replace( /[<>&]+/g, '' ) : '';
 			align = ( align && align[1] ) ? align[1] : 'alignnone';
@@ -228,7 +228,6 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 	function parseMediaCreditShortcode( content, standalone ) {
 		var pattern;
-		standalone = ( typeof standalone === 'undefined' ? false : standalone );
 
 		if ( standalone ) {
 			pattern = /(?:<p>)?\[media-credit([^\]]+)\]([\s\S]+?)\[\/media-credit\](?:<\/p>)?/g;
@@ -388,7 +387,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				// Convert remaining line breaks to <br>.
 				caption = caption.replace( /\s*\n\s*/g, '<br />' );
 
-				c = getMediaCreditShortcode( c );
+				c = getMediaCreditShortcode( c, false );
 
 				return '[caption id="' + id + '" align="' + align + '" width="' + width + '"' + classes + ']' + c + ' ' + caption + '[/caption]';
 			} );
@@ -412,7 +411,6 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 	function getMediaCreditShortcode( content, standalone ) {
 		var pattern = /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span>/g;
-		standalone = ( typeof standalone === 'undefined' ? false : standalone );
 
 		if ( standalone ) {
 			pattern = /<div class="mceMediaCreditOuterTemp[^"]*"[^>]*>((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span><\/div>/g;
