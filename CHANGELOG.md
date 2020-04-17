@@ -1,6 +1,6 @@
 # Changelog #
 
-## 4.1.0 (unreleased) ##
+## 4.1.0 (April 17, 2020) ##
 *   _Feature_: Images cropped in the Customizer inherit the credit from the original image.
 *   _Feature_: Credits are read from EXIF/IPTC fields on image upload.
 *   _Bugfix_: No markup is added to `core/image` blocks when no credit is set.
