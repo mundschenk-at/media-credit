@@ -1293,4 +1293,4 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		_do_shcode: parseShortcode, // eslint-disable-line camelcase
 		_get_shcode: getShortcode, // eslint-disable-line camelcase
 	};
-} );
+}, [ 'noneditable' ] );
