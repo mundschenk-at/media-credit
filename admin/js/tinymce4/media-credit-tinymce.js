@@ -234,108 +234,74 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	 * @return {string}             The content with any [media-credit] shortcodes replaced.
 	 */
 	function parseMediaCreditShortcode( content, standalone ) {
-		var pattern;
+		return wp.shortcode.replace( 'media-credit', content, function( shortcode ) {
+			var attrs, c, img, credit, out;
 
-		if ( standalone ) {
-			pattern = /(?:<p>)?\[media-credit([^\]]+)\]([\s\S]+?)\[\/media-credit\](?:<\/p>)?/g;
-		} else {
-			pattern = /\[media-credit([^\]]+)\]([\s\S]+?)\[\/media-credit\]/g;
-		}
-
-		return content.replace( pattern, function( a, b, c ) {
-			var id, align, w, img, width, out, link, name, credit, nofollow;
-
-			id = b.match( /id=['"]?([0-9]+)['"]? ?/ );
-			if ( id ) {
-				b = b.replace( id[0], '' );
-			}
-
-			align = b.match( /align=['"]([^'"]*)['"] ?/ );
-			if ( align ) {
-				b = b.replace( align[0], '' );
-			}
-
-			w = b.match( /width=['"]([0-9]*)['"] ?/ );
-			if ( w ) {
-				b = b.replace( w[0], '' );
-			}
-
-			link = b.match( /link=['"]([^'"]*)['"] ?/ );
-			if ( link ) {
-				b = b.replace( link[0], '' );
-			}
-
-			nofollow = b.match( /nofollow=['"]([^'"]*)['"] ?/ );
-			if ( nofollow ) {
-				b = b.replace( nofollow[0], '' );
-			}
-
-			/* Name matching is more complicated to allow both ' and " inside each other */
-			name = b.match( /name=[']([^']*)['] ?/i );
-			if ( ! name ) {
-				name = b.match( /name=["]([^"]*)["] ?/i );
-			}
-
-			/*
-			Not needed unless we add another attribute.
-			if ( name ) {
-				b = b.replace( name[0], '' );
-			}
-			*/
-
-			c = trim( c );
+			c = trim( shortcode.content );
 			img = c.match( /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)([\s\S]*)/i );
 
 			if ( img && img[1] ) {
 				img = trim( img[1] );
 			}
 
-			id = ( id && id[1] ) ? id[1] : '';
-			align = ( align && align[1] ) ? align[1] : 'alignnone';
-			link = ( link && link[1] ) ? link[1] : '';
-			name = ( name && name[1] ) ? name[1] : '';
-			nofollow = ( nofollow && nofollow[1] ) ? nofollow[1] : '';
+			// Shortcode attribute defaults.
+			attrs = shortcode.attrs.named;
+			attrs.id = attrs.id || '';
+			attrs.name = attrs.name || '';
+			attrs.align = attrs.align || 'alignnone';
+			attrs.link = attrs.link || '';
+			attrs.nofollow = attrs.nofollow || '';
 
-			if ( ! w && img ) {
-				w = img.match( /width=['"]([0-9]*)['"]/ );
+			// Fall back to image width if none was provided.
+			if ( ! attrs.width && img ) {
+				attrs.width = wp.html.attrs( img ).width;
 			}
+			attrs.width = parseInt( attrs.width, 10 );
 
-			if ( w && w[1] ) {
-				w = w[1];
-			}
-
-			if ( ! w || ! ( name || id ) ) {
+			// Abort if we don't have a width and either an ID or a name.
+			if ( ! attrs.width || ! ( attrs.name || attrs.id ) ) {
 				return c;
 			}
 
-			width = parseInt( w, 10 );
+			// Add extra margin for legacy captions.
 			if ( ! editor.getParam( 'wpeditimage_html5_captions' ) ) {
-				width += 10;
+				attrs.width += 10;
 			}
 
-			credit = '' + ( name ? name : ( mundschenk.mediaCredit.id[id] + mundschenk.mediaCredit.options.separator + mundschenk.mediaCredit.options.organization ) );
-			credit = credit.replace( /<[^>]+>(.*)<\/[^>]+>/g, '$1' ); // Basic sanitation.
+			// Build visible credit string.
+			credit = attrs.name
+				? attrs.name
+				: (
+					mundschenk.mediaCredit.id[attrs.id] +
+					mundschenk.mediaCredit.options.separator +
+					mundschenk.mediaCredit.options.organization
+				);
 
+			// Some basic sanitation, just to be sure.
+			credit = credit.replace( /<[^>]+>(.*)<\/[^>]+>/g, '$1' );
+
+			// Create inner HTML markup.
 			out = img + wp.html.string( {
 				tag: 'span',
 				content: credit,
 				attrs: {
 					class: 'mceMediaCreditTemp mceNonEditable',
-					'data-media-credit-author-id': id,
-					'data-media-credit-text': _.escape( name ),
-					'data-media-credit-align': align,
-					'data-media-credit-link': _.escape( link ),
-					'data-media-credit-nofollow': _.escape( nofollow ),
+					'data-media-credit-author-id': _.escape( attrs.id ),
+					'data-media-credit-text': _.escape( attrs.name ),
+					'data-media-credit-align': _.escape( attrs.align ),
+					'data-media-credit-link': _.escape( attrs.link ),
+					'data-media-credit-nofollow': _.escape( attrs.nofollow ),
 				},
 			} );
 
 			if ( standalone ) {
+				// Add outer container.
 				out = wp.html.string( {
 					tag: 'div',
 					content: out,
 					attrs: {
-						class: 'mceMediaCreditOuterTemp ' + align,
-						style: 'width: ' + width + 'px',
+						class: 'mceMediaCreditOuterTemp ' + _.escape( attrs.align ),
+						style: 'width: ' + attrs.width + 'px',
 					},
 				} );
 			}
@@ -426,15 +392,12 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	 * @return {string}             The content with [media-credit] shortcodes.
 	 */
 	function getMediaCreditShortcode( content, standalone ) {
-		var pattern = /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span>/g;
-
-		if ( standalone ) {
-			pattern = /<div class="mceMediaCreditOuterTemp[^"]*"[^>]*>((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span><\/div>/g;
-		}
+		var pattern = ! standalone
+			? /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span>/g
+			: /<div class="mceMediaCreditOuterTemp[^"]*"[^>]*>((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span><\/div>/g;
 
 		return content.replace( pattern, function( a, b, c, d ) {
-			var out = '',
-				id, name, w, align, link, nofollow, quotedName, credit;
+			var attrs, shortcode, result;
 
 			if ( b.indexOf( '<img ' ) === -1 ) {
 				// Broken credit. The user managed to drag the image out?
@@ -442,78 +405,52 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				return '<p>' + d + '</p>';
 			}
 
-			w = b.match( /width="([0-9]*)"/ );
-			w = ( w && w[1] ) ? w[1] : '';
+			// Prepare shortcode data.
+			attrs = wp.html.attrs( c );
+			shortcode = {
+				tag: 'media-credit',
+				attrs: {
+					id: _.unescape( attrs['data-media-credit-author-id'] ),
+					name: _.unescape( attrs['data-media-credit-text'] ),
+					link: _.unescape( attrs['data-media-credit-link'] ),
+					nofollow: 'true' === _.unescape( attrs['data-media-credit-nofollow'] ),
+					align: _.unescape( attrs['data-media-credit-align'] ),
+					width: wp.html.attrs( b ).width,
+				},
+				content: b,
+				type: 'closed',
+			};
 
-			id = parseAttribute( c, 'data-media-credit-author-id', '[0-9]+', true );
-			align = parseAttribute( c, 'data-media-credit-align', '[^\'"]*', false );
-			name = _.unescape( parseAttribute( c, 'data-media-credit-text', '[^"]*', false ) );
-			link = _.unescape( parseAttribute( c, 'data-media-credit-link', '[^"]*', false ) );
-			nofollow = _.unescape( parseAttribute( c, 'data-media-credit-nofollow', '[^"]*', false ) );
+			// Make sure we only have ID or freeform text.
+			if ( shortcode.attrs.id ) {
+				shortcode.attrs.name = undefined;
+			} else {
+				shortcode.attrs.id = undefined;
+			}
 
-			if ( ! w || ! ( name || id ) ) {
+			// Unset empty attributes.
+			_.each( Object.keys( shortcode.attrs ), function( key ) {
+				if ( ! shortcode.attrs[ key ] ) {
+					delete shortcode.attrs[ key ];
+				}
+			} );
+
+			// Abort if we don't have a width and either an ID or a name.
+			if ( ! shortcode.attrs.width || ! ( shortcode.attrs.name || shortcode.attrs.id ) ) {
 				return b;
 			}
 
-			if ( name.indexOf( '"' ) > -1 ) {
-				quotedName = 'name=\'' + name + '\'';
-			} else {
-				quotedName = 'name="' + name + '"';
-			}
+			// Build shortcode.
+			result = wp.shortcode.string( shortcode );
 
-			credit = id ? ( 'id=' + id ) : quotedName;
-
-			if ( link ) {
-				credit += ' link="' + link + '"';
-			}
-
-			if ( nofollow && 'true' === nofollow ) {
-				credit += ' nofollow="true"';
-			}
-
-			out = '[media-credit ' + credit + ' align="' + align + '" width="' + w + '"]' + b + '[/media-credit]';
-
-			if ( 0 !== out.indexOf( '[media-credit' ) ) {
+			if ( 0 !== result.indexOf( '[media-credit' ) ) {
 				// The caption HTML seems broken, try to find the image that may be wrapped in a link
 				// and may be followed by <p> with the caption text.
-				out = b.replace( /[\s\S]*?((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)(<p>[\s\S]*<\/p>)?[\s\S]*/gi, '<p>$1</p>$2' );
+				result = b.replace( /[\s\S]*?((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)(<p>[\s\S]*<\/p>)?[\s\S]*/gi, '<p>$1</p>$2' );
 			}
 
-			return out;
+			return result;
 		} );
-	}
-
-	/**
-	 * Parse attributes.
-	 *
-	 * @param {string}  content  The snippet to parse.
-	 * @param {string}  attr     The attribute name.
-	 * @param {string}  pattern  A regex pattern matching the result.
-	 * @param {boolean} unquoted Whether quotes are necessary (default).
-	 */
-	function parseAttribute( content, attr, pattern, unquoted ) {
-		var result = null,
-			searchPattern;
-		unquoted = ( typeof unquoted === 'undefined' ? false : unquoted );
-
-		if ( unquoted ) {
-			searchPattern = new RegExp( attr + '=(' + pattern + ') ?' );
-			result = content.match( searchPattern );
-		}
-
-		if ( ! result ) {
-			searchPattern = new RegExp( attr + '="(' + pattern + ')" ?' );
-			result = content.match( searchPattern );
-		}
-
-		if ( ! result ) {
-			searchPattern = new RegExp( attr + '=\'(' + pattern + ')\' ?' );
-			result = content.match( searchPattern );
-		}
-
-		result = ( result && result[1] ) ? result[1] : '';
-
-		return result;
 	}
 
 	function extractImageData( imageNode ) {
