@@ -270,9 +270,12 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				name = b.match( /name=["]([^"]*)["] ?/i );
 			}
 
+			/*
+			Not needed unless we add another attribute.
 			if ( name ) {
 				b = b.replace( name[0], '' );
 			}
+			*/
 
 			c = trim( c );
 			img = c.match( /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)([\s\S]*)/i );
