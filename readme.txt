@@ -3,7 +3,7 @@ Contributors: pputzer, sbressler
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 5.0
 Requires PHP: 5.6
-Tested up to: 5.2
+Tested up to: 5.4
 Stable tag: 4.0.4
 License: GPLv2 or later
 
