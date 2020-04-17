@@ -218,14 +218,21 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				'<dt class="wp-caption-dt">' + img + '</dt><dd class="wp-caption-dd">' + caption + '</dd></dl></div>';
 		} );
 
-		/*
-		 * Handle all other occurences of [media-credit]
-		 */
+		// Handle all other occurences of [media-credit]
 		result = parseMediaCreditShortcode( result, true );
 
 		return result;
 	}
 
+	/**
+	 * Replaces a [media-credit] shortcode with its TinyMCE markup
+	 *
+	 * @param  {string}  content    The content.
+	 * @param  {boolean} standalone A flag indicating whether to expect a standalone
+	 *                              shortcode (without [caption]).
+	 *
+	 * @return {string}             The content with any [media-credit] shortcodes replaced.
+	 */
 	function parseMediaCreditShortcode( content, standalone ) {
 		var pattern;
 
@@ -409,6 +416,15 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		return result;
 	}
 
+	/**
+	 * Replaces TinyMCE HTML markup with [media-credit] shortcode.
+	 *
+	 * @param  {string}  content    The content.
+	 * @param  {boolean} standalone A flag indicating whether to expect a standalone
+	 *                              shortcode (without [caption]).
+	 *
+	 * @return {string}             The content with [media-credit] shortcodes.
+	 */
 	function getMediaCreditShortcode( content, standalone ) {
 		var pattern = /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span>/g;
 
