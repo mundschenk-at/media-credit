@@ -271,8 +271,11 @@ class Media_Library implements \Media_Credit\Component {
 	 */
 	public function add_media_credit_fields( $fields, \WP_Post $attachment ) {
 
-		$data      = $this->core->get_media_credit_json( $attachment );
-		$author_id = '' === $data['raw']['freeform'] ? $data['raw']['user_id'] : '';
+		$data       = $this->core->get_media_credit_json( $attachment );
+		$author_id  = \esc_attr( '' === $data['raw']['freeform'] ? $data['raw']['user_id'] : '' );
+		$credit     = \esc_attr( $data['plaintext'] );
+		$credit_url = \esc_url( $data['raw']['url'] );
+		$nofollow   = \checked( ! empty( $data['raw']['flags']['nofollow'] ), true, false );
 
 		// Use placeholders with `no_default_credit` enabled.
 		$placeholder = '';
@@ -285,7 +288,7 @@ class Media_Library implements \Media_Credit\Component {
 		$fields['media-credit'] = [
 			'label'         => __( 'Credit', 'media-credit' ),
 			'input'         => 'html',
-			'html'          => "<input id='attachments[{$attachment->ID}][media-credit]' class='media-credit-input' size='30' {$placeholder} value='{$data['plaintext']}' name='attachments[{$attachment->ID}][media-credit]' />",
+			'html'          => "<input id='attachments[{$attachment->ID}][media-credit]' class='media-credit-input' size='30' {$placeholder} value='{$credit}' name='attachments[{$attachment->ID}][media-credit]' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
 		];
@@ -294,13 +297,13 @@ class Media_Library implements \Media_Credit\Component {
 		$fields['media-credit-url'] = [
 			'label'         => __( 'Credit URL', 'media-credit' ),
 			'input'         => 'html',
-			'html'          => "<input id='attachments[{$attachment->ID}][media-credit-url]' class='media-credit-input' type='url' size='30' value='{$data['raw']['url']}' name='attachments[{$attachment->ID}][media-credit-url]' />",
+			'html'          => "<input id='attachments[{$attachment->ID}][media-credit-url]' class='media-credit-input' type='url' size='30' value='{$credit_url}' name='attachments[{$attachment->ID}][media-credit-url]' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
 		];
 
 		// Set up nofollow checkbox.
-		$html = "<label><input id='attachments[{$attachment->ID}][media-credit-nofollow]' class='media-credit-input' type='checkbox' value='1' name='attachments[{$attachment->ID}][media-credit-nofollow]' " . \checked( ! empty( $data['raw']['flags']['nofollow'] ), true, false ) . '/>' . __( 'Add <code>rel="nofollow"</code>.', 'media-credit' ) . '</label>';
+		$html = "<label><input id='attachments[{$attachment->ID}][media-credit-nofollow]' class='media-credit-input' type='checkbox' value='1' name='attachments[{$attachment->ID}][media-credit-nofollow]' {$nofollow}/>" . __( 'Add <code>rel="nofollow"</code>.', 'media-credit' ) . '</label>';
 
 		$fields['media-credit-data'] = [
 			'label'         => '', // necessary for HTML type fields.
@@ -314,7 +317,7 @@ class Media_Library implements \Media_Credit\Component {
 		$fields['media-credit-hidden'] = [
 			'label'         => '', // necessary for HTML type fields.
 			'input'         => 'html',
-			'html'          => "<input name='attachments[{$attachment->ID}][media-credit-hidden]' id='attachments[{$attachment->ID}][media-credit-hidden]' type='hidden' value='$author_id' class='media-credit-hidden' data-author-id='{$attachment->post_author}' data-post-id='{$attachment->ID}' data-author-display='{$data['plaintext']}' />",
+			'html'          => "<input name='attachments[{$attachment->ID}][media-credit-hidden]' id='attachments[{$attachment->ID}][media-credit-hidden]' type='hidden' value='$author_id' class='media-credit-hidden' data-author-id='{$attachment->post_author}' data-post-id='{$attachment->ID}' data-author-display='{$credit}' />",
 			'show_in_edit'  => true,
 			'show_in_modal' => false,
 		];
