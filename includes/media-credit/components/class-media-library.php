@@ -336,7 +336,9 @@ class Media_Library implements \Media_Credit\Component {
 			'user_id'  => $attachment['media-credit-hidden'],
 			'freeform' => $attachment['media-credit'],
 			'url'      => $attachment['media-credit-url'],
-			'nofollow' => ! empty( $attachment['media-credit-nofollow'] ),
+			'flags'    => [
+				'nofollow' => ! empty( $attachment['media-credit-nofollow'] ),
+			],
 		];
 
 		// Only clear the post author if we've been setting a user credit.
