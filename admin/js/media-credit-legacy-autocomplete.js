@@ -39,9 +39,9 @@ jQuery( function( $ ) {
 	 */
 	mediaCredit.autoCompleteLegacy = function( $input, $hidden ) {
 		var updateFreeformCredit = function( credit ) {
-			$hidden.attr( 'value', '' );
-			$hidden.attr( 'data-author-display', credit );
-			$input.attr( 'value', credit );
+			$hidden.prop( 'value', '' );
+			$hidden.prop( 'data-author-display', credit );
+			$input.prop( 'value', credit );
 		};
 
 		// Target the input element (& return it after for chaining).
@@ -57,9 +57,10 @@ jQuery( function( $ ) {
 				} ) ),
 
 				select: function( event, ui ) {
-					$hidden.attr( 'value', ui.item.id );
-					$hidden.attr( 'data-author-display', ui.item.value );
-					$input.attr( 'value', ui.item.value );
+					$hidden.prop( 'value', ui.item.id );
+					$hidden.prop( 'data-author-display', ui.item.value );
+					$input.prop( 'value', ui.item.value );
+
 
 					return false;
 				},
@@ -70,7 +71,7 @@ jQuery( function( $ ) {
 					if ( 0 === ui.content.length ) {
 						credit = $( this ).val();
 
-						if ( credit !== $hidden.attr( 'data-display-author' ) ) {
+						if ( credit !== $hidden.prop( 'data-display-author' ) ) {
 							updateFreeformCredit( credit );
 						}
 					}
@@ -91,18 +92,18 @@ jQuery( function( $ ) {
 		// Handle tab while still loading suggestion.
 			.change( function( event ) {
 				var credit = $input.val(),
-					authorID = $hidden.attr( 'data-author-id' );
+					authorID = $hidden.prop( 'data-author-id' );
 
 				if ( mediaCredit.options.noDefaultCredit && '' === credit && '' === $hidden.val() ) {
 					$hidden.val( authorID );
-					$hidden.attr( 'data-author-display', mediaCredit.id[ authorID ] );
+					$hidden.prop( 'data-author-display', mediaCredit.id[ authorID ] );
 
 					// Re-set placeholder.
-					$input.val( '' ).attr( 'placeholder', $hidden.attr( 'data-author-display' ) );
+					$input.val( '' ).prop( 'placeholder', $hidden.prop( 'data-author-display' ) );
 
 					event.stopImmediatePropagation();
 					event.preventDefault();
-				} else if ( credit !== $hidden.attr( 'data-author-display' ) ) {
+				} else if ( credit !== $hidden.prop( 'data-author-display' ) ) {
 					updateFreeformCredit( credit );
 
 					event.stopImmediatePropagation();
