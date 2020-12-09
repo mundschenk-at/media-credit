@@ -1,5 +1,7 @@
 'use strict';
-const sass = require('node-sass');
+
+// Which SASS implementation to use.
+const sass = require('sass');
 
 module.exports = function( grunt ) {
 	grunt.initConfig({
