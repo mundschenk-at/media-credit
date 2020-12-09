@@ -63,7 +63,7 @@ jQuery( function( $ ) {
 				} ) ),
 
 				select: function( event, ui ) {
-					$( this ).attr( 'value', ui.item.value );
+					$( this ).prop( 'value', ui.item.value );
 					view.model.set( {
 						mediaCreditAuthorID: ui.item.id,
 						mediaCreditAuthorDisplay: ui.item.value,
@@ -119,7 +119,7 @@ jQuery( function( $ ) {
 					}
 
 					// Re-set placeholder.
-					$input.val( '' ).attr( 'placeholder', view.model.get( 'mediaCredit.placeholder' ) );
+					$input.val( '' ).prop( 'placeholder', view.model.get( 'mediaCredit.placeholder' ) );
 
 					event.stopImmediatePropagation();
 					event.preventDefault();
@@ -159,7 +159,7 @@ jQuery( function( $ ) {
 
 					// Re-set placeholder.
 					if ( '' !== this.model.get( 'mediaCreditAuthorID' ) ) {
-						$input.val( '' ).attr( 'placeholder', this.model.get( 'mediaCredit.placeholder' ) );
+						$input.val( '' ).prop( 'placeholder', this.model.get( 'mediaCredit.placeholder' ) );
 					}
 				} else {
 					$input.autocomplete( 'enable' );
