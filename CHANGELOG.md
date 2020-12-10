@@ -1,5 +1,10 @@
 # Changelog #
 
+## 4.1.1 (December 10, 2020) ##
+*   _Bugfix_: Credits containing apostrophes can be edited in the legacy Media Library view.
+*   _Bugfix_: Changes to `nofollow` flag are now saved in the legacy Media Library view as well.
+*   _Bugfix_: The plugin is now compatible with WordPress 5.6.
+
 ## 4.1.0 (April 17, 2020) ##
 *   _Feature_: Images cropped in the Customizer inherit the credit from the original image.
 *   _Feature_: Credits are read from EXIF/IPTC fields on image upload.
