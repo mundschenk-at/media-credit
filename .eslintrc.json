@@ -1,16 +1,39 @@
 {
-  "extends": [
-    "plugin:@wordpress/eslint-plugin/es5",
-    "plugin:@wordpress/eslint-plugin/custom",
-    "plugin:@wordpress/eslint-plugin/jsdoc"
-  ],
+  "extends": [ "plugin:@wordpress/eslint-plugin/recommended" ],
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": false
+    }
+  },
   "globals": {
-    "window": "readonly",
+    "wp": "readonly",
+    "wpApiSettings": true,
+    "window": true,
+    "document": true,
     "jQuery": "readonly",
     "Backbone": "readonly",
     "_": "readonly",
-    "wp": "readonly",
     "tinymce": "readonly",
     "mundschenk": "writable"
-  }
+  },
+  "settings": {
+    "react": {
+      "pragma": "wp"
+    }
+  },
+  "ignorePatterns": [
+    "admin/js/tinymce4/tinymce-noneditable.js",
+    "!**/src/**/*.js"
+  ],
+  "overrides": [
+    {
+      "files": [ "admin/js/tinymce4/*.js", "admin/js/*.js" ],
+      "rules": {
+        "no-var": "off",
+        "object-shorthand": "off",
+        "prettier/prettier": "off"
+      }
+    }
+  ]
 }
