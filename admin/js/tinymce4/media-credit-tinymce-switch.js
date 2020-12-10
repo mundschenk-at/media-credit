@@ -24,7 +24,7 @@
  */
 
 /**
- * Based on revision @47579 of https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/wp/editor/base.js (removep)
+ * Based on revision @48650 of https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/wp/editor/base.js (removep)
  *
  * The version number in the "@since" tags below mean WordPress versions.
  */
