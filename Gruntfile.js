@@ -11,7 +11,16 @@ module.exports = function( grunt ) {
 
 		clean: {
 			build: [ "build/**/*" ],
-			autoloader: [ "build/tests", "build/composer.*", "build/vendor-scoped/composer/*.json", "build/vendor-scoped/scoper-autoload.php", "build/vendor-scoped/mundschenk-at/composer-for-wordpress/**" ]
+			autoloader: [
+				"build/tests",
+				"build/composer.*",
+				"build/vendor-scoped/composer/*.json",
+				"build/vendor-scoped/composer/InstalledVersions.php",
+				"build/vendor-scoped/composer/installed.php",
+				"build/vendor-scoped/scoper-autoload.php",
+				"build/vendor-scoped/mundschenk-at/composer-for-wordpress/**",
+				"build/vendor-scoped/dangoodman"
+			]
 		},
 
 		composer: {
@@ -41,6 +50,9 @@ module.exports = function( grunt ) {
                 }, {
                     pattern: /\s+'Dangoodman\\\\ComposerForWordpress\\\\.*,(?=\n)/g,
                     replacement: ''
+								}, {
+	                  pattern: /\s+'Composer\\\\InstalledVersions.*,(?=\n)/g,
+	                  replacement: ''
                 }]
             }
         },
@@ -135,6 +147,7 @@ module.exports = function( grunt ) {
 						'vendor/{composer,mundschenk-at,level-2}/**/CREDITS*',
 						'vendor/{composer,mundschenk-at,level-2}/**/COPYING*',
 						'vendor/{composer,mundschenk-at,level-2}/**/CHANGE*',
+						'!vendor/composer/package-versions-deprecated/**',
 					],
 					dest: 'build/',
 					rename: function(dest, src) {
