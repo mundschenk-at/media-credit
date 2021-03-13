@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019-2020 Peter Putzer.
+ * Copyright 2019-2021 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,21 +24,25 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+namespace Media_Credit;
+
+use Media_Credit\Components\Uninstallation;
+
 // Don't do anything if called directly.
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+if ( ! \defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	die();
 }
 
 // Make plugin file path available globally (even if we probably don't need it during uninstallaton).
-if ( ! defined( 'MEDIA_CREDIT_PLUGIN_FILE' ) ) {
-	define( 'MEDIA_CREDIT_PLUGIN_FILE', dirname( __FILE__ ) . '/media-credit.php' );
+if ( ! \defined( 'MEDIA_CREDIT_PLUGIN_FILE' ) ) {
+	\define( 'MEDIA_CREDIT_PLUGIN_FILE', \dirname( __FILE__ ) . '/media-credit.php' );
 }
-if ( ! defined( 'MEDIA_CREDIT_PLUGIN_PATH' ) ) {
-	define( 'MEDIA_CREDIT_PLUGIN_PATH', dirname( __FILE__ ) );
+if ( ! \defined( 'MEDIA_CREDIT_PLUGIN_PATH' ) ) {
+	\define( 'MEDIA_CREDIT_PLUGIN_PATH', __DIR__ );
 }
 
-// Load requirements class in a PHP 5.2 compatible manner.
-require_once dirname( __FILE__ ) . '/vendor/mundschenk-at/check-wp-requirements/class-mundschenk-wp-requirements.php';
+// Initialize autoloader.
+require_once __DIR__ . '/vendor/autoload.php';
 
 /**
  * Uninstall the plugin after checking for the necessary PHP version.
@@ -46,22 +50,10 @@ require_once dirname( __FILE__ ) . '/vendor/mundschenk-at/check-wp-requirements/
  * It's necessary to do this here because our classes rely on namespaces.
  */
 function media_credit_uninstall() {
-	// Define our requirements.
-	$reqs = array(
-		'php'       => '5.6.0',
-		'multibyte' => false,
-		'utf-8'     => false,
-	);
-
 	// Validate the requirements.
-	$requirements = new Mundschenk_WP_Requirements( 'Media Credit', __FILE__, 'media-credit', $reqs );
-
-	if ( $requirements->check() ) {
-		// Autoload the rest of your classes.
-		require_once __DIR__ . '/vendor/autoload.php'; // phpcs:ignore PHPCompatibility.Keywords.NewKeywords.t_dirFound
-
+	if ( ( new Requirements() )->check() ) {
 		// Create and start the uninstallation handler.
-		$uninstaller = Media_Credit_Factory::get()->create( 'Media_Credit\Components\Uninstallation' );
+		$uninstaller = \Media_Credit_Factory::get()->create( Uninstallation::class );
 		$uninstaller->run();
 	}
 }
