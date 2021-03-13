@@ -34,8 +34,6 @@ use Media_Credit\Tools;
 
 use Mundschenk\Data_Storage;
 
-use RuntimeException;
-
 /**
  * A factory for creating Media_Credit instances via dependency injection.
  *
@@ -78,7 +76,7 @@ class Media_Credit_Factory extends Dice {
 			$factory = new static();
 			$factory = $factory->addRules( $factory->get_rules() );
 
-			if ( $factory instanceof Factory ) {
+			if ( $factory instanceof Media_Credit_Factory ) {
 				self::$factory = $factory;
 			} else {
 				throw new RuntimeException( 'Could not create object factory.' ); // @codeCoverageIgnore
@@ -169,14 +167,14 @@ class Media_Credit_Factory extends Dice {
 	 */
 	protected function get_components() {
 		return [
-			[ 'instance' => Components\Setup::class ],
-			[ 'instance' => Components\Frontend::class ],
-			[ 'instance' => Components\Shortcodes::class ],
-			[ 'instance' => Components\Block_Editor::class ],
-			[ 'instance' => Components\Classic_Editor::class ],
-			[ 'instance' => Components\Media_Library::class ],
-			[ 'instance' => Components\Settings_Page::class ],
-			[ 'instance' => Components\REST_API::class ],
+			[ Dice::INSTANCE => Components\Setup::class ],
+			[ Dice::INSTANCE => Components\Frontend::class ],
+			[ Dice::INSTANCE => Components\Shortcodes::class ],
+			[ Dice::INSTANCE => Components\Block_Editor::class ],
+			[ Dice::INSTANCE => Components\Classic_Editor::class ],
+			[ Dice::INSTANCE => Components\Media_Library::class ],
+			[ Dice::INSTANCE => Components\Settings_Page::class ],
+			[ Dice::INSTANCE => Components\REST_API::class ],
 		];
 	}
 }
