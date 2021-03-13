@@ -17,3 +17,9 @@ build/*
 
 # sass
 .sass-cache/*
+
+# PHPUnit
+.phpunit.result.cache
+
+# Test coverage
+tests/coverage/

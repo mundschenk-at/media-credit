@@ -37,12 +37,15 @@
         "phpcompatibility/phpcompatibility-wp": "^2.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
         "roave/security-advisories": "dev-master",
-        "humbug/php-scoper": "^0.13"
+        "humbug/php-scoper": "^0.13",
+        "phpunit/phpunit": "< 10",
+        "mundschenk-at/phpunit-cross-version": "dev-master"
     },
 
     "autoload": {
         "classmap": ["includes/", "public/", "admin/"],
-        "files": ["includes/media-credit-template.php"]
+        "files": ["includes/media-credit-template.php"],
+        "exclude-from-classmap": ["tests/phpstan/"]
     },
 
     "config": {
@@ -60,6 +63,12 @@
     "scripts": {
         "phpcs": [
             "phpcs -p -s includes/ admin/ public/ --extensions=php"
+        ],
+        "test": [
+            "phpunit --testsuite MediaCredit"
+        ],
+        "coverage": [
+            "phpunit --testsuite MediaCredit --coverage-html tests/coverage"
         ],
         "scope-dependencies": [
             "@php vendor/bin/php-scoper add-prefix --config=.scoper.inc.php --force --quiet"
