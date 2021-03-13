@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019-2020 Peter Putzer.
+ * Copyright 2019-2021 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,6 +34,8 @@ use Media_Credit\Tools;
 
 use Mundschenk\Data_Storage;
 
+use RuntimeException;
+
 /**
  * A factory for creating Media_Credit instances via dependency injection.
  *
@@ -57,25 +59,30 @@ class Media_Credit_Factory extends Dice {
 	 *
 	 * @since 4.1.0
 	 */
-	protected function __construct() {
-		// Add rules.
-		foreach ( $this->get_rules() as $classname => $rule ) {
-			$this->addRule( $classname, $rule );
-		}
-	}
+	final protected function __construct() {}
 
 	/**
 	 * Retrieves a factory set up for creating Media_Credit instances.
 	 *
 	 * @since 4.1.0 Parameter $full_plugin_path replaced with MEDIA_CREDIT_PLUGIN_PATH constant.
+	 * @since 4.2.0 Now throws a RuntimeException in case of error.
 	 *
 	 * @return Media_Credit_Factory
+	 *
+	 * @throws RuntimeException An exception is thrown if the factory cannot be created.
 	 */
 	public static function get() {
 		if ( ! isset( self::$factory ) ) {
 
 			// Create factory.
-			self::$factory = new static();
+			$factory = new static();
+			$factory = $factory->addRules( $factory->get_rules() );
+
+			if ( $factory instanceof Factory ) {
+				self::$factory = $factory;
+			} else {
+				throw new RuntimeException( 'Could not create object factory.' ); // @codeCoverageIgnore
+			}
 		}
 
 		return self::$factory;
