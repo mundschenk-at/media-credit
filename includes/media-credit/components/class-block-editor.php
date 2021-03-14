@@ -66,8 +66,8 @@ class Block_Editor implements \Media_Credit\Component {
 	/**
 	 * Adds the images media credit to rendered `core/image` blocks.
 	 *
-	 * @param string $block_content The block content about to be appended.
-	 * @param array  $block         The full block, including name and attributes.
+	 * @param  string $block_content The block content about to be appended.
+	 * @param  array  $block         The full block, including name and attributes.
 	 *
 	 * @return string
 	 */

@@ -29,7 +29,7 @@ if ( ! \function_exists( 'get_media_credit' ) ) {
 	/**
 	 * Template tag to return the media credit as plain text for some media attachment.
 	 *
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 *
 	 * @return string
 	 */
@@ -44,7 +44,7 @@ if ( ! \function_exists( 'the_media_credit' ) ) {
 	/**
 	 * Template tag to print the media credit as plain text for some media attachment.
 	 *
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 *
 	 * @return void
 	 */
@@ -59,7 +59,7 @@ if ( ! \function_exists( 'get_media_credit_url' ) ) {
 	/**
 	 * Template tag to return the media credit URL as plain text for some media attachment.
 	 *
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 *
 	 * @return string
 	 */
@@ -74,7 +74,7 @@ if ( ! \function_exists( 'the_media_credit_url' ) ) {
 	/**
 	 * Template tag to print the media credit URL as plain text for some media attachment.
 	 *
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 *
 	 * @return void
 	 */
@@ -89,8 +89,8 @@ if ( ! function_exists( 'get_media_credit_html' ) ) {
 	/**
 	 * Template tag to return the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
-	 * @param int|object $post       Optional post ID or object of attachment. Default is global $post object.
-	 * @param bool       $deprecated Optional. Deprecated argument. Default true.
+	 * @param  int|object $post       Optional post ID or object of attachment. Default is global $post object.
+	 * @param  bool       $deprecated Optional. Deprecated argument. Default true.
 	 *
 	 * @return string
 	 */
@@ -105,7 +105,7 @@ if ( ! \function_exists( 'the_media_credit_html' ) ) {
 	/**
 	 * Template tag to print the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
-	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
 	 *
 	 * @return void
 	 */
@@ -120,7 +120,7 @@ if ( ! \function_exists( 'get_media_credit_html_by_user_id' ) ) {
 	/**
 	 * Template tag to return the media credit as HTML with a link to the author page if one exists for a WordPress user.
 	 *
-	 * @param int $id User ID of a WordPress user.
+	 * @param  int $id User ID of a WordPress user.
 	 *
 	 * @return string
 	 */
@@ -135,7 +135,7 @@ if ( ! \function_exists( 'the_media_credit_html_by_user_id' ) ) {
 	/**
 	 * Template tag to print the media credit as HTML with a link to the author page if one exists for a WordPress user.
 	 *
-	 * @param int $id User ID of a WordPress user.
+	 * @param  int $id User ID of a WordPress user.
 	 *
 	 * @return void
 	 */
@@ -151,12 +151,12 @@ if ( ! \function_exists( 'display_author_media' ) ) {
 	/**
 	 * Template tag to display the recently added media attachments for given author.
 	 *
-	 * @param int     $author_id           The user ID of the author.
-	 * @param boolean $sidebar             Display as sidebar or inline. Optional. Default true.
-	 * @param int     $limit               Optional. Default 10.
-	 * @param boolean $link_without_parent Optional. Default false.
-	 * @param string  $header              HTML-formatted heading. Optional. Default <h3>Recent Media</h3> (translated).
-	 * @param boolean $exclude_unattached  Optional. Default true.
+	 * @param  int    $author_id           The user ID of the author.
+	 * @param  bool   $sidebar             Display as sidebar or inline. Optional. Default true.
+	 * @param  int    $limit               Optional. Default 10.
+	 * @param  bool   $link_without_parent Optional. Default false.
+	 * @param  string $header              HTML-formatted heading. Optional. Default <h3>Recent Media</h3> (translated).
+	 * @param  bool   $exclude_unattached  Optional. Default true.
 	 *
 	 * @return void
 	 */

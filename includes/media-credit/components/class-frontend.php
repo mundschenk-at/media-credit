@@ -211,9 +211,9 @@ class Frontend implements \Media_Credit\Component {
 	/**
 	 * Adds media credit to post thumbnails (in the loop).
 	 *
-	 * @param string $html              The post thumbnail HTML.
-	 * @param int    $post_id           The post ID.
-	 * @param int    $post_thumbnail_id The post thumbnail ID.
+	 * @param  string $html              The post thumbnail HTML.
+	 * @param  int    $post_id           The post ID.
+	 * @param  int    $post_thumbnail_id The post thumbnail ID.
 	 *
 	 * @return string
 	 */

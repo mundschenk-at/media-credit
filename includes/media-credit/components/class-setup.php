@@ -189,7 +189,7 @@ class Setup implements \Media_Credit\Component {
 	/**
 	 * Sets up the meta fields with proper authorization and sanitization callbacks.
 	 *
-	 * @since 4.0.0
+	 * @since  4.0.0
 	 *
 	 * @return void
 	 */
