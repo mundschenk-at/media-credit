@@ -5,18 +5,18 @@
 .serenata
 
 # Composer
-vendor/*
+vendor/
 composer.lock
 
 # Node.js/Grunt
-node_modules/*
+node_modules/
 package-lock.json
 
-# grunt-wp-deploy
-build/*
+# Build directory
+build/
 
-# sass
-.sass-cache/*
+# SASS
+.sass-cache
 
 # PHPUnit
 .phpunit.result.cache
