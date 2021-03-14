@@ -76,13 +76,13 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since    3.0.0
-	 * @since    4.0.0 Parameter $options added.
-	 * @since    4.1.0 Parameter $author_query added.
+	 * @since  3.0.0
+	 * @since  4.0.0 Parameter $options added.
+	 * @since  4.1.0 Parameter $author_query added.
 	 *
-	 * @param string       $version      The plugin version.
-	 * @param Core         $core         The core plugin API.
-	 * @param Author_Query $author_query The author query helper.
+	 * @param  string       $version      The plugin version.
+	 * @param  Core         $core         The core plugin API.
+	 * @param  Author_Query $author_query The author query helper.
 	 */
 	public function __construct( $version, Core $core, Author_Query $author_query ) {
 		$this->version      = $version;
@@ -124,8 +124,8 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Register the JavaScript for the admin area.
 	 *
-	 * @since 3.0.0
-	 * @since 4.0.0 Renamed to enqueue_scripts_and_stylees.
+	 * @since  3.0.0
+	 * @since  4.0.0 Renamed to enqueue_scripts_and_stylees.
 	 *
 	 * @return void
 	 */
@@ -241,11 +241,11 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Add media credit information to wp.media.model.Attachment.
 	 *
-	 * @since 3.1.0
-	 * @since 4.0.0 Removed unused parameter $meta.
+	 * @since  3.1.0
+	 * @since  4.0.0 Removed unused parameter $meta.
 	 *
-	 * @param array    $response   Array of prepared attachment data.
-	 * @param \WP_Post $attachment Attachment object.
+	 * @param  array    $response   Array of prepared attachment data.
+	 * @param  \WP_Post $attachment Attachment object.
 	 *
 	 * @return array Array of prepared attachment data.
 	 */
@@ -274,10 +274,10 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Adds custom media credit fields to Edit Media screens.
 	 *
-	 * @param array    $fields     An array of attachment form fields.
-	 * @param \WP_Post $attachment The \WP_Post attachment object.
+	 * @param  array    $fields     An array of attachment form fields.
+	 * @param  \WP_Post $attachment The \WP_Post attachment object.
 	 *
-	 * @return array               The filtered fields.
+	 * @return array                The filtered fields.
 	 */
 	public function add_media_credit_fields( $fields, \WP_Post $attachment ) {
 
@@ -338,8 +338,8 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Saves media credit fields edited in the old attachment view.
 	 *
-	 * @param array $post       An array of post data.
-	 * @param array $attachment An array of attachment metadata (including the custom fields).
+	 * @param  array $post       An array of post data.
+	 * @param  array $attachment An array of attachment metadata (including the custom fields).
 	 *
 	 * @return array
 	 */
@@ -366,7 +366,7 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Retrieves the placeholder text to use for the given attachemnt.
 	 *
-	 * @since 4.0.0
+	 * @since  4.0.0
 	 *
 	 * @param  \WP_Post $attachment The attachment \WP_Post object.
 	 *
@@ -413,7 +413,7 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Retrieves and filters the custom default credit string for new attachments.
 	 *
-	 * @since 4.0.0
+	 * @since  4.0.0
 	 *
 	 * @param  \WP_Post $attachment The attachment \WP_Post object.
 	 *
@@ -452,7 +452,7 @@ class Media_Library implements \Media_Credit\Component {
 	 * Adds the media credit information from the original attachment for cropped
 	 * header images.
 	 *
-	 * @since 4.1.0
+	 * @since  4.1.0
 	 *
 	 * @param  array $data Attachment meta data.
 	 *
@@ -471,7 +471,7 @@ class Media_Library implements \Media_Credit\Component {
 	 * Adds the media credit information from the original attachment for cropped
 	 * images (other than header images).
 	 *
-	 * @since 4.1.0
+	 * @since  4.1.0
 	 *
 	 * @param  array $data Attachment meta data.
 	 *
@@ -490,7 +490,7 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Adds the media credit information from the parent to the meta data array.
 	 *
-	 * @since 4.1.0
+	 * @since  4.1.0
 	 *
 	 * @param  array $data      Attachment meta data.
 	 * @param  int   $parent_id Attachment parent post ID.
@@ -517,12 +517,12 @@ class Media_Library implements \Media_Credit\Component {
 	 * If the name exactly matches a user (and default credits are not disabled),
 	 * the ID of the user will be used, otherwise a freeform credit will be generated.
 	 *
-	 * @since 4.1.0
+	 * @since  4.1.0
 	 *
-	 * @param array  $data          An array of attachment meta data.
-	 * @param int    $attachment_id Current attachment ID.
-	 * @param string $context       Optional (only available on WordPress 5.3+). Additional context. Can be 'create' when metadata was initially created for new attachment
-	 *                              or 'update' when the metadata was updated. Default 'create'.
+	 * @param  array  $data          An array of attachment meta data.
+	 * @param  int    $attachment_id Current attachment ID.
+	 * @param  string $context       Optional (only available on WordPress 5.3+). Additional context. Can be 'create' when metadata was initially created for new attachment
+	 *                               or 'update' when the metadata was updated. Default 'create'.
 	 *
 	 * @return array
 	 */
@@ -556,7 +556,7 @@ class Media_Library implements \Media_Credit\Component {
 	 * Updates the media credit information when possible. (The `media_credit` key
 	 * is removed from the meta data array afterwards.)
 	 *
-	 * @since 4.1.0
+	 * @since  4.1.0
 	 *
 	 * @param  array $data          Attachment meta data.
 	 * @param  int   $attachment_id Attachment post ID.

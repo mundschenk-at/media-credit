@@ -114,7 +114,7 @@ class Classic_Editor implements \Media_Credit\Component {
 	/**
 	 * Add styling for media credits in the rich editor.
 	 *
-	 * @param string $css A comma separated list of CSS files.
+	 * @param  string $css A comma separated list of CSS files.
 	 *
 	 * @return string A comma separated list of CSS files.
 	 */
@@ -125,7 +125,7 @@ class Classic_Editor implements \Media_Credit\Component {
 	/**
 	 * Enqueue scripts & styles for displaying media credits in the rich-text editor.
 	 *
-	 * @param array $to_load An array containing boolean values whether TinyMCE and Quicktags are being loaded.
+	 * @param  array $to_load An array containing boolean values whether TinyMCE and Quicktags are being loaded.
 	 *
 	 * @return void
 	 */
@@ -146,7 +146,7 @@ class Classic_Editor implements \Media_Credit\Component {
 	/**
 	 * Removes the default wpeditimage plugin.
 	 *
-	 * @param array $plugins An array of plugins to load.
+	 * @param  array $plugins An array of plugins to load.
 	 *
 	 * @return array         The array of plugins to load.
 	 */

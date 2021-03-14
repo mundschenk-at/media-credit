@@ -118,8 +118,8 @@ class Shortcodes implements \Media_Credit\Component {
 	 * Fixes the new style caption shortcode parsing and then calls the stock
 	 * shortcode function. Optionally adds schema.org microdata.
 	 *
-	 * @param array  $attr    The `[caption]` shortcode attributes.
-	 * @param string $content Optional. Shortcode content. Default null.
+	 * @param  array  $attr    The `[caption]` shortcode attributes.
+	 * @param  string $content Optional. Shortcode content. Default null.
 	 *
 	 * @return string The enriched caption markup.
 	 */
@@ -208,7 +208,7 @@ class Shortcodes implements \Media_Credit\Component {
 	 * Usage: `[media-credit id=1 align="center" width="300"]` or
 	 *        `[media-credit name="Another User" align="center" width="300"]`
 	 *
-	 * @param array  $atts {
+	 * @param  array  $atts {
 	 *     An array of shortcode attributes.
 	 *
 	 *     @type int    $id         Optional. A user ID. Default 0.
@@ -222,9 +222,9 @@ class Shortcodes implements \Media_Credit\Component {
 	 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
 	 *                              attribute should be added to the link tag.
 	 * }
-	 * @param string $content Optional. Shortcode content. Default null.
+	 * @param  string $content Optional. Shortcode content. Default null.
 	 *
-	 * @return string         The HTML markup for the media credit.
+	 * @return string          The HTML markup for the media credit.
 	 */
 	public function media_credit_shortcode( $atts, $content = null ) {
 		// Disable shortcode if credits should be shown after the post content.
@@ -307,7 +307,7 @@ class Shortcodes implements \Media_Credit\Component {
 	/**
 	 * Renders inline part of the shortcode (prepared for output).
 	 *
-	 * @param array $attr {
+	 * @param  array $attr {
 	 *     The `[media-credit]` shortcode attributes.
 	 *
 	 *     @type int    $id         Optional. A user ID. Default 0.
@@ -321,7 +321,7 @@ class Shortcodes implements \Media_Credit\Component {
 	 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
 	 *                              attribute should be added to the link tag.
 	 * }
-	 * @param bool  $include_schema_org Optional. Include schema.org markup. Default false.
+	 * @param  bool  $include_schema_org Optional. Include schema.org markup. Default false.
 	 *
 	 * @return string
 	 */
@@ -377,7 +377,7 @@ class Shortcodes implements \Media_Credit\Component {
 	/**
 	 * Ensures all required attributes are present and sanitized.
 	 *
-	 * @param array $atts {
+	 * @param  array $atts {
 	 *     The `[media-credit]` shortcode attributes.
 	 *
 	 *     @type int    $id         Optional. A user ID. Default 0.
