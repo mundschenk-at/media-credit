@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2020 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -97,6 +97,8 @@ class Shortcodes implements \Media_Credit\Component {
 
 	/**
 	 * Adds our shortcode and overrdies the WordPress caption shortcodes to allow nesting.
+	 *
+	 * @return void
 	 */
 	public function add_shortcodes() {
 		// Load plugin options.
@@ -284,6 +286,8 @@ class Shortcodes implements \Media_Credit\Component {
 		 *                              return zero.
 		 * @param array  $atts          Attributes of the media-credit shortcode.
 		 * @param string $content       The image element, possibly wrapped in a hyperlink.
+		 *
+		 * @return string
 		 */
 		$width = \apply_filters( 'img_caption_shortcode_width', $width, $atts, $content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 

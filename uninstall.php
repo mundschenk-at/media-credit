@@ -48,6 +48,8 @@ require_once __DIR__ . '/vendor/autoload.php';
  * Uninstall the plugin after checking for the necessary PHP version.
  *
  * It's necessary to do this here because our classes rely on namespaces.
+ *
+ * @return void
  */
 function media_credit_uninstall() {
 	// Validate the requirements.

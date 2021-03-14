@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -30,6 +30,8 @@ if ( ! \function_exists( 'get_media_credit' ) ) {
 	 * Template tag to return the media credit as plain text for some media attachment.
 	 *
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 *
+	 * @return string
 	 */
 	function get_media_credit( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_plaintext' );
@@ -43,6 +45,8 @@ if ( ! \function_exists( 'the_media_credit' ) ) {
 	 * Template tag to print the media credit as plain text for some media attachment.
 	 *
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 *
+	 * @return void
 	 */
 	function the_media_credit( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::plaintext' );
@@ -56,6 +60,8 @@ if ( ! \function_exists( 'get_media_credit_url' ) ) {
 	 * Template tag to return the media credit URL as plain text for some media attachment.
 	 *
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 *
+	 * @return string
 	 */
 	function get_media_credit_url( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_url' );
@@ -69,6 +75,8 @@ if ( ! \function_exists( 'the_media_credit_url' ) ) {
 	 * Template tag to print the media credit URL as plain text for some media attachment.
 	 *
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 *
+	 * @return void
 	 */
 	function the_media_credit_url( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0' );
@@ -83,6 +91,8 @@ if ( ! function_exists( 'get_media_credit_html' ) ) {
 	 *
 	 * @param int|object $post       Optional post ID or object of attachment. Default is global $post object.
 	 * @param bool       $deprecated Optional. Deprecated argument. Default true.
+	 *
+	 * @return string
 	 */
 	function get_media_credit_html( $post = null, /* @scrutinizer ignore-unused */ $deprecated = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_html' );
@@ -96,6 +106,8 @@ if ( ! \function_exists( 'the_media_credit_html' ) ) {
 	 * Template tag to print the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
 	 * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 *
+	 * @return void
 	 */
 	function the_media_credit_html( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::html' );
@@ -109,6 +121,8 @@ if ( ! \function_exists( 'get_media_credit_html_by_user_id' ) ) {
 	 * Template tag to return the media credit as HTML with a link to the author page if one exists for a WordPress user.
 	 *
 	 * @param int $id User ID of a WordPress user.
+	 *
+	 * @return string
 	 */
 	function get_media_credit_html_by_user_id( $id ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_html_by_user_id' );
@@ -122,6 +136,8 @@ if ( ! \function_exists( 'the_media_credit_html_by_user_id' ) ) {
 	 * Template tag to print the media credit as HTML with a link to the author page if one exists for a WordPress user.
 	 *
 	 * @param int $id User ID of a WordPress user.
+	 *
+	 * @return void
 	 */
 	function the_media_credit_html_by_user_id( $id ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::html_by_user_id' );
@@ -141,6 +157,8 @@ if ( ! \function_exists( 'display_author_media' ) ) {
 	 * @param boolean $link_without_parent Optional. Default false.
 	 * @param string  $header              HTML-formatted heading. Optional. Default <h3>Recent Media</h3> (translated).
 	 * @param boolean $exclude_unattached  Optional. Default true.
+	 *
+	 * @return void
 	 */
 	function display_author_media( $author_id, $sidebar = true, $limit = 10, $link_without_parent = false, $header = null, $exclude_unattached = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::display_author_media' );

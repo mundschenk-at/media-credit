@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2020 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -87,6 +87,8 @@ class Classic_Editor implements \Media_Credit\Component {
 
 	/**
 	 * Initialize settings.
+	 *
+	 * @return void
 	 */
 	public function initialize_editor_integration() {
 		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages.
@@ -124,6 +126,8 @@ class Classic_Editor implements \Media_Credit\Component {
 	 * Enqueue scripts & styles for displaying media credits in the rich-text editor.
 	 *
 	 * @param array $to_load An array containing boolean values whether TinyMCE and Quicktags are being loaded.
+	 *
+	 * @return void
 	 */
 	public function enqueue_editor( $to_load ) {
 		if ( ! empty( $to_load['tinymce'] ) ) {
@@ -173,6 +177,8 @@ class Classic_Editor implements \Media_Credit\Component {
 
 	/**
 	 * Template for setting Media Credit in image properties.
+	 *
+	 * @return void
 	 */
 	public function image_properties_template() {
 		include \MEDIA_CREDIT_PLUGIN_PATH . '/admin/partials/media-credit-image-properties-tmpl.php';

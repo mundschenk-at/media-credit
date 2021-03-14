@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019-2020 Peter Putzer.
+ * Copyright 2019-2021 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -112,6 +112,8 @@ class Settings_Page implements \Media_Credit\Component {
 	/**
 	 * Registers the settings with the Settings API. This is only used to display
 	 * an explanation of the wrong gravatar settings.
+	 *
+	 * @return void
 	 */
 	public function register_settings() {
 		\add_settings_section( self::SETTINGS_SECTION, __( 'Media Credit', 'media-credit' ), [ $this, 'print_settings_section' ], 'media' );
@@ -161,6 +163,8 @@ class Settings_Page implements \Media_Credit\Component {
 	 * Register the styles and scripts for the settings page.
 	 *
 	 * @param  string $hook_suffix The current admin page.
+	 *
+	 * @return void
 	 */
 	public function enqueue_scripts_and_styles( $hook_suffix ) {
 		if ( 'options-media.php' !== $hook_suffix ) {
@@ -216,7 +220,9 @@ class Settings_Page implements \Media_Credit\Component {
 	/**
 	 * Print HTML for settings section.
 	 *
-	 * @param array $args The argument array.
+	 * @param  array $args The argument array.
+	 *
+	 * @return void
 	 */
 	public function print_settings_section( $args ) {
 		require \MEDIA_CREDIT_PLUGIN_PATH . '/admin/partials/settings/section.php';

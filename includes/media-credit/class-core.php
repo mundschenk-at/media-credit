@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -174,6 +174,8 @@ class Core {
 	 * @internal
 	 *
 	 * @throws \BadMethodCallException Thrown when Media_Credit\Core::make_singleton is called after plugin initialization.
+	 *
+	 * @return void
 	 */
 	public function make_singleton() {
 		if ( null !== self::$instance ) {
@@ -232,6 +234,8 @@ class Core {
 	 *
 	 *     @type bool $nofollow Optional. A flag indicating that `rel=nofollow` should be added to the link. Default false.
 	 * }
+	 *
+	 * @return void
 	 */
 	protected function update_shortcodes_in_parent_post( \WP_Post $attachment, $user_id = 0, $freeform = '', $url = '', array $flags = [] ) {
 
@@ -502,6 +506,8 @@ class Core {
 	 *         @type bool $nofollow Optional. A flag indicating that `rel=nofollow` should be added to the link. Default false.
 	 *     }
 	 * }
+	 *
+	 * @return void
 	 */
 	public function update_media_credit_json( \WP_Post $attachment, array $fields ) {
 
@@ -612,6 +618,8 @@ class Core {
 	 *
 	 * @param \WP_Post $attachment The attachment \WP_Post object.
 	 * @param int      $user_id    A valid user ID.
+	 *
+	 * @return void
 	 */
 	protected function set_post_author_credit( \WP_Post $attachment, $user_id ) {
 		$fields = [

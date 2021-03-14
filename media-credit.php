@@ -63,6 +63,8 @@ require_once __DIR__ . '/vendor/autoload.php';
  *
  * @since 3.0.0
  * @since 4.0.0 Renamed to media_credit_run
+ *
+ * @return void
  */
 function media_credit_run() {
 	// Validate the requirements.

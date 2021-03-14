@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2020 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -63,6 +63,8 @@ class Media_Credit {
 	 * @param  int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
 	 * @param  bool         $fancy      Optional. Fancy output (<user> <separator> <organization>)
 	 *                                  for local user credits. Optional. Default false.
+	 *
+	 * @return void
 	 */
 	public static function plaintext( $attachment, $fancy = false ) {
 		echo \esc_html( self::get_plaintext( $attachment, $fancy ) );
@@ -87,6 +89,8 @@ class Media_Credit {
 	 * Outputs the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
 	 * @param  int|\WP_Post $attachment An attachment ID or the corresponding \WP_Post object.
+	 *
+	 * @return void
 	 */
 	public static function html( $attachment ) {
 		echo self::get_html( $attachment );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data is safe for output.
@@ -172,6 +176,8 @@ class Media_Credit {
 	 * Outputs the media credit as HTML with a link to the author page if one exists for a WordPress user.
 	 *
 	 * @param  int $id User ID of a WordPress user.
+	 *
+	 * @return void
 	 */
 	public static function html_by_user_id( $id ) {
 		echo self::get_html_by_user_id( $id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data is safe for output.
@@ -233,6 +239,8 @@ class Media_Credit {
 	 *                                     should be excluded from the results.
 	 *                                     Default true.
 	 * }
+	 *
+	 * @return void
 	 */
 	public static function display_author_media( array $args = [] ) {
 
