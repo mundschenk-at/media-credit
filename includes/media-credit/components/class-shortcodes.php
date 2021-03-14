@@ -286,8 +286,6 @@ class Shortcodes implements \Media_Credit\Component {
 		 *                              return zero.
 		 * @param array  $atts          Attributes of the media-credit shortcode.
 		 * @param string $content       The image element, possibly wrapped in a hyperlink.
-		 *
-		 * @return string
 		 */
 		$width = \apply_filters( 'img_caption_shortcode_width', $width, $atts, $content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
