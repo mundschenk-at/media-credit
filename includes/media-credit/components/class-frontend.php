@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2020 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -113,6 +113,8 @@ class Frontend implements \Media_Credit\Component {
 
 	/**
 	 * Registers the stylesheets for the public-facing side of the site.
+	 *
+	 * @return void
 	 */
 	public function enqueue_styles() {
 		// Set up file suffix.
@@ -212,6 +214,8 @@ class Frontend implements \Media_Credit\Component {
 	 * @param string $html              The post thumbnail HTML.
 	 * @param int    $post_id           The post ID.
 	 * @param int    $post_thumbnail_id The post thumbnail ID.
+	 *
+	 * @return string
 	 */
 	public function add_media_credit_to_post_thumbnail( $html, $post_id, $post_thumbnail_id ) {
 		// Return early if we are not in the main loop or credits are to displayed at end of posts.

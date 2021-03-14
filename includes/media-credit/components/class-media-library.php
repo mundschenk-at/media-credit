@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2020 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -126,6 +126,8 @@ class Media_Library implements \Media_Credit\Component {
 	 *
 	 * @since 3.0.0
 	 * @since 4.0.0 Renamed to enqueue_scripts_and_stylees.
+	 *
+	 * @return void
 	 */
 	public function enqueue_scripts_and_styles() {
 		// Set up resource files.
@@ -161,6 +163,8 @@ class Media_Library implements \Media_Credit\Component {
 	 * Template for setting Media Credit in attachment details.
 	 *
 	 * @since 3.1.0
+	 *
+	 * @return void
 	 */
 	public function attachment_details_template() {
 		include \MEDIA_CREDIT_PLUGIN_PATH . '/admin/partials/media-credit-attachment-details-tmpl.php';
@@ -168,6 +172,8 @@ class Media_Library implements \Media_Credit\Component {
 
 	/**
 	 * Adds our global data for the JavaScript modules.
+	 *
+	 * @return void
 	 */
 	public function add_inline_script_data() {
 		// Retrieve list of authors.
@@ -193,6 +199,8 @@ class Media_Library implements \Media_Credit\Component {
 
 	/**
 	 * Ensures that proper attachment credits are shown on the admin side of WordPress.
+	 *
+	 * @return void
 	 */
 	public function admin_init() {
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
@@ -221,6 +229,8 @@ class Media_Library implements \Media_Credit\Component {
 	 *
 	 * @internal 3.1.0
 	 * @access private
+	 *
+	 * @return bool
 	 */
 	private function is_legacy_media_edit_page() {
 		$screen = \get_current_screen();
@@ -330,6 +340,8 @@ class Media_Library implements \Media_Credit\Component {
 	 *
 	 * @param array $post       An array of post data.
 	 * @param array $attachment An array of attachment metadata (including the custom fields).
+	 *
+	 * @return array
 	 */
 	public function save_media_credit_fields( array $post, array $attachment ) {
 		$fields = [
@@ -377,9 +389,11 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Saves the default media credit for newly uploaded attachments.
 	 *
-	 * @since 4.0.0
+	 * @since  4.0.0
 	 *
-	 * @param int $post_id Attachment ID.
+	 * @param  int $post_id Attachment ID.
+	 *
+	 * @return void
 	 */
 	public function add_default_media_credit_for_attachment( $post_id ) {
 		// Retrieve the attachemnt object.
@@ -423,10 +437,12 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Stores the parent attachment ID for a cropped image.
 	 *
-	 * @since 4.1.0
+	 * @since  4.1.0
 	 *
-	 * @param string $context       The Customizer control requesting the cropped image.
-	 * @param int    $attachment_id The attachment ID of the original image.
+	 * @param  string $context       The Customizer control requesting the cropped image.
+	 * @param  int    $attachment_id The attachment ID of the original image.
+	 *
+	 * @return void
 	 */
 	public function store_cropped_image_parent( $context, $attachment_id ) {
 		$this->cropped_parent_id = $attachment_id;

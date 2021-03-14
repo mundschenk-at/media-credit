@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2020 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -91,6 +91,8 @@ class Setup implements \Media_Credit\Component {
 
 	/**
 	 * Checks if the default settings or database schema need to be upgraded.
+	 *
+	 * @return void
 	 */
 	public function update_check() {
 		// The default plugin options.
@@ -177,6 +179,8 @@ class Setup implements \Media_Credit\Component {
 	 * Handles plugin deactivation.
 	 *
 	 * @param  bool $network_wide A flag indicating if the plugin was network-activated.
+	 *
+	 * @return void
 	 */
 	public function deactivate( /* @scrutinizer ignore-unused */ $network_wide ) {
 		// Not used yet.
@@ -186,6 +190,8 @@ class Setup implements \Media_Credit\Component {
 	 * Sets up the meta fields with proper authorization and sanitization callbacks.
 	 *
 	 * @since 4.0.0
+	 *
+	 * @return void
 	 */
 	public function register_meta_fields() {
 		\register_meta(

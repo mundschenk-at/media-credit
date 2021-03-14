@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -82,6 +82,8 @@ class Media_Query {
 	 *    @type string $since              If set, only attachments and posts younger
 	 *                                     than this date will be returned. Default empty.
 	 * }
+	 *
+	 * @return object[]                    An integer-keyed array of row objects.
 	 */
 	public function get_author_media_and_posts( array $query = [] ) {
 
@@ -142,6 +144,8 @@ class Media_Query {
 	 *    @type string $since              If set, only attachments and posts younger
 	 *                                     than this date will be returned. Default empty.
 	 * }
+	 *
+	 * @return object[]                    An integer-keyed array of row objects.
 	 */
 	protected function query( array $query = [] ) {
 		global $wpdb;

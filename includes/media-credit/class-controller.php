@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019-2020 Peter Putzer.
+ * Copyright 2019-2021 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -67,6 +67,8 @@ class Controller {
 
 	/**
 	 * Starts the plugin for real.
+	 *
+	 * @return void
 	 */
 	public function run() {
 		// Set up API singleton.

@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2020 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -138,6 +138,8 @@ class REST_API implements \Media_Credit\Component {
 
 	/**
 	 * Start up enabled integrations.
+	 *
+	 * @return void
 	 */
 	public function run() {
 		\add_action( 'rest_api_init', [ $this, 'register_media_credit_fields' ] );
@@ -146,6 +148,8 @@ class REST_API implements \Media_Credit\Component {
 
 	/**
 	 * Registers the meta fields for use (not only) with the REST API.
+	 *
+	 * @return void
 	 */
 	public function register_media_credit_fields() {
 		\register_rest_field(
@@ -162,6 +166,8 @@ class REST_API implements \Media_Credit\Component {
 
 	/**
 	 * Registers our custom routes with the REST API.
+	 *
+	 * @return void
 	 */
 	public function register_custom_routes() {
 		\register_rest_route(
