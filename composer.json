@@ -39,7 +39,10 @@
         "roave/security-advisories": "dev-master",
         "humbug/php-scoper": "^0.13",
         "phpunit/phpunit": "< 10",
-        "mundschenk-at/phpunit-cross-version": "dev-master"
+        "mundschenk-at/phpunit-cross-version": "dev-master",
+        "phpstan/phpstan": "^0.12.81",
+        "szepeviktor/phpstan-wordpress": "^0.7.4",
+        "php-stubs/wp-cli-stubs": "^2.4"
     },
 
     "autoload": {
@@ -69,6 +72,12 @@
         ],
         "coverage": [
             "phpunit --testsuite MediaCredit --coverage-html tests/coverage"
+        ],
+        "phpstan": [
+            "phpstan analyze"
+        ],
+        "phpstan-clean": [
+            "phpstan clear-result-cache && phpstan analyze"
         ],
         "scope-dependencies": [
             "@php vendor/bin/php-scoper add-prefix --config=.scoper.inc.php --force --quiet"

@@ -1,0 +1,38 @@
+#$ composer update --optimize-autoloader
+#$ vendor/bin/phpstan analyze
+
+includes:
+    # @see https://github.com/phpstan/phpstan-src/blob/master/conf/bleedingEdge.neon
+    - phar://phpstan.phar/conf/bleedingEdge.neon
+    # Include the WordPress extension
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+    level: max
+    inferPrivatePropertyTypeFromConstructor: true
+    treatPhpDocTypesAsCertain: false
+    checkMissingIterableValueType: false
+    reportUnmatchedIgnoredErrors: true
+    bootstrapFiles:
+        # Missing constants, function and class stubs
+        - tests/phpstan/constants.php
+        - tests/phpstan/external-classes.php
+        - tests/phpstan/external-functions.php
+    scanFiles:
+        - vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
+    paths:
+        - media-credit.php
+        - uninstall.php
+        - includes/
+        - admin/partials/
+        - public/partials/
+    excludes_analyse:
+        - tests/
+    ignoreErrors:
+        # Uses func_get_args()
+        - '#^Function apply_filters(_ref_array)? invoked with [34567] parameters, 2 required\.$#'
+        - '#^Parameter \#[1-9] \$[a-z_]+ of function [a-z_]+ expects GdImage, GdImage\|resource given\.$#'
+        - '#^Parameter \#[1-9] \$[a-z_]+ of function [a-z_]+ expects resource, GdImage\|resource given\.$#'
+        - '#^Parameter \#[1-9] \$[a-z_]+ of function [a-z_]+ expects resource, resource\|false given\.$#'
+        - '#^Method Avatar_Privacy(\\[a-zA-Z_]+)+::[a-z_]+\(\) should return GdImage\|resource but returns resource\|false\.$#'
+        - '#^Call to function is_resource\(\) with GdImage\|false will always evaluate to false\.$#'
