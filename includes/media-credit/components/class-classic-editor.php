@@ -94,8 +94,8 @@ class Classic_Editor implements \Media_Credit\Component {
 		// Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages.
 		if ( \user_can_richedit() ) {
 			// Set up resource files.
+			$this->suffix = ( defined( 'SCRIPT_DEBUG' ) && \SCRIPT_DEBUG ) ? '' : '.min';
 			$this->url    = \plugin_dir_url( \MEDIA_CREDIT_PLUGIN_FILE );
-			$this->suffix = \SCRIPT_DEBUG ? '' : '.min';
 
 			// Load our TinyMCE plugins and styles.
 			\add_filter( 'tiny_mce_plugins',     [ $this, 'tinymce_internal_plugins' ] );

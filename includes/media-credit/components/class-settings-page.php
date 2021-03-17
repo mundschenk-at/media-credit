@@ -172,8 +172,8 @@ class Settings_Page implements \Media_Credit\Component {
 		}
 
 		// Set up resource file information.
+		$suffix = ( defined( 'SCRIPT_DEBUG' ) && \SCRIPT_DEBUG ) ? '' : '.min';
 		$url    = \plugin_dir_url( \MEDIA_CREDIT_PLUGIN_FILE );
-		$suffix = \SCRIPT_DEBUG ? '' : '.min';
 
 		// Style the preview area of the settings page.
 		\wp_enqueue_style( 'media-credit-preview-style', "{$url}/admin/css/media-credit-preview{$suffix}.css", [], $this->version, 'screen' );
