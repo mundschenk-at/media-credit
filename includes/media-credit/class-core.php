@@ -242,6 +242,9 @@ class Core {
 		if ( ! empty( $attachment->post_parent ) ) {
 			// Get the parent post of the attachment.
 			$post = \get_post( $attachment->post_parent );
+			if ( ! $post instanceof \WP_Post ) {
+				return;
+			}
 
 			// Extract flags.
 			$nofollow = ! empty( $flags['nofollow'] );
