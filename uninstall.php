@@ -54,7 +54,11 @@ require_once __DIR__ . '/vendor/autoload.php';
 function media_credit_uninstall() {
 	// Validate the requirements.
 	if ( ( new Requirements() )->check() ) {
-		// Create and start the uninstallation handler.
+		/**
+		 * Create and start the uninstallation handler.
+		 *
+		 * @var Uninstallation
+		 */
 		$uninstaller = \Media_Credit_Factory::get()->create( Uninstallation::class );
 		$uninstaller->run();
 	}
