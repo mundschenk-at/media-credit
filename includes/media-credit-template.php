@@ -29,12 +29,17 @@ if ( ! \function_exists( 'get_media_credit' ) ) {
 	/**
 	 * Template tag to return the media credit as plain text for some media attachment.
 	 *
-	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @param  int|\WP_Post $post  An attachment ID or the corresponding \WP_Post object.
 	 *
 	 * @return string
 	 */
 	function get_media_credit( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_plaintext' );
+
+		if ( empty( $post ) ) {
+			_doing_it_wrong( __FUNCTION__, 'You need to specify an attachment object or ID.', '4.2.0' );
+			return '';
+		}
 
 		return Media_Credit::get_plaintext( $post );
 	}
@@ -44,12 +49,17 @@ if ( ! \function_exists( 'the_media_credit' ) ) {
 	/**
 	 * Template tag to print the media credit as plain text for some media attachment.
 	 *
-	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @param  int|\WP_Post $post  An attachment ID or the corresponding \WP_Post object.
 	 *
 	 * @return void
 	 */
 	function the_media_credit( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::plaintext' );
+
+		if ( empty( $post ) ) {
+			_doing_it_wrong( __FUNCTION__, 'You need to specify an attachment object or ID.', '4.2.0' );
+			return;
+		}
 
 		Media_Credit::plaintext( $post );
 	}
@@ -59,12 +69,17 @@ if ( ! \function_exists( 'get_media_credit_url' ) ) {
 	/**
 	 * Template tag to return the media credit URL as plain text for some media attachment.
 	 *
-	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @param  int|\WP_Post $post  An attachment ID or the corresponding \WP_Post object.
 	 *
 	 * @return string
 	 */
 	function get_media_credit_url( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_url' );
+
+		if ( empty( $post ) ) {
+			_doing_it_wrong( __FUNCTION__, 'You need to specify an attachment object or ID.', '4.2.0' );
+			return '';
+		}
 
 		return Media_Credit::get_url( $post );
 	}
@@ -74,12 +89,17 @@ if ( ! \function_exists( 'the_media_credit_url' ) ) {
 	/**
 	 * Template tag to print the media credit URL as plain text for some media attachment.
 	 *
-	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @param  int|\WP_Post $post  An attachment ID or the corresponding \WP_Post object.
 	 *
 	 * @return void
 	 */
 	function the_media_credit_url( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0' );
+
+		if ( empty( $post ) ) {
+			_doing_it_wrong( __FUNCTION__, 'You need to specify an attachment object or ID.', '4.2.0' );
+			return;
+		}
 
 		echo \esc_url_raw( \get_media_credit_url( $post ) );
 	}
@@ -89,13 +109,18 @@ if ( ! function_exists( 'get_media_credit_html' ) ) {
 	/**
 	 * Template tag to return the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
-	 * @param  int|object $post       Optional post ID or object of attachment. Default is global $post object.
-	 * @param  bool       $deprecated Optional. Deprecated argument. Default true.
+	 * @param  int|\WP_Post $post       An attachment ID or the corresponding \WP_Post object.
+	 * @param  bool         $deprecated Optional. Deprecated argument. Default true.
 	 *
 	 * @return string
 	 */
 	function get_media_credit_html( $post = null, /* @scrutinizer ignore-unused */ $deprecated = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_html' );
+
+		if ( empty( $post ) ) {
+			_doing_it_wrong( __FUNCTION__, 'You need to specify an attachment object or ID.', '4.2.0' );
+			return '';
+		}
 
 		return Media_Credit::get_html( $post );
 	}
@@ -105,12 +130,17 @@ if ( ! \function_exists( 'the_media_credit_html' ) ) {
 	/**
 	 * Template tag to print the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
-	 * @param  int|object $post Optional post ID or object of attachment. Default is global $post object.
+	 * @param  int|\WP_Post $post  An attachment ID or the corresponding \WP_Post object.
 	 *
 	 * @return void
 	 */
 	function the_media_credit_html( $post = null ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::html' );
+
+		if ( empty( $post ) ) {
+			_doing_it_wrong( __FUNCTION__, 'You need to specify an attachment object or ID.', '4.2.0' );
+			return;
+		}
 
 		Media_Credit::html( $post );
 	}
