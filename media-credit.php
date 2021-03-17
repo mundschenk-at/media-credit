@@ -69,7 +69,11 @@ require_once __DIR__ . '/vendor/autoload.php';
 function media_credit_run() {
 	// Validate the requirements.
 	if ( ( new Requirements() )->check() ) {
-		// Create and start the plugin.
+		/**
+		 * Create and start the plugin.
+		 *
+		 * @var Controller
+		 */
 		$plugin = \Media_Credit_Factory::get()->create( Controller::class );
 		$plugin->run();
 	}
