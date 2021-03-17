@@ -114,7 +114,7 @@ if ( ! function_exists( 'get_media_credit_html' ) ) {
 	 *
 	 * @return string
 	 */
-	function get_media_credit_html( $post = null, /* @scrutinizer ignore-unused */ $deprecated = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
+	function get_media_credit_html( $post = null, $deprecated = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_html' );
 
 		if ( empty( $post ) ) {
