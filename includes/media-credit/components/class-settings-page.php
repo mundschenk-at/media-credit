@@ -156,7 +156,7 @@ class Settings_Page implements \Media_Credit\Component {
 		require \MEDIA_CREDIT_PLUGIN_PATH . '/admin/partials/settings/preview.php';
 
 		// Retrieve buffer.
-		return \ob_get_clean();
+		return (string) \ob_get_clean();
 	}
 
 	/**

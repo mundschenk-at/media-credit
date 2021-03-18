@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019-2020 Peter Putzer.
+ * Copyright 2019-2021 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -51,7 +51,7 @@ class Shortcodes_Filter {
 
 		// Get the image source URL.
 		$src = \wp_get_attachment_image_src( $image_id );
-		if ( empty( $src[0] ) ) {
+		if ( false === $src || empty( $src[0] ) ) {
 			// Invalid image ID.
 			return $content;
 		}
@@ -66,7 +66,11 @@ class Shortcodes_Filter {
 
 			// Grab the shortcode attributes ...
 			$attr = \shortcode_parse_atts( $shortcode[3] );
-			$attr = $attr ?: []; // phpcs:ignore WordPress.PHP.DisallowShortTernary
+			if ( ! \is_array( $attr ) ) {
+				// Workaround for messed up WP Core syntax.
+				// See https://core.trac.wordpress.org/ticket/23307 for details.
+				$attr = [];
+			}
 
 			// ... and the contained <img> tag.
 			$img = $shortcode[5];
@@ -134,6 +138,6 @@ class Shortcodes_Filter {
 	 */
 	protected function get_image_filename_from_full_url( $image ) {
 		// Drop "-{$width}x{$height}".
-		return \preg_replace( '/(.*?)(\-\d+x\d+)?\.\w+/S', '$1', \wp_basename( $image ) );
+		return (string) \preg_replace( '/(.*?)(\-\d+x\d+)?\.\w+/S', '$1', \wp_basename( $image ) );
 	}
 }

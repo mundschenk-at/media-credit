@@ -129,7 +129,7 @@ class Shortcodes implements \Media_Credit\Component {
 		$schema_org = ! empty( $this->settings['schema_org_markup'] );
 
 		// New-style shortcode with the caption inside the shortcode with the link and image tags.
-		if ( ! isset( $attr['caption'] ) ) {
+		if ( ! empty( $content ) && ! isset( $attr['caption'] ) ) {
 			if ( \preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#Sis', $content, $matches ) ) {
 				$content         = $matches[1];
 				$attr['caption'] = \trim( $matches[2] );
@@ -188,12 +188,12 @@ class Shortcodes implements \Media_Credit\Component {
 		if ( $schema_org ) {
 			// Inject schema.org markup for figure.
 			if ( ! \preg_match( '/<figure[^>]*\bitemscope\b/S', $caption ) ) {
-				$caption = \preg_replace( '/<figure\b/S', '<figure itemscope itemtype="http://schema.org/ImageObject"', $caption );
+				$caption = \preg_replace( '/<figure\b/S', '<figure itemscope itemtype="http://schema.org/ImageObject"', $caption ) ?? $caption;
 			}
 
 			// Inject schema.org markup for figcaption.
 			if ( ! \preg_match( '/<figcaption[^>]*\bitemprop\s*=\b/S', $caption ) ) {
-				$caption = \preg_replace( '/<figcaption\b/S', '<figcaption itemprop="caption"', $caption );
+				$caption = \preg_replace( '/<figcaption\b/S', '<figcaption itemprop="caption"', $caption ) ?? $caption;
 			}
 		}
 
@@ -227,8 +227,11 @@ class Shortcodes implements \Media_Credit\Component {
 	 * @return string          The HTML markup for the media credit.
 	 */
 	public function media_credit_shortcode( $atts, $content = null ) {
-		// Disable shortcode if credits should be shown after the post content.
+		// Make sure that content is a string.
+		$content = $content ?? '';
+
 		if ( ! empty( $this->settings['credit_at_end'] ) ) {
+			// Disable shortcode if credits should be shown after the post content.
 			return \do_shortcode( $content );
 		}
 
@@ -299,7 +302,7 @@ class Shortcodes implements \Media_Credit\Component {
 		require \MEDIA_CREDIT_PLUGIN_PATH . '/public/partials/media-credit-shortcode.php';
 
 		// Retrieve buffer.
-		return \ob_get_clean();
+		return (string) \ob_get_clean();
 	}
 
 	/**
