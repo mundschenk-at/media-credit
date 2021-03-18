@@ -358,7 +358,10 @@ class Media_Library implements \Media_Credit\Component {
 			unset( $post['post_author'] );
 		}
 
-		$this->core->update_media_credit_json( \get_post( $post['ID'] ), $fields );
+		$attachment = \get_post( $post['ID'] );
+		if ( $attachment instanceof \WP_Post ) {
+			$this->core->update_media_credit_json( $attachment, $fields );
+		}
 
 		return $post;
 	}
