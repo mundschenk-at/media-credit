@@ -48,7 +48,7 @@ class Media_Credit_Factory extends Dice {
 	/**
 	 * The factory instance.
 	 *
-	 * @var Media_Credit_Factory
+	 * @var Media_Credit_Factory|null
 	 */
 	private static $factory;
 
