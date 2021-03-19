@@ -38,10 +38,8 @@
  */
 ?>
 <div id="recent-media-<?php echo ( $sidebar ? 'sidebar' : 'inline' ); ?>">
-	<?php if ( \is_string( $header ) ) : ?>
+	<?php if ( ! empty( $header ) ) : ?>
 		<h3><?php \esc_html_e( 'Recent Media', 'media-credit' ); ?></h3>
-	<?php else : ?>
-		<?php echo \wp_kses_post( $header ); ?>
 	<?php endif; ?>
 	<?php foreach ( $media as $attachment ) : ?>
 		<?php
