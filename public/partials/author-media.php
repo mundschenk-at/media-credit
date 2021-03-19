@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,17 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+/**
+ * Required template variables:
+ *
+ * @var string|null $header              The heading to use (if not null).
+ * @var bool        $sidebar             A flag indicating the media should be
+ *                                       displayed as a sidebar or inline.
+ * @var bool        $link_without_parent A flag indicating whether media files not
+ *                                       attached a post should be shown.
+ * @var stdClass[]  $media               An integer-keyed array of attachment
+ *                                       data rows.
+ */
 ?>
 <div id="recent-media-<?php echo ( $sidebar ? 'sidebar' : 'inline' ); ?>">
 	<?php if ( \is_string( $header ) ) : ?>
