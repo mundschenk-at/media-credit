@@ -295,6 +295,10 @@ class Shortcodes implements \Media_Credit\Component {
 		// Prepare media content (nested shortcodes).
 		$content = \do_shortcode( $content );
 
+		// Additional required template variables.
+		$inline_media_credit = [ $this, 'inline_media_credit' ];
+		$schema_org          = ! empty( $this->settings['schema_org_markup'] );
+
 		// Start buffering.
 		\ob_start();
 
