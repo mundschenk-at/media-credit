@@ -25,15 +25,17 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-use Media_Credit\Components\Shortcodes;
-
 /**
  * Required template variables:
  *
- * @var string     $content The HTML content contained between [media-credit] and [/media-credit].
- * @var bool       $html5   A flag indicating that the theme supports HTML5 captions.
- * @var int        $width   The width in pixels.
- * @var Shortcodes $this    The shortcodes component.
+ * @var string     $content             The HTML content contained between
+ *                                      [media-credit] and [/media-credit].
+ * @var bool       $html5               A flag indicating that the theme supports
+ *                                      HTML5 captions.
+ * @var bool       $schema_org          A flag indicating that the schema.org information
+ *                                      should be injected into the markup.
+ * @var int        $width               The width in pixels.
+ * @var callable   $inline_media_credit A helper to print the media credit line.
  * @var array      $atts {
  *     An array of shortcode attributes.
  *
@@ -53,7 +55,6 @@ $align_class = "align{$atts['align']}";
 $wrap = $atts['standalone'] && $html5;
 
 // Optional schema.org markup.
-$schema_org            = ! empty( $this->settings['schema_org_markup'] );
 $schema_org_figure     = '';
 $schema_org_figcaption = '';
 if ( $schema_org ) {
@@ -71,12 +72,12 @@ if ( $schema_org ) {
 <?php endif; ?>
 	<?php if ( ! $html5 ) : ?>
 		<div class="media-credit-container <?php echo \esc_attr( $align_class ); ?>" <?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-			<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo $this->inline_media_credit( $atts, $schema_org ); ?>
+			<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo $inline_media_credit( $atts, $schema_org ); ?>
 		</div>
 	<?php else : ?>
 		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<figcaption class="wp-caption-text" <?php echo $schema_org_figcaption; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-			<?php echo $this->inline_media_credit( $atts, $schema_org ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php echo $inline_media_credit( $atts, $schema_org ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		</figcaption>
 	<?php endif; ?>
 <?php if ( $wrap ) : ?>

@@ -25,13 +25,19 @@
  */
 
 use Media_Credit\Settings;
-use Media_Credit\Components\Settings_Page;
 
 /**
  * Required template variables:
  *
- * @var Settings_Page $this    The shortcodes component.
- * @var array         $options An array of plugin options.
+ * @var array $options      An array of plugin options.
+ * @var array $preview_data {
+ *     Strings used for generating the preview.
+ *
+ *     @type string $pattern The pattern string for credits with two names.
+ *     @type string $name1   A male example name.
+ *     @type string $name2   A female example name.
+ *     @type string $joiner  The string used to join multiple image credits.
+ * }
  */
 
 $user        = \wp_get_current_user();
@@ -39,9 +45,9 @@ $user_credit = '<a href="' . \esc_url( \get_author_posts_url( $user->ID ) ) . '"
 
 if ( ! empty( $options[ Settings::CREDIT_AT_END ] ) ) {
 	$credit_html = \sprintf(
-		$this->preview_data['pattern'],
-		$this->preview_data['name1'],
-		$user_credit . $this->preview_data['joiner'] . $this->preview_data['name2']
+		$preview_data['pattern'],
+		$preview_data['name1'],
+		$user_credit . $preview_data['joiner'] . $preview_data['name2']
 	);
 } else {
 	$credit_html = $user_credit;

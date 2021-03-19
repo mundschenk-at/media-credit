@@ -149,8 +149,9 @@ class Settings_Page implements \Media_Credit\Component {
 		// Start buffering.
 		\ob_start();
 
-		// The partial needs access to the plugin options.
-		$options = $this->options->get( Options::OPTION, [] );
+		// The partial needs access to the plugin options and other internal data.
+		$options      = $this->options->get( Options::OPTION, [] );
+		$preview_data = $this->preview_data;
 
 		// Require partial.
 		require \MEDIA_CREDIT_PLUGIN_PATH . '/admin/partials/settings/preview.php';
