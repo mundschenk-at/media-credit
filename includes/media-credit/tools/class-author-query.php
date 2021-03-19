@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2020 Peter Putzer.
+ * Copyright 2020-2021 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -66,7 +66,7 @@ class Author_Query {
 	 */
 	public function get_authors() {
 		$query      = $this->get_author_list_query();
-		$query_hash = \md5( /* @scrutinizer ignore-type */ \wp_json_encode( $query ) );
+		$query_hash = \md5( (string) \wp_json_encode( $query ) );
 		$cache_key  = "author_list_{$query_hash}";
 		$results    = $this->cache->get( $cache_key );
 
