@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,24 @@
  *
  * @package mundschenk-at/media-credit
  * @license http://www.gnu.org/licenses/gpl-2.0.html
+ */
+
+use Media_Credit\Components\Shortcodes;
+
+/**
+ * Required template variables:
+ *
+ * @var string     $content The HTML content contained between [media-credit] and [/media-credit].
+ * @var bool       $html5   A flag indicating that the theme supports HTML5 captions.
+ * @var int        $width   The width in pixels.
+ * @var Shortcodes $this    The shortcodes component.
+ * @var array      $atts {
+ *     An array of shortcode attributes.
+ *
+ *     @type string $align      The alignment (left, right, center, none).
+ *     @type bool   $standalone A flag indicating that this is a standalone
+ *                              [media-credit] without a surrounding [caption].
+ * }
  */
 
 // Apply credit width via style attribute.

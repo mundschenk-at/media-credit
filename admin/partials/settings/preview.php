@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2019 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,6 +25,14 @@
  */
 
 use Media_Credit\Settings;
+use Media_Credit\Components\Settings_Page;
+
+/**
+ * Required template variables:
+ *
+ * @var Settings_Page $this    The shortcodes component.
+ * @var array         $options An array of plugin options.
+ */
 
 $user        = \wp_get_current_user();
 $user_credit = '<a href="' . \esc_url( \get_author_posts_url( $user->ID ) ) . '">' . \esc_html( $user->display_name ) . '</a>' . \esc_html( $options[ Settings::SEPARATOR ] . $options[ Settings::ORGANIZATION ] );
