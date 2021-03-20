@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019 Peter Putzer.
+ * Copyright 2019-2021 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -47,21 +47,14 @@ class Uninstallation implements \Media_Credit\Component {
 	private $options;
 
 	/**
-	 * The transients handler.
-	 *
-	 * @var Transients
-	 */
-	private $transients;
-
-	/**
 	 * Creates a new Setup instance.
 	 *
-	 * @param Options    $options    The options handler.
-	 * @param Transients $transients The transients handler.
+	 * @since 4.2.0 Unused parameter $transients removed.
+	 *
+	 * @param Options $options The options handler.
 	 */
-	public function __construct( Options $options, Transients $transients ) {
-		$this->options    = $options;
-		$this->transients = $transients;
+	public function __construct( Options $options ) {
+		$this->options = $options;
 	}
 
 	/**
