@@ -61,13 +61,6 @@ class Shortcodes implements \Media_Credit\Component {
 	private $settings;
 
 	/**
-	 * The options handler.
-	 *
-	 * @var Options
-	 */
-	private $options;
-
-	/**
 	 * The core API.
 	 *
 	 * @var Core
@@ -77,12 +70,12 @@ class Shortcodes implements \Media_Credit\Component {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @param Core    $core    The core plugin API.
-	 * @param Options $options     The options handler.
+	 * @since 4.2.0 Unused parameter $options removed.
+	 *
+	 * @param Core $core The core plugin API.
 	 */
-	public function __construct( Core $core, Options $options ) {
-		$this->core    = $core;
-		$this->options = $options;
+	public function __construct( Core $core ) {
+		$this->core = $core;
 	}
 
 	/**
