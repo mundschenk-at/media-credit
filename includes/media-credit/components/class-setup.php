@@ -97,14 +97,14 @@ class Setup implements \Media_Credit\Component {
 	public function update_check() {
 		// The default plugin options.
 		$default_options = [
-			'version'               => $this->version,
-			'install_date'          => \gmdate( 'Y-m-d' ),
-			'separator'             => Settings::DEFAULT_SEPARATOR,
-			'organization'          => \get_bloginfo( 'name', 'display' ),
-			'credit_at_end'         => false,
-			'no_default_credit'     => false,
-			'post_thumbnail_credit' => false,
-			'schema_org_markup'     => false,
+			Settings::INSTALLED_VERSION     => $this->version,
+			Settings::INSTALL_DATE          => \gmdate( 'Y-m-d' ),
+			Settings::SEPARATOR             => Settings::DEFAULT_SEPARATOR,
+			Settings::ORGANIZATION          => \get_bloginfo( 'name', 'display' ),
+			Settings::CREDIT_AT_END         => false,
+			Settings::NO_DEFAULT_CREDIT     => false,
+			Settings::FEATURED_IMAGE_CREDIT => false,
+			Settings::SCHEMA_ORG_MARKUP     => false,
 		];
 
 		// Retrieve options.
@@ -119,13 +119,13 @@ class Setup implements \Media_Credit\Component {
 		if ( empty( $installed_options ) ) {
 			// The plugin was installed for the frist time.
 			$installed_options = $default_options;
-		} elseif ( ! isset( $installed_options['version'] ) ) {
+		} elseif ( ! isset( $installed_options[ Settings::INSTALLED_VERSION ] ) ) {
 			// Upgrade plugin to 1.0 (0.5.5 didn't have a version number).
-			$installed_options['install_date'] = $default_options['install_date'];
+			$installed_options[ Settings::INSTALL_DATE ] = $default_options[ Settings::INSTALL_DATE ];
 		}
 
 		// Upgrade plugin to 1.0.1.
-		if ( \version_compare( $installed_options['version'], '1.0.1', '<' ) ) {
+		if ( \version_compare( $installed_options[ Settings::INSTALLED_VERSION ], '1.0.1', '<' ) ) {
 			// Update all media-credit postmeta keys to _media_credit.
 			global $wpdb;
 
@@ -134,22 +134,22 @@ class Setup implements \Media_Credit\Component {
 		}
 
 		// Upgrade plugin to 2.2.0.
-		if ( \version_compare( $installed_options['version'], '2.2.0', '<' ) ) {
-			$installed_options['no_default_credit'] = $default_options['no_default_credit'];
+		if ( \version_compare( $installed_options[ Settings::INSTALLED_VERSION ], '2.2.0', '<' ) ) {
+			$installed_options[ Settings::NO_DEFAULT_CREDIT ] = $default_options[ Settings::NO_DEFAULT_CREDIT ];
 		}
 
 		// Upgrade plugin to 3.0.0.
-		if ( \version_compare( $installed_options['version'], '3.0.0', '<' ) ) {
-			$installed_options['post_thumbnail_credit'] = $default_options['post_thumbnail_credit'];
+		if ( \version_compare( $installed_options[ Settings::INSTALLED_VERSION ], '3.0.0', '<' ) ) {
+			$installed_options[ Settings::FEATURED_IMAGE_CREDIT ] = $default_options[ Settings::FEATURED_IMAGE_CREDIT ];
 		}
 
 		// Upgrade plugin to 3.1.0.
-		if ( \version_compare( $installed_options['version'], '3.1.0', '<' ) ) {
-			$installed_options['schema_org_markup'] = $default_options['schema_org_markup'];
+		if ( \version_compare( $installed_options[ Settings::INSTALLED_VERSION ], '3.1.0', '<' ) ) {
+			$installed_options[ Settings::SCHEMA_ORG_MARKUP ] = $default_options[ Settings::SCHEMA_ORG_MARKUP ];
 		}
 
 		// Update installed version.
-		$installed_options['version'] = $this->version;
+		$installed_options[ Settings::INSTALLED_VERSION ] = $this->version;
 
 		// Store upgraded options.
 		if ( $original_options !== $installed_options ) {
