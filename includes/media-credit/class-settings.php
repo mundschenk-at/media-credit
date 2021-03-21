@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019 Peter Putzer.
+ * Copyright 2019-2021 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,7 +31,7 @@ use Media_Credit\Data_Storage\Options;
 use Mundschenk\UI\Controls;
 
 /**
- * Default configuration for Media Credit.
+ * Plugin settings for Media Credit.
  *
  * @internal
  *
@@ -40,6 +40,7 @@ use Mundschenk\UI\Controls;
  * @author Peter Putzer <github@mundschenk.at>
  */
 class Settings {
+	// Individual settings.
 	const INSTALLED_VERSION     = 'version';
 	const INSTALL_DATE          = 'install_date';
 	const SEPARATOR             = 'separator';
@@ -50,8 +51,10 @@ class Settings {
 	const FEATURED_IMAGE_CREDIT = 'post_thumbnail_credit';
 	const SCHEMA_ORG_MARKUP     = 'schema_org_markup';
 
+	// The "Preview" pseudo-setting.
 	const MEDIA_CREDIT_PREVIEW = 'media-credit-preview';
 
+	// The section key.
 	const SETTINGS_SECTION = 'media-credit';
 
 	/**
@@ -68,6 +71,176 @@ class Settings {
 	 * @var array
 	 */
 	private $fields;
+
+	/**
+	 * The defaults array.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @var array
+	 */
+	private $defaults;
+
+	/**
+	 * The user's settings (indexed by site ID to be multisite-safe).
+	 *
+	 * @since 4.2.0
+	 *
+	 * @var array
+	 */
+	private $settings;
+
+	/**
+	 * The plugin version.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @var string
+	 */
+	private $version;
+
+	/**
+	 * The options handler.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @var Options
+	 */
+	private $options;
+
+	/**
+	 * Creates a new instance.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @param string  $version The plugin version string (e.g. "3.0.0-beta.2").
+	 * @param Options $options The options handler.
+	 */
+	public function __construct( $version, Options $options ) {
+		$this->version = $version;
+		$this->options = $options;
+	}
+
+	/**
+	 * Retrieves the plugin version.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @return string
+	 */
+	public function get_version() {
+		return $this->version;
+	}
+
+	/**
+	 * Retrieves the complete plugin settings array.
+	 *
+	 * @since  4.2.0
+	 *
+	 * @param  bool $force Optional. Forces retrieval of settings from database.
+	 *                     Default false.
+	 *
+	 * @return array
+	 */
+	public function get_all_settings( $force = false ) {
+		// Force a re-read if the cached settings do not appear to be from the current version.
+		if (
+			empty( $this->settings ) ||
+			empty( $this->settings[ self::INSTALLED_VERSION ] ) ||
+			$this->version !== $this->settings[ self::INSTALLED_VERSION ] ||
+			$force
+		) {
+			$this->settings = $this->load_settings();
+		}
+
+		return $this->settings;
+	}
+
+	/**
+	 * Load settings from the database and set defaults if necessary.
+	 *
+	 * @since  4.2.0
+	 *
+	 * @return array
+	 */
+	protected function load_settings() {
+		$_settings = $this->options->get( Options::OPTION );
+		$_defaults = $this->get_defaults();
+		$modified  = false;
+
+		if ( \is_array( $_settings ) ) {
+			foreach ( $_defaults as $name => $default_value ) {
+				if ( ! isset( $_settings[ $name ] ) ) {
+					$_settings[ $name ] = $default_value;
+					$modified           = true;
+				}
+			}
+		} else {
+			$_settings = $_defaults;
+			$modified  = true;
+		}
+
+		if ( $modified ) {
+			$this->options->set( Options::OPTION, $_settings );
+		}
+
+		return $_settings;
+	}
+
+	/**
+	 * Retrieves a single setting.
+	 *
+	 * @since  4.2.0
+	 *
+	 * @param  string $setting The setting name (index).
+	 * @param  bool   $force   Optional. Forces retrieval of settings from database. Default false.
+	 *
+	 * @return mixed           The requested setting value.
+	 *
+	 * @throws \UnexpectedValueException Thrown when the setting name is invalid.
+	 */
+	public function get( $setting, $force = false ) {
+		$all_settings = $this->get_all_settings( $force );
+
+		if ( ! isset( $all_settings[ $setting ] ) ) {
+			throw new \UnexpectedValueException( "Invalid setting name '{$setting}'." );
+		}
+
+		return $all_settings[ $setting ];
+	}
+
+	/**
+	 * Sets a single setting.
+	 *
+	 * @since  4.2.0
+	 *
+	 * @internal
+	 *
+	 * @param  string $setting The setting name (index).
+	 * @param  mixed  $value   The setting value.
+	 *
+	 * @return bool
+	 *
+	 * @throws \UnexpectedValueException Thrown when the setting name is invalid.
+	 */
+	public function set( $setting, $value ) {
+		$all_settings = $this->get_all_settings();
+
+		if ( ! isset( $all_settings[ $setting ] ) ) {
+			throw new \UnexpectedValueException( "Invalid setting name '{$setting}'." );
+		}
+
+		// Update DB.
+		$all_settings[ $setting ] = $value;
+		$result                   = $this->options->set( Options::OPTION, $all_settings );
+
+		// Update cached settings only if DB the DB write was successful.
+		if ( $result ) {
+			$this->settings = $all_settings;
+		}
+
+		return $result;
+	}
 
 	/**
 	 * Retrieves the settings field definitions.
@@ -162,5 +335,30 @@ class Settings {
 		}
 
 		return $this->fields;
+	}
+
+	/**
+	 * Retrieves the default settings.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @return array
+	 */
+	public function get_defaults() {
+		if ( empty( $this->defaults ) ) {
+			$_defaults = [];
+			foreach ( $this->get_fields() as $index => $field ) {
+				if ( isset( $field['default'] ) ) {
+					$_defaults[ $index ] = $field['default'];
+				}
+			}
+
+			// Allow detection of new installations.
+			$_defaults[ self::INSTALLED_VERSION ] = '';
+
+			$this->defaults = $_defaults;
+		}
+
+		return $this->defaults;
 	}
 }

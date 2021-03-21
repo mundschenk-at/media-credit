@@ -101,37 +101,17 @@ class Core {
 	private static $instance;
 
 	/**
-	 * The plugin version.
-	 *
-	 * @var string
-	 */
-	private $version;
-
-	/**
 	 * The object cache handler.
 	 *
 	 * @var Cache
 	 */
 	private $cache;
 
-	/**
-	 * The options handler.
-	 *
-	 * @var Options
-	 */
-	private $options;
 
 	/**
 	 * The default settings.
 	 *
 	 * @var Settings
-	 */
-	private $settings_template;
-
-	/**
-	 * The cached plugin settings.
-	 *
-	 * @var array
 	 */
 	private $settings;
 
@@ -152,18 +132,17 @@ class Core {
 	/**
 	 * Creates a new instance.
 	 *
-	 * @param string            $version           The plugin version string (e.g. "3.0.0-beta.2").
+	 * @since 4.2.0 Parameters $version and $options removed. Parameter $settings_template
+	 *              has been renamed to $settings.
+	 *
 	 * @param Cache             $cache             The object cache handler.
-	 * @param Options           $options           The options handler.
-	 * @param Settings          $settings_template The default settings template.
+	 * @param Settings          $settings          The settings handler.
 	 * @param Shortcodes_Filter $shortcodes_filter The shortcodes filter.
 	 * @param Media_Query       $media_query       The media query handler.
 	 */
-	public function __construct( $version, Cache $cache, Options $options, Settings $settings_template, Shortcodes_Filter $shortcodes_filter, Media_Query $media_query ) {
-		$this->version           = $version;
+	public function __construct( Cache $cache, Settings $settings, Shortcodes_Filter $shortcodes_filter, Media_Query $media_query ) {
 		$this->cache             = $cache;
-		$this->options           = $options;
-		$this->settings_template = $settings_template;
+		$this->settings          = $settings;
 		$this->media_query       = $media_query;
 		$this->shortcodes_filter = $shortcodes_filter;
 	}
@@ -206,7 +185,7 @@ class Core {
 	 * @return string
 	 */
 	public function get_version() {
-		return $this->version;
+		return $this->settings->get_version();
 	}
 
 	/**
@@ -215,11 +194,7 @@ class Core {
 	 * @return array
 	 */
 	public function get_settings() {
-		if ( empty( $this->settings ) ) {
-			$this->settings = $this->options->get( Options::OPTION, [] );
-		}
-
-		return $this->settings;
+		return $this->settings->get_all_settings();
 	}
 
 	/**
