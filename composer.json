@@ -47,7 +47,10 @@
 
     "autoload": {
         "classmap": ["includes/", "public/", "admin/"],
-        "files": ["includes/media-credit-template.php"],
+        "files": ["includes/media-credit-template.php"]
+    },
+    "autoload-dev": {
+        "classmap": ["tests/" ],
         "exclude-from-classmap": ["tests/phpstan/"]
     },
 
