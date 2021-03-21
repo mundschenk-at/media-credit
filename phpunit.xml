@@ -2,13 +2,13 @@
 <phpunit
 	bootstrap="tests/bootstrap.php"
 	beStrictAboutTestsThatDoNotTestAnything="true"
-	beStrictAboutCoversAnnotation="true"
+	beStrictAboutCoversAnnotation="false"
 	stopOnRisky="true"
 	verbose="true"
 >
 	<testsuites>
 	    <testsuite name="MediaCredit">
-			<directory suffix="-test.php">tests</directory>
+			<directory suffix="_Test.php">tests</directory>
 	    </testsuite>
 	</testsuites>
 	<filter>
