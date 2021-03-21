@@ -229,6 +229,7 @@ class Settings_Test extends \Media_Credit\Tests\TestCase {
 			->once()
 			->with( Options::OPTION )
 			->andReturn( $settings );
+		$this->options->shouldReceive( 'get' )->never()->with( 'media-credit', false, true );
 
 		$this->sut->shouldReceive( 'get_defaults' )
 			->once()
@@ -263,6 +264,10 @@ class Settings_Test extends \Media_Credit\Tests\TestCase {
 			->once()
 			->with( Options::OPTION )
 			->andReturn( false );
+		$this->options->shouldReceive( 'get' )
+			->once()
+			->with( 'media-credit', false, true )
+			->andReturn( false );
 
 		$this->sut->shouldReceive( 'get_defaults' )
 			->once()
@@ -282,8 +287,9 @@ class Settings_Test extends \Media_Credit\Tests\TestCase {
 	 */
 	public function test_load_settings_everything_in_order() {
 		$settings = [
-			'foo' => 'barfoo',
-			'baz' => 'foo',
+			'foo'                       => 'barfoo',
+			'baz'                       => 'foo',
+			Settings::INSTALLED_VERSION => '1.2.3',
 		];
 		$defaults = [
 			'foo' => 'bar',
@@ -294,6 +300,7 @@ class Settings_Test extends \Media_Credit\Tests\TestCase {
 			->once()
 			->with( Options::OPTION )
 			->andReturn( $settings );
+		$this->options->shouldReceive( 'get' )->never()->with( 'media-credit', false, true );
 
 		$this->sut->shouldReceive( 'get_defaults' )
 			->once()
@@ -302,6 +309,57 @@ class Settings_Test extends \Media_Credit\Tests\TestCase {
 		$this->options->shouldReceive( 'set' )->never();
 
 		$this->assertSame( $settings, $this->sut->load_settings() );
+	}
+
+	/**
+	 * Tests ::load_settings from legacy option name.
+	 *
+	 * @covers ::load_settings
+	 */
+	public function test_load_settings_legacy() {
+		$setting1      = 'foo';
+		$setting2      = 'baz';
+		$orig_settings = [
+			$setting1 => 'barfoo',
+		];
+		$defaults      = [
+			$setting1 => 'bar',
+			$setting2 => 'foobar',
+		];
+
+		// Expected result.
+		$settings                                = $orig_settings;
+		$settings[ Settings::INSTALLED_VERSION ] = '0.5.5-or-earlier';
+		$settings[ $setting2 ]                   = $defaults[ $setting2 ];
+
+		$this->options->shouldReceive( 'get' )
+			->once()
+			->with( Options::OPTION )
+			->andReturn( false );
+		$this->options->shouldReceive( 'get' )
+			->once()
+			->with( 'media-credit', false, true )
+			->andReturn( $orig_settings );
+		$this->options->shouldReceive( 'delete' )
+			->once()
+			->with( 'media-credit', true );
+
+		$this->sut->shouldReceive( 'get_defaults' )
+			->once()
+			->andReturn( $defaults );
+
+		$this->options->shouldReceive( 'set' )
+			->once()
+			->with( Options::OPTION, m::type( 'array' ) );
+
+		$result = $this->sut->load_settings();
+
+		$this->assert_is_array( $result );
+		$this->assertArrayHasKey( $setting1, $result );
+		$this->assertSame( 'barfoo', $result[ $setting1 ] );
+		$this->assertArrayHasKey( $setting2, $result );
+		$this->assertSame( 'foobar', $result[ $setting2 ] );
+		$this->assertArrayHasKey( Settings::INSTALLED_VERSION, $result );
 	}
 
 	/**

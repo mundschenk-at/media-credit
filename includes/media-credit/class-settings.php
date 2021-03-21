@@ -168,7 +168,24 @@ class Settings {
 		$_defaults = $this->get_defaults();
 		$modified  = false;
 
+		// Maybe we need to use the old option name.
+		if ( false === $_settings ) {
+			$_settings = $this->options->get( 'media-credit', false, true );
+
+			if ( \is_array( $_settings ) ) {
+				// Let's move things to the new name.
+				$this->options->delete( 'media-credit', true );
+				$modified = true;
+			}
+		}
+
 		if ( \is_array( $_settings ) ) {
+			// Set correct installed version for really old installs (pre-1.0).
+			if ( ! isset( $_settings[ self::INSTALLED_VERSION ] ) ) {
+				$_settings[ self::INSTALLED_VERSION ] = '0.5.5-or-earlier';
+			}
+
+			// Ensure default values are set for all new settings.
 			foreach ( $_defaults as $name => $default_value ) {
 				if ( ! isset( $_settings[ $name ] ) ) {
 					$_settings[ $name ] = $default_value;
@@ -355,6 +372,7 @@ class Settings {
 
 			// Allow detection of new installations.
 			$_defaults[ self::INSTALLED_VERSION ] = '';
+			$_defaults[ self::INSTALL_DATE ]      = \gmdate( 'Y-m-d' );
 
 			$this->defaults = $_defaults;
 		}
