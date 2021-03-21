@@ -150,7 +150,7 @@ class Settings_Page implements \Media_Credit\Component {
 		\ob_start();
 
 		// The partial needs access to the plugin options and other internal data.
-		$options      = $this->options->get( Options::OPTION, [] );
+		$options      = $this->settings->get_all_settings();
 		$preview_data = $this->preview_data;
 
 		// Require partial.
@@ -200,7 +200,7 @@ class Settings_Page implements \Media_Credit\Component {
 		}
 
 		// Prepare valid options to preserve the version number.
-		$valid_options = $this->options->get( Options::OPTION, [] );
+		$valid_options = $this->settings->get_all_settings();
 
 		// Sanitize the actual input values.
 		foreach ( $input as $key => $value ) {
