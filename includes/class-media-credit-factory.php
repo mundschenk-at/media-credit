@@ -31,6 +31,7 @@ use Media_Credit\Controller;
 use Media_Credit\Component;
 use Media_Credit\Components;
 use Media_Credit\Tools;
+use Media_Credit\Settings;
 
 use Mundschenk\Data_Storage;
 
@@ -105,7 +106,8 @@ class Media_Credit_Factory extends Dice {
 		// Define rules.
 		$rules = [
 			// Core API.
-			Core::class                         => [
+			Core::class                         => self::SHARED,
+			Settings::class                     => [
 				'shared'          => true,
 				'constructParams' => [ $version ],
 			],
