@@ -133,7 +133,6 @@ class Media_Credit_Factory extends Dice {
 			Components\Frontend::class          => $version_rule,
 			Components\Media_Library::class     => $version_rule,
 			Components\Settings_Page::class     => $version_rule,
-			Components\Setup::class             => $version_rule,
 		];
 
 		return $rules;

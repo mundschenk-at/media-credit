@@ -29,7 +29,6 @@ namespace Media_Credit\Components;
 
 use Media_Credit\Core;
 use Media_Credit\Settings;
-use Media_Credit\Data_Storage\Options;
 
 /**
  * Handles plugin activation and deactivation.
@@ -40,13 +39,6 @@ use Media_Credit\Data_Storage\Options;
 class Setup implements \Media_Credit\Component {
 
 	/**
-	 * The plugin version string.
-	 *
-	 * @var string
-	 */
-	private $version;
-
-	/**
 	 * The core API.
 	 *
 	 * @var Core
@@ -54,23 +46,25 @@ class Setup implements \Media_Credit\Component {
 	private $core;
 
 	/**
-	 * The options handler.
+	 * The settings handler.
 	 *
-	 * @var Options
+	 * @since 4.2.0
+	 *
+	 * @var Settings
 	 */
-	private $options;
+	private $settings;
 
 	/**
 	 * Creates a new Setup instance.
 	 *
-	 * @param string  $version         The plugin version string.
-	 * @param Core    $core            The core plugin API.
-	 * @param Options $options         The options handler.
+	 * @since 4.2.0 Parameter $version removed. Parameter $options replaced by $settings.
+	 *
+	 * @param Core     $core     The core plugin API.
+	 * @param Settings $settings The settings handler.
 	 */
-	public function __construct( $version, Core $core, Options $options ) {
-		$this->version = $version;
-		$this->core    = $core;
-		$this->options = $options;
+	public function __construct( Core $core, Settings $settings ) {
+		$this->core     = $core;
+		$this->settings = $settings;
 	}
 
 	/**
@@ -95,37 +89,17 @@ class Setup implements \Media_Credit\Component {
 	 * @return void
 	 */
 	public function update_check() {
-		// The default plugin options.
-		$default_options = [
-			Settings::INSTALLED_VERSION     => $this->version,
-			Settings::INSTALL_DATE          => \gmdate( 'Y-m-d' ),
-			Settings::SEPARATOR             => Settings::DEFAULT_SEPARATOR,
-			Settings::ORGANIZATION          => \get_bloginfo( 'name', 'display' ),
-			Settings::CREDIT_AT_END         => false,
-			Settings::NO_DEFAULT_CREDIT     => false,
-			Settings::FEATURED_IMAGE_CREDIT => false,
-			Settings::SCHEMA_ORG_MARKUP     => false,
-		];
+		// Force reading the settings from the DB.
+		$current_settings = $this->settings->get_all_settings( true );
 
-		// Retrieve options.
-		$original_options  = $this->options->get( Options::OPTION, [] );
-		$installed_options = $original_options;
-
-		// Also look for legacy options.
-		if ( empty( $original_options ) ) {
-			$installed_options = $this->load_legacy_options();
-		}
-
-		if ( empty( $installed_options ) ) {
-			// The plugin was installed for the frist time.
-			$installed_options = $default_options;
-		} elseif ( ! isset( $installed_options[ Settings::INSTALLED_VERSION ] ) ) {
-			// Upgrade plugin to 1.0 (0.5.5 didn't have a version number).
-			$installed_options[ Settings::INSTALL_DATE ] = $default_options[ Settings::INSTALL_DATE ];
-		}
+		// Check if the plugin data needs to be updated.
+		$installed_version = $current_settings[ Settings::INSTALLED_VERSION ];
+		$version           = $this->settings->get_version();
+		$update_needed     = $version !== $installed_version;
+		$new_install       = empty( $installed_version );
 
 		// Upgrade plugin to 1.0.1.
-		if ( \version_compare( $installed_options[ Settings::INSTALLED_VERSION ], '1.0.1', '<' ) ) {
+		if ( \version_compare( $installed_version, '1.0.1', '<' ) ) {
 			// Update all media-credit postmeta keys to _media_credit.
 			global $wpdb;
 
@@ -133,46 +107,8 @@ class Setup implements \Media_Credit\Component {
 			$wpdb->update( $wpdb->postmeta, [ 'meta_key' => Core::POSTMETA_KEY ], [ 'meta_key' => 'media-credit' ] );
 		}
 
-		// Upgrade plugin to 2.2.0.
-		if ( \version_compare( $installed_options[ Settings::INSTALLED_VERSION ], '2.2.0', '<' ) ) {
-			$installed_options[ Settings::NO_DEFAULT_CREDIT ] = $default_options[ Settings::NO_DEFAULT_CREDIT ];
-		}
-
-		// Upgrade plugin to 3.0.0.
-		if ( \version_compare( $installed_options[ Settings::INSTALLED_VERSION ], '3.0.0', '<' ) ) {
-			$installed_options[ Settings::FEATURED_IMAGE_CREDIT ] = $default_options[ Settings::FEATURED_IMAGE_CREDIT ];
-		}
-
-		// Upgrade plugin to 3.1.0.
-		if ( \version_compare( $installed_options[ Settings::INSTALLED_VERSION ], '3.1.0', '<' ) ) {
-			$installed_options[ Settings::SCHEMA_ORG_MARKUP ] = $default_options[ Settings::SCHEMA_ORG_MARKUP ];
-		}
-
 		// Update installed version.
-		$installed_options[ Settings::INSTALLED_VERSION ] = $this->version;
-
-		// Store upgraded options.
-		if ( $original_options !== $installed_options ) {
-			$this->options->set( Options::OPTION, $installed_options );
-		}
-	}
-
-	/**
-	 * Retrieves legacy options and deletes them from the database.
-	 *
-	 * @return array   The legacy options, or an empty array.
-	 */
-	protected function load_legacy_options() {
-		$legacy_options = $this->options->get( 'media-credit', [], true );
-		if ( empty( $legacy_options ) ) {
-			// No legacy options found, abort.
-			return [];
-		}
-
-		// Delete legacy options.
-		$this->options->delete( 'media-credit', true );
-
-		return $legacy_options;
+		$this->settings->set( Settings::INSTALLED_VERSION, $version );
 	}
 
 	/**
