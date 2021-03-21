@@ -49,4 +49,24 @@
 
 	<!-- Include sniffs for PHP cross-version compatibility. -->
 	<rule ref="PHPCompatibilityWP" />
+
+
+		<!-- Check for undefined variables, except in partials. -->
+		<rule ref="VariableAnalysis">
+			<properties>
+				<property name="allowUnusedFunctionParameters" value="1" />
+			</properties>
+			<exclude-pattern>*/partials/*\.php</exclude-pattern>
+		</rule>
+
+		<!-- Check for unused symbols (or imports) -->
+		<rule ref="ImportDetection"/>
+		<rule ref="ImportDetection.Imports.RequireImports">
+			<properties>
+				<property name="ignoreUnimportedSymbols" value="/^Brain\\Monkey\\(Actions|Filters|Functions)$/"/>
+				<property name="ignoreGlobalsWhenInGlobalScope" value="true"/>
+				<property name="ignoreWordPressSymbols" value="true"/>
+			</properties>
+		</rule>
+
 </ruleset>
