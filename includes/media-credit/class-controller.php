@@ -26,7 +26,8 @@
 
 namespace Media_Credit;
 
-use Media_Credit\Component;
+use Media_Credit\Component; // phpcs:ignore ImportDetection.Imports.RequireImports -- needed for type annotations.
+use Media_Credit\Core;
 
 /**
  * Initializes Media Credit plugin.

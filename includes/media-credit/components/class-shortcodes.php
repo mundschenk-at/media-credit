@@ -28,7 +28,6 @@
 namespace Media_Credit\Components;
 
 use Media_Credit\Core;
-use Media_Credit\Data_Storage\Options;
 
 /**
  * The component providing the `[media-credit]` shortcode and patching `[caption]`

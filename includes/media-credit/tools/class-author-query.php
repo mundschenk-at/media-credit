@@ -26,7 +26,6 @@
 
 namespace Media_Credit\Tools;
 
-use Media_Credit\Core;
 use Media_Credit\Data_Storage\Cache;
 
 /**

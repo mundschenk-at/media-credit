@@ -26,6 +26,7 @@
 
 namespace Media_Credit;
 
+use Media_Credit\Requirements;
 use Media_Credit\Components\Uninstallation;
 
 // Don't do anything if called directly.

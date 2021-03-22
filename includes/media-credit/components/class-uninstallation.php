@@ -28,10 +28,6 @@ namespace Media_Credit\Components;
 
 use Media_Credit\Data_Storage\Options;
 
-use Mundschenk\Data_Storage\Network_Options;
-use Mundschenk\Data_Storage\Site_Transients;
-use Mundschenk\Data_Storage\Transients;
-
 /**
  * Handles plugin uninstallation.
  *
