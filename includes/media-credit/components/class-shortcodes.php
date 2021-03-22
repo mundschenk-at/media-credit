@@ -288,8 +288,9 @@ class Shortcodes implements \Media_Credit\Component {
 		$content = \do_shortcode( $content );
 
 		// Additional required template variables.
-		$inline_media_credit = [ $this, 'inline_media_credit' ];
+		$inline_media_credit = [ $this, 'inline_media_credit' ]; // phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- needed for partial
 		$schema_org          = ! empty( $this->settings['schema_org_markup'] );
+		// phpcs:enable
 
 		// Start buffering.
 		\ob_start();

@@ -266,9 +266,10 @@ class Media_Credit {
 		}
 
 		// Extract variables for template.
-		$sidebar             = $args['sidebar'];
+		$sidebar             = $args['sidebar']; // phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- needed for partial
 		$link_without_parent = $args['link_without_parent'];
 		$header              = $args['header'];
+		// phpcs:enable
 
 		// Load the template part.
 		require \MEDIA_CREDIT_PLUGIN_PATH . '/public/partials/author-media.php';

@@ -150,8 +150,9 @@ class Settings_Page implements \Media_Credit\Component {
 		\ob_start();
 
 		// The partial needs access to the plugin options and other internal data.
-		$options      = $this->settings->get_all_settings();
+		$options      = $this->settings->get_all_settings(); // phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- needed for partial
 		$preview_data = $this->preview_data;
+		// phpcs:enable
 
 		// Require partial.
 		require \MEDIA_CREDIT_PLUGIN_PATH . '/admin/partials/settings/preview.php';
