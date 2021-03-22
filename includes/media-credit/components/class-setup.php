@@ -93,22 +93,35 @@ class Setup implements \Media_Credit\Component {
 		$current_settings = $this->settings->get_all_settings( true );
 
 		// Check if the plugin data needs to be updated.
-		$installed_version = $current_settings[ Settings::INSTALLED_VERSION ];
-		$version           = $this->settings->get_version();
-		$update_needed     = $version !== $installed_version;
-		$new_install       = empty( $installed_version );
+		$previous_version = $current_settings[ Settings::INSTALLED_VERSION ];
+		$version          = $this->settings->get_version();
+		$update_needed    = $version !== $previous_version;
 
-		// Upgrade plugin to 1.0.1.
-		if ( \version_compare( $installed_version, '1.0.1', '<' ) ) {
+		if ( $update_needed ) {
+			$this->maybe_update_postmeta_keys( $previous_version );
+		}
+
+		// Update installed version.
+		$this->settings->set( Settings::INSTALLED_VERSION, $version );
+	}
+
+	/**
+	 * Updates the postmeta keys if necessary.
+	 *
+	 * @since  4.2.0
+	 *
+	 * @param  string $previous_version The previously installed version.
+	 *
+	 * @return void
+	 */
+	protected function maybe_update_postmeta_keys( $previous_version ) {
+		if ( \version_compare( $previous_version, '1.0.1', '<' ) ) {
 			// Update all media-credit postmeta keys to _media_credit.
 			global $wpdb;
 
 			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->update( $wpdb->postmeta, [ 'meta_key' => Core::POSTMETA_KEY ], [ 'meta_key' => 'media-credit' ] );
 		}
-
-		// Update installed version.
-		$this->settings->set( Settings::INSTALLED_VERSION, $version );
 	}
 
 	/**

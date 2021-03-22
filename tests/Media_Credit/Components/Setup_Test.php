@@ -121,17 +121,54 @@ class Setup_Test extends \Media_Credit\Tests\TestCase {
 	 * @covers ::update_check
 	 */
 	public function test_update_check() {
-		$version  = '6.6.6';
-		$settings = [
+		$version      = '6.6.6';
+		$prev_version = '1.0.1';
+		$settings     = [
 			'foo'                       => 'bar',
-			Settings::INSTALLED_VERSION => '1.0.1',
+			Settings::INSTALLED_VERSION => $prev_version,
 		];
 
 		$this->settings->shouldReceive( 'get_all_settings' )->once()->with( true )->andReturn( $settings );
 		$this->settings->shouldReceive( 'get_version' )->once()->andReturn( $version );
 		$this->settings->shouldReceive( 'set' )->once()->with( Settings::INSTALLED_VERSION, $version );
 
+		$this->sut->shouldReceive( 'maybe_update_postmeta_keys' )->once()->with( $prev_version );
+
 		$this->assertNull( $this->sut->update_check() );
+	}
+
+	/**
+	 * Tests ::maybe_update_postmeta_keys.
+	 *
+	 * @covers ::maybe_update_postmeta_keys
+	 */
+	public function test_maybe_update_postmeta_keys() {
+		global $wpdb;
+		$wpdb           = m::mock( \wpdb::class ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride
+		$wpdb->postmeta = 'my_postmeta_table';
+
+		$prev_version = '1.0.0';
+
+		$wpdb->shouldReceive( 'update' )->once()->with( $wpdb->postmeta, [ 'meta_key' => Core::POSTMETA_KEY ], [ 'meta_key' => 'media-credit' ] ); // phpcs:ignore WordPress.DB.SlowDBQuery
+
+		$this->assertNull( $this->sut->maybe_update_postmeta_keys( $prev_version ) );
+	}
+
+	/**
+	 * Tests ::maybe_update_postmeta_keys.
+	 *
+	 * @covers ::maybe_update_postmeta_keys
+	 */
+	public function test_maybe_update_postmeta_keys_not_necessary() {
+		global $wpdb;
+		$wpdb           = m::mock( \wpdb::class ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride
+		$wpdb->postmeta = 'my_postmeta_table';
+
+		$prev_version = '1.0.1';
+
+		$wpdb->shouldReceive( 'update' )->never();
+
+		$this->assertNull( $this->sut->maybe_update_postmeta_keys( $prev_version ) );
 	}
 
 	/**
