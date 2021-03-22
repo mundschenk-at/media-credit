@@ -38,6 +38,10 @@
 
 namespace Media_Credit;
 
+use Media_Credit_Factory;
+use Media_Credit\Controller;
+use Media_Credit\Requirements;
+
 // Don't do anything if called directly.
 if ( ! \defined( 'ABSPATH' ) || ! defined( 'WPINC' ) ) {
 	die();
@@ -74,7 +78,7 @@ function media_credit_run() {
 		 *
 		 * @var Controller
 		 */
-		$plugin = \Media_Credit_Factory::get()->create( Controller::class );
+		$plugin = Media_Credit_Factory::get()->create( Controller::class );
 		$plugin->run();
 	}
 }

@@ -27,11 +27,12 @@
 
 namespace Media_Credit;
 
+use Media_Credit\Settings;
+
 use Media_Credit\Tools\Media_Query;
 use Media_Credit\Tools\Shortcodes_Filter;
 
 use Media_Credit\Data_Storage\Cache;
-use Media_Credit\Data_Storage\Options;
 
 /**
  * The main API for the Media Credit plugin. To allow for static template functions,
