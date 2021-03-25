@@ -20,7 +20,7 @@
  *
  *  ***
  *
- * @package mundschenk-at/avatar-privacy/tests
+ * @package mundschenk-at/media-credit/tests
  * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
