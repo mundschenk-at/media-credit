@@ -251,19 +251,21 @@ class Core {
 	 *
 	 * @return mixed
 	 */
-	public function sanitize_media_credit_meta_field( $meta_value, $meta_key, /* @scrutinizer ignore-unused */ $object_type ) {
-		switch ( $meta_key ) {
-			case self::POSTMETA_KEY:
-				$meta_value = \sanitize_text_field( $meta_value );
-				break;
+	public function sanitize_media_credit_meta_field( $meta_value, $meta_key, $object_type ) {
+		if ( 'post' === $object_type ) {
+			switch ( $meta_key ) {
+				case self::POSTMETA_KEY:
+					$meta_value = \sanitize_text_field( $meta_value );
+					break;
 
-			case self::URL_POSTMETA_KEY:
-				$meta_value = \esc_url_raw( $meta_value );
-				break;
+				case self::URL_POSTMETA_KEY:
+					$meta_value = \esc_url_raw( $meta_value );
+					break;
 
-			case self::DATA_POSTMETA_KEY:
-				$meta_value = \is_array( $meta_value ) ? $meta_value : [];
-				break;
+				case self::DATA_POSTMETA_KEY:
+					$meta_value = \is_array( $meta_value ) ? $meta_value : [];
+					break;
+			}
 		}
 
 		return $meta_value;
