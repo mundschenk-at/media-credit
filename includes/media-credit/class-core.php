@@ -338,16 +338,16 @@ class Core {
 	 * @return string                             The media credit HTML (or the empty string if no credit is set).
 	 */
 	public function render_media_credit_html( $user_id = 0, $freeform = '', $url = '', array $flags = [] ) {
-
-		// The plugin settings are needed to render the credit.
-		$s = $this->get_settings();
-
 		// Start building the credit markup.
 		$credit = '';
 		$name   = $freeform;
 		$suffix = '';
 
-		if ( '' === $freeform && ! empty( $user_id ) && empty( $s[ Settings::NO_DEFAULT_CREDIT ] ) ) {
+		if ( '' === $freeform ) {
+			if ( empty( $user_id ) || ! empty( $this->settings->get( Settings::NO_DEFAULT_CREDIT ) ) ) {
+				return '';
+			}
+
 			$name   = \get_the_author_meta( 'display_name', $user_id );
 			$url    = $url ?: \get_author_posts_url( $user_id ); // phpcs:ignore WordPress.PHP.DisallowShortTernary
 			$suffix = $this->get_organization_suffix();
@@ -374,14 +374,10 @@ class Core {
 	 * @return string                             The media credit HTML (or the empty string if no credit is set).
 	 */
 	protected function render_media_credit_plaintext( $user_id = 0, $freeform = '' ) {
-
-		// The plugin settings are needed to render the credit.
-		$s = $this->get_settings();
-
 		// Start building the credit markup.
 		$credit = $freeform;
 
-		if ( '' === $freeform && ! empty( $user_id ) && empty( $s[ Settings::NO_DEFAULT_CREDIT ] ) ) {
+		if ( '' === $freeform && ! empty( $user_id ) && empty( $this->settings->get( Settings::NO_DEFAULT_CREDIT ) ) ) {
 			$credit = \get_the_author_meta( 'display_name', $user_id );
 		}
 
