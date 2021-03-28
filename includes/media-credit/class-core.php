@@ -365,13 +365,13 @@ class Core {
 	}
 
 	/**
-	 * Renders the media credit as HTML (i.e. with a link to the author page or
-	 * custom URL).
+	 * Renders the media credit as plain text (i.e. without any links and without
+	 * organization suffix).
 	 *
 	 * @param int    $user_id  Optional. The ID of the media item author. Default 0 (invalid).
 	 * @param string $freeform Optional. The media credit string (if $user_id is not used). Default ''.
 	 *
-	 * @return string                             The media credit HTML (or the empty string if no credit is set).
+	 * @return string          The media credit as plain text (or the empty string if no credit is set).
 	 */
 	protected function render_media_credit_plaintext( $user_id = 0, $freeform = '' ) {
 		// Start building the credit markup.
@@ -386,13 +386,12 @@ class Core {
 	}
 
 	/**
-	 * Renders the media credit as HTML (i.e. with a link to the author page or
-	 * custom URL).
+	 * Renders the media credit as plain text, but with the organization suffix.
 	 *
 	 * @param int    $user_id  Optional. The ID of the media item author. Default 0 (invalid).
 	 * @param string $freeform Optional. The media credit string (if $user_id is not used). Default ''.
 	 *
-	 * @return string                             The media credit HTML (or the empty string if no credit is set).
+	 * @return string          The media credit as plain text (or the empty string if no credit is set).
 	 */
 	protected function render_media_credit_fancy( $user_id = 0, $freeform = '' ) {
 
