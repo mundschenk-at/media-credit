@@ -611,13 +611,13 @@ class Core {
 	/**
 	 * Validates a putative user ID against the database.
 	 *
-	 * @param  mixed $user_id A supposed user ID.
+	 * @since  4.2.0 The parameter $user_id is expected to be an integer.
+	 *
+	 * @param  int $user_id A supposed user ID.
 	 *
 	 * @return int|null
 	 */
 	protected function validate_user_id( $user_id ) {
-		$user_id = \absint( $user_id );
-
 		return false !== \get_user_by( 'id', $user_id ) ? $user_id : null;
 	}
 
