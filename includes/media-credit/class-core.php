@@ -646,7 +646,7 @@ class Core {
 	 *                                     Default true.
 	 * }
 	 *
-	 * @return array
+	 * @return object[]                    An integer-keyed array of row objects.
 	 */
 	public function get_author_media_and_posts( array $query = [] ) {
 
