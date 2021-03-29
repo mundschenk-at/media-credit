@@ -651,10 +651,7 @@ class Core {
 	public function get_author_media_and_posts( array $query = [] ) {
 
 		// Limit query to attachments/posts published since the first plugin activation.
-		$settings = $this->get_settings();
-		if ( ! empty( $settings[ Settings::INSTALL_DATE ] ) ) {
-			$query['since'] = $settings[ Settings::INSTALL_DATE ];
-		}
+		$query['since'] = $this->settings->get( Settings::INSTALL_DATE );
 
 		return $this->media_query->get_author_media_and_posts( $query );
 	}
