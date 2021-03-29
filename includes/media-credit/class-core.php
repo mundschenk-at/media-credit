@@ -381,7 +381,7 @@ class Core {
 			$credit = \get_the_author_meta( 'display_name', $user_id );
 		}
 
-		// The suffix should not contain any markup (the credit might).
+		// This is a plain text result and should be escaped for HTML output.
 		return $credit;
 	}
 
@@ -394,7 +394,6 @@ class Core {
 	 * @return string          The media credit as plain text (or the empty string if no credit is set).
 	 */
 	protected function render_media_credit_fancy( $user_id = 0, $freeform = '' ) {
-
 		// Start building the credit markup.
 		$credit = $this->render_media_credit_plaintext( $user_id, $freeform );
 
@@ -402,7 +401,7 @@ class Core {
 			$credit .= $this->get_organization_suffix();
 		}
 
-		// The suffix should not contain any markup (the credit might).
+		// This is a plain text result and should be escaped for HTML output.
 		return $credit;
 	}
 
