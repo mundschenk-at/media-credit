@@ -77,7 +77,7 @@
             "phpunit --testsuite MediaCredit"
         ],
         "coverage": [
-            "phpunit --testsuite MediaCredit --coverage-html tests/coverage"
+            "XDEBUG_MODE=coverage phpunit --testsuite MediaCredit --coverage-html tests/coverage"
         ],
         "phpstan": [
             "phpstan analyze"
