@@ -63,66 +63,99 @@ class Shortcodes_Filter {
 		\preg_match_all( '/' . \get_shortcode_regex( [ 'media-credit' ] ) . '/Ss', $content, $matches, PREG_SET_ORDER );
 
 		foreach ( $matches as $shortcode ) {
-
-			// Grab the shortcode attributes ...
-			$attr = \shortcode_parse_atts( $shortcode[3] );
-			if ( ! \is_array( $attr ) ) {
-				// Workaround for messed up WP Core syntax.
-				// See https://core.trac.wordpress.org/ticket/23307 for details.
-				$attr = [];
-			}
-
-			// ... and the contained <img> tag.
+			// Grab the contained <img> tag and check if it is the right one.
 			$img = $shortcode[5];
-
 			if ( ! \preg_match( "/src=([\"'])(?:(?!\1).)*{$filename}/S", $img ) || ! \preg_match( "/wp-image-{$image_id}/S", $img ) ) {
 				// This shortcode is for another image.
 				continue;
 			}
 
-			// Check for credit type.
-			if ( $author_id > 0 ) {
-				// The new credit should use the ID.
-				$id_or_name = "id={$author_id}";
-			} else {
-				// No valid ID, so use the freeform credit.
-				$id_or_name = "name=\"{$freeform}\"";
-			}
-
-			// Drop the old id/name attributes (if any).
-			unset( $attr['id'] );
-			unset( $attr['name'] );
-
-			// Update link attribute.
-			if ( ! empty( $url ) ) {
-				$attr['link'] = $url;
-			} else {
-				unset( $attr['link'] );
-			}
-
-			// Update nofollow attribute.
-			if ( ! empty( $url ) && ! empty( $nofollow ) ) {
-				$attr['nofollow'] = true;
-			} else {
-				unset( $attr['nofollow'] );
-			}
-
-			// Start reconstructing the shortcode.
-			$new_shortcode = "[media-credit {$id_or_name}";
-
-			// Add the rest of the attributes.
-			foreach ( $attr as $name => $value ) {
-				$new_shortcode .= " {$name}=\"{$value}\"";
-			}
-
-			// Finish up with the closing bracket and the <img> content.
-			$new_shortcode .= ']' . $img . '[/media-credit]';
-
 			// Replace the old shortcode with then new one.
-			$content = \str_replace( $shortcode[0], $new_shortcode, $content );
+			$content = $this->update_shortcode( $content, $shortcode[0], $this->parse_shortcode_attributes( $shortcode[3] ), $img, $author_id, $freeform, $url, $nofollow );
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Updates the shortcode using new data.
+	 *
+	 * @since  4.2.0
+	 *
+	 * @param  string $content    The current post content.
+	 * @param  string $shortcode  The shortcode to update.
+	 * @param  array  $attr {
+	 *     The parsed shortcode attributes. All attributes are optional.
+	 *
+	 *     @type int    $id       The author ID.
+	 *     @type string $name     The freeform credit.
+	 *     @type string $url      The credit URL.
+	 *     @type bool   $nofollow The "rel=nofollow" flag.
+	 * }
+	 * @param  string $img        The contained `<img>` tag.
+	 * @param  int    $author_id  The new author ID.
+	 * @param  string $freeform   The new freeform credit.
+	 * @param  string $url        The new credit URL.
+	 * @param  bool   $nofollow   The new "rel=nofollow" flag.
+	 *
+	 * @return string             The updated post content.
+	 */
+	protected function update_shortcode( string $content, string $shortcode, array $attr, string $img, int $author_id, string $freeform, string $url, bool $nofollow ) {
+
+		// Drop the old id/name attributes (if any).
+		unset( $attr['id'] );
+		unset( $attr['name'] );
+
+		// Prefer author ID if present & valid.
+		$id_or_name = $author_id > 0 ? "id={$author_id}" : "name=\"{$freeform}\"";
+
+		// Update link attribute.
+		if ( ! empty( $url ) ) {
+			$attr['link'] = $url;
+		} else {
+			unset( $attr['link'] );
+		}
+
+		// Update nofollow attribute.
+		if ( ! empty( $url ) && ! empty( $nofollow ) ) {
+			$attr['nofollow'] = true;
+		} else {
+			unset( $attr['nofollow'] );
+		}
+
+		// Start reconstructing the shortcode.
+		$new_shortcode = "[media-credit {$id_or_name}";
+
+		// Add the rest of the attributes.
+		foreach ( $attr as $name => $value ) {
+			$new_shortcode .= " {$name}=\"{$value}\"";
+		}
+
+		// Finish up with the closing bracket and the <img> content.
+		$new_shortcode .= "]{$img}[/media-credit]";
+
+		return \str_replace( $shortcode, $new_shortcode, $content );
+	}
+
+	/**
+	 * Parses the shortcode attributes from a string. Always returns an array,
+	 * unlike the WordPress Core function `shortcode_parse_atts`.
+	 *
+	 * @since  4.2.0
+	 *
+	 * @param  string $attributes The attributes matching the shortcode regex.
+	 *
+	 * @return array
+	 */
+	protected function parse_shortcode_attributes( string $attributes ) {
+		$attr = \shortcode_parse_atts( $attributes );
+		if ( ! \is_array( $attr ) ) {
+			// Workaround for messed up WP Core syntax.
+			// See https://core.trac.wordpress.org/ticket/23307 for details.
+			$attr = [];
+		}
+
+		return $attr;
 	}
 
 	/**
