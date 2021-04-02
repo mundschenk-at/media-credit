@@ -30,6 +30,8 @@ namespace Media_Credit\Tools;
  * A utility class for updating shortcode inside existing content.
  *
  * @since 4.0.0
+ * @since 4.2.0 The method `get_image_filename_from_full_url` has been replaced
+ *              by `get_quoted_image_basename`.
  *
  * @author Peter Putzer <github@mundschenk.at>
  */
@@ -49,15 +51,12 @@ class Shortcodes_Filter {
 	 */
 	public function update_changed_media_credits( $content, $image_id, $author_id, $freeform, $url, $nofollow ) {
 
-		// Get the image source URL.
-		$src = \wp_get_attachment_image_src( $image_id );
-		if ( false === $src || empty( $src[0] ) ) {
+		// Get the image basename without the size for use in a regular expression.
+		$basename = $this->get_quoted_image_basename( $image_id, '/' );
+		if ( empty( $basename ) ) {
 			// Invalid image ID.
 			return $content;
 		}
-
-		// Extract the image basename without the size for use in a regular expression.
-		$filename = \preg_quote( $this->get_image_filename_from_full_url( $src[0] ), '/' );
 
 		// Look at every matching shortcode.
 		\preg_match_all( '/' . \get_shortcode_regex( [ 'media-credit' ] ) . '/Ss', $content, $matches, PREG_SET_ORDER );
@@ -65,7 +64,7 @@ class Shortcodes_Filter {
 		foreach ( $matches as $shortcode ) {
 			// Grab the contained <img> tag and check if it is the right one.
 			$img = $shortcode[5];
-			if ( ! \preg_match( "/src=([\"'])(?:(?!\1).)*{$filename}/S", $img ) || ! \preg_match( "/wp-image-{$image_id}/S", $img ) ) {
+			if ( ! \preg_match( "/src=([\"'])(?:(?!\1).)*{$basename}/S", $img ) || ! \preg_match( "/wp-image-{$image_id}/S", $img ) ) {
 				// This shortcode is for another image.
 				continue;
 			}
@@ -159,18 +158,31 @@ class Shortcodes_Filter {
 	}
 
 	/**
-	 * Returns the filename of an image in the wp_content directory (normally, could be any dir really) given the full URL to the image, ignoring WP sizes.
+	 * Retrieves the image basename (without file extension and size suffix) for
+	 * the given image ID and runs it through `preg_quote`.
 	 *
 	 * Examples:
 	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-150x150.jpg, returns ParksTrip2010_100706_1487 (ignores size at end of string)
-	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-thumb.jpg, return ParksTrip2010_100706_1487-thumb
-	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-1.jpg, return ParksTrip2010_100706_1487-1
+	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-thumb.jpg, return ParksTrip2010_100706_1487\-thumb
+	 * Given http://localhost/wordpress/wp-content/uploads/2010/08/ParksTrip2010_100706_1487-1.jpg, return ParksTrip2010_100706_1487\-1
 	 *
-	 * @param  string $image Full URL to an image.
-	 * @return string        The filename of the image excluding any size or extension, as given in the example above.
+	 * @since  4.2.0
+	 *
+	 * @param  int    $image_id  The attachment ID.
+	 * @param  string $delimiter Optional. The regex delimiter. Default '/'.
+	 *
+	 * @return string|false      The quoted image basename or false in case of error.
 	 */
-	protected function get_image_filename_from_full_url( $image ) {
-		// Drop "-{$width}x{$height}".
-		return (string) \preg_replace( '/(.*?)(\-\d+x\d+)?\.\w+/S', '$1', \wp_basename( $image ) );
+	protected function get_quoted_image_basename( int $image_id, string $delimiter = '/' ) {
+		// Get the image source URL.
+		$src = \wp_get_attachment_image_src( $image_id );
+		if ( ! empty( $src ) && ! empty( $src[0] ) ) {
+			$result = \preg_replace( '/(.*?)(\-\d+x\d+)?\.\w+/S', '$1', \wp_basename( $src[0] ) );
+			if ( ! empty( $result ) ) {
+				return \preg_quote( $result, $delimiter );
+			}
+		}
+
+		return false;
 	}
 }
