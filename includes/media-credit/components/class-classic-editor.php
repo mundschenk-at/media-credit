@@ -235,8 +235,16 @@ class Classic_Editor implements \Media_Credit\Component {
 		}
 
 		// Add alignment to shortcode arguments and strip it from the image markup.
-		$html                 = \preg_replace( "/(class=[\"'][^\"']*)align{$align}\s*/S", '$1', $html );
 		$shortcode_arguments .= " align=\"{$align}\"";
+		$html                 = \preg_replace(
+			[
+				"/(class=[\"'][^\"']*)\s*align{$align}\s*([^\"']*[\"'])/S",
+				'/(class=["\'])\s+([^"\'\s])/S',
+				'/(class=["\'][^"\']*)\s+(["\'])/S',
+			],
+			'$1$2',
+			$html
+		);
 
 		// Put it all together.
 		$shortcode = "[media-credit {$shortcode_arguments}]{$html}[/media-credit]";
