@@ -213,7 +213,7 @@ class Classic_Editor implements \Media_Credit\Component {
 			return $html;
 		} elseif ( ! empty( $credit['raw']['freeform'] ) ) {
 			// Add the freeform credit.
-			$shortcode_arguments = "name='{$credit['raw']['freeform']}'";
+			$shortcode_arguments = "name=\"{$credit['raw']['freeform']}\"";
 		} else {
 			// Add the user credit.
 			$shortcode_arguments = "id={$credit['raw']['user_id']}";
@@ -221,7 +221,7 @@ class Classic_Editor implements \Media_Credit\Component {
 
 		// Add link URL.
 		if ( ! empty( $credit['raw']['url'] ) ) {
-			$shortcode_arguments .= " link='{$credit['raw']['url']}'";
+			$shortcode_arguments .= " link=\"{$credit['raw']['url']}\"";
 
 			// Optionally add "nofollow" parameter.
 			if ( ! empty( $credit['raw']['flags']['nofollow'] ) ) {
@@ -235,8 +235,8 @@ class Classic_Editor implements \Media_Credit\Component {
 		}
 
 		// Add alignment to shortcode arguments and strip it from the image markup.
-		$shortcode_arguments .= " align='{$align}'";
 		$html                 = \preg_replace( "/(class=[\"'][^\"']*)align{$align}\s*/S", '$1', $html );
+		$shortcode_arguments .= " align=\"{$align}\"";
 
 		// Put it all together.
 		$shortcode = "[media-credit {$shortcode_arguments}]{$html}[/media-credit]";
