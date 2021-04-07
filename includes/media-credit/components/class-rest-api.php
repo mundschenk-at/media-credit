@@ -26,8 +26,9 @@
 
 namespace Media_Credit\Components;
 
-use Media_Credit\Core;
+use WP_REST_Server;
 
+use Media_Credit\Core;
 use Media_Credit\Tools\Shortcodes_Filter;
 
 /**
@@ -174,9 +175,10 @@ class REST_API implements \Media_Credit\Component {
 			self::NAMESPACE_V1,
 			'/replace_in_content',
 			[
-				'methods'  => 'GET',
-				'callback' => [ $this, 'rest_filter_content' ],
-				'args'     => [
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => [ $this, 'rest_filter_content' ],
+				'permission_callback' => '__return_true',
+				'args'                => [
 					'attachment_id' => [
 						'required'          => true,
 						'type'              => 'integer',
