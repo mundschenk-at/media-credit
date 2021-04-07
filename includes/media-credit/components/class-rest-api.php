@@ -35,6 +35,7 @@ use Media_Credit\Tools\Shortcodes_Filter;
  * Combines the WordPress REST API with Media Credit.
  *
  * @since 4.0.0
+ * @since 4.2.0 The public method sanitize_text_field has been deprecated.
  */
 class REST_API implements \Media_Credit\Component {
 
@@ -197,7 +198,7 @@ class REST_API implements \Media_Credit\Component {
 						'default'           => '',
 						'description'       => 'The copyright line itself (if not overridden by the `user_id`)',
 						'type'              => 'string',
-						'sanitize_callback' => [ $this, 'sanitize_text_field' ],
+						'sanitize_callback' => 'sanitize_text_field',
 					],
 					'url'           => [
 						'default'           => '',
@@ -218,6 +219,8 @@ class REST_API implements \Media_Credit\Component {
 	/**
 	 * Sanitizes a text field via the REST API.
 	 *
+	 * @deprecated 4.2.0 There is no need to wrap the sanitize_text_field function.
+	 *
 	 * @param  mixed            $param   The parameter value.
 	 * @param  \WP_REST_Request $request The REST request.
 	 * @param  string           $key     The parameter name.
@@ -225,6 +228,8 @@ class REST_API implements \Media_Credit\Component {
 	 * @return string
 	 */
 	public function sanitize_text_field( $param, /* @scrutinizer ignore-unused */ \WP_REST_Request $request, /* @scrutinizer ignore-unused */ $key ) {
+		\_deprecated_function( __FUNCTION__, '4.2.0', 'sanitize_text_field' );
+
 		return \sanitize_text_field( $param );
 	}
 
