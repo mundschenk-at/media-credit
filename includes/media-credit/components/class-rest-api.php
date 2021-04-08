@@ -221,13 +221,13 @@ class REST_API implements \Media_Credit\Component {
 	 *
 	 * @deprecated 4.2.0 There is no need to wrap the sanitize_text_field function.
 	 *
-	 * @param  mixed            $param   The parameter value.
-	 * @param  \WP_REST_Request $request The REST request.
-	 * @param  string           $key     The parameter name.
+	 * @since  4.2.0 Unused parameters $request and $key removed.
+	 *
+	 * @param  mixed $param The parameter value.
 	 *
 	 * @return string
 	 */
-	public function sanitize_text_field( $param, /* @scrutinizer ignore-unused */ \WP_REST_Request $request, /* @scrutinizer ignore-unused */ $key ) {
+	public function sanitize_text_field( $param ) {
 		\_deprecated_function( __FUNCTION__, '4.2.0', 'sanitize_text_field' );
 
 		return \sanitize_text_field( $param );
@@ -237,13 +237,13 @@ class REST_API implements \Media_Credit\Component {
 	/**
 	 * Prepares the field for output during a GET request.
 	 *
-	 * @param  array            $post        The post JSON object.
-	 * @param  string           $field_name  The field name.
-	 * @param  \WP_REST_Request $request     The REST request.
+	 * @since  4.2.0 Unused Parameters $field_name and $request removed.
+	 *
+	 * @param  array $post The post JSON object.
 	 *
 	 * @return array|void
 	 */
-	public function prepare_media_credit_fields( $post, /* @scrutinizer ignore-unused */ $field_name, /* @scrutinizer ignore-unused */ \WP_REST_Request $request ) {
+	public function prepare_media_credit_fields( $post ) {
 		$attachment = ! empty( $post['id'] ) ? \get_post( $post['id'] ) : null;
 		if ( ! empty( $attachment ) ) {
 			return $this->core->get_media_credit_json( $attachment );
@@ -253,14 +253,14 @@ class REST_API implements \Media_Credit\Component {
 	/**
 	 * Updates the media credit post meta data during a POST request.
 	 *
-	 * @param  array            $value       The new values for the media credit.
-	 * @param  \WP_Post         $post        The post object.
-	 * @param  string           $field_name  The field name.
-	 * @param  \WP_REST_Request $request     The REST request.
+	 * @since  4.2.0 Unused Parameters $field_name and $request removed.
+	 *
+	 * @param  array    $value The new values for the media credit.
+	 * @param  \WP_Post $post  The post object.
 	 *
 	 * @return bool
 	 */
-	public function update_media_credit_fields( $value, \WP_Post $post, /* @scrutinizer ignore-unused */ $field_name, /* @scrutinizer ignore-unused */ \WP_REST_Request $request ) {
+	public function update_media_credit_fields( $value, \WP_Post $post ) {
 		if ( empty( $value['raw'] ) ) {
 			return false;
 		}
