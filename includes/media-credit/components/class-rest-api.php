@@ -244,7 +244,7 @@ class REST_API implements \Media_Credit\Component {
 	 * @return array|void
 	 */
 	public function prepare_media_credit_fields( $post, /* @scrutinizer ignore-unused */ $field_name, /* @scrutinizer ignore-unused */ \WP_REST_Request $request ) {
-		$attachment = \get_post( $post['id'] );
+		$attachment = ! empty( $post['id'] ) ? \get_post( $post['id'] ) : null;
 		if ( ! empty( $attachment ) ) {
 			return $this->core->get_media_credit_json( $attachment );
 		}
