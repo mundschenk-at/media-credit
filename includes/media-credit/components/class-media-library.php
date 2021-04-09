@@ -203,6 +203,8 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Ensures that proper attachment credits are shown on the admin side of WordPress.
 	 *
+	 * @todo Rename to show_credit_in_media_list_view.
+	 *
 	 * @return void
 	 */
 	public function admin_init() {
