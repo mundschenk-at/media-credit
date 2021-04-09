@@ -36,17 +36,9 @@ use Media_Credit\Tools\Author_Query;
  *
  * @since 4.0.0 Renamed to Media_Credit\Components\Media_Library
  * @since 4.1.0 Constant AUTHORS_QUERY removed, property $author_query added.
+ * @since 4.2.0 Property $version removed.
  */
 class Media_Library implements \Media_Credit\Component {
-
-	/**
-	 * The version of this plugin.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @var string
-	 */
-	private $version;
 
 	/**
 	 * The core API.
@@ -74,19 +66,29 @@ class Media_Library implements \Media_Credit\Component {
 	private $author_query;
 
 	/**
+	 * The settings handler.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @var Settings
+	 */
+	private $settings;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since  3.0.0
 	 * @since  4.0.0 Parameter $options added.
 	 * @since  4.1.0 Parameter $author_query added.
+	 * @since  4.2.0 Parameter $settings added, parameter $version removed.
 	 *
-	 * @param  string       $version      The plugin version.
 	 * @param  Core         $core         The core plugin API.
+	 * @param  Settings     $settings     The settings handler.
 	 * @param  Author_Query $author_query The author query helper.
 	 */
-	public function __construct( $version, Core $core, Author_Query $author_query ) {
-		$this->version      = $version;
+	public function __construct( Core $core, Settings $settings, Author_Query $author_query ) {
 		$this->core         = $core;
+		$this->settings     = $settings;
 		$this->author_query = $author_query;
 	}
 
@@ -131,17 +133,18 @@ class Media_Library implements \Media_Credit\Component {
 	 */
 	public function enqueue_scripts_and_styles() {
 		// Set up resource files.
-		$suffix = ( defined( 'SCRIPT_DEBUG' ) && \SCRIPT_DEBUG ) ? '' : '.min';
-		$url    = \plugin_dir_url( \MEDIA_CREDIT_PLUGIN_FILE );
+		$suffix  = ( defined( 'SCRIPT_DEBUG' ) && \SCRIPT_DEBUG ) ? '' : '.min';
+		$url     = \plugin_dir_url( \MEDIA_CREDIT_PLUGIN_FILE );
+		$version = $this->settings->get_version();
 
 		// Pre-register the media scripts.
-		\wp_register_script( 'media-credit-bootstrap',           "{$url}/admin/js/media-credit-bootstrap{$suffix}.js",           [],                                                                         $this->version, true );
-		\wp_register_script( 'media-credit-legacy-autocomplete', "{$url}/admin/js/media-credit-legacy-autocomplete{$suffix}.js", [ 'media-credit-bootstrap', 'jquery', 'jquery-ui-autocomplete' ],           $this->version, true );
-		\wp_register_script( 'media-credit-attachment-details',  "{$url}/admin/js/media-credit-attachment-details{$suffix}.js",  [ 'media-credit-bootstrap', 'jquery', 'jquery-ui-autocomplete', 'wp-api' ], $this->version, true );
+		\wp_register_script( 'media-credit-bootstrap',           "{$url}/admin/js/media-credit-bootstrap{$suffix}.js",           [],                                                                         $version, true );
+		\wp_register_script( 'media-credit-legacy-autocomplete', "{$url}/admin/js/media-credit-legacy-autocomplete{$suffix}.js", [ 'media-credit-bootstrap', 'jquery', 'jquery-ui-autocomplete' ],           $version, true );
+		\wp_register_script( 'media-credit-attachment-details',  "{$url}/admin/js/media-credit-attachment-details{$suffix}.js",  [ 'media-credit-bootstrap', 'jquery', 'jquery-ui-autocomplete', 'wp-api' ], $version, true );
 
 		// And some styles.
-		\wp_register_style( 'media-credit-legacy-edit-media-style',  "{$url}/admin/css/media-credit-legacy-edit-media{$suffix}.css",  [], $this->version, 'screen' );
-		\wp_register_style( 'media-credit-attachment-details-style', "{$url}/admin/css/media-credit-attachment-details{$suffix}.css", [], $this->version, 'screen' );
+		\wp_register_style( 'media-credit-legacy-edit-media-style',  "{$url}/admin/css/media-credit-legacy-edit-media{$suffix}.css",  [], $version, 'screen' );
+		\wp_register_style( 'media-credit-attachment-details-style', "{$url}/admin/css/media-credit-attachment-details{$suffix}.css", [], $version, 'screen' );
 
 		// Now add inline script data.
 		$this->add_inline_script_data();
