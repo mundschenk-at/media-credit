@@ -186,16 +186,16 @@ class Media_Library implements \Media_Credit\Component {
 		}
 
 		// Retrieve the plugin settings.
-		$options  = $this->core->get_settings();
-		$settings = [
-			'separator'       => $options[ Settings::SEPARATOR ],
-			'organization'    => $options[ Settings::ORGANIZATION ],
-			'noDefaultCredit' => $options[ Settings::NO_DEFAULT_CREDIT ],
+		$s       = $this->settings->get_all_settings();
+		$options = [
+			'separator'       => $s[ Settings::SEPARATOR ],
+			'organization'    => $s[ Settings::ORGANIZATION ],
+			'noDefaultCredit' => $s[ Settings::NO_DEFAULT_CREDIT ],
 		];
 
 		$script  = 'var mundschenk=window.mundschenk||{},mediaCredit=mundschenk.mediaCredit||{};';
-		$script .= 'mediaCredit.options=' . /* @scrutinizer ignore-type */ \wp_json_encode( $settings ) . ';';
-		$script .= 'mediaCredit.id=' . /* @scrutinizer ignore-type */ \wp_json_encode( $authors ) . ';';
+		$script .= 'mediaCredit.options=' . \wp_json_encode( $options ) . ';';
+		$script .= 'mediaCredit.id=' . \wp_json_encode( $authors ) . ';';
 
 		\wp_add_inline_script( 'media-credit-bootstrap', $script, 'after' );
 	}
@@ -292,7 +292,7 @@ class Media_Library implements \Media_Credit\Component {
 
 		// Use placeholders with `no_default_credit` enabled.
 		$placeholder = '';
-		if ( ! empty( $this->core->get_settings()[ Settings::NO_DEFAULT_CREDIT ] ) ) {
+		if ( ! empty( $this->settings->get( Settings::NO_DEFAULT_CREDIT ) ) ) {
 			$placeholder = \esc_attr( $this->get_placeholder_text( $attachment ) );
 			$placeholder = "placeholder='{$placeholder}'";
 		}
@@ -426,9 +426,7 @@ class Media_Library implements \Media_Credit\Component {
 	 * @return string
 	 */
 	protected function get_default_credit( \WP_Post $attachment ) {
-		$s = $this->core->get_settings();
-
-		$default = ! empty( $s[ Settings::CUSTOM_DEFAULT_CREDIT ] ) ? \trim( $s[ Settings::CUSTOM_DEFAULT_CREDIT ] ) : '';
+		$default = \trim( $this->settings->get( Settings::CUSTOM_DEFAULT_CREDIT ) );
 
 		/**
 		 * Filters the default credit for new attachments. An empty string means
