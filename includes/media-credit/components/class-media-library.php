@@ -232,12 +232,13 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Is the current page one where media attachments can be edited using the legacy API?
 	 *
-	 * @internal 3.1.0
-	 * @access private
+	 * @internal
+	 *
+	 * @since  4.2.0 Method visibility changed to protected to allow unit testing.
 	 *
 	 * @return bool
 	 */
-	private function is_legacy_media_edit_page() {
+	protected function is_legacy_media_edit_page() {
 		$screen = \get_current_screen();
 
 		return ! empty( $screen ) && 'post' === $screen->base && 'attachment' === $screen->id;
