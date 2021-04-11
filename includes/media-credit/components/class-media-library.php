@@ -103,7 +103,7 @@ class Media_Library implements \Media_Credit\Component {
 		\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts_and_styles' ] );
 
 		// Add default credit to new attachments.
-		\add_action( 'add_attachment', [ $this, 'add_default_media_credit_for_attachment' ], 10, 1 );
+		\add_action( 'add_attachment', [ $this, 'add_default_media_credit_for_attachment' ] );
 
 		// Handle editing attachment details.
 		\add_action( 'print_media_templates',        [ $this, 'attachment_details_template' ] );
@@ -112,9 +112,9 @@ class Media_Library implements \Media_Credit\Component {
 		\add_filter( 'attachment_fields_to_save',    [ $this, 'save_media_credit_fields' ],               10, 2 );
 
 		// Handle image cropping in the customizer.
-		\add_action( 'wp_ajax_crop_image_pre_save',         [ $this, 'store_cropped_image_parent' ],                 10, 2 );
-		\add_filter( 'wp_ajax_cropped_attachment_metadata', [ $this, 'add_credit_to_cropped_attachment_metadata' ],  10, 1 );
-		\add_filter( 'wp_header_image_attachment_metadata', [ $this, 'add_credit_to_cropped_header_metadata' ],      10, 1 );
+		\add_action( 'wp_ajax_crop_image_pre_save',         [ $this, 'store_cropped_image_parent' ], 10, 2 );
+		\add_filter( 'wp_ajax_cropped_attachment_metadata', [ $this, 'add_credit_to_cropped_attachment_metadata' ] );
+		\add_filter( 'wp_header_image_attachment_metadata', [ $this, 'add_credit_to_cropped_header_metadata' ] );
 
 		// Handle credits in EXIF meta data.
 		\add_filter( 'wp_generate_attachment_metadata', [ $this, 'maybe_add_credit_from_exif_metadata' ], 10, 3 );
@@ -209,7 +209,7 @@ class Media_Library implements \Media_Credit\Component {
 	 */
 	public function admin_init() {
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
-		\add_filter( 'the_author', [ $this, 'filter_the_author' ], 10, 1 );
+		\add_filter( 'the_author', [ $this, 'filter_the_author' ] );
 	}
 
 	/**
