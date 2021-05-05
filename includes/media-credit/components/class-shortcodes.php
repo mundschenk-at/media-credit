@@ -28,6 +28,7 @@
 namespace Media_Credit\Components;
 
 use Media_Credit\Core;
+use Media_Credit\Settings;
 
 /**
  * The component providing the `[media-credit]` shortcode and patching `[caption]`
@@ -118,7 +119,7 @@ class Shortcodes implements \Media_Credit\Component {
 	public function caption_shortcode( $attr, $content = null ) {
 		// Options influencing the markup.
 		$html5      = \current_theme_supports( 'html5', 'caption' );
-		$schema_org = ! empty( $this->settings['schema_org_markup'] );
+		$schema_org = ! empty( $this->settings[ Settings::SCHEMA_ORG_MARKUP ] );
 
 		// New-style shortcode with the caption inside the shortcode with the link and image tags.
 		if ( ! empty( $content ) && ! isset( $attr['caption'] ) ) {
@@ -134,7 +135,7 @@ class Shortcodes implements \Media_Credit\Component {
 					$shortcode = $matches[0];
 					$content   = \str_replace( [ $shortcode, '[/media-credit]' ], '', $content );
 
-					if ( empty( $this->settings['credit_at_end'] ) ) {
+					if ( empty( $this->settings[ Settings::CREDIT_AT_END ] ) ) {
 						// The byline.
 						$credit_attr = $this->sanitize_attributes( (array) \shortcode_parse_atts( $matches[1] ) );
 						$credit      = $this->inline_media_credit( $credit_attr, $schema_org );
@@ -222,7 +223,7 @@ class Shortcodes implements \Media_Credit\Component {
 		// Make sure that content is a string.
 		$content = $content ?? '';
 
-		if ( ! empty( $this->settings['credit_at_end'] ) ) {
+		if ( ! empty( $this->settings[ Settings::CREDIT_AT_END ] ) ) {
 			// Disable shortcode if credits should be shown after the post content.
 			return \do_shortcode( $content );
 		}
@@ -289,7 +290,7 @@ class Shortcodes implements \Media_Credit\Component {
 
 		// Additional required template variables.
 		$inline_media_credit = [ $this, 'inline_media_credit' ]; // phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- needed for partial
-		$schema_org          = ! empty( $this->settings['schema_org_markup'] );
+		$schema_org          = ! empty( $this->settings[ Settings::SCHEMA_ORG_MARKUP ] );
 		// phpcs:enable
 
 		// Start buffering.
