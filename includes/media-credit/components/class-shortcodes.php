@@ -122,54 +122,56 @@ class Shortcodes implements \Media_Credit\Component {
 		$schema_org = ! empty( $this->settings[ Settings::SCHEMA_ORG_MARKUP ] );
 
 		// New-style shortcode with the caption inside the shortcode with the link and image tags.
-		if ( ! empty( $content ) && ! isset( $attr['caption'] ) ) {
-			if ( \preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#Sis', $content, $matches ) ) {
-				$content         = $matches[1];
-				$attr['caption'] = \trim( $matches[2] );
+		if (
+			! empty( $content ) &&
+			! isset( $attr['caption'] ) &&
+			\preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#Sis', $content, $matches )
+		) {
+			$content         = $matches[1];
+			$attr['caption'] = \trim( $matches[2] );
 
-				if ( ! $html5 ) {
-					// Add attribute "standalone=0" to [media-credit] shortcode if present.
-					$content = \preg_replace( '#\[media-credit([^]]+)\]#S', '[media-credit standalone=0$1]', $content );
-				} elseif ( \preg_match( '#\[media-credit([^]]+)\]#S', $content, $matches ) ) {
-					// Use improved HTML5 mode.
-					$shortcode = $matches[0];
-					$content   = \str_replace( [ $shortcode, '[/media-credit]' ], '', $content );
+			if ( ! $html5 ) {
+				// Add attribute "standalone=0" to [media-credit] shortcode if present.
+				$content = \preg_replace( '#\[media-credit([^]]+)\]#S', '[media-credit standalone=0$1]', $content );
+			} elseif ( \preg_match( '#\[media-credit([^]]+)\]#S', $content, $matches ) ) {
+				// Use improved HTML5 mode.
+				$shortcode = $matches[0];
+				$content   = \str_replace( [ $shortcode, '[/media-credit]' ], '', $content );
 
-					if ( empty( $this->settings[ Settings::CREDIT_AT_END ] ) ) {
-						// The byline.
-						$credit_attr = $this->sanitize_attributes( (array) \shortcode_parse_atts( $matches[1] ) );
-						$credit      = $this->inline_media_credit( $credit_attr, $schema_org );
+				if ( empty( $this->settings[ Settings::CREDIT_AT_END ] ) ) {
+					// The byline.
+					$credit_attr = $this->sanitize_attributes( (array) \shortcode_parse_atts( $matches[1] ) );
+					$credit      = $this->inline_media_credit( $credit_attr, $schema_org );
 
-						// The original caption.
-						$caption = $attr['caption'];
+					// The original caption.
+					$caption = $attr['caption'];
 
-						/**
-						 * Filters the HTML5 caption including the credit byline.
-						 *
-						 * @since 4.0.0
-						 *
-						 * @param string $caption     The caption including the credit.
-						 *                            Default caption text followed by
-						 *                            credit with a seprating space.
-						 * @param string $old_caption The caption text.
-						 * @param string $credit      The credit byline (including markup).
-						 * @param array  $attr {
-						 *     An array of shortcode attributes.
-						 *
-						 *     @type int    $id         Optional. A user ID. Default 0.
-						 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
-						 *     @type string $link       Optional. A URL used for linking the credit.
-						 *     @type bool   $standalone Optional. A flag indicating that the shortcode
-						 *                              was used without an enclosing `[caption]`. Default true.
-						 *     @type string $align      Optional. The alignment to use for the image/figure
-						 *                              (if used without `[caption]`). Default 'none'.
-						 *     @type int    $width      Optional. The width of the image/figure. Default 0.
-						 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
-						 *                              attribute should be added to the link tag.
-						 * }
-						 */
-						$attr['caption'] = \apply_filters( 'media_credit_shortcode_html5_caption', "{$caption} {$credit}", $caption, $credit, $credit_attr );
-					}
+					/**
+					 * Filters the HTML5 caption including the credit byline.
+					 *
+					 * @since 4.0.0
+					 *
+					 * @param string $caption     The caption including the credit.
+					 *                            Default caption text followed by
+					 *                            credit with a seprating space.
+					 * @param string $old_caption The caption text.
+					 * @param string $credit      The credit byline (including markup).
+					 * @param array  $attr {
+					 *     An array of shortcode attributes.
+					 *
+					 *     @type int    $id         Optional. A user ID. Default 0.
+					 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
+					 *     @type string $link       Optional. A URL used for linking the credit.
+					 *     @type bool   $standalone Optional. A flag indicating that the shortcode
+					 *                              was used without an enclosing `[caption]`. Default true.
+					 *     @type string $align      Optional. The alignment to use for the image/figure
+					 *                              (if used without `[caption]`). Default 'none'.
+					 *     @type int    $width      Optional. The width of the image/figure. Default 0.
+					 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
+					 *                              attribute should be added to the link tag.
+					 * }
+					 */
+					$attr['caption'] = \apply_filters( 'media_credit_shortcode_html5_caption', "{$caption} {$credit}", $caption, $credit, $credit_attr );
 				}
 			}
 		}
