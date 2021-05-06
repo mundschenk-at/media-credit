@@ -181,15 +181,31 @@ class Shortcodes implements \Media_Credit\Component {
 
 		// Optionally add schema.org markup.
 		if ( $schema_org ) {
-			// Inject schema.org markup for figure.
-			if ( ! \preg_match( '/<figure[^>]*\bitemscope\b/S', $caption ) ) {
-				$caption = \preg_replace( '/<figure\b/S', '<figure itemscope itemtype="http://schema.org/ImageObject"', $caption ) ?? $caption;
-			}
+			$caption = $this->maybe_add_schema_org_markup_to_caption( $caption );
+		}
 
-			// Inject schema.org markup for figcaption.
-			if ( ! \preg_match( '/<figcaption[^>]*\bitemprop\s*=\b/S', $caption ) ) {
-				$caption = \preg_replace( '/<figcaption\b/S', '<figcaption itemprop="caption"', $caption ) ?? $caption;
-			}
+		return $caption;
+	}
+
+	/**
+	 * Adds schema.org markup to the caption if it does not already contain
+	 * `itemtype`/`itemprop` attributes.
+	 *
+	 * @since  4.2.0
+	 *
+	 * @param  string $caption The caption markup.
+	 *
+	 * @return string
+	 */
+	protected function maybe_add_schema_org_markup_to_caption( $caption ) {
+		// Inject schema.org markup for figure.
+		if ( ! \preg_match( '/<figure[^>]*\bitemscope\b/S', $caption ) ) {
+			$caption = \preg_replace( '/<figure\b/S', '<figure itemscope itemtype="http://schema.org/ImageObject"', $caption ) ?? $caption;
+		}
+
+		// Inject schema.org markup for figcaption.
+		if ( ! \preg_match( '/<figcaption[^>]*\bitemprop\s*=\b/S', $caption ) ) {
+			$caption = \preg_replace( '/<figcaption\b/S', '<figcaption itemprop="caption"', $caption ) ?? $caption;
 		}
 
 		return $caption;
