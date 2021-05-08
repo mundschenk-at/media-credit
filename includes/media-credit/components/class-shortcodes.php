@@ -215,7 +215,7 @@ class Shortcodes implements \Media_Credit\Component {
 		}
 
 		// Inject schema.org markup for figcaption.
-		if ( ! \preg_match( '/<figcaption[^>]*\bitemprop\s*=\b/S', $caption ) ) {
+		if ( ! \preg_match( '/<figcaption[^>]*\bitemprop\s*=/S', $caption ) ) {
 			$caption = \preg_replace( '/<figcaption\b/S', '<figcaption itemprop="caption"', $caption ) ?? $caption;
 		}
 
