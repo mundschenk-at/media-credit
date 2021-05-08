@@ -30,6 +30,8 @@ namespace Media_Credit\Components;
 use Media_Credit\Core;
 use Media_Credit\Settings;
 
+use Media_Credit\Tools\Shortcodes_Filter;
+
 /**
  * The component providing the `[media-credit]` shortcode and patching `[caption]`
  * and `[wp_caption]`.
@@ -68,14 +70,23 @@ class Shortcodes implements \Media_Credit\Component {
 	private $core;
 
 	/**
+	 * The shortcodes filter helper.
+	 *
+	 * @var Shortcodes_Filter
+	 */
+	private $filter;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since 4.2.0 Unused parameter $options removed.
+	 * @since 4.2.0 Unused parameter $options removed, new paramter $filter added.
 	 *
-	 * @param Core $core The core plugin API.
+	 * @param Core              $core   The core plugin API.
+	 * @param Shortcodes_Filter $filter The shortcodes filter helper.
 	 */
-	public function __construct( Core $core ) {
-		$this->core = $core;
+	public function __construct( Core $core, Shortcodes_Filter $filter ) {
+		$this->core   = $core;
+		$this->filter = $filter;
 	}
 
 	/**
@@ -140,7 +151,7 @@ class Shortcodes implements \Media_Credit\Component {
 
 				if ( empty( $this->settings[ Settings::CREDIT_AT_END ] ) ) {
 					// The byline.
-					$credit_attr = $this->sanitize_attributes( (array) \shortcode_parse_atts( $matches[1] ) );
+					$credit_attr = $this->sanitize_attributes( $this->filter->parse_shortcode_attributes( $matches[1] ) );
 					$credit      = $this->inline_media_credit( $credit_attr, $schema_org );
 
 					// The original caption.

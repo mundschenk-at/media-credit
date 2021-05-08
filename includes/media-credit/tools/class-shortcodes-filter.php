@@ -146,7 +146,7 @@ class Shortcodes_Filter {
 	 *
 	 * @return array
 	 */
-	protected function parse_shortcode_attributes( string $attributes ) {
+	public function parse_shortcode_attributes( string $attributes ) {
 		$attr = \shortcode_parse_atts( $attributes );
 		if ( ! \is_array( $attr ) ) {
 			// Workaround for messed up WP Core syntax.
