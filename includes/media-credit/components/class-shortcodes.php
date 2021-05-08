@@ -145,9 +145,9 @@ class Shortcodes implements \Media_Credit\Component {
 				// Add attribute "standalone=0" to [media-credit] shortcode if present.
 				$content = \preg_replace( '#\[media-credit([^]]+)\]#S', '[media-credit standalone=0$1]', $content );
 			} elseif ( \preg_match( '#\[media-credit([^]]+)\]#S', $content, $matches ) ) {
-				// Use improved HTML5 mode.
-				$shortcode = $matches[0];
-				$content   = \str_replace( [ $shortcode, '[/media-credit]' ], '', $content );
+				// Use improved HTML5 mode, i.e. remove shortcode from normal
+				// source order flow and inject it into <figcaption> instead.
+				$content = \str_replace( [ $matches[0], '[/media-credit]' ], '', $content );
 
 				if ( empty( $this->settings[ Settings::CREDIT_AT_END ] ) ) {
 					// The byline.
