@@ -56,9 +56,9 @@ class Shortcodes implements \Media_Credit\Component {
 	];
 
 	/**
-	 * The plugin settings.
+	 * The plugin settings API.
 	 *
-	 * @var array
+	 * @var Settings
 	 */
 	private $settings;
 
@@ -79,14 +79,17 @@ class Shortcodes implements \Media_Credit\Component {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since 4.2.0 Unused parameter $options removed, new paramter $filter added.
+	 * @since 4.2.0 Unused parameter $options removed, new parameters $settings
+	 *              and $filter added.
 	 *
-	 * @param Core              $core   The core plugin API.
-	 * @param Shortcodes_Filter $filter The shortcodes filter helper.
+	 * @param Core              $core     The core plugin API.
+	 * @param Settings          $settings The plugin settings API.
+	 * @param Shortcodes_Filter $filter   The shortcodes filter helper.
 	 */
-	public function __construct( Core $core, Shortcodes_Filter $filter ) {
-		$this->core   = $core;
-		$this->filter = $filter;
+	public function __construct( Core $core, Settings $settings, Shortcodes_Filter $filter ) {
+		$this->core     = $core;
+		$this->settings = $settings;
+		$this->filter   = $filter;
 	}
 
 	/**
@@ -105,9 +108,6 @@ class Shortcodes implements \Media_Credit\Component {
 	 * @return void
 	 */
 	public function add_shortcodes() {
-		// Load plugin options.
-		$this->settings = $this->core->get_settings();
-
 		// Override WordPress caption shortcodes.
 		\add_shortcode( 'wp_caption',   [ $this, 'caption_shortcode' ] );
 		\add_shortcode( 'caption',      [ $this, 'caption_shortcode' ] );
@@ -130,7 +130,7 @@ class Shortcodes implements \Media_Credit\Component {
 	public function caption_shortcode( $attr, $content = null ) {
 		// Options influencing the markup.
 		$html5      = \current_theme_supports( 'html5', 'caption' );
-		$schema_org = ! empty( $this->settings[ Settings::SCHEMA_ORG_MARKUP ] );
+		$schema_org = ! empty( $this->settings->get( Settings::SCHEMA_ORG_MARKUP ) );
 
 		// New-style shortcode with the caption inside the shortcode with the link and image tags.
 		if (
@@ -149,7 +149,7 @@ class Shortcodes implements \Media_Credit\Component {
 				// source order flow and inject it into <figcaption> instead.
 				$content = \str_replace( [ $matches[0], '[/media-credit]' ], '', $content );
 
-				if ( empty( $this->settings[ Settings::CREDIT_AT_END ] ) ) {
+				if ( empty( $this->settings->get( Settings::CREDIT_AT_END ) ) ) {
 					// The byline.
 					$credit_attr = $this->sanitize_attributes( $this->filter->parse_shortcode_attributes( $matches[1] ) );
 					$credit      = $this->inline_media_credit( $credit_attr, $schema_org );
@@ -252,7 +252,7 @@ class Shortcodes implements \Media_Credit\Component {
 		// Make sure that content is a string.
 		$content = $content ?? '';
 
-		if ( ! empty( $this->settings[ Settings::CREDIT_AT_END ] ) ) {
+		if ( ! empty( $this->settings->get( Settings::CREDIT_AT_END ) ) ) {
 			// Disable shortcode if credits should be shown after the post content.
 			return \do_shortcode( $content );
 		}
@@ -319,7 +319,7 @@ class Shortcodes implements \Media_Credit\Component {
 
 		// Additional required template variables.
 		$inline_media_credit = [ $this, 'inline_media_credit' ]; // phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- needed for partial
-		$schema_org          = ! empty( $this->settings[ Settings::SCHEMA_ORG_MARKUP ] );
+		$schema_org          = ! empty( $this->settings->get( Settings::SCHEMA_ORG_MARKUP ) );
 		// phpcs:enable
 
 		// Start buffering.
