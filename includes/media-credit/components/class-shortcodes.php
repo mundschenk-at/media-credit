@@ -134,8 +134,11 @@ class Shortcodes implements \Media_Credit\Component {
 
 		// New-style shortcode with the caption inside the shortcode with the link and image tags.
 		if (
-			! empty( $content ) &&
+			// Only handle new-style captions ...
 			! isset( $attr['caption'] ) &&
+			// ... but only if the shortcode content is not empty ...
+			! empty( $content ) &&
+			// ... and only if it contain a media credit.
 			\preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#Sis', $content, $matches )
 		) {
 			$content         = $matches[1];
