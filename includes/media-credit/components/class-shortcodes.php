@@ -129,7 +129,6 @@ class Shortcodes implements \Media_Credit\Component {
 	 */
 	public function caption_shortcode( $attr, $content = null ) {
 		// Options influencing the markup.
-		$html5      = \current_theme_supports( 'html5', 'caption' );
 		$schema_org = ! empty( $this->settings->get( Settings::SCHEMA_ORG_MARKUP ) );
 
 		// New-style shortcode with the caption inside the shortcode with the link and image tags.
@@ -144,7 +143,7 @@ class Shortcodes implements \Media_Credit\Component {
 			$content         = $matches[1];
 			$attr['caption'] = \trim( $matches[2] );
 
-			if ( ! $html5 ) {
+			if ( ! \current_theme_supports( 'html5', 'caption' ) ) {
 				// Add attribute "standalone=0" to [media-credit] shortcode if present.
 				$content = \preg_replace( '#\[media-credit([^]]+)\]#S', '[media-credit standalone=0$1]', $content );
 			} elseif ( \preg_match( '#\[media-credit([^]]+)\]#S', $content, $matches ) ) {
