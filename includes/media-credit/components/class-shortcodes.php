@@ -369,15 +369,19 @@ class Shortcodes implements \Media_Credit\Component {
 			$url           = $url ?: \get_author_posts_url( $attr['id'] ); // phpcs:ignore WordPress.PHP.DisallowShortTernary
 		}
 
-		// Construct the credit line.
-		$credit_line = \esc_html( $credit );
-		if ( $url ) {
-			$credit_line = '<a href="' . \esc_url( $url ) . '"' . ( ! empty( $attr['nofollow'] ) ? ' rel="nofollow"' : '' ) . '>' . $credit_line . '</a>';
-		}
-		$credit_line .= \esc_html( $credit_suffix );
+		// The credit should not contain any HTML.
+		$credit = \esc_html( $credit );
 
-		// Wrap the credit in a container <span>.
-		$markup = $this->core->wrap_media_credit_markup( $credit_line, $include_schema_org );
+		// Wrap credit in link if URL is set.
+		if ( $url ) {
+			$credit = '<a href="' . \esc_url( $url ) . '"' . ( ! empty( $attr['nofollow'] ) ? ' rel="nofollow"' : '' ) . '>' . $credit . '</a>';
+		}
+
+		// Add suffix (no HTML there, too).
+		$credit .= \esc_html( $credit_suffix );
+
+		// Finally, let's wrap up everything in a container <span>.
+		$markup = $this->core->wrap_media_credit_markup( $credit, $include_schema_org );
 
 		/**
 		 * Filters the inline markup used for the credit line part of the `media-credit` shortcode.
