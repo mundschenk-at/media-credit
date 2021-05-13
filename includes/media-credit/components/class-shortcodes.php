@@ -422,14 +422,14 @@ class Shortcodes implements \Media_Credit\Component {
 	 *
 	 *     @type int    $id         Optional. A user ID. Default 0.
 	 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
-	 *     @type string $link       Optional. A URL used for linking the credit.
+	 *     @type string $link       Optional. A URL used for linking the credit. Default ''.
 	 *     @type bool   $standalone Optional. A flag indicating that the shortcode
 	 *                              was used without an enclosing `[caption]`. Default true.
 	 *     @type string $align      Optional. The alignment to use for the image/figure
 	 *                              (if used without `[caption]`). Default 'none'.
 	 *     @type int    $width      Optional. The width of the image/figure. Default 0.
 	 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
-	 *                              attribute should be added to the link tag.
+	 *                              attribute should be added to the link tag. Default false.
 	 * }
 	 *
 	 * @return array
