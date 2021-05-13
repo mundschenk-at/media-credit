@@ -170,18 +170,20 @@ class Shortcodes implements \Media_Credit\Component {
 					 * @param string $old_caption The caption text.
 					 * @param string $credit      The credit byline (including markup).
 					 * @param array  $attr {
-					 *     An array of shortcode attributes.
+					 *     The sanitized `[media-credit]` shortcode attributes.
 					 *
-					 *     @type int    $id         Optional. A user ID. Default 0.
-					 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
-					 *     @type string $link       Optional. A URL used for linking the credit.
-					 *     @type bool   $standalone Optional. A flag indicating that the shortcode
-					 *                              was used without an enclosing `[caption]`. Default true.
-					 *     @type string $align      Optional. The alignment to use for the image/figure
-					 *                              (if used without `[caption]`). Default 'none'.
-					 *     @type int    $width      Optional. The width of the image/figure. Default 0.
-					 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
-					 *                              attribute should be added to the link tag.
+					 *     @type int    $id         A user ID (0 is used to indicate `$name`
+					 *                              should take precedence).
+					 *     @type string $name       The (freeform) credit to display.
+					 *     @type string $link       A URL used for linking the credit (or '').
+					 *     @type bool   $standalone A flag indicating that the shortcode was used
+					 *                              without an enclosing `[caption]`.
+					 *     @type string $align      The alignment to use for the image/figure (if
+					 *                              used without `[caption]`).
+					 *     @type int    $width      The width of the image/figure in pixels.
+					 *     @type bool   $no_follow  A flag indicating that a `rel=nofollow`
+					 *                              attribute should be added to the link tag (if
+					 *                              `$url` is not empty).
 					 * }
 					 */
 					$attr['caption'] = \apply_filters( 'media_credit_shortcode_html5_caption', "{$caption} {$credit}", $caption, $credit, $credit_attr );
@@ -338,18 +340,20 @@ class Shortcodes implements \Media_Credit\Component {
 	 * Renders inline part of the shortcode (prepared for output).
 	 *
 	 * @param  array $attr {
-	 *     The `[media-credit]` shortcode attributes.
+	 *     The sanitized `[media-credit]` shortcode attributes (@see `Shortcodes::sanitize_attributes`).
 	 *
-	 *     @type int    $id         Optional. A user ID. Default 0.
-	 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
-	 *     @type string $link       Optional. A URL used for linking the credit.
-	 *     @type bool   $standalone Optional. A flag indicating that the shortcode
-	 *                              was used without an enclosing `[caption]`. Default true.
-	 *     @type string $align      Optional. The alignment to use for the image/figure
-	 *                              (if used without `[caption]`). Default 'none'.
-	 *     @type int    $width      Optional. The width of the image/figure. Default 0.
-	 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
-	 *                              attribute should be added to the link tag.
+	 *     @type int    $id         A user ID (0 is used to indicate $name should
+	 *                              take precedence).
+	 *     @type string $name       The (freeform) credit to display.
+	 *     @type string $link       A URL used for linking the credit (or '').
+	 *     @type bool   $standalone A flag indicating that the shortcode was used
+	 *                              without an enclosing `[caption]`.
+	 *     @type string $align      The alignment to use for the image/figure (if
+	 *                              used without `[caption]`).
+	 *     @type int    $width      The width of the image/figure in pixels.
+	 *     @type bool   $no_follow  A flag indicating that a `rel=nofollow`
+	 *                              attribute should be added to the link tag (if
+	 *                              `$url` is not empty).
 	 * }
 	 * @param  bool  $include_schema_org Optional. Include schema.org markup. Default false.
 	 *
@@ -390,18 +394,20 @@ class Shortcodes implements \Media_Credit\Component {
 		 *
 		 * @param string $markup The inline part of the shortcode markup.
 		 * @param array $attr {
-		 *     The `[media-credit]` shortcode attributes.
+		 *     The sanitized `[media-credit]` shortcode attributes.
 		 *
-		 *     @type int    $id         Optional. A user ID. Default 0.
-		 *     @type string $name       Optional. The (freeform) credit to display. Default ''.
-		 *     @type string $link       Optional. A URL used for linking the credit.
-		 *     @type bool   $standalone Optional. A flag indicating that the shortcode
-		 *                              was used without an enclosing `[caption]`. Default true.
-		 *     @type string $align      Optional. The alignment to use for the image/figure
-		 *                              (if used without `[caption]`). Default 'none'.
-		 *     @type int    $width      Optional. The width of the image/figure. Default 0.
-		 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
-		 *                              attribute should be added to the link tag.
+		 *     @type int    $id         A user ID (0 is used to indicate `$name`
+		 *                              should take precedence).
+		 *     @type string $name       The (freeform) credit to display.
+		 *     @type string $link       A URL used for linking the credit (or '').
+		 *     @type bool   $standalone A flag indicating that the shortcode was used
+		 *                              without an enclosing `[caption]`.
+		 *     @type string $align      The alignment to use for the image/figure (if
+		 *                              used without `[caption]`).
+		 *     @type int    $width      The width of the image/figure in pixels.
+		 *     @type bool   $no_follow  A flag indicating that a `rel=nofollow`
+		 *                              attribute should be added to the link tag (if
+		 *                              `$url` is not empty).
 		 * }
 		 * @param bool  $include_schema_org Optional. Include schema.org markup. Default false.
 		 */
