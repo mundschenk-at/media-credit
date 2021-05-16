@@ -56,21 +56,6 @@ class Frontend implements \Media_Credit\Component {
 	const WP_ATTACHMENT_CLASS_NAME_PREFIX = 'attachment_';
 
 	/**
-	 * The version of this plugin.
-	 *
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
-	 */
-	private $version;
-
-	/**
-	 * The plugin settings.
-	 *
-	 * @var array
-	 */
-	private $settings;
-
-	/**
 	 * The core API.
 	 *
 	 * @var Core
@@ -78,14 +63,25 @@ class Frontend implements \Media_Credit\Component {
 	private $core;
 
 	/**
+	 * The plugin settings API.
+	 *
+	 * @since 4.2.0 The property is now of type Media_Credit\Settings.
+	 *
+	 * @var Settings
+	 */
+	private $settings;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @param string $version The version of this plugin.
-	 * @param Core   $core    The core plugin API.
+	 * @since 4.2.0 Parameter $version removed, parameter $settings added.
+	 *
+	 * @param Core     $core     The core plugin API.
+	 * @param Settings $settings The settings handler.
 	 */
-	public function __construct( $version, Core $core ) {
-		$this->version = $version;
-		$this->core    = $core;
+	public function __construct( Core $core, Settings $settings ) {
+		$this->core     = $core;
+		$this->settings = $settings;
 	}
 
 	/**
@@ -94,19 +90,16 @@ class Frontend implements \Media_Credit\Component {
 	 * @return void
 	 */
 	public function run() {
-		// Retrieve plugin settings.
-		$this->settings = $this->core->get_settings();
-
 		// Enqueue frontend styles.
 		\add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
 
 		// Optional credits after the main content.
-		if ( ! empty( $this->settings['credit_at_end'] ) ) {
+		if ( ! empty( $this->settings->get( Settings::CREDIT_AT_END ) ) ) {
 			\add_filter( 'the_content', [ $this, 'add_media_credits_to_end' ], 10, 1 );
 		}
 
 		// Post thumbnail credits.
-		if ( ! empty( $this->settings['post_thumbnail_credit'] ) ) {
+		if ( ! empty( $this->settings->get( Settings::FEATURED_IMAGE_CREDIT ) ) ) {
 			\add_filter( 'post_thumbnail_html', [ $this, 'add_media_credit_to_post_thumbnail' ], 10, 3 );
 		}
 	}
@@ -118,14 +111,15 @@ class Frontend implements \Media_Credit\Component {
 	 */
 	public function enqueue_styles() {
 		// Set up file suffix.
-		$suffix = ( defined( 'SCRIPT_DEBUG' ) && \SCRIPT_DEBUG ) ? '' : '.min';
-		$url    = \plugin_dir_url( \MEDIA_CREDIT_PLUGIN_FILE );
+		$suffix  = ( defined( 'SCRIPT_DEBUG' ) && \SCRIPT_DEBUG ) ? '' : '.min';
+		$url     = \plugin_dir_url( \MEDIA_CREDIT_PLUGIN_FILE );
+		$version = $this->settings->get_version();
 
 		// Do not display inline media credit if media credit is displayed at end of posts.
-		if ( ! empty( $this->settings['credit_at_end'] ) ) {
-			\wp_enqueue_style( 'media-credit-end', "{$url}public/css/media-credit-end{$suffix}.css", [], $this->version, 'all' );
+		if ( ! empty( $this->settings->get( Settings::CREDIT_AT_END ) ) ) {
+			\wp_enqueue_style( 'media-credit-end', "{$url}public/css/media-credit-end{$suffix}.css", [], $version, 'all' );
 		} else {
-			\wp_enqueue_style( 'media-credit', "{$url}public/css/media-credit{$suffix}.css", [], $this->version, 'all' );
+			\wp_enqueue_style( 'media-credit', "{$url}public/css/media-credit{$suffix}.css", [], $version, 'all' );
 		}
 	}
 
@@ -151,7 +145,7 @@ class Frontend implements \Media_Credit\Component {
 		$images = $images[1];
 
 		// Optionally include post thumbnail credit.
-		if ( ! empty( $this->settings[ Settings::FEATURED_IMAGE_CREDIT ] ) ) {
+		if ( ! empty( $this->settings->get( Settings::FEATURED_IMAGE_CREDIT ) ) ) {
 			$post_thumbnail_id = \get_post_thumbnail_id();
 
 			if ( ! empty( $post_thumbnail_id ) ) {
@@ -219,7 +213,7 @@ class Frontend implements \Media_Credit\Component {
 	 */
 	public function add_media_credit_to_post_thumbnail( $html, $post_id, $post_thumbnail_id ) {
 		// Return early if we are not in the main loop or credits are to displayed at end of posts.
-		if ( ! \in_the_loop() || ! empty( $this->settings['credit_at_end'] ) ) {
+		if ( ! \in_the_loop() || ! empty( $this->settings->get( Settings::CREDIT_AT_END ) ) ) {
 			return $html;
 		}
 
