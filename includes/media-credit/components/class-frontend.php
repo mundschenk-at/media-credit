@@ -56,6 +56,15 @@ class Frontend implements \Media_Credit\Component {
 	const WP_ATTACHMENT_CLASS_NAME_PREFIX = 'attachment_';
 
 	/**
+	 * A regular expression to collect all image IDs in the post content.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @var string
+	 */
+	const IMAGE_ID_REGEX = '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/';
+
+	/**
 	 * The core API.
 	 *
 	 * @var Core
@@ -140,38 +149,12 @@ class Frontend implements \Media_Credit\Component {
 			return $content; // abort.
 		}
 
-		// Find the attachment_IDs of all media used in $content.
-		\preg_match_all( '/' . self::WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $images );
-		$images = $images[1];
+		// Get a list of (unique) credits contained in the post (if a featured
+		// image has been set, it will be first in the list).
+		$credits = $this->get_unique_image_credits( $content );
 
-		// Optionally include post thumbnail credit.
-		if ( ! empty( $this->settings->get( Settings::FEATURED_IMAGE_CREDIT ) ) ) {
-			$post_thumbnail_id = \get_post_thumbnail_id();
-
-			if ( ! empty( $post_thumbnail_id ) ) {
-				\array_unshift( $images, $post_thumbnail_id );
-			}
-		}
-
-		// Get a list of credits for the page.
-		$credit_unique = [];
-		foreach ( $images as $image_id ) {
-			$attachment = \get_post( $image_id );
-			if ( empty( $attachment ) ) {
-				continue;
-			}
-
-			$credit = $this->core->get_media_credit_json( $attachment );
-			if ( ! empty( $credit['rendered'] ) ) {
-				$credit_unique[] = $credit['rendered'];
-			}
-		}
-
-		// Make credit list unique.
-		$credit_unique = \array_unique( $credit_unique );
-
-		// If no images are left, don't display credit line.
-		if ( empty( $credit_unique ) ) {
+		// Don't display the credit line if there are no images.
+		if ( empty( $credits ) ) {
 			return $content;
 		}
 
@@ -180,26 +163,89 @@ class Frontend implements \Media_Credit\Component {
 		$image_credit = \_n(
 			'Image courtesy of %2$s%1$s', // %2$s will be empty
 			'Images courtesy of %2$s and %1$s',
-			\count( $credit_unique ),
+			\count( $credits ),
 			'media-credit'
 		);
 
 		// Construct actual credit line from list of unique credits.
-		$last_credit   = \array_pop( $credit_unique );
-		$other_credits = \implode( \_x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' ), $credit_unique );
+		$last_credit   = \array_pop( $credits );
+		$other_credits = \implode( \_x( ', ', 'String used to join multiple image credits for "Display credit after post"', 'media-credit' ), $credits );
 		$image_credit  = \sprintf( $image_credit, $last_credit, $other_credits );
 
 		// Restore credit array for filter.
-		$credit_unique[] = $last_credit;
+		$credits[] = $last_credit;
 
 		/**
 		 * Filters the credits at the end of a post.
 		 *
-		 * @param string   $markup        The generated end credit mark-up.
-		 * @param string   $content       The original content before the end credits were added.
-		 * @param string[] $credit_unique An array of unique media credits contained in the current post.
+		 * @since 4.2.0 Parameter $credit_unique renamed to $credits.
+		 *
+		 * @param string   $markup  The generated end credit mark-up.
+		 * @param string   $content The original content before the end credits were added.
+		 * @param string[] $credits An array of unique media credits contained in the current post.
 		 */
-		return \apply_filters( 'media_credit_at_end', $content . '<div class="media-credit-end">' . $image_credit . '</div>', $content, $credit_unique );
+		return \apply_filters( 'media_credit_at_end', $content . '<div class="media-credit-end">' . $image_credit . '</div>', $content, $credits );
+	}
+
+	/**
+	 * Retrieves the image credits for the current post.
+	 *
+	 * @since  4.2.0
+	 *
+	 * @param  string $content The post content.
+	 *
+	 * @return string[]
+	 */
+	protected function get_unique_image_credits( $content ) {
+		// Get a list of credits for the page.
+		$credits = [];
+		foreach ( $this->get_image_ids( $content ) as $image_id ) {
+			$attachment = \get_post( $image_id );
+			if ( empty( $attachment ) ) {
+				continue;
+			}
+
+			$credit = $this->core->get_media_credit_json( $attachment );
+			if ( ! empty( $credit['rendered'] ) ) {
+				$credits[] = $credit['rendered'];
+			}
+		}
+
+		// Make credit list unique and re-index numerically.
+		return \array_values( \array_unique( $credits ) );
+	}
+
+	/**
+	 * Retrieves the attachment IDs for all images in the current post (including
+	 * the featured image).
+	 *
+	 * @since  4.2.0
+	 *
+	 * @param  string       $content The post content.
+	 * @param  int|\WP_Post $post    Optional. Post ID or WP_Post object. Defaults
+	 *                               to the global `$post`.
+	 *
+	 * @return int[]
+	 */
+	protected function get_image_ids( $content, $post = null ) {
+		$image_ids = [];
+
+		// Optionally include featured image credit.
+		if ( ! empty( $this->settings->get( Settings::FEATURED_IMAGE_CREDIT ) ) ) {
+			$featured_image_id = \get_post_thumbnail_id( $post );
+
+			if ( ! empty( $featured_image_id ) ) {
+				$image_ids[] = $featured_image_id;
+			}
+		}
+
+		// Find the attachment IDs of all media used in $content.
+		\preg_match_all( self::IMAGE_ID_REGEX, $content, $images );
+		foreach ( $images[1] as $image_id_string ) {
+			$image_ids[] = (int) $image_id_string;
+		}
+
+		return $image_ids;
 	}
 
 	/**
