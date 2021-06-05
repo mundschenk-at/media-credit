@@ -277,16 +277,40 @@ class Frontend implements \Media_Credit\Component {
 			return $output;
 		}
 
-		// Retrieve the attachment.
-		$attachment = \get_post( $post_thumbnail_id );
-
-		// Abort if the post ID does not correspond to a valid attachment.
-		if ( empty( $attachment ) ) {
+		$credit = $this->get_featured_image_credit( $post_id, $post_thumbnail_id );
+		if ( empty( $credit ) ) {
+			// Don't print an empty default credit.
 			return $html;
+		}
+
+		// Return styled & wrapped credit markup.
+		return $html . $this->core->wrap_media_credit_markup( $credit, false, $this->get_featured_image_credit_style( $html ) );
+	}
+
+	/**
+	 * Retrieves the credit for a featured image.
+	 *
+	 * @since  4.2.0
+	 *
+	 * @param  int $post_id           The current post ID.
+	 * @param  int $post_thumbnail_id The attachment ID of the post thumbnail.
+	 *
+	 * @return string                 The featured image credit (or '').
+	 */
+	protected function get_featured_image_credit( $post_id, $post_thumbnail_id ) {
+		// Retrieve the featured image.
+		$attachment = \get_post( $post_thumbnail_id );
+		if ( empty( $attachment ) ) {
+			// Abort if the ID does not correspond to a valid attachment.
+			return '';
 		}
 
 		// Load the media credit fields.
 		$fields = $this->core->get_media_credit_json( $attachment );
+		if ( empty( $fields['rendered'] ) || empty( $fields['fancy'] ) ) {
+			// There was an error retrieving the credit (or the credit was empty).
+			return '';
+		}
 
 		/**
 		 * Filters whether link tags should be included in the post thumbnail credit.
@@ -299,29 +323,33 @@ class Frontend implements \Media_Credit\Component {
 		 * @param int  $post_id           The post ID.
 		 * @param int  $post_thumbnail_id The post thumbnail's attachment ID.
 		 */
-		if ( \apply_filters( 'media_credit_post_thumbnail_include_links', false, $post_id, $post_thumbnail_id ) ) {
-			$credit = $fields['rendered'];
-		} else {
-			$credit = \esc_html( $fields['fancy'] );
-		}
+		$include_links = \apply_filters( 'media_credit_post_thumbnail_include_links', false, $post_id, $post_thumbnail_id );
 
-		// Don't print an empty default credit.
-		if ( empty( $credit ) ) {
-			return $html;
-		}
+		// Return either the full "rendered" credit including posible links, or
+		// the "fancy" plain text one without any markup.
+		return $include_links ? $fields['rendered'] : \esc_html( $fields['fancy'] );
+	}
 
+	/**
+	 * Generates a style attribute suitable for direct inclusion the featured
+	 * image credit markup.
+	 *
+	 * @since  4.2.0
+	 *
+	 * @param  string $html The post thumbnail HTML.
+	 *
+	 * @return string
+	 */
+	protected function get_featured_image_credit_style( $html ) {
 		// Extract image width.
 		if ( \preg_match( "/<img[^>]+width=([\"'])([0-9]+)\\1/", $html, $match ) ) {
-			$credit_width = $match[2];
+			$image_width = $match[2];
 		}
 
-		// Set optional style attribute.
-		$style = '';
-		if ( ! empty( $credit_width ) ) {
-			$style = ' style="max-width: ' . (int) $credit_width . 'px"';
+		if ( empty( $image_width ) ) {
+			return '';
 		}
 
-		// Return styled & wrapped credit markup.
-		return $html . $this->core->wrap_media_credit_markup( $credit, false, $style );
+		return ' style="max-width: ' . (int) $image_width . 'px"';
 	}
 }
