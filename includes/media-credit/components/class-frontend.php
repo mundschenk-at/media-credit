@@ -105,10 +105,8 @@ class Frontend implements \Media_Credit\Component {
 		// Optional credits after the main content.
 		if ( ! empty( $this->settings->get( Settings::CREDIT_AT_END ) ) ) {
 			\add_filter( 'the_content', [ $this, 'add_media_credits_to_end' ], 10, 1 );
-		}
-
-		// Post thumbnail credits.
-		if ( ! empty( $this->settings->get( Settings::FEATURED_IMAGE_CREDIT ) ) ) {
+		} elseif ( ! empty( $this->settings->get( Settings::FEATURED_IMAGE_CREDIT ) ) ) {
+			// Featured Image credits are only added "inline".
 			\add_filter( 'post_thumbnail_html', [ $this, 'add_media_credit_to_post_thumbnail' ], 10, 3 );
 		}
 	}
@@ -258,8 +256,8 @@ class Frontend implements \Media_Credit\Component {
 	 * @return string
 	 */
 	public function add_media_credit_to_post_thumbnail( $html, $post_id, $post_thumbnail_id ) {
-		// Return early if we are not in the main loop or credits are to displayed at end of posts.
-		if ( ! \in_the_loop() || ! empty( $this->settings->get( Settings::CREDIT_AT_END ) ) ) {
+		// Return early if we are not in the main loop.
+		if ( ! \in_the_loop() ) {
 			return $html;
 		}
 
