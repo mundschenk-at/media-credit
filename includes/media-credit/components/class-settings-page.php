@@ -57,13 +57,6 @@ class Settings_Page implements \Media_Credit\Component {
 	private $settings;
 
 	/**
-	 * The current version of this plugin.
-	 *
-	 * @var string
-	 */
-	private $version;
-
-	/**
 	 * Some strings for displaying the preview.
 	 *
 	 * @var    array   $preview_data {
@@ -80,12 +73,12 @@ class Settings_Page implements \Media_Credit\Component {
 	/**
 	 * Creates a new instance.
 	 *
-	 * @param string   $version     The plugin version.
-	 * @param Options  $options     The options handler.
-	 * @param Settings $settings    The default settings.
+	 * @since 4.2.0 Parameter $version removed.
+	 *
+	 * @param Options  $options  The options handler.
+	 * @param Settings $settings The default settings.
 	 */
-	public function __construct( $version, Options $options, Settings $settings ) {
-		$this->version  = $version;
+	public function __construct( Options $options, Settings $settings ) {
 		$this->options  = $options;
 		$this->settings = $settings;
 	}
@@ -174,14 +167,15 @@ class Settings_Page implements \Media_Credit\Component {
 		}
 
 		// Set up resource file information.
-		$suffix = ( defined( 'SCRIPT_DEBUG' ) && \SCRIPT_DEBUG ) ? '' : '.min';
-		$url    = \plugin_dir_url( \MEDIA_CREDIT_PLUGIN_FILE );
+		$suffix  = ( defined( 'SCRIPT_DEBUG' ) && \SCRIPT_DEBUG ) ? '' : '.min';
+		$url     = \plugin_dir_url( \MEDIA_CREDIT_PLUGIN_FILE );
+		$version = $this->settings->get_version();
 
 		// Style the preview area of the settings page.
-		\wp_enqueue_style( 'media-credit-preview-style', "{$url}/admin/css/media-credit-preview{$suffix}.css", [], $this->version, 'screen' );
+		\wp_enqueue_style( 'media-credit-preview-style', "{$url}/admin/css/media-credit-preview{$suffix}.css", [], $version, 'screen' );
 
 		// Preview script for the settings page.
-		\wp_enqueue_script( 'media-credit-preview', "{$url}/admin/js/media-credit-preview{$suffix}.js", [ 'jquery' ], $this->version, true );
+		\wp_enqueue_script( 'media-credit-preview', "{$url}/admin/js/media-credit-preview{$suffix}.js", [ 'jquery' ], $version, true );
 		\wp_localize_script( 'media-credit-preview', 'mediaCreditPreviewData', $this->preview_data );
 	}
 

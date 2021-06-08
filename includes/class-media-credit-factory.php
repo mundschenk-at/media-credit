@@ -130,7 +130,6 @@ class Media_Credit_Factory extends Dice {
 			// Components.
 			Component::class                    => self::SHARED,
 			Components\Classic_Editor::class    => $version_rule,
-			Components\Settings_Page::class     => $version_rule,
 		];
 
 		return $rules;
