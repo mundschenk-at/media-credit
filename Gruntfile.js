@@ -205,16 +205,6 @@ module.exports = function( grunt ) {
 			]
 		},
 
-		phpcs: {
-			plugin: {
-				src: ['includes/**/*.php', 'admin/**/*.php', 'public/**/*.php']
-			},
-			options: {
-				bin: 'vendor/bin/phpcs -p -s -v -n ',
-				standard: './phpcs.xml'
-			}
-		},
-
 		sass: {
 			options: {
 				implementation: sass,
@@ -348,7 +338,7 @@ module.exports = function( grunt ) {
 
 	grunt.registerTask( 'default', [
 			'newer:eslint',
-			'newer:phpcs',
+			'newer:composer:dev:phpcs',
 			'newer:sass:dev',
 			'newer:postcss:dev'
 	] );
@@ -404,14 +394,14 @@ module.exports = function( grunt ) {
 	});
 
 	grunt.registerTask('deploy', [
-			'phpcs',
+			'composer:dev:phpcs',
 			'eslint',
 			'build',
 			'wp_deploy:release'
 	] );
 
 	grunt.registerTask('trunk', [
-			'phpcs',
+			'composer:dev:phpcs',
 			'eslint',
 			'build',
 			'wp_deploy:trunk'
