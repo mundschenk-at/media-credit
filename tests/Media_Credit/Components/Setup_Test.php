@@ -50,7 +50,7 @@ class Setup_Test extends \Media_Credit\Tests\TestCase {
 	/**
 	 * The system-under-test.
 	 *
-	 * @var Settings
+	 * @var Setup
 	 */
 	private $sut;
 
