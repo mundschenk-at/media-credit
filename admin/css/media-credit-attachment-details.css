@@ -1,46 +1,48 @@
-label[data-setting="mediaCreditText"] input[type="text"]::-webkit-input-placeholder {
+label[data-setting=mediaCreditText] input[type=text]::-webkit-input-placeholder {
   opacity: 0.3;
 }
 
-label[data-setting="mediaCreditText"] input[type="text"]:-ms-input-placeholder {
+label[data-setting=mediaCreditText] input[type=text]::-moz-placeholder {
   opacity: 0.3;
 }
 
-label[data-setting="mediaCreditText"] input[type="text"]::-ms-input-placeholder {
+label[data-setting=mediaCreditText] input[type=text]:-ms-input-placeholder {
   opacity: 0.3;
 }
 
-label[data-setting="mediaCreditText"] input[type="text"]::placeholder {
+label[data-setting=mediaCreditText] input[type=text]::-ms-input-placeholder {
   opacity: 0.3;
 }
 
-label[data-setting="mediaCreditNoFollow"].setting {
+label[data-setting=mediaCreditText] input[type=text]::placeholder {
+  opacity: 0.3;
+}
+
+label[data-setting=mediaCreditNoFollow].setting {
   float: right;
   width: 65%;
 }
 
 @media only screen and (max-width: 900px) {
-  label[data-setting="mediaCreditNoFollow"].setting {
+  label[data-setting=mediaCreditNoFollow].setting {
     float: none;
     margin-top: 5px;
     width: 100%;
   }
-  label[data-setting="mediaCreditNoFollow"].setting input[type="checkbox"] {
+  label[data-setting=mediaCreditNoFollow].setting input[type=checkbox] {
     bottom: 1px;
     margin: 0;
     position: relative;
     vertical-align: middle;
   }
 }
-
-.attachment-details label[data-setting="mediaCreditNoFollow"].setting {
+.attachment-details label[data-setting=mediaCreditNoFollow].setting {
   margin-top: 4px;
 }
-
-.attachment-details label[data-setting="mediaCreditNoFollow"].setting input[type="checkbox"] {
+.attachment-details label[data-setting=mediaCreditNoFollow].setting input[type=checkbox] {
   bottom: 1px;
   margin: 0 3px 0 0;
   position: relative;
   vertical-align: middle;
 }
-/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFkbWluL3Njc3MvbWVkaWEtY3JlZGl0LWF0dGFjaG1lbnQtZGV0YWlscy5zY3NzIiwibWVkaWEtY3JlZGl0LWF0dGFjaG1lbnQtZGV0YWlscy5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0E7RUFFSSxhQUFZO0NBQ2I7O0FBSEg7RUFFSSxhQUFZO0NBQ2I7O0FBSEg7RUFFSSxhQUFZO0NBQ2I7O0FBSEg7RUFFSSxhQUFZO0NBQ2I7O0FBR0g7RUFDRSxhQUFZO0VBQ1osV0FBVTtDQUNYOztBQUVEO0VBQ0U7SUFDRSxZQUFXO0lBQ1gsZ0JBQWU7SUFDZixZQUFXO0dBUWI7RUFYQTtJQU1JLFlBQVc7SUFDWCxVQUFTO0lBQ1QsbUJBQWtCO0lBQ2xCLHVCQUFzQjtHQUN6QjtDQ0ZGOztBRE1EO0VBRUksZ0JBQWU7Q0FRakI7O0FBVkY7RUFLTSxZQUFXO0VBQ1gsa0JBQWlCO0VBQ2pCLG1CQUFrQjtFQUNsQix1QkFBc0I7Q0FDekIiLCJmaWxlIjoibWVkaWEtY3JlZGl0LWF0dGFjaG1lbnQtZGV0YWlscy5jc3MifQ== */
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1lZGlhLWNyZWRpdC1hdHRhY2htZW50LWRldGFpbHMuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsWUFBWTtBQUNkOztBQUZBO0VBQ0UsWUFBWTtBQUNkOztBQUZBO0VBQ0UsWUFBWTtBQUNkOztBQUZBO0VBQ0UsWUFBWTtBQUNkOztBQUZBO0VBQ0UsWUFBWTtBQUNkOztBQUVBO0VBQ0UsWUFBWTtFQUNaLFVBQVU7QUFDWjs7QUFFQTtFQUNFO0lBQ0UsV0FBVztJQUNYLGVBQWU7SUFDZixXQUFXO0VBQ2I7RUFDQTtJQUNFLFdBQVc7SUFDWCxTQUFTO0lBQ1Qsa0JBQWtCO0lBQ2xCLHNCQUFzQjtFQUN4QjtBQUNGO0FBQ0E7RUFDRSxlQUFlO0FBQ2pCO0FBQ0E7RUFDRSxXQUFXO0VBQ1gsaUJBQWlCO0VBQ2pCLGtCQUFrQjtFQUNsQixzQkFBc0I7QUFDeEIiLCJmaWxlIjoibWVkaWEtY3JlZGl0LWF0dGFjaG1lbnQtZGV0YWlscy5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyJsYWJlbFtkYXRhLXNldHRpbmc9bWVkaWFDcmVkaXRUZXh0XSBpbnB1dFt0eXBlPXRleHRdOjpwbGFjZWhvbGRlciB7XG4gIG9wYWNpdHk6IDAuMztcbn1cblxubGFiZWxbZGF0YS1zZXR0aW5nPW1lZGlhQ3JlZGl0Tm9Gb2xsb3ddLnNldHRpbmcge1xuICBmbG9hdDogcmlnaHQ7XG4gIHdpZHRoOiA2NSU7XG59XG5cbkBtZWRpYSBvbmx5IHNjcmVlbiBhbmQgKG1heC13aWR0aDogOTAwcHgpIHtcbiAgbGFiZWxbZGF0YS1zZXR0aW5nPW1lZGlhQ3JlZGl0Tm9Gb2xsb3ddLnNldHRpbmcge1xuICAgIGZsb2F0OiBub25lO1xuICAgIG1hcmdpbi10b3A6IDVweDtcbiAgICB3aWR0aDogMTAwJTtcbiAgfVxuICBsYWJlbFtkYXRhLXNldHRpbmc9bWVkaWFDcmVkaXROb0ZvbGxvd10uc2V0dGluZyBpbnB1dFt0eXBlPWNoZWNrYm94XSB7XG4gICAgYm90dG9tOiAxcHg7XG4gICAgbWFyZ2luOiAwO1xuICAgIHBvc2l0aW9uOiByZWxhdGl2ZTtcbiAgICB2ZXJ0aWNhbC1hbGlnbjogbWlkZGxlO1xuICB9XG59XG4uYXR0YWNobWVudC1kZXRhaWxzIGxhYmVsW2RhdGEtc2V0dGluZz1tZWRpYUNyZWRpdE5vRm9sbG93XS5zZXR0aW5nIHtcbiAgbWFyZ2luLXRvcDogNHB4O1xufVxuLmF0dGFjaG1lbnQtZGV0YWlscyBsYWJlbFtkYXRhLXNldHRpbmc9bWVkaWFDcmVkaXROb0ZvbGxvd10uc2V0dGluZyBpbnB1dFt0eXBlPWNoZWNrYm94XSB7XG4gIGJvdHRvbTogMXB4O1xuICBtYXJnaW46IDAgM3B4IDAgMDtcbiAgcG9zaXRpb246IHJlbGF0aXZlO1xuICB2ZXJ0aWNhbC1hbGlnbjogbWlkZGxlO1xufSJdfQ== */
