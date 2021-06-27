@@ -31,6 +31,7 @@ use Media_Credit\Core;
 use Media_Credit\Settings;
 
 use Media_Credit\Tools\Shortcodes_Filter;
+use Media_Credit\Tools\Template;
 
 /**
  * The component providing the `[media-credit]` shortcode and patching `[caption]`
@@ -77,18 +78,29 @@ class Shortcodes implements \Media_Credit\Component {
 	private $filter;
 
 	/**
+	 * The template handler.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @var Template
+	 */
+	private $template;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since 4.2.0 Unused parameter $options removed, new parameters $settings
-	 *              and $filter added.
+	 * @since 4.2.0 Unused parameter $options removed, new parameters $settings,
+	 *              $template, and $filter added.
 	 *
 	 * @param Core              $core     The core plugin API.
 	 * @param Settings          $settings The plugin settings API.
+	 * @param Template          $template The template handler.
 	 * @param Shortcodes_Filter $filter   The shortcodes filter helper.
 	 */
-	public function __construct( Core $core, Settings $settings, Shortcodes_Filter $filter ) {
+	public function __construct( Core $core, Settings $settings, Template $template, Shortcodes_Filter $filter ) {
 		$this->core     = $core;
 		$this->settings = $settings;
+		$this->template = $template;
 		$this->filter   = $filter;
 	}
 
@@ -318,22 +330,17 @@ class Shortcodes implements \Media_Credit\Component {
 		 */
 		$width = \apply_filters( 'img_caption_shortcode_width', $width, $atts, $content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
-		// Prepare media content (nested shortcodes).
-		$content = \do_shortcode( $content );
+		// Required template variables.
+		$args = [
+			'content'             => \do_shortcode( $content ), // expand nested shortcodes.
+			'html5'               => $html5,
+			'schema_org'          => ! empty( $this->settings->get( Settings::SCHEMA_ORG_MARKUP ) ),
+			'width'               => $width,
+			'inline_media_credit' => [ $this, 'inline_media_credit' ],
+			'atts'                => $atts,
+		];
 
-		// Additional required template variables.
-		$inline_media_credit = [ $this, 'inline_media_credit' ]; // phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- needed for partial
-		$schema_org          = ! empty( $this->settings->get( Settings::SCHEMA_ORG_MARKUP ) );
-		// phpcs:enable
-
-		// Start buffering.
-		\ob_start();
-
-		// Require partial.
-		require \MEDIA_CREDIT_PLUGIN_PATH . '/public/partials/media-credit-shortcode.php';
-
-		// Retrieve buffer.
-		return (string) \ob_get_clean();
+		return $this->template->get_partial( '/public/partials/media-credit-shortcode.php', $args );
 	}
 
 	/**
