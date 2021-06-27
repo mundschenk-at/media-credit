@@ -266,13 +266,15 @@ class Media_Credit {
 		}
 
 		// Extract variables for template.
-		$sidebar             = $args['sidebar']; // phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- needed for partial
-		$link_without_parent = $args['link_without_parent'];
-		$header              = $args['header'];
-		// phpcs:enable
+		$partial_args = [
+			'media'               => $media,
+			'sidebar'             => $args['sidebar'],
+			'link_without_parent' => $args['link_without_parent'],
+			'header'              => $args['header'],
+		];
 
 		// Load the template part.
-		require \MEDIA_CREDIT_PLUGIN_PATH . '/public/partials/author-media.php';
+		Core::get_instance()->print_partial( '/public/partials/author-media.php', $partial_args );
 	}
 
 	/**

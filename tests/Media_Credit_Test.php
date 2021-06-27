@@ -32,8 +32,6 @@ use Brain\Monkey\Functions;
 
 use Mockery as m;
 
-use org\bovigo\vfs\vfsStream;
-
 use Media_Credit\Tests\TestCase;
 
 use Media_Credit\Core;
@@ -78,19 +76,6 @@ class Media_Credit_Test extends TestCase {
 	 */
 	protected function set_up() {
 		parent::set_up();
-
-		// Set up virtual filesystem.
-		$filesystem = [
-			'plugin' => [
-				'public'       => [
-					'partials' => [
-						'author-media.php' => 'AUTHOR_MEDIA',
-					],
-				],
-			],
-		];
-		vfsStream::setup( 'root', null, $filesystem );
-		set_include_path( 'vfs://root/' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_set_include_path
 
 		m::getConfiguration()->setConstantsMap(
 			[
@@ -404,10 +389,10 @@ class Media_Credit_Test extends TestCase {
 
 		Functions\expect( 'wp_parse_args' )->once()->with( m::type( 'array' ), m::type( 'array' ) )->andReturn( $merged_query );
 
-		$this->core->shouldReceive( 'get_instance' )->once()->andReturn( $this->core );
+		$this->core->shouldReceive( 'get_instance' )->twice()->withNoArgs()->andReturn( $this->core );
 		$this->core->shouldReceive( 'get_author_media_and_posts' )->once()->with( $final_query )->andReturn( $result );
+		$this->core->shouldReceive( 'print_partial' )->once()->with( '/public/partials/author-media.php', m::type( 'array' ) );
 
-		$this->expectOutputString( 'AUTHOR_MEDIA' );
 		$this->assertNull( \Media_Credit::display_author_media( $query ) );
 	}
 
@@ -435,10 +420,10 @@ class Media_Credit_Test extends TestCase {
 
 		Functions\expect( 'wp_parse_args' )->once()->with( m::type( 'array' ), m::type( 'array' ) )->andReturn( $merged_query );
 
-		$this->core->shouldReceive( 'get_instance' )->once()->andReturn( $this->core );
+		$this->core->shouldReceive( 'get_instance' )->once()->withNoArgs()->andReturn( $this->core );
 		$this->core->shouldReceive( 'get_author_media_and_posts' )->once()->with( $final_query )->andReturn( null );
+		$this->core->shouldReceive( 'print_partial' )->never();
 
-		$this->expectOutputString( '' );
 		$this->assertNull( \Media_Credit::display_author_media( $query ) );
 	}
 
