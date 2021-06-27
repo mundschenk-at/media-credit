@@ -31,6 +31,7 @@ use Media_Credit\Settings;
 
 use Media_Credit\Tools\Media_Query;
 use Media_Credit\Tools\Shortcodes_Filter;
+use Media_Credit\Tools\Template;
 
 use Media_Credit\Data_Storage\Cache;
 
@@ -131,21 +132,32 @@ class Core {
 	private $media_query;
 
 	/**
+	 * The template handler.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @var Template
+	 */
+	private $template;
+
+	/**
 	 * Creates a new instance.
 	 *
 	 * @since 4.2.0 Parameters $version and $options removed. Parameter $settings_template
-	 *              has been renamed to $settings.
+	 *              has been renamed to $settings. Parameter $template added.
 	 *
 	 * @param Cache             $cache             The object cache handler.
 	 * @param Settings          $settings          The settings handler.
 	 * @param Shortcodes_Filter $shortcodes_filter The shortcodes filter.
 	 * @param Media_Query       $media_query       The media query handler.
+	 * @param Template          $template          The template handler.
 	 */
-	public function __construct( Cache $cache, Settings $settings, Shortcodes_Filter $shortcodes_filter, Media_Query $media_query ) {
+	public function __construct( Cache $cache, Settings $settings, Shortcodes_Filter $shortcodes_filter, Media_Query $media_query, Template $template ) {
 		$this->cache             = $cache;
 		$this->settings          = $settings;
-		$this->media_query       = $media_query;
 		$this->shortcodes_filter = $shortcodes_filter;
+		$this->media_query       = $media_query;
+		$this->template          = $template;
 	}
 
 	/**
@@ -681,5 +693,23 @@ class Core {
 			 * @param bool   $include_schema_org A flag indicating whether schema.org markup should be included.
 			 */
 			return \apply_filters( 'media_credit_wrapper', $markup, $credit, $include_schema_org );
+	}
+
+	/**
+	 * Parses and echoes a partial template.
+	 *
+	 * @internal
+	 *
+	 * @since  4.2.0
+	 *
+	 * @param  string $partial The file path of the partial to include (relative
+	 *                         to the plugin directory.
+	 * @param  array  $args    Arguments passed to the partial. Only string keys
+	 *                         allowed and the keys must be valid variable names.
+	 *
+	 * @return void
+	 */
+	public function print_partial( $partial, array $args = [] ) {
+		$this->template->print_partial( $partial, $args );
 	}
 }

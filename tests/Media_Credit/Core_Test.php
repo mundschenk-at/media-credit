@@ -38,6 +38,7 @@ use Media_Credit\Settings;
 use Media_Credit\Data_Storage\Cache;
 use Media_Credit\Tools\Media_Query;
 use Media_Credit\Tools\Shortcodes_Filter;
+use Media_Credit\Tools\Template;
 
 use Media_Credit\Tests\TestCase;
 
@@ -70,14 +71,12 @@ class Core_Test extends TestCase {
 	 */
 	private $cache;
 
-
 	/**
 	 * Helper mock.
 	 *
 	 * @var Settings
 	 */
 	private $settings;
-
 
 	/**
 	 * Helper mock.
@@ -86,13 +85,19 @@ class Core_Test extends TestCase {
 	 */
 	private $shortcodes_filter;
 
-
 	/**
 	 * Helper mock.
 	 *
 	 * @var Media_Query
 	 */
 	private $media_query;
+
+	/**
+	 * Helper mock.
+	 *
+	 * @var Template
+	 */
+	private $template;
 
 	/**
 	 * Sets up the fixture, for example, opens a network connection.
@@ -106,9 +111,10 @@ class Core_Test extends TestCase {
 		$this->settings          = m::mock( Settings::Class );
 		$this->shortcodes_filter = m::mock( Shortcodes_Filter::Class );
 		$this->media_query       = m::mock( Media_Query::Class );
+		$this->template          = m::mock( Template::Class );
 
 		// Create system-under-test.
-		$this->sut = m::mock( Core::class, [ $this->cache, $this->settings, $this->shortcodes_filter, $this->media_query ] )->makePartial()->shouldAllowMockingProtectedMethods();
+		$this->sut = m::mock( Core::class, [ $this->cache, $this->settings, $this->shortcodes_filter, $this->media_query, $this->template ] )->makePartial()->shouldAllowMockingProtectedMethods();
 	}
 
 	/**
@@ -121,14 +127,16 @@ class Core_Test extends TestCase {
 		$settings          = m::mock( Settings::Class );
 		$shortcodes_filter = m::mock( Shortcodes_Filter::Class );
 		$media_query       = m::mock( Media_Query::Class );
+		$template          = m::mock( Template::Class );
 
 		$mock = m::mock( Core::class )->makePartial();
-		$mock->__construct( $cache, $settings, $shortcodes_filter, $media_query );
+		$mock->__construct( $cache, $settings, $shortcodes_filter, $media_query, $template );
 
 		$this->assert_attribute_same( $cache, 'cache', $mock );
 		$this->assert_attribute_same( $settings, 'settings', $mock );
 		$this->assert_attribute_same( $shortcodes_filter, 'shortcodes_filter', $mock );
 		$this->assert_attribute_same( $media_query, 'media_query', $mock );
+		$this->assert_attribute_same( $template, 'template', $mock );
 	}
 
 	/**
@@ -1296,5 +1304,23 @@ class Core_Test extends TestCase {
 		Filters\expectApplied( 'media_credit_wrapper' )->once()->with( $result, $credit, $include_schema_org )->andReturn( $result );
 
 		$this->assertSame( $result, $this->sut->wrap_media_credit_markup( $credit, $include_schema_org, $extra_attributes ) );
+	}
+
+	/**
+	 * Tests ::print_partial.
+	 *
+	 * @covers ::print_partial
+	 */
+	public function test_print_partial() {
+		// Input data.
+		$partial = '/foo/bar.php';
+		$args    = [
+			'foo' => 'bar',
+			'bar' => 'baz',
+		];
+
+		$this->template->shouldReceive( 'print_partial' )->once()->with( $partial, $args );
+
+		$this->assertNull( $this->sut->print_partial( $partial, $args ) );
 	}
 }
