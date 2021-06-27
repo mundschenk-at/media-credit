@@ -32,8 +32,6 @@ use Brain\Monkey\Functions;
 
 use Mockery as m;
 
-use org\bovigo\vfs\vfsStream;
-
 use Media_Credit\Tests\TestCase;
 
 use Media_Credit\Components\Shortcodes;
@@ -41,6 +39,7 @@ use Media_Credit\Components\Shortcodes;
 use Media_Credit\Core;
 use Media_Credit\Settings;
 use Media_Credit\Tools\Shortcodes_Filter;
+use Media_Credit\Tools\Template;
 
 /**
  * Media_Credit\Components\Shortcodes unit test.
@@ -76,6 +75,13 @@ class Shortcodes_Test extends TestCase {
 	/**
 	 * Required helper object.
 	 *
+	 * @var Template
+	 */
+	private $template;
+
+	/**
+	 * Required helper object.
+	 *
 	 * @var Shortcodes_Filter
 	 */
 	private $filter;
@@ -87,24 +93,12 @@ class Shortcodes_Test extends TestCase {
 	protected function set_up() {
 		parent::set_up();
 
-		// Set up virtual filesystem.
-		$filesystem = [
-			'plugin' => [
-				'public'       => [
-					'partials' => [
-						'media-credit-shortcode.php' => 'SHORTCODE PARTIAL',
-					],
-				],
-			],
-		];
-		vfsStream::setup( 'root', null, $filesystem );
-		set_include_path( 'vfs://root/' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_set_include_path
-
 		$this->core     = m::mock( Core::class );
 		$this->settings = m::mock( Settings::class );
+		$this->template = m::mock( Template::class );
 		$this->filter   = m::mock( Shortcodes_Filter::class );
 
-		$this->sut = m::mock( Shortcodes::class, [ $this->core, $this->settings, $this->filter ] )
+		$this->sut = m::mock( Shortcodes::class, [ $this->core, $this->settings, $this->template, $this->filter ] )
 			->makePartial()
 			->shouldAllowMockingProtectedMethods();
 	}
@@ -117,13 +111,15 @@ class Shortcodes_Test extends TestCase {
 	public function test_constructor() {
 		$core     = m::mock( Core::class );
 		$settings = m::mock( Settings::class );
+		$template = m::mock( Template::class );
 		$filter   = m::mock( Shortcodes_Filter::class );
 
 		$sut = m::mock( Shortcodes::class )->makePartial();
-		$sut->__construct( $core, $settings, $filter );
+		$sut->__construct( $core, $settings, $template, $filter );
 
 		$this->assert_attribute_same( $core, 'core', $sut );
 		$this->assert_attribute_same( $settings, 'settings', $sut );
+		$this->assert_attribute_same( $template, 'template', $sut );
 		$this->assert_attribute_same( $filter, 'filter', $sut );
 	}
 
@@ -524,6 +520,9 @@ class Shortcodes_Test extends TestCase {
 		$schema_org     = true;
 		$filtered_width = 320;
 
+		// Expected result.
+		$result = 'MY SHORTCODE MARKUP';
+
 		$this->settings->shouldReceive( 'get' )->once()->with( Settings::CREDIT_AT_END )->andReturn( false );
 		$this->sut->shouldReceive( 'sanitize_attributes' )->once()->with( $atts )->andReturn( $sanitized_atts );
 
@@ -534,7 +533,9 @@ class Shortcodes_Test extends TestCase {
 		Functions\expect( 'do_shortcode' )->once()->with( $content )->andReturn( '<img> with expanded shortcodes' );
 		$this->settings->shouldReceive( 'get' )->once()->with( Settings::SCHEMA_ORG_MARKUP )->andReturn( $schema_org );
 
-		$this->assertSame( 'SHORTCODE PARTIAL', $this->sut->media_credit_shortcode( $atts, $content ) );
+		$this->template->shouldReceive( 'get_partial' )->once()->with( '/public/partials/media-credit-shortcode.php', m::type( 'array' ) )->andReturn( $result );
+
+		$this->assertSame( $result, $this->sut->media_credit_shortcode( $atts, $content ) );
 	}
 
 	/**

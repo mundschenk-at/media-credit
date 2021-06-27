@@ -32,12 +32,11 @@ use Brain\Monkey\Functions;
 
 use Mockery as m;
 
-use org\bovigo\vfs\vfsStream;
-
 use Media_Credit\Components\Settings_Page;
 
 use Media_Credit\Settings;
 use Media_Credit\Data_Storage\Options;
+use Media_Credit\Tools\Template;
 
 use Mundschenk\UI\Control_Factory;
 use Mundschenk\UI\Control;
@@ -74,6 +73,12 @@ class Settings_Page_Test extends \Media_Credit\Tests\TestCase {
 	 */
 	private $settings;
 
+	/**
+	 * Required helper object.
+	 *
+	 * @var Template
+	 */
+	private $template;
 
 	/**
 	 * Required class helper.
@@ -88,22 +93,6 @@ class Settings_Page_Test extends \Media_Credit\Tests\TestCase {
 	protected function set_up() {
 		parent::set_up();
 
-		// Set up virtual filesystem.
-		$filesystem = [
-			'plugin' => [
-				'admin'       => [
-					'partials' => [
-						'settings' => [
-							'preview.php' => 'PREVIEW TEMPLATE',
-							'section.php' => 'SECTION TEMPLATE',
-						],
-					],
-				],
-			],
-		];
-		vfsStream::setup( 'root', null, $filesystem );
-		set_include_path( 'vfs://root/' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_set_include_path
-
 		Functions\when( '__' )->returnArg( 1 );
 		Functions\when( '_x' )->returnArg( 1 );
 		Functions\when( '_n' )->returnArg( 2 );
@@ -112,8 +101,9 @@ class Settings_Page_Test extends \Media_Credit\Tests\TestCase {
 
 		$this->options  = m::mock( Options::class );
 		$this->settings = m::mock( Settings::class );
+		$this->template = m::mock( Template::class );
 
-		$this->sut = m::mock( Settings_Page::class, [ $this->options, $this->settings ] )
+		$this->sut = m::mock( Settings_Page::class, [ $this->options, $this->settings, $this->template ] )
 			->makePartial()
 			->shouldAllowMockingProtectedMethods();
 	}
@@ -126,12 +116,14 @@ class Settings_Page_Test extends \Media_Credit\Tests\TestCase {
 	public function test_constructor() {
 		$options  = m::mock( Options::class );
 		$settings = m::mock( Settings::class );
+		$template = m::mock( Template::class );
 
 		$sut = m::mock( Settings_Page::class )->makePartial();
-		$sut->__construct( $options, $settings );
+		$sut->__construct( $options, $settings, $template );
 
 		$this->assert_attribute_same( $options, 'options', $sut );
 		$this->assert_attribute_same( $settings, 'settings', $sut );
+		$this->assert_attribute_same( $template, 'template', $sut );
 	}
 
 	/**
@@ -227,12 +219,19 @@ class Settings_Page_Test extends \Media_Credit\Tests\TestCase {
 		$preview_data = [
 			'mocked' => 'preview data',
 		];
+		$args         = [
+			'options'      => $settings,
+			'preview_data' => $preview_data,
+		];
 
 		// Expected result.
-		$result = 'PREVIEW TEMPLATE';
+		$result = 'PREVIEW TEMPLATE MARKUP';
+
+		// Set up object state.
+		$this->set_value( $this->sut, 'preview_data', $preview_data );
 
 		$this->settings->shouldReceive( 'get_all_settings' )->once()->withNoArgs()->andReturn( $settings );
-		$this->set_value( $this->sut, 'preview_data', $preview_data );
+		$this->template->shouldReceive( 'get_partial' )->once()->with( '/admin/partials/settings/preview.php', $args )->andReturn( $result );
 
 		$this->assertSame( $result, $this->sut->get_preview_markup() );
 	}
@@ -451,7 +450,8 @@ class Settings_Page_Test extends \Media_Credit\Tests\TestCase {
 			'second' => 'mocked arg',
 		];
 
-		$this->expectOutputString( 'SECTION TEMPLATE' );
+		$this->template->shouldReceive( 'print_partial' )->once()->with( '/admin/partials/settings/section.php', $args );
+
 		$this->assertNull( $this->sut->print_settings_section( $args ) );
 	}
 

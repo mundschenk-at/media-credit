@@ -29,6 +29,7 @@ namespace Media_Credit\Components;
 use Media_Credit\Settings;
 
 use Media_Credit\Data_Storage\Options;
+use Media_Credit\Tools\Template;
 
 use Mundschenk\UI\Control_Factory;
 use Mundschenk\UI\Controls;
@@ -57,6 +58,13 @@ class Settings_Page implements \Media_Credit\Component {
 	private $settings;
 
 	/**
+	 * The template handler..
+	 *
+	 * @var Template
+	 */
+	private $template;
+
+	/**
 	 * Some strings for displaying the preview.
 	 *
 	 * @var    array   $preview_data {
@@ -77,10 +85,12 @@ class Settings_Page implements \Media_Credit\Component {
 	 *
 	 * @param Options  $options  The options handler.
 	 * @param Settings $settings The default settings.
+	 * @param Template $template The template handler.
 	 */
-	public function __construct( Options $options, Settings $settings ) {
+	public function __construct( Options $options, Settings $settings, Template $template ) {
 		$this->options  = $options;
 		$this->settings = $settings;
+		$this->template = $template;
 	}
 
 	/**
@@ -139,19 +149,13 @@ class Settings_Page implements \Media_Credit\Component {
 	 * @return string
 	 */
 	protected function get_preview_markup() {
-		// Start buffering.
-		\ob_start();
-
 		// The partial needs access to the plugin options and other internal data.
-		$options      = $this->settings->get_all_settings(); // phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- needed for partial
-		$preview_data = $this->preview_data;
-		// phpcs:enable
+		$args = [
+			'options'      => $this->settings->get_all_settings(),
+			'preview_data' => $this->preview_data,
+		];
 
-		// Require partial.
-		require \MEDIA_CREDIT_PLUGIN_PATH . '/admin/partials/settings/preview.php';
-
-		// Retrieve buffer.
-		return (string) \ob_get_clean();
+		return $this->template->get_partial( '/admin/partials/settings/preview.php', $args );
 	}
 
 	/**
@@ -221,7 +225,7 @@ class Settings_Page implements \Media_Credit\Component {
 	 * @return void
 	 */
 	public function print_settings_section( $args ) {
-		require \MEDIA_CREDIT_PLUGIN_PATH . '/admin/partials/settings/section.php';
+		$this->template->print_partial( '/admin/partials/settings/section.php', $args );
 	}
 
 	/**
