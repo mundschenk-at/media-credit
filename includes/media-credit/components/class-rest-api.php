@@ -284,7 +284,7 @@ class REST_API implements \Media_Credit\Component {
 		$params = $request->get_params();
 
 		// Return the filtered post content in a response object.
-		$response = new \WP_REST_Response(
+		return new \WP_REST_Response(
 			$this->shortcodes_filter->update_changed_media_credits(
 				$params['content'],
 				$params['attachment_id'],
@@ -294,7 +294,5 @@ class REST_API implements \Media_Credit\Component {
 				$params['nofollow']
 			)
 		);
-
-		return $response;
 	}
 }
