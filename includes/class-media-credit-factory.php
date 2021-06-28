@@ -104,7 +104,7 @@ class Media_Credit_Factory extends Dice {
 		];
 
 		// Define rules.
-		$rules = [
+		return [
 			// Core API.
 			Core::class                         => self::SHARED,
 			Settings::class                     => [
@@ -131,8 +131,6 @@ class Media_Credit_Factory extends Dice {
 			Component::class                    => self::SHARED,
 			Components\Classic_Editor::class    => $version_rule,
 		];
-
-		return $rules;
 	}
 
 	/**
