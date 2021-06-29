@@ -192,6 +192,7 @@ class Block_Editor_Test extends TestCase {
 		$this->core->shouldReceive( 'get_media_credit_json' )->once()->with( $attachment )->andReturn( $credit_json );
 		$this->core->shouldReceive( 'wrap_media_credit_markup' )->once()->with( $rendered_credit, $schema_org )->andReturn( $wrapped_credit );
 		$this->sut->shouldReceive( 'inject_credit_into_caption' )->once()->with( $block_content, $wrapped_credit )->andReturn( $injected_block_content );
+		$this->core->shouldReceive( 'maybe_add_schema_org_markup_to_figure' )->once()->with( $injected_block_content )->andReturn( $result );
 
 		$this->assertSame( $result, $this->sut->add_media_credit_to_image_blocks( $block_content, $block ) );
 	}
@@ -230,6 +231,7 @@ class Block_Editor_Test extends TestCase {
 		$this->core->shouldReceive( 'get_media_credit_json' )->never();
 		$this->core->shouldReceive( 'wrap_media_credit_markup' )->never();
 		$this->sut->shouldReceive( 'inject_credit_into_caption' )->never();
+		$this->core->shouldReceive( 'maybe_add_schema_org_markup_to_figure' )->never();
 
 		$this->assertSame( $result, $this->sut->add_media_credit_to_image_blocks( $block_content, $block ) );
 	}
@@ -268,6 +270,7 @@ class Block_Editor_Test extends TestCase {
 		$this->core->shouldReceive( 'get_media_credit_json' )->never();
 		$this->core->shouldReceive( 'wrap_media_credit_markup' )->never();
 		$this->sut->shouldReceive( 'inject_credit_into_caption' )->never();
+		$this->core->shouldReceive( 'maybe_add_schema_org_markup_to_figure' )->never();
 
 		$this->assertSame( $result, $this->sut->add_media_credit_to_image_blocks( $block_content, $block ) );
 	}
@@ -303,6 +306,7 @@ class Block_Editor_Test extends TestCase {
 		$this->core->shouldReceive( 'get_media_credit_json' )->never();
 		$this->core->shouldReceive( 'wrap_media_credit_markup' )->never();
 		$this->sut->shouldReceive( 'inject_credit_into_caption' )->never();
+		$this->core->shouldReceive( 'maybe_add_schema_org_markup_to_figure' )->never();
 
 		$this->assertSame( $result, $this->sut->add_media_credit_to_image_blocks( $block_content, $block ) );
 	}
@@ -341,6 +345,7 @@ class Block_Editor_Test extends TestCase {
 		$this->core->shouldReceive( 'get_media_credit_json' )->never();
 		$this->core->shouldReceive( 'wrap_media_credit_markup' )->never();
 		$this->sut->shouldReceive( 'inject_credit_into_caption' )->never();
+		$this->core->shouldReceive( 'maybe_add_schema_org_markup_to_figure' )->never();
 
 		$this->assertSame( $result, $this->sut->add_media_credit_to_image_blocks( $block_content, $block ) );
 	}
@@ -383,6 +388,7 @@ class Block_Editor_Test extends TestCase {
 		$this->core->shouldReceive( 'get_media_credit_json' )->once()->with( $attachment )->andReturn( $credit_json );
 		$this->core->shouldReceive( 'wrap_media_credit_markup' )->never();
 		$this->sut->shouldReceive( 'inject_credit_into_caption' )->never();
+		$this->core->shouldReceive( 'maybe_add_schema_org_markup_to_figure' )->never();
 
 		$this->assertSame( $result, $this->sut->add_media_credit_to_image_blocks( $block_content, $block ) );
 	}

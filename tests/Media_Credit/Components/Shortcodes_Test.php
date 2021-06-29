@@ -178,7 +178,7 @@ class Shortcodes_Test extends TestCase {
 		Filters\expectApplied( 'media_credit_shortcode_html5_caption' )->never();
 
 		Functions\expect( 'img_caption_shortcode' )->once()->with( $attr_with_caption, $captionless_content )->andReturn( $result );
-		$this->sut->shouldReceive( 'maybe_add_schema_org_markup_to_caption' )->never();
+		$this->core->shouldReceive( 'maybe_add_schema_org_markup_to_figure' )->never();
 
 		$this->assertSame( $result, $this->sut->caption_shortcode( $attr, $content ) );
 	}
@@ -229,7 +229,7 @@ class Shortcodes_Test extends TestCase {
 		Filters\expectApplied( 'media_credit_shortcode_html5_caption' )->once()->with( "{$caption} {$credit}", $caption, $credit, $sanitized_mc_attr )->andReturn( $filtered_html5_caption );
 		Functions\expect( 'img_caption_shortcode' )->once()->with( $attr_with_caption, $captionless_content )->andReturn( $result );
 
-		$this->sut->shouldReceive( 'maybe_add_schema_org_markup_to_caption' )->never();
+		$this->core->shouldReceive( 'maybe_add_schema_org_markup_to_figure' )->never();
 
 		$this->assertSame( $result, $this->sut->caption_shortcode( $attr, $content ) );
 	}
@@ -271,7 +271,7 @@ class Shortcodes_Test extends TestCase {
 
 		Functions\expect( 'img_caption_shortcode' )->once()->with( $attr_with_caption, $content_without_mediacredit )->andReturn( $result );
 
-		$this->sut->shouldReceive( 'maybe_add_schema_org_markup_to_caption' )->never();
+		$this->core->shouldReceive( 'maybe_add_schema_org_markup_to_figure' )->never();
 
 		$this->assertSame( $result, $this->sut->caption_shortcode( $attr, $content ) );
 	}
@@ -323,7 +323,7 @@ class Shortcodes_Test extends TestCase {
 		Filters\expectApplied( 'media_credit_shortcode_html5_caption' )->once()->with( "{$caption} {$credit}", $caption, $credit, $sanitized_mc_attr )->andReturn( $filtered_html5_caption );
 		Functions\expect( 'img_caption_shortcode' )->once()->with( $attr_with_caption, $captionless_content )->andReturn( $caption_markup );
 
-		$this->sut->shouldReceive( 'maybe_add_schema_org_markup_to_caption' )->once()->with( $caption_markup )->andReturn( $result );
+		$this->core->shouldReceive( 'maybe_add_schema_org_markup_to_figure' )->once()->with( $caption_markup )->andReturn( $result );
 
 		$this->assertSame( $result, $this->sut->caption_shortcode( $attr, $content ) );
 	}
@@ -363,7 +363,7 @@ class Shortcodes_Test extends TestCase {
 
 		Functions\expect( 'img_caption_shortcode' )->once()->with( $attr, $content )->andReturn( $caption_markup );
 
-		$this->sut->shouldReceive( 'maybe_add_schema_org_markup_to_caption' )->once()->with( $caption_markup )->andReturn( $result );
+		$this->core->shouldReceive( 'maybe_add_schema_org_markup_to_figure' )->once()->with( $caption_markup )->andReturn( $result );
 
 		$this->assertSame( $result, $this->sut->caption_shortcode( $attr, $content ) );
 	}
@@ -401,7 +401,7 @@ class Shortcodes_Test extends TestCase {
 
 		Functions\expect( 'img_caption_shortcode' )->once()->with( $attr, $content )->andReturn( $caption_markup );
 
-		$this->sut->shouldReceive( 'maybe_add_schema_org_markup_to_caption' )->once()->with( $caption_markup )->andReturn( $result );
+		$this->core->shouldReceive( 'maybe_add_schema_org_markup_to_figure' )->once()->with( $caption_markup )->andReturn( $result );
 
 		$this->assertSame( $result, $this->sut->caption_shortcode( $attr, $content ) );
 	}
@@ -441,60 +441,9 @@ class Shortcodes_Test extends TestCase {
 
 		Functions\expect( 'img_caption_shortcode' )->once()->with( $attr, $content )->andReturn( $caption_markup );
 
-		$this->sut->shouldReceive( 'maybe_add_schema_org_markup_to_caption' )->once()->with( $caption_markup )->andReturn( $result );
+		$this->core->shouldReceive( 'maybe_add_schema_org_markup_to_figure' )->once()->with( $caption_markup )->andReturn( $result );
 
 		$this->assertSame( $result, $this->sut->caption_shortcode( $attr, $content ) );
-	}
-
-	/**
-	 * Provides data for testing ::maybe_add_schema_org_markup_to_caption.
-	 *
-	 * @return array
-	 */
-	public function provide_maybe_add_schema_org_markup_to_caption_data() {
-		return [
-			// Noop.
-			[ '', '' ],
-			// <figure> only.
-			[
-				'<figure foo="bar">FOOBAR</figure>',
-				'<figure itemscope itemtype="http://schema.org/ImageObject" foo="bar">FOOBAR</figure>',
-			],
-			// <figure> with <figcaption>.
-			[
-				'<figure foo="bar">FOOBAR <figcaption class="some-class">Oh caption, my caption!</figcaption></figure>',
-				'<figure itemscope itemtype="http://schema.org/ImageObject" foo="bar">FOOBAR <figcaption itemprop="caption" class="some-class">Oh caption, my caption!</figcaption></figure>',
-			],
-			// <figure> with <figcaption>, pre-existing 'itemscope'.
-			[
-				'<figure foo="bar" itemscope itemtype="some://thing">FOOBAR <figcaption class="some-class">Oh caption, my caption!</figcaption></figure>',
-				'<figure foo="bar" itemscope itemtype="some://thing">FOOBAR <figcaption itemprop="caption" class="some-class">Oh caption, my caption!</figcaption></figure>',
-			],
-			// <figure> with <figcaption>, pre-existing 'itemprop' on <figcaption>.
-			[
-				'<figure foo="bar">FOOBAR <figcaption class="some-class" itemprop="foo">Oh caption, my caption!</figcaption></figure>',
-				'<figure itemscope itemtype="http://schema.org/ImageObject" foo="bar">FOOBAR <figcaption class="some-class" itemprop="foo">Oh caption, my caption!</figcaption></figure>',
-			],
-			// <figure> with <figcaption>, pre-existing 'itemscope' and 'itemprop' (on <figcaption>).
-			[
-				'<figure foo="bar"itemscope itemtype="some://thing">FOOBAR <figcaption class="some-class" itemprop="foo">Oh caption, my caption!</figcaption></figure>',
-				'<figure foo="bar"itemscope itemtype="some://thing">FOOBAR <figcaption class="some-class" itemprop="foo">Oh caption, my caption!</figcaption></figure>',
-			],
-		];
-	}
-
-	/**
-	 * Tests ::maybe_add_schema_org_markup_to_caption.
-	 *
-	 * @covers ::maybe_add_schema_org_markup_to_caption
-	 *
-	 * @dataProvider provide_maybe_add_schema_org_markup_to_caption_data
-	 *
-	 * @param string $caption The caption.
-	 * @param string $result  The expected result.
-	 */
-	public function test_maybe_add_schema_org_markup_to_caption( $caption, $result ) {
-		$this->assertSame( $result, $this->sut->maybe_add_schema_org_markup_to_caption( $caption ) );
 	}
 
 	/**
