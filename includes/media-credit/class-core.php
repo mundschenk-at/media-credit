@@ -277,6 +277,9 @@ class Core {
 				case self::DATA_POSTMETA_KEY:
 					$meta_value = \is_array( $meta_value ) ? $meta_value : [];
 					break;
+
+				default:
+					// Ignore unknown key.
 			}
 		}
 
