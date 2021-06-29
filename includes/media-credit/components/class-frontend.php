@@ -276,13 +276,12 @@ class Frontend implements \Media_Credit\Component {
 		}
 
 		$credit = $this->get_featured_image_credit( $post_id, $post_thumbnail_id );
-		if ( empty( $credit ) ) {
-			// Don't print an empty default credit.
-			return $html;
+		if ( ! empty( $credit ) ) {
+			// Add styled & wrapped credit markup.
+			$html .= $this->core->wrap_media_credit_markup( $credit, false, $this->get_featured_image_credit_style( $html ) );
 		}
 
-		// Return styled & wrapped credit markup.
-		return $html . $this->core->wrap_media_credit_markup( $credit, false, $this->get_featured_image_credit_style( $html ) );
+		return $html;
 	}
 
 	/**
