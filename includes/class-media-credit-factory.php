@@ -32,6 +32,7 @@ use Media_Credit\Component;
 use Media_Credit\Components;
 use Media_Credit\Tools;
 use Media_Credit\Settings;
+use Media_Credit\Exceptions\Factory_Exception;
 
 use Mundschenk\Data_Storage;
 
@@ -64,11 +65,11 @@ class Media_Credit_Factory extends Dice {
 	 * Retrieves a factory set up for creating Media_Credit instances.
 	 *
 	 * @since 4.1.0 Parameter $full_plugin_path replaced with MEDIA_CREDIT_PLUGIN_PATH constant.
-	 * @since 4.2.0 Now throws a RuntimeException in case of error.
+	 * @since 4.2.0 Now throws a Factory_Exception in case of error.
 	 *
 	 * @return Media_Credit_Factory
 	 *
-	 * @throws RuntimeException An exception is thrown if the factory cannot be created.
+	 * @throws Factory_Exception An exception is thrown if the factory cannot be created.
 	 */
 	public static function get() {
 		if ( ! isset( self::$factory ) ) {
@@ -80,7 +81,7 @@ class Media_Credit_Factory extends Dice {
 			if ( $factory instanceof Media_Credit_Factory ) {
 				self::$factory = $factory;
 			} else {
-				throw new RuntimeException( 'Could not create object factory.' ); // @codeCoverageIgnore
+				throw new Factory_Exception( 'Could not create object factory.' ); // @codeCoverageIgnore
 			}
 		}
 
