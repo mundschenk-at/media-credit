@@ -712,4 +712,30 @@ class Core {
 	public function print_partial( $partial, array $args = [] ) {
 		$this->template->print_partial( $partial, $args );
 	}
+
+	/**
+	 * Adds schema.org markup to the <figure>/<figcaption> markup if it does not
+	 * already contain `itemtype`/`itemprop` attributes.
+	 *
+	 * @internal
+	 *
+	 * @since  4.2.0
+	 *
+	 * @param  string $markup The caption markup.
+	 *
+	 * @return string
+	 */
+	public function maybe_add_schema_org_markup_to_figure( $markup ) {
+		// Inject schema.org markup for figure.
+		if ( ! \preg_match( '/<figure[^>]*\bitemscope\b/S', $markup ) ) {
+			$markup = \preg_replace( '/<figure\b/S', '<figure itemscope itemtype="http://schema.org/ImageObject"', $markup ) ?? $markup;
+		}
+
+		// Inject schema.org markup for figcaption.
+		if ( ! \preg_match( '/<figcaption[^>]*\bitemprop\s*=/S', $markup ) ) {
+			$markup = \preg_replace( '/<figcaption\b/S', '<figcaption itemprop="caption"', $markup ) ?? $markup;
+		}
+
+		return $markup;
+	}
 }

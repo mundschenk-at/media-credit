@@ -1323,4 +1323,55 @@ class Core_Test extends TestCase {
 
 		$this->assertNull( $this->sut->print_partial( $partial, $args ) );
 	}
+
+	/**
+	 * Provides data for testing ::maybe_add_schema_org_markup_to_figure.
+	 *
+	 * @return array
+	 */
+	public function provide_maybe_add_schema_org_markup_to_figure_data() {
+		return [
+			// Noop.
+			[ '', '' ],
+			// <figure> only.
+			[
+				'<figure foo="bar">FOOBAR</figure>',
+				'<figure itemscope itemtype="http://schema.org/ImageObject" foo="bar">FOOBAR</figure>',
+			],
+			// <figure> with <figcaption>.
+			[
+				'<figure foo="bar">FOOBAR <figcaption class="some-class">Oh caption, my caption!</figcaption></figure>',
+				'<figure itemscope itemtype="http://schema.org/ImageObject" foo="bar">FOOBAR <figcaption itemprop="caption" class="some-class">Oh caption, my caption!</figcaption></figure>',
+			],
+			// <figure> with <figcaption>, pre-existing 'itemscope'.
+			[
+				'<figure foo="bar" itemscope itemtype="some://thing">FOOBAR <figcaption class="some-class">Oh caption, my caption!</figcaption></figure>',
+				'<figure foo="bar" itemscope itemtype="some://thing">FOOBAR <figcaption itemprop="caption" class="some-class">Oh caption, my caption!</figcaption></figure>',
+			],
+			// <figure> with <figcaption>, pre-existing 'itemprop' on <figcaption>.
+			[
+				'<figure foo="bar">FOOBAR <figcaption class="some-class" itemprop="foo">Oh caption, my caption!</figcaption></figure>',
+				'<figure itemscope itemtype="http://schema.org/ImageObject" foo="bar">FOOBAR <figcaption class="some-class" itemprop="foo">Oh caption, my caption!</figcaption></figure>',
+			],
+			// <figure> with <figcaption>, pre-existing 'itemscope' and 'itemprop' (on <figcaption>).
+			[
+				'<figure foo="bar"itemscope itemtype="some://thing">FOOBAR <figcaption class="some-class" itemprop="foo">Oh caption, my caption!</figcaption></figure>',
+				'<figure foo="bar"itemscope itemtype="some://thing">FOOBAR <figcaption class="some-class" itemprop="foo">Oh caption, my caption!</figcaption></figure>',
+			],
+		];
+	}
+
+	/**
+	 * Tests ::maybe_add_schema_org_markup_to_figure.
+	 *
+	 * @covers ::maybe_add_schema_org_markup_to_figure
+	 *
+	 * @dataProvider provide_maybe_add_schema_org_markup_to_figure_data
+	 *
+	 * @param string $caption The caption.
+	 * @param string $result  The expected result.
+	 */
+	public function test_maybe_add_schema_org_markup_to_figure( $caption, $result ) {
+		$this->assertSame( $result, $this->sut->maybe_add_schema_org_markup_to_figure( $caption ) );
+	}
 }

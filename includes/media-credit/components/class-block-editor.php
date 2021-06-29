@@ -103,15 +103,7 @@ class Block_Editor implements \Media_Credit\Component {
 
 		// Inject additional schema.org markup.
 		if ( $include_schema_org ) {
-			// <figure> markup.
-			if ( ! \preg_match( '/<figure[^>]*\bitemscope\b/S', $block_content ) ) {
-				$block_content = \preg_replace( '/<figure\b/S', '<figure itemscope itemtype="http://schema.org/ImageObject"', $block_content ) ?? $block_content;
-			}
-
-			// <figcaption> markup.
-			if ( ! \preg_match( '/<figcaption[^>]*\bitemprop\s*=\b/S', $block_content ) ) {
-				$block_content = \preg_replace( '/<figcaption\b/S', '<figcaption itemprop="caption"', $block_content ) ?? $block_content;
-			}
+			$block_content = $this->core->maybe_add_schema_org_markup_to_figure( $block_content );
 		}
 
 		return $block_content;
