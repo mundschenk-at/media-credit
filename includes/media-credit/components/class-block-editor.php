@@ -92,18 +92,15 @@ class Block_Editor implements \Media_Credit\Component {
 
 		// Load the media credit for the attachment.
 		$credit = $this->core->get_media_credit_json( $attachment );
-		if ( empty( $credit['rendered'] ) ) {
-			// No credit to display, let's bail.
-			return $block_content;
-		}
+		if ( ! empty( $credit['rendered'] ) ) {
+			// Inject the (modified) caption markup.
+			$markup        = $this->core->wrap_media_credit_markup( $credit['rendered'], $include_schema_org );
+			$block_content = $this->inject_credit_into_caption( $block_content, $markup );
 
-		// Inject the (modified) caption markup.
-		$markup        = $this->core->wrap_media_credit_markup( $credit['rendered'], $include_schema_org );
-		$block_content = $this->inject_credit_into_caption( $block_content, $markup );
-
-		// Inject additional schema.org markup.
-		if ( $include_schema_org ) {
-			$block_content = $this->core->maybe_add_schema_org_markup_to_figure( $block_content );
+			// Inject additional schema.org markup.
+			if ( $include_schema_org ) {
+				$block_content = $this->core->maybe_add_schema_org_markup_to_figure( $block_content );
+			}
 		}
 
 		return $block_content;
