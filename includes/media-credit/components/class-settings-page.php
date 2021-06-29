@@ -203,14 +203,11 @@ class Settings_Page implements \Media_Credit\Component {
 
 		// Sanitize the actual input values.
 		foreach ( $input as $key => $value ) {
-			switch ( $key ) {
-				case Settings::SEPARATOR:
-					// We can't use sanitize_text_field because we want to keep enclosing whitespace.
-					$valid_options[ $key ] = \wp_kses( $value, [] );
-					break;
-
-				default:
-					$valid_options[ $key ] = \sanitize_text_field( $value );
+			if ( Settings::SEPARATOR === $key ) {
+				// We can't use sanitize_text_field because we want to keep enclosing whitespace.
+				$valid_options[ $key ] = \wp_kses( $value, [] );
+			} else {
+				$valid_options[ $key ] = \sanitize_text_field( $value );
 			}
 		}
 
