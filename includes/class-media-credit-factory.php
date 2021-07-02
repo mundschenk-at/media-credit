@@ -127,6 +127,10 @@ class Media_Credit_Factory extends Dice {
 			Tools\Author_Query::class           => self::SHARED,
 			Tools\Media_Query::class            => self::SHARED,
 			Tools\Shortcodes_Filter::class      => self::SHARED,
+			Tools\Template::class               => [
+				'shared'          => true,
+				'constructParams' => [ \MEDIA_CREDIT_PLUGIN_PATH ],
+			],
 
 			// Components.
 			Component::class                    => self::SHARED,
