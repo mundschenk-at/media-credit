@@ -179,8 +179,11 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			}
 
 			c = trim( c );
-			img = c.match( /((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?(?:\s*\[\/media-credit\])?)([\s\S]*)/i );
-			img = img !== null ? img : c.match( /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)([\s\S]*)/i ); // Alternative match if there is no media-credit shortcode
+			img =
+				// Look for nested media-credit first.
+				c.match( /((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?(?:\s*\[\/media-credit\])?)([\s\S]*)/i ) ||
+				// Alternative match if there is no media-credit shortcode
+				c.match( /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)([\s\S]*)/i );
 
 			if ( img && img[2] ) {
 				caption = trim( img[2] );
@@ -721,8 +724,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 
 				wrap = dom.create( 'div', { class: 'mceTemp' }, html );
 
-				if ( ( parent = dom.getParent( node, 'p' ) ) ||
-						( parent = dom.getParent( node, '.mceMediaCreditOuterTemp' ) ) ) {
+				if ( ( parent = dom.getParent( node, 'p' ) || dom.getParent( node, '.mceMediaCreditOuterTemp' ) ) ) {
 					parent.parentNode.insertBefore( wrap, parent );
 
 					// Prevent duplicate children.
@@ -927,7 +929,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				if ( node.nodeName === 'IMG' ) {
 					node.className = node.className.replace( /\bsize-[^ ]+/, '' );
 
-					if ( parent = dom.getParent( node, '.wp-caption' ) || dom.getParent( node, '.mceMediaCreditOuterTemp' ) ) { // eslint-disable-line no-cond-assign
+					if ( ( parent = dom.getParent( node, '.wp-caption' ) || dom.getParent( node, '.mceMediaCreditOuterTemp' ) ) ) {
 						width = event.width || dom.getAttrib( node, 'width' );
 
 						if ( width ) {
@@ -1081,11 +1083,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		if ( keyCode === VK.ENTER ) {
 			// When pressing Enter inside a caption move the caret to a new parapraph under it.
 			node = selection.getNode();
-			wrap = dom.getParent( node, 'div.mceTemp' );
-
-			if ( ! wrap ) {
-				wrap = dom.getParent( node, 'div.mceMediaCreditOuterTemp' );
-			}
+			wrap = dom.getParent( node, 'div.mceTemp' ) || dom.getParent( node, 'div.mceMediaCreditOuterTemp' );
 
 			if ( wrap ) {
 				dom.events.cancel( event ); // Doesn't cancel all :(
