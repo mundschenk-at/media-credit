@@ -1178,7 +1178,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		return getShortcode( content );
 	};
 
-	editor.on( 'beforeGetContent', function( event ) {
+	editor.on( 'BeforeGetContent', function( event ) {
 		if ( event.format !== 'raw' ) {
 			editor.$( 'img[id="__wp-temp-img-id"]' ).removeAttr( 'id' );
 		}
