@@ -1196,6 +1196,20 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		}
 	} );
 
+	// Do not select the credit element.
+	editor.on( 'BeforeObjectSelected', function( event ) {
+		var node = event.target, img, dom = editor.dom;
+
+		if ( dom.hasClass( node, 'mceMediaCreditTemp' ) ) {
+			img = dom.getPrev( node, 'img' );
+			if ( img ) {
+				event.preventDefault();
+				editor.selection.select( img );
+			}
+		}
+	} );
+
+
 	( function() {
 		var wrap;
 
