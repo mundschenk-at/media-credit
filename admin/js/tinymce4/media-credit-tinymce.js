@@ -1,7 +1,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2020 Peter Putzer.
+ * Copyright 2013-2021 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  * Copyright 2003-2020 The WordPress contributors.
  *
@@ -1100,7 +1100,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				spacer = tinymce.Env.ie && tinymce.Env.ie < 11 ? '' : '<br data-mce-bogus="1" />';
 				P = dom.create( 'p', null, spacer );
 
-				if ( node.nodeName === 'DD' ) {
+				if ( node.nodeName === 'DD' || node.nodeName === 'DT' || node === wrap ) {
 					dom.insertAfter( P, wrap );
 				} else {
 					wrap.parentNode.insertBefore( P, wrap );
