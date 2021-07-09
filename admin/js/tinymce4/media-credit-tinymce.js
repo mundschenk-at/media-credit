@@ -927,7 +927,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				if ( node.nodeName === 'IMG' ) {
 					node.className = node.className.replace( /\bsize-[^ ]+/, '' );
 
-					if ( parent = dom.getParent( node, '.wp-caption' ) ) { // eslint-disable-line no-cond-assign
+					if ( parent = dom.getParent( node, '.wp-caption' ) || dom.getParent( node, '.mceMediaCreditOuterTemp' ) ) { // eslint-disable-line no-cond-assign
 						width = event.width || dom.getAttrib( node, 'width' );
 
 						if ( width ) {
