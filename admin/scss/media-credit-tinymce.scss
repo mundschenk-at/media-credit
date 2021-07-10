@@ -24,6 +24,16 @@
   position: relative;
 }
 
+.mceMediaCredit {
+  dl.wp-caption dt.wp-caption-dt img {
+    margin-bottom: 0;
+  }
+
+  .wp-caption-dd {
+    padding-top: 0;
+  }
+}
+
 .mceMediaCreditOuterTemp {
   background: none repeat scroll 0 0 #fff;
   margin-bottom: 6px;

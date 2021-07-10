@@ -156,7 +156,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		 * Handle [media-credit] wrapped in [caption]
 		 */
 		result = content.replace( /(?:<p>)?\[(?:wp_)?caption([^\]]+)\]([\s\S]+?)\[\/(?:wp_)?caption\](?:<\/p>)?/g, function( a, b, c ) {
-			var id, align, classes, caption, img, width;
+			var id, align, classes, caption, img, width, maybeMediaCredit;
 
 			id = b.match( /id=['"]([^'"]*)['"] ?/ );
 			if ( id ) {
@@ -217,7 +217,10 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				width += 10;
 			}
 
-			return '<div class="mceTemp"><dl id="' + id + '" class="wp-caption ' + align + classes + '" style="width: ' + width + 'px">' +
+			// Add media-credit marker to outer class for layout purposes.
+			maybeMediaCredit = img.match( /<span class="mceMediaCreditTemp/ ) ? ' mceMediaCredit' : '';
+
+			return '<div class="mceTemp' + maybeMediaCredit + '"><dl id="' + id + '" class="wp-caption ' + align + classes + '" style="width: ' + width + 'px">' +
 				'<dt class="wp-caption-dt">' + img + '</dt><dd class="wp-caption-dd">' + caption + '</dd></dl></div>';
 		} );
 
@@ -588,8 +591,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	function updateImage( $imageNode, imageData ) {
 		var classes, className, node, html, parent, wrap, linkNode, imageNode,
 			captionNode, dd, dl, id, attrs, linkAttrs, width, height, align,
-			mediaCreditNode, mediaCreditWrapper, removeCreditNode,
+			mediaCreditNode, mediaCreditWrapper,
 			/* $imageNode, */ srcset, src,
+			withMediaCredit = !!( imageData.mediaCreditText || imageData.mediaCreditAuthorID ),
 			dom = editor.dom;
 
 		if ( ! $imageNode || ! $imageNode.length ) {
@@ -715,6 +719,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				if ( dd.length ) {
 					dom.setHTML( dd[0], imageData.caption );
 				}
+
+				// Set correct media-credit marker.
+				dom.toggleClass( captionNode, 'mceMediaCredit', withMediaCredit );
 			} else {
 				id = id ? 'id="' + id + '" ' : '';
 
@@ -722,7 +729,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				html = '<dl ' + id + 'class="' + className + '" style="width: ' + width + 'px">' +
 					'<dt class="wp-caption-dt"></dt><dd class="wp-caption-dd">' + imageData.caption + '</dd></dl>';
 
-				wrap = dom.create( 'div', { class: 'mceTemp' }, html );
+				wrap = dom.create( 'div', {
+					class: 'mceTemp' + ( withMediaCredit ? ' mceMediaCredit' : '' ),
+				}, html );
 
 				if ( ( parent = dom.getParent( node, 'p' ) || dom.getParent( node, '.mceMediaCreditOuterTemp' ) ) ) {
 					parent.parentNode.insertBefore( wrap, parent );
@@ -747,14 +756,11 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				}
 			}
 		} else {
-			// No caption, so we might need to remove the credit name
-			removeCreditNode = ! imageData.mediaCreditText && ! imageData.mediaCreditAuthorID;
-
 			if ( captionNode ) {
 				// Remove the caption wrapper and place the image in new media-credit wrapper or a new paragraph.
 				mediaCreditNode = dom.getNext( node, '.mceMediaCreditTemp' );
 
-				if ( mediaCreditNode && ! removeCreditNode ) {
+				if ( mediaCreditNode && withMediaCredit ) {
 					align = 'align' + ( imageData.align || 'none' );
 
 					parent = dom.create( 'div', { class: 'mceMediaCreditOuterTemp ' + align,
@@ -764,7 +770,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				}
 				captionNode.parentNode.insertBefore( parent, captionNode );
 				parent.appendChild( node );
-				if ( mediaCreditNode && ! removeCreditNode ) {
+				if ( mediaCreditNode && withMediaCredit ) {
 					parent.appendChild( mediaCreditNode );
 				}
 
@@ -774,7 +780,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				mediaCreditWrapper = dom.getParent( mediaCreditNode, '.mceMediaCreditOuterTemp' );
 
 				if ( mediaCreditWrapper ) {
-					if ( removeCreditNode ) {
+					if ( ! withMediaCredit ) {
 						// Create new parent
 						parent = dom.create( 'p' );
 
