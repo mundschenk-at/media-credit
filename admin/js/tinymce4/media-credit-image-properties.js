@@ -93,7 +93,7 @@
 			image = options.image,
 			model = frame.content.get().model,
 			align = model.get( 'align' ),
-			width = model.get( 'width' ),
+			width = parseInt( model.get( 'width' ), 10 ),
 			credit,
 			mediaCreditText = model.get( 'mediaCreditText' ),
 			mediaCreditAuthorID = model.get( 'mediaCreditAuthorID' ),
@@ -139,10 +139,15 @@
 		if ( mediaCreditBlock ) {
 			// Check for media-credit nested inside caption.
 			if ( ! dom.getParent( mediaCreditBlock, 'dl.wp-caption' ) ) {
+				// Maybe add extra width.
+				if ( ! editor.getParam( 'wpeditimage_html5_captions' ) ) {
+					width += 10;
+				}
+
 				// Standalone [media-credit].
 				mediaCreditWrapper = dom.create( 'div', {
 					class: 'mceMediaCreditOuterTemp ' + align,
-					style: 'width: ' + ( parseInt( width, 10 ) + 10 ) + 'px',
+					style: 'width: ' + width + 'px',
 				} );
 
 				// Swap existing parent with our new wrapper.
