@@ -733,7 +733,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 					class: 'mceTemp' + ( withMediaCredit ? ' mceMediaCredit' : '' ),
 				}, html );
 
-				if ( ( parent = dom.getParent( node, 'p' ) || dom.getParent( node, '.mceMediaCreditOuterTemp' ) ) ) {
+				parent = dom.getParent( node, 'p' ) || dom.getParent( node, '.mceMediaCreditOuterTemp' );
+				if ( parent ) {
 					parent.parentNode.insertBefore( wrap, parent );
 
 					// Prevent duplicate children.
@@ -935,7 +936,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				if ( node.nodeName === 'IMG' ) {
 					node.className = node.className.replace( /\bsize-[^ ]+/, '' );
 
-					if ( ( parent = dom.getParent( node, '.wp-caption' ) || dom.getParent( node, '.mceMediaCreditOuterTemp' ) ) ) {
+					parent = dom.getParent( node, '.wp-caption' ) || dom.getParent( node, '.mceMediaCreditOuterTemp' )
+					if ( parent ) {
 						width = event.width || dom.getAttrib( node, 'width' );
 
 						if ( width ) {
