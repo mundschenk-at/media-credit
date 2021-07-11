@@ -1,5 +1,10 @@
 # Changelog #
 
+## 4.2.0 (unreleased) ##
+*   _Bugfix_: The credit overlay cannot be selected any more by accident in the
+    classic editor.
+*   _Bugfix_: Several visual glitches in classic editor have been fixed.
+
 ## 4.1.1 (December 10, 2020) ##
 *   _Bugfix_: Credits containing apostrophes can be edited in the legacy Media Library view.
 *   _Bugfix_: Changes to `nofollow` flag are now saved in the legacy Media Library view as well.
