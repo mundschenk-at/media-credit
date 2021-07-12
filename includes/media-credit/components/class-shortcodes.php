@@ -312,7 +312,9 @@ class Shortcodes implements \Media_Credit\Component {
 			'html5'               => $html5,
 			'schema_org'          => ! empty( $this->settings->get( Settings::SCHEMA_ORG_MARKUP ) ),
 			'width'               => $width,
-			'inline_media_credit' => [ $this, 'inline_media_credit' ],
+			'inline_media_credit' => function( array $attr, $include_schema_org = false ) {
+				return $this->inline_media_credit( $attr, $include_schema_org ); // @codeCoverageIgnore
+			},
 			'atts'                => $atts,
 		];
 
