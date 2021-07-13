@@ -156,14 +156,33 @@ class Frontend implements \Media_Credit\Component {
 			return $content;
 		}
 
-		// Prepare credit line string.
-		/* translators: 1: last credit 2: concatenated other credits (empty in singular) */
-		$image_credit = \_n(
-			'Image courtesy of %2$s%1$s', // %2$s will be empty
-			'Images courtesy of %2$s and %1$s',
-			\count( $credits ),
-			'media-credit'
-		);
+		/**
+		 * Filters whether to use a shorter label (e.g. 'Images:' instead of
+		 * 'Images courtesy of').
+		 *
+		 * @param string $short_form Default false.
+		 */
+		$use_short_label = \apply_filters( 'media_credit_at_end_use_short_label', false );
+
+		// Prepare credit line strings.
+		$credit_count = \count( $credits );
+		if ( $use_short_label ) {
+			/* translators: 1: last credit 2: concatenated other credits (empty in singular) */
+			$image_credit = \_n(
+				'Image: %2$s%1$s', // %2$s will be empty
+				'Images: %2$s and %1$s',
+				$credit_count,
+				'media-credit'
+			);
+		} else {
+			/* translators: 1: last credit 2: concatenated other credits (empty in singular) */
+			$image_credit = \_n(
+				'Image courtesy of %2$s%1$s', // %2$s will be empty
+				'Images courtesy of %2$s and %1$s',
+				$credit_count,
+				'media-credit'
+			);
+		}
 
 		// Construct actual credit line from list of unique credits.
 		$last_credit   = \array_pop( $credits );
