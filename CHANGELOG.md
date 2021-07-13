@@ -1,13 +1,15 @@
 # Changelog #
 
 ## 4.2.0 (unreleased) ##
+*   _Feature_: A shorter label for credits displayed at the end of a post can be
+    enabled via the new filter hook `media_credit_at_end_use_short_label` (`Images:`
+    instead of `Images courtesy of`).
 *   _Bugfix_: The credit overlay cannot be selected any more by accident in the
     classic editor.
 *   _Bugfix_: Several visual glitches in classic editor have been fixed and parsing
     has been made more robust.
-*   _Feature_: A shorter label for credits displayed at the end of a post can be
-    enabled via the new filter hook `media_credit_at_end_use_short_label` (`Images:`
-    instead of `Images courtesy of`).
+*   _Bugfix_: Credit width is set properly for custom image sizes when editing
+    image properties in the classic editor.
 
 ## 4.1.1 (December 10, 2020) ##
 *   _Bugfix_: Credits containing apostrophes can be edited in the legacy Media Library view.
