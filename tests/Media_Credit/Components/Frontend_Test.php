@@ -214,7 +214,41 @@ class Frontend_Test extends TestCase {
 
 		$this->sut->shouldReceive( 'get_unique_image_credits' )->once()->with( $content )->andReturn( $credits );
 
-		Functions\expect( '_n' )->once()->with( m::type( 'string' ), m::type( 'string' ), $credit_count, 'media-credit' )->andReturnArg( (int) ( $credit_count > 1 ) );
+		Filters\expectApplied( 'media_credit_at_end_use_short_label' )->once()->with( m::type( 'bool' ) )->andReturn( false );
+
+		Functions\expect( '_n' )->once()->with( 'Image courtesy of %2$s%1$s', 'Images courtesy of %2$s and %1$s', $credit_count, 'media-credit' )->andReturnArg( (int) ( $credit_count > 1 ) );
+		Functions\expect( '_x' )->once()->with( m::type( 'string' ), m::type( 'string' ), 'media-credit' )->andReturnArg( 0 );
+
+		Filters\expectApplied( 'media_credit_at_end' )->once()->with( m::type( 'string' ), $content, $credits )->andReturnArg( 0 );
+
+		$this->assertSame( $result, $this->sut->add_media_credits_to_end( $content ) );
+	}
+
+	/**
+	 * Tests ::add_media_credits_to_end.
+	 *
+	 * @covers ::add_media_credits_to_end
+	 */
+	public function test_add_media_credits_to_end_short_label() {
+		// Input data.
+		$content = "Fake content\n";
+
+		// Intermediary data.
+		$credits      = [ 'Some', 'fake', 'credits' ];
+		$credit_count = \count( $credits );
+
+		// Expected result.
+		$result = $content . '<div class="media-credit-end">Images: Some, fake and credits</div>';
+
+		Functions\expect( 'is_singular' )->once()->withNoArgs()->andReturn( true );
+		Functions\expect( 'in_the_loop' )->once()->withNoArgs()->andReturn( true );
+		Functions\expect( 'is_main_query' )->once()->withNoArgs()->andReturn( true );
+
+		$this->sut->shouldReceive( 'get_unique_image_credits' )->once()->with( $content )->andReturn( $credits );
+
+		Filters\expectApplied( 'media_credit_at_end_use_short_label' )->once()->with( m::type( 'bool' ) )->andReturn( true );
+
+		Functions\expect( '_n' )->once()->with( 'Image: %2$s%1$s', 'Images: %2$s and %1$s', $credit_count, 'media-credit' )->andReturnArg( (int) ( $credit_count > 1 ) );
 		Functions\expect( '_x' )->once()->with( m::type( 'string' ), m::type( 'string' ), 'media-credit' )->andReturnArg( 0 );
 
 		Filters\expectApplied( 'media_credit_at_end' )->once()->with( m::type( 'string' ), $content, $credits )->andReturnArg( 0 );
@@ -244,6 +278,8 @@ class Frontend_Test extends TestCase {
 
 		$this->sut->shouldReceive( 'get_unique_image_credits' )->once()->with( $content )->andReturn( $credits );
 
+		Filters\expectApplied( 'media_credit_at_end_use_short_label' )->once()->with( m::type( 'bool' ) )->andReturnArg( 0 );
+
 		Functions\expect( '_n' )->once()->with( m::type( 'string' ), m::type( 'string' ), $credit_count, 'media-credit' )->andReturnArg( (int) ( $credit_count > 1 ) );
 		Functions\expect( '_x' )->once()->with( m::type( 'string' ), m::type( 'string' ), 'media-credit' )->andReturnArg( 0 );
 
@@ -266,6 +302,8 @@ class Frontend_Test extends TestCase {
 		Functions\expect( 'is_main_query' )->never();
 
 		$this->sut->shouldReceive( 'get_unique_image_credits' )->never();
+
+		Filters\expectApplied( 'media_credit_at_end_use_short_label' )->never();
 
 		Functions\expect( '_n' )->never();
 		Functions\expect( '_x' )->never();
@@ -290,6 +328,8 @@ class Frontend_Test extends TestCase {
 
 		$this->sut->shouldReceive( 'get_unique_image_credits' )->never();
 
+		Filters\expectApplied( 'media_credit_at_end_use_short_label' )->never();
+
 		Functions\expect( '_n' )->never();
 		Functions\expect( '_x' )->never();
 
@@ -313,6 +353,8 @@ class Frontend_Test extends TestCase {
 
 		$this->sut->shouldReceive( 'get_unique_image_credits' )->never();
 
+		Filters\expectApplied( 'media_credit_at_end_use_short_label' )->never();
+
 		Functions\expect( '_n' )->never();
 		Functions\expect( '_x' )->never();
 
@@ -335,6 +377,8 @@ class Frontend_Test extends TestCase {
 		Functions\expect( 'is_main_query' )->once()->withNoArgs()->andReturn( true );
 
 		$this->sut->shouldReceive( 'get_unique_image_credits' )->once()->with( $content )->andReturn( [] );
+
+		Filters\expectApplied( 'media_credit_at_end_use_short_label' )->never();
 
 		Functions\expect( '_n' )->never();
 		Functions\expect( '_x' )->never();
