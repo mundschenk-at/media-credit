@@ -1,7 +1,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2014-2020 Peter Putzer.
+ * Copyright 2014-2021 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License,
@@ -111,6 +111,11 @@
 
 		if ( mediaCredit.id[ mediaCreditAuthorID ] !== mediaCreditText ) {
 			mediaCreditAuthorID = '';
+		}
+
+		// We need to support custom sizes as well.
+		if ( model.get( 'size' ) === 'custom' ) {
+			width = parseInt( model.get( 'customWidth' ) );
 		}
 
 		credit = mediaCreditAuthorID ? ( mediaCredit.id[ mediaCreditAuthorID ] + mediaCredit.separator + mediaCredit.organization ) : mediaCreditText;
