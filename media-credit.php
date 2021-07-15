@@ -25,15 +25,16 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html
  *
  * @wordpress-plugin
- * Plugin Name: Media Credit
- * Plugin URI: https://code.mundschenk.at/media-credit/
- * Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
- * Version: 4.2.0-alpha.1
- * Author: Peter Putzer
- * Author URI: https://code.mundschenk.at/
- * License: GNU General Public License v2 or later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: media-credit
+ * Plugin Name:       Media Credit
+ * Plugin URI:        https://code.mundschenk.at/media-credit/
+ * Description:       This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
+ * Version:           4.2.0-alpha.1
+ * Requires at least: 5.2
+ * Requires PHP:      7.0
+ * Author:            Peter Putzer
+ * Author URI:        https://code.mundschenk.at/
+ * License:           GNU General Public License v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 namespace Media_Credit;
