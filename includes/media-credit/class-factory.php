@@ -24,6 +24,8 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+namespace Media_Credit;
+
 use Dice\Dice;
 
 use Media_Credit\Core;
@@ -41,16 +43,17 @@ use Mundschenk\Data_Storage;
  *
  * @since 4.0.0
  * @since 4.1.0 Class made concrete.
+ * @since 4.2.0 Renamed to `Media_Credit\Factory`.
  *
  * @author Peter Putzer <github@mundschenk.at>
  */
-class Media_Credit_Factory extends Dice {
+class Factory extends Dice {
 	const SHARED = [ 'shared' => true ];
 
 	/**
 	 * The factory instance.
 	 *
-	 * @var Media_Credit_Factory|null
+	 * @var Factory|null
 	 */
 	private static $factory;
 
@@ -67,7 +70,7 @@ class Media_Credit_Factory extends Dice {
 	 * @since 4.1.0 Parameter $full_plugin_path replaced with MEDIA_CREDIT_PLUGIN_PATH constant.
 	 * @since 4.2.0 Now throws a Factory_Exception in case of error.
 	 *
-	 * @return Media_Credit_Factory
+	 * @return Factory
 	 *
 	 * @throws Factory_Exception An exception is thrown if the factory cannot be created.
 	 */
@@ -78,7 +81,7 @@ class Media_Credit_Factory extends Dice {
 			$factory = new static();
 			$factory = $factory->addRules( $factory->get_rules() );
 
-			if ( $factory instanceof Media_Credit_Factory ) {
+			if ( $factory instanceof Factory ) {
 				self::$factory = $factory;
 			} else {
 				throw new Factory_Exception( 'Could not create object factory.' ); // @codeCoverageIgnore

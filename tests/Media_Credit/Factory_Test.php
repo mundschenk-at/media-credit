@@ -24,7 +24,7 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace Media_Credit\Tests;
+namespace Media_Credit\Tests\Media_Credit;
 
 use Brain\Monkey\Actions;
 use Brain\Monkey\Filters;
@@ -36,22 +36,22 @@ use Mockery as m;
 
 use Media_Credit\Tests\TestCase;
 
-use Media_Credit_Factory;
+use Media_Credit\Factory;
 
 /**
- * Media_Credit_Factory unit test.
+ * Factory unit test.
  *
  * @since 4.2.0
  *
- * @coversDefaultClass \Media_Credit_Factory
- * @usesDefaultClass \Media_Credit_Factory
+ * @coversDefaultClass Media_Credit\Factory
+ * @usesDefaultClass Media_Credit\Factory
  */
-class Media_Credit_Factory_Test extends TestCase {
+class Factory_Test extends TestCase {
 
 	/**
 	 * The system-under-test.
 	 *
-	 * @var Media_Credit_Factory
+	 * @var Factory
 	 */
 	private $sut;
 
@@ -79,7 +79,7 @@ class Media_Credit_Factory_Test extends TestCase {
 		\set_include_path( 'vfs://root/' ); // @codingStandardsIgnoreLine
 
 		// Set up the mock.
-		$this->sut = m::mock( Media_Credit_Factory::class )->makePartial()->shouldAllowMockingProtectedMethods();
+		$this->sut = m::mock( Factory::class )->makePartial()->shouldAllowMockingProtectedMethods();
 	}
 
 	/**
@@ -106,8 +106,8 @@ class Media_Credit_Factory_Test extends TestCase {
 	public function test_get_rules() {
 		$version    = '6.6.6';
 		$components = [
-			[ Media_Credit_Factory::INSTANCE => \Media_Credit\Components\Setup::class ],
-			[ Media_Credit_Factory::INSTANCE => \Media_Credit\Components\Avatar_Handling::class ],
+			[ Factory::INSTANCE => \Media_Credit\Components\Setup::class ],
+			[ Factory::INSTANCE => \Media_Credit\Components\Avatar_Handling::class ],
 		];
 
 		$this->sut->shouldReceive( 'get_plugin_version' )->once()->withNoArgs()->andReturn( $version );
@@ -137,18 +137,18 @@ class Media_Credit_Factory_Test extends TestCase {
 	 *
 	 * @covers ::get
 	 *
-	 * @uses Media_Credit_Factory::__construct
-	 * @uses Media_Credit_Factory::get_components
-	 * @uses Media_Credit_Factory::get_plugin_version
+	 * @uses ::__construct
+	 * @uses ::get_components
+	 * @uses ::get_plugin_version
 	 */
 	public function test_get() {
 		Functions\expect( 'get_plugin_data' )->once()->with( m::type( 'string' ), false, false )->andReturn( [ 'Version' => '42' ] );
 
-		$result1 = Media_Credit_Factory::get();
+		$result1 = Factory::get();
 
-		$this->assertInstanceOf( Media_Credit_Factory::class, $result1 );
+		$this->assertInstanceOf( Factory::class, $result1 );
 
-		$result2 = Media_Credit_Factory::get();
+		$result2 = Factory::get();
 
 		$this->assertSame( $result1, $result2 );
 	}
@@ -164,11 +164,11 @@ class Media_Credit_Factory_Test extends TestCase {
 		$this->assert_is_array( $result );
 
 		// Check some exemplary components.
-		$this->assert_contains( [ Media_Credit_Factory::INSTANCE => \Media_Credit\Components\Shortcodes::class ], $result, 'Component missing.' );
-		$this->assert_contains( [ Media_Credit_Factory::INSTANCE => \Media_Credit\Components\Block_Editor::class ], $result, 'Component missing.' );
-		$this->assert_contains( [ Media_Credit_Factory::INSTANCE => \Media_Credit\Components\Setup::class ], $result, 'Component missing.' );
+		$this->assert_contains( [ Factory::INSTANCE => \Media_Credit\Components\Shortcodes::class ], $result, 'Component missing.' );
+		$this->assert_contains( [ Factory::INSTANCE => \Media_Credit\Components\Block_Editor::class ], $result, 'Component missing.' );
+		$this->assert_contains( [ Factory::INSTANCE => \Media_Credit\Components\Setup::class ], $result, 'Component missing.' );
 
 		// Uninstallation must not (!) be included.
-		$this->assert_not_contains( [ Media_Credit_Factory::INSTANCE => \Media_Credit\Components\Uninstallation::class ], $result, 'Uninstallation component should not be included.' );
+		$this->assert_not_contains( [ Factory::INSTANCE => \Media_Credit\Components\Uninstallation::class ], $result, 'Uninstallation component should not be included.' );
 	}
 }
