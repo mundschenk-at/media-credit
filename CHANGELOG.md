@@ -10,6 +10,8 @@
     has been made more robust.
 *   _Bugfix_: Credit width is set properly for custom image sizes when editing
     image properties in the classic editor.
+*   _Change_: WordPress minimum version increased to 5.2.0.
+*   _Change_: PHP minimum version increased to 7.0.0.
 
 ## 4.1.1 (December 10, 2020) ##
 *   _Bugfix_: Credits containing apostrophes can be edited in the legacy Media Library view.
