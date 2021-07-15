@@ -435,7 +435,7 @@ class Core_Test extends TestCase {
 		$this->settings->shouldReceive( 'get' )->never();
 
 		Functions\expect( 'get_the_author_meta' )->never();
-		Functions\expect( 'get_author_posts_url' )->never();
+		$this->sut->shouldReceive( 'get_author_credit_url' )->never();
 		$this->sut->shouldReceive( 'get_organization_suffix' )->never();
 
 		Functions\expect( 'esc_html' )->once()->with( $freeform )->andReturn( $freeform );
@@ -464,7 +464,7 @@ class Core_Test extends TestCase {
 		$this->settings->shouldReceive( 'get' )->never();
 
 		Functions\expect( 'get_the_author_meta' )->never();
-		Functions\expect( 'get_author_posts_url' )->never();
+		$this->sut->shouldReceive( 'get_author_credit_url' )->never();
 		$this->sut->shouldReceive( 'get_organization_suffix' )->never();
 
 		Functions\expect( 'esc_html' )->once()->with( $freeform )->andReturn( $freeform );
@@ -499,7 +499,7 @@ class Core_Test extends TestCase {
 
 		Functions\expect( 'get_the_author_meta' )->once()->with( 'display_name', $user_id )->andReturn( $display_name );
 		Functions\expect( 'esc_html' )->once()->with( $display_name )->andReturn( $display_name );
-		Functions\expect( 'get_author_posts_url' )->never();
+		$this->sut->shouldReceive( 'get_author_credit_url' )->once()->with( $user_id, $url )->andReturn( $url );
 		Functions\expect( 'esc_url' )->once()->with( $url )->andReturn( $url );
 		Functions\expect( 'esc_html' )->once()->with( $suffix )->andReturn( $suffix );
 		$this->sut->shouldReceive( 'get_organization_suffix' )->once()->andReturn( $suffix );
@@ -534,7 +534,7 @@ class Core_Test extends TestCase {
 
 		Functions\expect( 'get_the_author_meta' )->once()->with( 'display_name', $user_id )->andReturn( $display_name );
 		Functions\expect( 'esc_html' )->once()->with( $display_name )->andReturn( $display_name );
-		Functions\expect( 'get_author_posts_url' )->once()->with( $user_id )->andReturn( $default_url );
+		$this->sut->shouldReceive( 'get_author_credit_url' )->once()->with( $user_id, $url )->andReturn( $default_url );
 		Functions\expect( 'esc_url' )->once()->with( $default_url )->andReturn( $default_url );
 		Functions\expect( 'esc_html' )->once()->with( $suffix )->andReturn( $suffix );
 		$this->sut->shouldReceive( 'get_organization_suffix' )->once()->andReturn( $suffix );
@@ -569,7 +569,7 @@ class Core_Test extends TestCase {
 
 		Functions\expect( 'get_the_author_meta' )->once()->with( 'display_name', $user_id )->andReturn( $display_name );
 		Functions\expect( 'esc_html' )->once()->with( $display_name )->andReturn( $display_name );
-		Functions\expect( 'get_author_posts_url' )->never();
+		$this->sut->shouldReceive( 'get_author_credit_url' )->once()->with( $user_id, $url )->andReturn( $url );
 		Functions\expect( 'esc_url' )->once()->with( $url )->andReturn( $url );
 		Functions\expect( 'esc_html' )->once()->with( $suffix )->andReturn( $suffix );
 		$this->sut->shouldReceive( 'get_organization_suffix' )->once()->andReturn( $suffix );
@@ -601,7 +601,7 @@ class Core_Test extends TestCase {
 
 		Functions\expect( 'get_the_author_meta' )->never();
 		Functions\expect( 'esc_html' )->never();
-		Functions\expect( 'get_author_posts_url' )->never();
+		$this->sut->shouldReceive( 'get_author_credit_url' )->never();
 		Functions\expect( 'esc_url' )->never();
 		$this->sut->shouldReceive( 'get_organization_suffix' )->never();
 
@@ -629,11 +629,71 @@ class Core_Test extends TestCase {
 
 		Functions\expect( 'get_the_author_meta' )->never();
 		Functions\expect( 'esc_html' )->never();
-		Functions\expect( 'get_author_posts_url' )->never();
+		$this->sut->shouldReceive( 'get_author_credit_url' )->never();
 		Functions\expect( 'esc_url' )->never();
 		$this->sut->shouldReceive( 'get_organization_suffix' )->never();
 
 		$this->assertSame( $result, $this->sut->render_media_credit_html( $user_id, $freeform, $url, $flags ) );
+	}
+
+	/**
+	 * Test ::get_author_credit_url.
+	 *
+	 * @covers ::get_author_credit_url
+	 */
+	public function test_get_author_credit_url() {
+		// Input data.
+		$user_id  = 47;
+		$url      = 'https://example.org/credit/url';
+
+		// Expected result.
+		$result = $url;
+
+		Filters\expectApplied( 'media_credit_disable_author_urls' )->once()->with( false )->andReturn( false );
+		Functions\expect( 'get_author_posts_url' )->never();
+
+		$this->assertSame( $result, $this->sut->get_author_credit_url( $user_id, $url ) );
+	}
+
+	/**
+	 * Test ::get_author_credit_url.
+	 *
+	 * @covers ::get_author_credit_url
+	 */
+	public function test_get_author_credit_url_empty_url() {
+		// Input data.
+		$user_id  = 47;
+		$url      = '';
+
+		// Intermediary data.
+		$author_url = "https://example.org/authors/{$user_id}";
+
+		// Expected result.
+		$result = $author_url;
+
+		Filters\expectApplied( 'media_credit_disable_author_urls' )->once()->with( false )->andReturn( false );
+		Functions\expect( 'get_author_posts_url' )->once()->with( $user_id )->andReturn( $author_url );
+
+		$this->assertSame( $result, $this->sut->get_author_credit_url( $user_id, $url ) );
+	}
+
+	/**
+	 * Test ::get_author_credit_url.
+	 *
+	 * @covers ::get_author_credit_url
+	 */
+	public function test_get_author_credit_url_disabled_author_urls() {
+		// Input data.
+		$user_id  = 47;
+		$url      = '';
+
+		// Expected result.
+		$result = '';
+
+		Filters\expectApplied( 'media_credit_disable_author_urls' )->once()->with( false )->andReturn( true );
+		Functions\expect( 'get_author_posts_url' )->never();
+
+		$this->assertSame( $result, $this->sut->get_author_credit_url( $user_id, $url ) );
 	}
 
 	/**
