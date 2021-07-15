@@ -26,6 +26,7 @@
 
 namespace Media_Credit;
 
+use Media_Credit\Factory;
 use Media_Credit\Requirements;
 use Media_Credit\Components\Uninstallation;
 
@@ -60,7 +61,7 @@ function media_credit_uninstall() {
 		 *
 		 * @var Uninstallation
 		 */
-		$uninstaller = \Media_Credit_Factory::get()->create( Uninstallation::class );
+		$uninstaller = Factory::get()->create( Uninstallation::class );
 		$uninstaller->run();
 	}
 }

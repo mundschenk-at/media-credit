@@ -39,7 +39,7 @@
 
 namespace Media_Credit;
 
-use Media_Credit_Factory;
+use Media_Credit\Factory;
 use Media_Credit\Controller;
 use Media_Credit\Requirements;
 
@@ -79,7 +79,7 @@ function media_credit_run() {
 		 *
 		 * @var Controller
 		 */
-		$plugin = Media_Credit_Factory::get()->create( Controller::class );
+		$plugin = Factory::get()->create( Controller::class );
 		$plugin->run();
 	}
 }
