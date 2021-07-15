@@ -364,7 +364,7 @@ class Core {
 			}
 
 			$name   = \get_the_author_meta( 'display_name', $user_id );
-			$url    = $url ?: \get_author_posts_url( $user_id ); // phpcs:ignore WordPress.PHP.DisallowShortTernary
+			$url    = $this->get_author_credit_url( $user_id, $url );
 			$suffix = $this->get_organization_suffix();
 		}
 
@@ -377,6 +377,35 @@ class Core {
 
 		// The suffix should not contain any markup (the credit might).
 		return $credit . \esc_html( $suffix );
+	}
+
+	/**
+	 * Retrieves the URL to use for the author credit.
+	 *
+	 * @since  4.2.0
+	 *
+	 * @param  int    $user_id    The author's user ID.
+	 * @param  string $custom_url A custom URL for the credit (maybe empty).
+	 *
+	 * @return string
+	 */
+	protected function get_author_credit_url( $user_id, $custom_url ) {
+		/**
+		 * Filters whether to disable automatic linking to the author page (for
+		 * default credits).
+		 *
+		 * @since  4.2.0
+		 *
+		 * @param  bool $disable Whether to disable linking to the author page.
+		 *                       Default false.
+		 */
+		$disable_author_urls = \apply_filters( 'media_credit_disable_author_urls', false );
+
+		if ( empty( $custom_url ) && ! $disable_author_urls ) {
+			return \get_author_posts_url( $user_id );
+		}
+
+		return $custom_url;
 	}
 
 	/**
