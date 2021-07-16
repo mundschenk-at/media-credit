@@ -345,29 +345,16 @@ class Shortcodes implements \Media_Credit\Component {
 	 * @return string
 	 */
 	protected function inline_media_credit( array $attr, $include_schema_org = false ) {
+		// Prepare arguments for compatibility with old shortcode behavior (`id` trumps `naem`).
+		$user_id  = $attr['id'];
+		$freeform = $user_id > 0 ? '' : $attr['name'];
+		$url      = $attr['link'];
+		$flags    = [
+			'nofollow' => $attr['nofollow'],
+		];
 
-		// The default credit and link.
-		$credit        = $attr['name'];
-		$credit_suffix = '';
-		$url           = $attr['link'];
-
-		// If present, use the user ID.
-		if ( $attr['id'] > 0 ) {
-			$credit        = \get_the_author_meta( 'display_name', $attr['id'] );
-			$credit_suffix = $this->core->get_organization_suffix();
-			$url           = $url ?: \get_author_posts_url( $attr['id'] ); // phpcs:ignore WordPress.PHP.DisallowShortTernary
-		}
-
-		// The credit should not contain any HTML.
-		$credit = \esc_html( $credit );
-
-		// Wrap credit in link if URL is set.
-		if ( $url ) {
-			$credit = '<a href="' . \esc_url( $url ) . '"' . ( ! empty( $attr['nofollow'] ) ? ' rel="nofollow"' : '' ) . '>' . $credit . '</a>';
-		}
-
-		// Add suffix (no HTML there, too).
-		$credit .= \esc_html( $credit_suffix );
+		// Render shortcode.
+		$credit = $this->core->render_media_credit_html( $user_id, $freeform, $url, $flags );
 
 		// Finally, let's wrap up everything in a container <span>.
 		$markup = $this->core->wrap_media_credit_markup( $credit, $include_schema_org );
