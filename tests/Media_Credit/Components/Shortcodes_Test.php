@@ -568,7 +568,6 @@ class Shortcodes_Test extends TestCase {
 					'nofollow' => true,
 				],
 				true,
-				'Marc Anthony',
 			],
 			[
 				[
@@ -578,7 +577,6 @@ class Shortcodes_Test extends TestCase {
 					'nofollow' => false,
 				],
 				true,
-				'<a href="https://example.org/">Marc Anthony</a>',
 			],
 			[
 				[
@@ -588,7 +586,6 @@ class Shortcodes_Test extends TestCase {
 					'nofollow' => true,
 				],
 				true,
-				'<a href="https://example.org/" rel="nofollow">Marc Anthony</a>',
 			],
 			[
 				[
@@ -598,9 +595,6 @@ class Shortcodes_Test extends TestCase {
 					'nofollow' => true,
 				],
 				true,
-				'<a href="https://example.org/" rel="nofollow">Marcus Antonius</a> | SPQR',
-				'Marcus Antonius',
-				' | SPQR',
 			],
 			[
 				[
@@ -610,10 +604,6 @@ class Shortcodes_Test extends TestCase {
 					'nofollow' => true,
 				],
 				true,
-				'<a href="https://example.org/marcus-antonius" rel="nofollow">Marcus Antonius</a> | SPQR',
-				'Marcus Antonius',
-				' | SPQR',
-				'https://example.org/marcus-antonius',
 			],
 		];
 	}
@@ -625,42 +615,21 @@ class Shortcodes_Test extends TestCase {
 	 *
 	 * @dataProvider provide_inline_media_credit_data
 	 *
-	 * @param  array       $attr               The shortcode attributes.
-	 * @param  bool        $include_schema_org Whether schema.org markup should be injected.
-	 * @param  string      $credit             The expected credit markup (without wrapper element).
-	 * @param  string|null $display_name       Optional. The result of the get_the_author_meta call, if set. Default null.
-	 * @param  string|null $org_suffix         Optional. The result of the $this->core->get_organization_suffix call, if set. Default null.
-	 * @param  string|null $post_author_url    Optional. The result of the get_author_posts_url call, if set. Default null.
+	 * @param  array $attr       The shortcode attributes.
+	 * @param  bool  $schema_org Whether schema.org markup should be injected.
 	 */
-	public function test_inline_media_credit( $attr, $include_schema_org, $credit, $display_name = null, $org_suffix = null, $post_author_url = null ) {
+	public function test_inline_media_credit( $attr, $schema_org ) {
+		// Intermediary data.
+		$credit = 'my credit';
+
 		// Expected result.
 		$markup = 'wrapped credit';
 
-		Functions\expect( 'esc_html' )->twice()->with( m::type( 'string' ) )->andReturnArg( 0 );
-		Functions\expect( 'esc_url' )->atMost()->once()->with( m::type( 'string' ) )->andReturnArg( 0 );
+		$this->core->shouldReceive( 'render_media_credit_html' )->once()->with( $attr['id'], $attr['id'] > 0 ? '' : $attr['name'], $attr['link'], [ 'nofollow' => $attr['nofollow'] ] )->andReturn( $credit );
+		$this->core->shouldReceive( 'wrap_media_credit_markup' )->once()->with( $credit, $schema_org )->andReturn( $markup );
+		Filters\expectApplied( 'media_credit_shortcode_inline_markup' )->once()->with( $markup, $attr, $schema_org )->andReturn( $markup );
 
-		if ( isset( $display_name ) ) {
-			Functions\expect( 'get_the_author_meta' )->once()->with( 'display_name', $attr['id'] )->andReturn( $display_name );
-		} else {
-			Functions\expect( 'get_the_author_meta' )->never();
-		}
-
-		if ( isset( $org_suffix ) ) {
-			$this->core->shouldReceive( 'get_organization_suffix' )->once()->withNoArgs()->andReturn( $org_suffix );
-		} else {
-			$this->core->shouldReceive( 'get_organization_suffix' )->never();
-		}
-
-		if ( isset( $post_author_url ) ) {
-			Functions\expect( 'get_author_posts_url' )->once()->with( $attr['id'] )->andReturn( $post_author_url );
-		} else {
-			Functions\expect( 'get_author_posts_url' )->never();
-		}
-
-		$this->core->shouldReceive( 'wrap_media_credit_markup' )->once()->with( $credit, $include_schema_org )->andReturn( $markup );
-		Filters\expectApplied( 'media_credit_shortcode_inline_markup' )->once()->with( $markup, $attr, $include_schema_org )->andReturn( $markup );
-
-		$this->assertSame( $markup, $this->sut->inline_media_credit( $attr, $include_schema_org ) );
+		$this->assertSame( $markup, $this->sut->inline_media_credit( $attr, $schema_org ) );
 	}
 
 	/**
