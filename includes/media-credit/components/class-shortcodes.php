@@ -336,7 +336,7 @@ class Shortcodes implements \Media_Credit\Component {
 	 *     @type string $align      The alignment to use for the image/figure (if
 	 *                              used without `[caption]`).
 	 *     @type int    $width      The width of the image/figure in pixels.
-	 *     @type bool   $no_follow  A flag indicating that a `rel=nofollow`
+	 *     @type bool   $nofollow   A flag indicating that a `rel=nofollow`
 	 *                              attribute should be added to the link tag (if
 	 *                              `$url` is not empty).
 	 * }
