@@ -4,6 +4,8 @@
 *   _Feature_: A shorter label for credits displayed at the end of a post can be
     enabled via the new filter hook `media_credit_at_end_use_short_label` (`Images:`
     instead of `Images courtesy of`).
+*   _Feature_: The automatic linking of user credits to the WordPress author page
+    can be disabled with the new filter hook `media_credit_disable_author_urls`.
 *   _Bugfix_: The credit overlay cannot be selected any more by accident in the
     classic editor.
 *   _Bugfix_: Several visual glitches in classic editor have been fixed and parsing
