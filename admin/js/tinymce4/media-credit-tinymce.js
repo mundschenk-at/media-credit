@@ -358,9 +358,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 					classes = ' class="' + classes + '"';
 				}
 
-				caption = caption.replace( /\r\n|\r/g, '\n' ).replace( /<[a-zA-Z0-9]+( [^<>]+)?>/g, function( a ) { // eslint-disable-line no-shadow
+				caption = caption.replace( /\r\n|\r/g, '\n' ).replace( /<[a-zA-Z0-9]+( [^<>]+)?>/g, function( _a ) {
 					// No line breaks inside HTML tags.
-					return a.replace( /[\r\n\t]+/, ' ' );
+					return _a.replace( /[\r\n\t]+/, ' ' );
 				} );
 
 				// Convert remaining line breaks to <br>.
