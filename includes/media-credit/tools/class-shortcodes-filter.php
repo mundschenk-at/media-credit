@@ -70,7 +70,14 @@ class Shortcodes_Filter {
 			}
 
 			// Replace the old shortcode with then new one.
-			$content = $this->update_shortcode( $content, $shortcode[0], $this->parse_shortcode_attributes( $shortcode[3] ), $img, $author_id, $freeform, $url, $nofollow );
+			$attr    = $this->parse_shortcode_attributes( $shortcode[3] );
+			$updated = [
+				'id'       => $author_id,
+				'name'     => $freeform,
+				'link'     => $url,
+				'nofollow' => $nofollow,
+			];
+			$content = $this->update_shortcode( $content, $shortcode[0], $img, $attr, $updated );
 		}
 
 		return $content;
@@ -83,40 +90,44 @@ class Shortcodes_Filter {
 	 *
 	 * @param  string $content    The current post content.
 	 * @param  string $shortcode  The shortcode to update.
+	 * @param  string $img        The contained `<img>` tag.
 	 * @param  array  $attr {
-	 *     The parsed shortcode attributes. All attributes are optional.
+	 *     The parsed shortcode attributes. All attributes are optional. Additional
+	 *     attributes not listed here will be preserved in the output.
 	 *
 	 *     @type int    $id       The author ID.
 	 *     @type string $name     The freeform credit.
 	 *     @type string $url      The credit URL.
 	 *     @type bool   $nofollow The "rel=nofollow" flag.
 	 * }
-	 * @param  string $img        The contained `<img>` tag.
-	 * @param  int    $author_id  The new author ID.
-	 * @param  string $freeform   The new freeform credit.
-	 * @param  string $url        The new credit URL.
-	 * @param  bool   $nofollow   The new "rel=nofollow" flag.
+	 * @param  array  $updated {
+	 *     The shortcode attributes to update. All attributes are mandatory.
+	 *
+	 *     @type int    $id       The author ID.
+	 *     @type string $name     The freeform credit.
+	 *     @type string $url      The credit URL.
+	 *     @type bool   $nofollow The "rel=nofollow" flag.
+	 * }
 	 *
 	 * @return string             The updated post content.
 	 */
-	protected function update_shortcode( string $content, string $shortcode, array $attr, string $img, int $author_id, string $freeform, string $url, bool $nofollow ) {
-
+	protected function update_shortcode( string $content, string $shortcode, string $img, array $attr, array $updated ) {
 		// Drop the old id/name attributes (if any).
 		unset( $attr['id'] );
 		unset( $attr['name'] );
 
 		// Prefer author ID if present & valid.
-		$id_or_name = $author_id > 0 ? "id={$author_id}" : "name=\"{$freeform}\"";
+		$id_or_name = $updated['id'] > 0 ? "id={$updated['id']}" : "name=\"{$updated['name']}\"";
 
 		// Update link attribute.
-		if ( ! empty( $url ) ) {
-			$attr['link'] = $url;
+		if ( ! empty( $updated['link'] ) ) {
+			$attr['link'] = $updated['link'];
 		} else {
 			unset( $attr['link'] );
 		}
 
 		// Update nofollow attribute.
-		if ( ! empty( $url ) && ! empty( $nofollow ) ) {
+		if ( ! empty( $updated['link'] ) && ! empty( $updated['nofollow'] ) ) {
 			$attr['nofollow'] = true;
 		} else {
 			unset( $attr['nofollow'] );
