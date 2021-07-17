@@ -38,7 +38,8 @@ if ( ! function_exists( 'get_media_credit' ) ) {
 	/**
 	 * Template tag to return the media credit as plain text for some media attachment.
 	 *
-	 * @since 4.0.0 The function has been deprecated in favor of Media_Credit::get_plaintext.
+	 * @deprecated 4.0.0 Deprecated in favor of `Media_Credit::get_plaintext`.
+	 *
 	 * @since 4.2.0 The parameter $post needs needs to be specified.
 	 *
 	 * @param  int|\WP_Post $post  An attachment ID or the corresponding \WP_Post object.
@@ -61,7 +62,8 @@ if ( ! function_exists( 'the_media_credit' ) ) {
 	/**
 	 * Template tag to print the media credit as plain text for some media attachment.
 	 *
-	 * @since 4.0.0 The function has been deprecated in favor of Media_Credit::plaintext.
+	 * @deprecated 4.0.0 Deprecated in favor of `Media_Credit::plaintext`.
+	 *
 	 * @since 4.2.0 The parameter $post needs needs to be specified.
 	 *
 	 * @param  int|\WP_Post $post  An attachment ID or the corresponding \WP_Post object.
@@ -84,7 +86,8 @@ if ( ! function_exists( 'get_media_credit_url' ) ) {
 	/**
 	 * Template tag to return the media credit URL as plain text for some media attachment.
 	 *
-	 * @since 4.0.0 The function has been deprecated in favor of Media_Credit::get_url.
+	 * @deprecated 4.0.0 Deprecated in favor of `Media_Credit::get_url`.
+	 *
 	 * @since 4.2.0 The parameter $post needs needs to be specified.
 	 *
 	 * @param  int|\WP_Post $post  An attachment ID or the corresponding \WP_Post object.
@@ -107,7 +110,8 @@ if ( ! function_exists( 'the_media_credit_url' ) ) {
 	/**
 	 * Template tag to print the media credit URL as plain text for some media attachment.
 	 *
-	 * @since  4.0.0 The function has been deprecated.
+	 * @deprecated 4.0.0
+	 *
 	 * @since  4.2.0 The parameter $post needs needs to be specified.
 	 *
 	 * @param  int|\WP_Post $post  An attachment ID or the corresponding \WP_Post object.
@@ -130,7 +134,8 @@ if ( ! function_exists( 'get_media_credit_html' ) ) {
 	/**
 	 * Template tag to return the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
-	 * @since  4.0.0 The function has been deprecated in favor of Media_Credit::get_html.
+	 * @deprecated 4.0.0 Deprecated in favor of `Media_Credit::get_html`.
+	 *
 	 * @since  4.2.0 The parameter $post needs needs to be specified.
 	 *
 	 * @param  int|\WP_Post $post An attachment ID or the corresponding \WP_Post object.
@@ -153,7 +158,8 @@ if ( ! function_exists( 'the_media_credit_html' ) ) {
 	/**
 	 * Template tag to print the media credit as HTML with a link to the author page if one exists for some media attachment.
 	 *
-	 * @since  4.0.0 The function has been deprecated in favor of Media_Credit::html.
+	 * @deprecated 4.0.0 Deprecated in favor of `Media_Credit::html`.
+	 *
 	 * @since  4.2.0 The parameter $post needs needs to be specified.
 	 *
 	 * @param  int|\WP_Post $post  An attachment ID or the corresponding \WP_Post object.
@@ -176,7 +182,7 @@ if ( ! function_exists( 'get_media_credit_html_by_user_id' ) ) {
 	/**
 	 * Template tag to return the media credit as HTML with a link to the author page if one exists for a WordPress user.
 	 *
-	 * @since  4.0.0 The function has been deprecated in favor of Media_Credit::get_html_by_user_id.
+	 * @deprecated 4.0.0 Deprecated in favor of `Media_Credit::get_html_by_user_id`.
 	 *
 	 * @param  int $id User ID of a WordPress user.
 	 *
@@ -193,7 +199,7 @@ if ( ! function_exists( 'the_media_credit_html_by_user_id' ) ) {
 	/**
 	 * Template tag to print the media credit as HTML with a link to the author page if one exists for a WordPress user.
 	 *
-	 * @since  4.0.0 The function has been deprecated in favor of Media_Credit::html_by_user_id.
+	 * @deprecated 4.0.0 Deprecated in favor of `Media_Credit::html_by_user_id`.
 	 *
 	 * @param  int $id User ID of a WordPress user.
 	 *
@@ -211,7 +217,7 @@ if ( ! function_exists( 'display_author_media' ) ) {
 	/**
 	 * Template tag to display the recently added media attachments for given author.
 	 *
-	 * @since  4.0.0 The function has been deprecated in favor of Media_Credit::display_author_media.
+	 * @deprecated 4.0.0 Deprecated in favor of `Media_Credit::display_author_media`.
 	 *
 	 * @param  int    $author_id           The user ID of the author.
 	 * @param  bool   $sidebar             Display as sidebar or inline. Optional. Default true.
@@ -245,7 +251,7 @@ if ( ! function_exists( 'author_media_and_posts' ) ) {
 	/**
 	 * Template tag to return the recently added media attachments and posts for a given author.
 	 *
-	 * @since  4.0.0 The function has been deprecated in favor of Media_Credit::author_media_and_posts.
+	 * @deprecated 4.0.0 Deprecated in favor of `Media_Credit::author_media_and_posts`.
 	 *
 	 * @param  int  $author_id          A user ID.
 	 * @param  bool $include_posts      Optional. A flag indicating whether posts (as well as attachments) should be included in the results. Default false.
@@ -272,7 +278,7 @@ if ( ! function_exists( 'author_media' ) ) {
 	/**
 	 * Returns the recently added media attachments for a given author.
 	 *
-	 * @since  4.0.0 The function has been deprecated in favor of Media_Credit::author_media_and_posts.
+	 * @deprecated 4.0.0 Deprecated in favor of `Media_Credit::author_media_and_posts`.
 	 *
 	 * @param  int  $author_id          A user ID.
 	 * @param  int  $limit              Optional. The upper limit to the number of returned posts. Default 0 (no limit).
