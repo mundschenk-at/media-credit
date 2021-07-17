@@ -99,7 +99,7 @@ class Media_Library implements \Media_Credit\Component {
 	 */
 	public function run() {
 		// Initialize admin-only parts.
-		\add_action( 'admin_init',            [ $this, 'admin_init' ] );
+		\add_action( 'admin_init',            [ $this, 'show_credit_in_media_list_view' ] );
 		\add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts_and_styles' ] );
 
 		// Add default credit to new attachments.
@@ -203,11 +203,11 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Ensures that proper attachment credits are shown on the admin side of WordPress.
 	 *
-	 * @todo Rename to show_credit_in_media_list_view.
+	 * @since 4.2.0 Renamed from `admin_init`.`
 	 *
 	 * @return void
 	 */
-	public function admin_init() {
+	public function show_credit_in_media_list_view() {
 		// Filter the_author using this method so that freeform media credit is correctly displayed in Media Library.
 		\add_filter( 'the_author', [ $this, 'filter_the_author' ] );
 	}
