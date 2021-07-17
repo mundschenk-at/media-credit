@@ -118,7 +118,7 @@
 			width = parseInt( model.get( 'customWidth' ) );
 		}
 
-		credit = mediaCreditAuthorID ? ( mediaCredit.id[ mediaCreditAuthorID ] + mediaCredit.separator + mediaCredit.organization ) : mediaCreditText;
+		credit = mediaCreditAuthorID ? ( mediaCredit.id[ mediaCreditAuthorID ] + mediaCredit.options.separator + mediaCredit.options.organization ) : mediaCreditText;
 		credit = credit.replace( /<[^>]+>(.*)<\/[^>]+>/g, '$1' ); // Basic sanitation.
 		align = 'align' + ( align || 'none' );
 
