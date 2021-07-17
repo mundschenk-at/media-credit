@@ -25,6 +25,15 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+/**
+ * Warning message for invalid use of deprecated API functions.
+ *
+ * @internal
+ *
+ * @var string
+ */
+const MEDIA_CREDIT_ATTACHMENT_OBJECT_OR_ID_REQUIRED = 'You need to specify an attachment object or ID.';
+
 if ( ! function_exists( 'get_media_credit' ) ) {
 	/**
 	 * Template tag to return the media credit as plain text for some media attachment.
@@ -40,7 +49,7 @@ if ( ! function_exists( 'get_media_credit' ) ) {
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_plaintext' );
 
 		if ( empty( $post ) ) {
-			_doing_it_wrong( __FUNCTION__, 'You need to specify an attachment object or ID.', '4.2.0' );
+			_doing_it_wrong( __FUNCTION__, \MEDIA_CREDIT_ATTACHMENT_OBJECT_OR_ID_REQUIRED, '4.2.0' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			return '';
 		}
 
@@ -63,7 +72,7 @@ if ( ! function_exists( 'the_media_credit' ) ) {
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::plaintext' );
 
 		if ( empty( $post ) ) {
-			_doing_it_wrong( __FUNCTION__, 'You need to specify an attachment object or ID.', '4.2.0' );
+			_doing_it_wrong( __FUNCTION__, \MEDIA_CREDIT_ATTACHMENT_OBJECT_OR_ID_REQUIRED, '4.2.0' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			return;
 		}
 
@@ -86,7 +95,7 @@ if ( ! function_exists( 'get_media_credit_url' ) ) {
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_url' );
 
 		if ( empty( $post ) ) {
-			_doing_it_wrong( __FUNCTION__, 'You need to specify an attachment object or ID.', '4.2.0' );
+			_doing_it_wrong( __FUNCTION__, \MEDIA_CREDIT_ATTACHMENT_OBJECT_OR_ID_REQUIRED, '4.2.0' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			return '';
 		}
 
@@ -109,7 +118,7 @@ if ( ! function_exists( 'the_media_credit_url' ) ) {
 		_deprecated_function( __FUNCTION__, '4.0.0' );
 
 		if ( empty( $post ) ) {
-			_doing_it_wrong( __FUNCTION__, 'You need to specify an attachment object or ID.', '4.2.0' );
+			_doing_it_wrong( __FUNCTION__, \MEDIA_CREDIT_ATTACHMENT_OBJECT_OR_ID_REQUIRED, '4.2.0' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			return;
 		}
 
@@ -132,7 +141,7 @@ if ( ! function_exists( 'get_media_credit_html' ) ) {
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::get_html' );
 
 		if ( empty( $post ) ) {
-			_doing_it_wrong( __FUNCTION__, 'You need to specify an attachment object or ID.', '4.2.0' );
+			_doing_it_wrong( __FUNCTION__, \MEDIA_CREDIT_ATTACHMENT_OBJECT_OR_ID_REQUIRED, '4.2.0' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			return '';
 		}
 
@@ -155,7 +164,7 @@ if ( ! function_exists( 'the_media_credit_html' ) ) {
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::html' );
 
 		if ( empty( $post ) ) {
-			_doing_it_wrong( __FUNCTION__, 'You need to specify an attachment object or ID.', '4.2.0' );
+			_doing_it_wrong( __FUNCTION__, \MEDIA_CREDIT_ATTACHMENT_OBJECT_OR_ID_REQUIRED, '4.2.0' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			return;
 		}
 
