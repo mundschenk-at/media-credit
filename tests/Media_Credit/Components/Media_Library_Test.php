@@ -126,7 +126,7 @@ class Media_Library_Test extends TestCase {
 	 * @covers ::run
 	 */
 	public function test_run() {
-		Actions\expectAdded( 'admin_init' )->once()->with( [ $this->sut, 'admin_init' ] );
+		Actions\expectAdded( 'admin_init' )->once()->with( [ $this->sut, 'show_credit_in_media_list_view' ] );
 		Actions\expectAdded( 'admin_enqueue_scripts' )->once()->with( [ $this->sut, 'enqueue_scripts_and_styles' ] );
 
 		Actions\expectAdded( 'add_attachment' )->once()->with( [ $this->sut, 'add_default_media_credit_for_attachment' ] );
@@ -259,14 +259,14 @@ class Media_Library_Test extends TestCase {
 	}
 
 	/**
-	 * Tests ::admin_init.
+	 * Tests ::show_credit_in_media_list_view.
 	 *
-	 * @covers ::admin_init
+	 * @covers ::show_credit_in_media_list_view
 	 */
-	public function test_admin_init() {
+	public function test_show_credit_in_media_list_view() {
 		Filters\expectAdded( 'the_author' )->once()->with( [ $this->sut, 'filter_the_author' ] );
 
-		$this->assertNull( $this->sut->admin_init() );
+		$this->assertNull( $this->sut->show_credit_in_media_list_view() );
 	}
 
 	/**
