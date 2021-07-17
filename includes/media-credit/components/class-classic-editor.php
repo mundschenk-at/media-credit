@@ -249,7 +249,12 @@ class Classic_Editor implements \Media_Credit\Component {
 		// Put it all together.
 		$shortcode = "[media-credit {$shortcode_arguments}]{$html}[/media-credit]";
 
-		// @todo Document filter.
+		/**
+		 * Filters the shortcode tag sent to the editor.
+		 *
+		 * @param string $shortcode The shortcode tag (including the image markup).
+		 * @param string $html      The image HTML markup to send.
+		 */
 		return \apply_filters( 'media_add_credit_shortcode', $shortcode, $html );
 	}
 }
