@@ -667,7 +667,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 				dom.remove( imageNode.parentNode, true );
 			}
 		} else if ( imageData.linkUrl ) {
-			if ( linkNode = dom.getParent( imageNode, 'a' ) ) { // eslint-disable-line no-cond-assign
+			linkNode = dom.getParent( imageNode, 'a' );
+			if ( linkNode ) {
 				// The image is inside a link together with other nodes,
 				// or is nested in another node, move it out.
 				dom.insertAfter( imageNode, linkNode );
