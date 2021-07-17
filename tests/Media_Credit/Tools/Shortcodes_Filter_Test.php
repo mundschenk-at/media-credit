@@ -133,6 +133,12 @@ HTML;
 			'align' => 'alignright',
 			'width' => '150',
 		];
+		$updated        = [
+			'id'       => $author_id,
+			'name'     => $freeform,
+			'link'     => $url,
+			'nofollow' => $nofollow,
+		];
 
 		// Expected result.
 		$updated_content = 'CONTENT WITH UPDATED SHORTCODES';
@@ -144,7 +150,7 @@ HTML;
 		$this->sut->shouldReceive( 'parse_shortcode_attributes' )->once()->with( m::type( 'string' ) )->andReturn( $attr );
 		$this->sut->shouldReceive( 'update_shortcode' )
 			->once()
-			->with( self::CONTENT, m::pattern( '/\[media-credit.*\[\/media-credit\]/' ), $attr, m::type( 'string' ), $author_id, $freeform, $url, $nofollow )
+			->with( self::CONTENT, m::pattern( '/\[media-credit.*\[\/media-credit\]/' ), m::type( 'string' ), $attr, $updated )
 			->andReturn( $updated_content );
 
 		$this->assertSame( $updated_content, $this->sut->update_changed_media_credits( self::CONTENT, $image_id, $author_id, $freeform, $url, $nofollow ) );
@@ -188,10 +194,12 @@ HTML;
 					'foo'      => 'bar',
 					'nofollow' => false,
 				],
-				5,
-				'',
-				'https://example.net/my/url',
-				true,
+				[
+					'id'       => 5,
+					'name'     => '',
+					'link'     => 'https://example.net/my/url',
+					'nofollow' => true,
+				],
 				'id=5 link="https://example.net/my/url" foo="bar" nofollow="1"',
 			],
 			[
@@ -202,10 +210,12 @@ HTML;
 					'foo'      => 'bar',
 					'nofollow' => false,
 				],
-				0,
-				'Foobar',
-				'',
-				true,
+				[
+					'id'       => 0,
+					'name'     => 'Foobar',
+					'link'     => '',
+					'nofollow' => true,
+				],
 				'name="Foobar" foo="bar"',
 			],
 			[
@@ -216,10 +226,12 @@ HTML;
 					'foo'      => 'bar',
 					'nofollow' => true,
 				],
-				5,
-				'',
-				'https://example.net/my/url',
-				false,
+				[
+					'id'       => 5,
+					'name'     => '',
+					'link'     => 'https://example.net/my/url',
+					'nofollow' => false,
+				],
 				'id=5 link="https://example.net/my/url" foo="bar"',
 			],
 		];
@@ -232,15 +244,12 @@ HTML;
 	 *
 	 * @dataProvider provide_update_shortcode_data
 	 *
-	 * @param  array  $attr      The current shortcode attributes.
-	 * @param  int    $author_id The new author ID.
-	 * @param  string $freeform  The new freeform credit.
-	 * @param  string $url       The new credit URL.
-	 * @param  bool   $nofollow  The new nofollow flag.
-	 * @param  string $result    The new shortcode attribute string as part of the
-	 *                           expected result.
+	 * @param  array  $attr    The current shortcode attributes.
+	 * @param  array  $updated The updated shortcode attributes.
+	 * @param  string $result  The new shortcode attribute string as part of the
+	 *                         expected result.
 	 */
-	public function test_update_shortcode( array $attr, $author_id, $freeform, $url, $nofollow, $result ) {
+	public function test_update_shortcode( array $attr, $updated, $result ) {
 		// Input data.
 		$content   = 'fake content [MEDIACREDIT] more fake content';
 		$shortcode = '[MEDIACREDIT]';
@@ -249,7 +258,7 @@ HTML;
 		// Expected result.
 		$result = "fake content [media-credit {$result}]{$img}[/media-credit] more fake content";
 
-		$this->assertSame( $result, $this->sut->update_shortcode( $content, $shortcode, $attr, $img, $author_id, $freeform, $url, $nofollow ) );
+		$this->assertSame( $result, $this->sut->update_shortcode( $content, $shortcode, $img, $attr, $updated ) );
 	}
 
 	/**
