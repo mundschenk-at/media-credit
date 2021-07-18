@@ -132,14 +132,10 @@ jQuery( function( $ ) {
 			} );
 	};
 
+	/**
+	 * Extend Attachment Details view to include media credit fields.
+	 */
 	if ( wp.media.view.Attachment.Details ) {
-		/**
-		 * MediaCredit.AttachmentDetails
-		 *
-		 * @class
-		 * @augments wp.media.view.Attachment.Details
-		 * @augments wp.media.view.Attachment
-		 */
 		_.extend( wp.media.view.Attachment.Details.prototype, {
 
 			template: function( view ) {
@@ -152,8 +148,10 @@ jQuery( function( $ ) {
 
 				wp.media.view.Attachment.prototype.render.apply( this, [] );
 
+				// Add autocomplete to credit field.
 				$input = mediaCredit.autoComplete( this, 'label[data-setting="mediaCreditText"] input[type="text"]', true );
 
+				// Handle placeholders when author credits are disabled.
 				if ( noDefaultCredit ) {
 					$input.autocomplete( 'disable' );
 
@@ -179,15 +177,10 @@ jQuery( function( $ ) {
 		} );
 	}
 
+	/**
+	 * Extend Attachment Details TwoColumn view with media credit fields.
+	 */
 	if ( wp.media.view.Attachment.Details.TwoColumn ) {
-		/**
-		 * MediaCredit.AttachmentDetailsTwoColumn
-		 *
-		 * @class
-		 * @augments wp.media.view.Attachment.Details.TwoColumn
-		 * @augments wp.media.view.Attachment.Details
-		 * @augments wp.media.view.Attachment
-		 */
 		 _.extend( wp.media.view.Attachment.Details.TwoColumn.prototype, {
 
 			template: function( view ) {
@@ -204,13 +197,10 @@ jQuery( function( $ ) {
 		} );
 	}
 
+	/**
+	 * Extend Attachment model to handle changes to media credit fields.
+	 */
 	if ( wp.media.model.Attachment ) {
-		/**
-		 * MediaCredit.AttachmentModel
-		 *
-		 * @class
-		 * @augments wp.media.model.Attachment
-		 */
 		 _.extend( wp.media.model.Attachment.prototype, {
 
 			sync: function( method, model, options ) {
@@ -278,6 +268,14 @@ jQuery( function( $ ) {
 				return $.Deferred().rejectWith( this ).promise();
 			},
 
+			/**
+			 * Updates [media-credit] shortcodes in the current editor.
+			 *
+			 * @param  {string}         previousContent The editor content.
+			 * @param  {number}         attachmentId    The attachment ID to look for.
+			 * @param  {Backbone.Model} model           The attachment model containing
+			 *                                          the updated credit.
+			 */
 			updateMediaCreditInEditorContent: function( previousContent, attachmentId, model ) {
 				if ( previousContent ) {
 					wp.apiRequest( {
