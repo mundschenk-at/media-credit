@@ -1,7 +1,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2016-2020 Peter Putzer.
+ * Copyright 2016-2021 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License,
@@ -140,7 +140,7 @@ jQuery( function( $ ) {
 		 * @augments wp.media.view.Attachment.Details
 		 * @augments wp.media.view.Attachment
 		 */
-		mediaCredit.AttachmentDetails = wp.media.view.Attachment.Details.extend( {
+		_.extend( wp.media.view.Attachment.Details.prototype, {
 
 			template: function( view ) {
 				return wp.media.template( 'attachment-details' )( view ) + wp.media.template( 'media-credit-attachment-details' )( view );
@@ -177,9 +177,6 @@ jQuery( function( $ ) {
 				wp.media.view.Attachment.prototype.updateSetting.apply( this, [ event ] );
 			},
 		} );
-
-		// Exchange prototype.
-		wp.media.view.Attachment.Details.prototype = mediaCredit.AttachmentDetails.prototype;
 	}
 
 	if ( wp.media.view.Attachment.Details.TwoColumn ) {
@@ -191,7 +188,7 @@ jQuery( function( $ ) {
 		 * @augments wp.media.view.Attachment.Details
 		 * @augments wp.media.view.Attachment
 		 */
-		mediaCredit.AttachmentDetailsTwoColumn = wp.media.view.Attachment.Details.TwoColumn.extend( {
+		 _.extend( wp.media.view.Attachment.Details.TwoColumn.prototype, {
 
 			template: function( view ) {
 				var templateHtml = $( $.parseHTML( wp.media.template( 'attachment-details-two-column' )( view ) ) );
@@ -205,9 +202,6 @@ jQuery( function( $ ) {
 				wp.media.view.Attachment.Details.prototype.updateSetting.apply( this, [ event ] );
 			},
 		} );
-
-		// Exchange prototype.
-		wp.media.view.Attachment.Details.TwoColumn.prototype = mediaCredit.AttachmentDetailsTwoColumn.prototype;
 	}
 
 	if ( wp.media.model.Attachment ) {
@@ -217,7 +211,7 @@ jQuery( function( $ ) {
 		 * @class
 		 * @augments wp.media.model.Attachment
 		 */
-		mediaCredit.AttachmentModel = wp.media.model.Attachment.extend( {
+		 _.extend( wp.media.model.Attachment.prototype, {
 
 			sync: function( method, model, options ) {
 				var result = null,
@@ -317,8 +311,5 @@ jQuery( function( $ ) {
 				}
 			},
 		} );
-
-		// Exchange prototype.
-		wp.media.model.Attachment.prototype = mediaCredit.AttachmentModel.prototype;
 	}
 } );
