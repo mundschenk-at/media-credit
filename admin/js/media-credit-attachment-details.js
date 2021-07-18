@@ -142,11 +142,13 @@ jQuery( function( $ ) {
 				return wp.media.template( 'attachment-details' )( view ) + wp.media.template( 'media-credit-attachment-details' )( view );
 			},
 
+			_render: wp.media.view.Attachment.Details.prototype.render,
 			render: function() {
 				var $input,
 					noDefaultCredit = mediaCredit.options.noDefaultCredit || false;
 
-				wp.media.view.Attachment.prototype.render.apply( this, [] );
+				// Render template using superclass implementation.
+				this._render( this );
 
 				// Add autocomplete to credit field.
 				$input = mediaCredit.autoComplete( this, 'label[data-setting="mediaCreditText"] input[type="text"]', true );
@@ -164,6 +166,7 @@ jQuery( function( $ ) {
 				}
 			},
 
+			_updateSetting: wp.media.view.Attachment.Details.prototype.updateSetting,
 			updateSetting: function( event ) {
 				var $input = $( event.target );
 
@@ -172,7 +175,8 @@ jQuery( function( $ ) {
 					event.target.value = $input.prop( 'checked' ) ? 1 : 0;
 				}
 
-				wp.media.view.Attachment.prototype.updateSetting.apply( this, [ event ] );
+				// Update settings using superclass implementation.
+				this._updateSetting( event );
 			},
 		} );
 	}
@@ -182,17 +186,11 @@ jQuery( function( $ ) {
 	 */
 	if ( wp.media.view.Attachment.Details.TwoColumn ) {
 		 _.extend( wp.media.view.Attachment.Details.TwoColumn.prototype, {
-
 			template: function( view ) {
 				var templateHtml = $( $.parseHTML( wp.media.template( 'attachment-details-two-column' )( view ) ) );
 				$( wp.media.template( 'media-credit-attachment-details' )( view ) ).insertAfter( templateHtml.find( '.attachment-compat' ).prevAll( '*[data-setting]' )[0] );
 
 				return templateHtml;
-			},
-
-			updateSetting: function( event ) {
-				// If we don't override this here, the superclass updateSetting will never be called.
-				wp.media.view.Attachment.Details.prototype.updateSetting.apply( this, [ event ] );
 			},
 		} );
 	}
@@ -202,7 +200,7 @@ jQuery( function( $ ) {
 	 */
 	if ( wp.media.model.Attachment ) {
 		 _.extend( wp.media.model.Attachment.prototype, {
-
+			_sync: wp.media.model.Attachment.prototype.sync,
 			sync: function( method, model, options ) {
 				var result = null,
 					attachment,
@@ -261,10 +259,11 @@ jQuery( function( $ ) {
 
 				// Don't trigger AJAX call if there is nothing left to do.
 				if ( 'update' !== method || model.hasChanged() ) {
-					return this.constructor.__super__.sync.apply( this, [ method, model, options ] );
+					return this._sync( method, model, options );
 				} else if ( result ) {
 					return result;
 				}
+
 				return $.Deferred().rejectWith( this ).promise();
 			},
 
