@@ -202,8 +202,7 @@ jQuery( function( $ ) {
 		 _.extend( wp.media.model.Attachment.prototype, {
 			_sync: wp.media.model.Attachment.prototype.sync,
 			sync: function( method, model, options ) {
-				var result = null,
-					attachment,
+				var attachment,
 					attachmentId,
 					updatedMediaCredit = {};
 
@@ -260,8 +259,6 @@ jQuery( function( $ ) {
 				// Don't trigger AJAX call if there is nothing left to do.
 				if ( 'update' !== method || model.hasChanged() ) {
 					return this._sync( method, model, options );
-				} else if ( result ) {
-					return result;
 				}
 
 				return $.Deferred().rejectWith( this ).promise();
