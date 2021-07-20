@@ -320,6 +320,7 @@ class Core_Test extends TestCase {
 			[ 'some value', Core::POSTMETA_KEY, 'user', 'some value' ],
 			[ 'some value', Core::URL_POSTMETA_KEY, 'user', 'some value' ],
 			[ 'some value', Core::DATA_POSTMETA_KEY, 'user', 'some value' ],
+			[ Core::EMPTY_META_STRING, Core::POSTMETA_KEY, 'post', Core::EMPTY_META_STRING ],
 		];
 	}
 
