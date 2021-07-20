@@ -267,7 +267,9 @@ class Core {
 		if ( 'post' === $object_type ) {
 			switch ( $meta_key ) {
 				case self::POSTMETA_KEY:
-					$meta_value = \sanitize_text_field( $meta_value );
+					if ( self::EMPTY_META_STRING !== $meta_value ) {
+						$meta_value = \sanitize_text_field( $meta_value );
+					}
 					break;
 
 				case self::URL_POSTMETA_KEY:
