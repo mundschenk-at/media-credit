@@ -425,6 +425,8 @@ class Core {
 
 		if ( '' === $freeform && ! empty( $user_id ) && empty( $this->settings->get( Settings::NO_DEFAULT_CREDIT ) ) ) {
 			$credit = \get_the_author_meta( 'display_name', $user_id );
+		} elseif ( self::EMPTY_META_STRING === $freeform ) {
+			$credit = '';
 		}
 
 		// This is a plain text result and should be escaped for HTML output.

@@ -722,6 +722,26 @@ class Core_Test extends TestCase {
 	 *
 	 * @covers ::render_media_credit_plaintext
 	 */
+	public function test_render_media_credit_plaintext_empty_freeform() {
+		// Input data.
+		$user_id  = 0;
+		$freeform = Core::EMPTY_META_STRING;
+
+		// Expected result.
+		$result = '';
+
+		$this->settings->shouldReceive( 'get' )->never();
+
+		Functions\expect( 'get_the_author_meta' )->never();
+
+		$this->assertSame( $result, $this->sut->render_media_credit_plaintext( $user_id, $freeform ) );
+	}
+
+	/**
+	 * Test ::render_media_credit_plaintext.
+	 *
+	 * @covers ::render_media_credit_plaintext
+	 */
 	public function test_render_media_credit_plaintext_user() {
 		// Input data.
 		$user_id      = 47;
