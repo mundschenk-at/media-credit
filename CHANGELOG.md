@@ -14,6 +14,8 @@
     image properties in the classic editor.
 *   _Bugfix_: Organization and separator are set correctly when adding a user credit
     via the image properties dialogue in the classic editor.
+*   _Bugfix_: Credits can be deliberately set to empty again when credits to Wordpress
+    authors are enabled (broken since 4.0.0).
 *   _Change_: WordPress minimum version increased to 5.2.0.
 *   _Change_: PHP minimum version increased to 7.0.0.
 
