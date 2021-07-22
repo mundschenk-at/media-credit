@@ -1,11 +1,12 @@
 # Changelog #
 
-## 4.2.0 (unreleased) ##
+## 4.2.0 (July 22, 2021) ##
 *   _Feature_: A shorter label for credits displayed at the end of a post can be
     enabled via the new filter hook `media_credit_at_end_use_short_label` (`Images:`
     instead of `Images courtesy of`).
 *   _Feature_: The automatic linking of user credits to the WordPress author page
     can be disabled with the new filter hook `media_credit_disable_author_urls`.
+*   _Feature_: Media Credit is now fully compatible with PHP 8.0.
 *   _Bugfix_: The credit overlay cannot be selected any more by accident in the
     classic editor.
 *   _Bugfix_: Several visual glitches in classic editor have been fixed and parsing
@@ -14,10 +15,15 @@
     image properties in the classic editor.
 *   _Bugfix_: Organization and separator are set correctly when adding a user credit
     via the image properties dialogue in the classic editor.
-*   _Bugfix_: Credits can be deliberately set to empty again when credits to Wordpress
-    authors are enabled (broken since 4.0.0).
+*   _Bugfix_: Autocomplete works realiably again in Media Library.
+*   _Bugfix_: Credits can be deliberately set to be empty again when credits to
+    Wordpress authors are enabled (had been broken since 4.0.0).
+*   _Bugfix_: No more `Notice: register_rest_route was called incorrectly` during
+    plugin initialization.
 *   _Change_: WordPress minimum version increased to 5.2.0.
 *   _Change_: PHP minimum version increased to 7.0.0.
+*   _Change_: Support for Internet Explorer 11 has been dropped.
+*   _Change_: A fabulous new plugin icon designed by [Johanna Amann](https://www.instagram.com/_jo_am/).
 
 ## 4.1.1 (December 10, 2020) ##
 *   _Bugfix_: Credits containing apostrophes can be edited in the legacy Media Library view.
