@@ -94,7 +94,7 @@ module.exports = function( grunt ) {
 						files: [ {
 								expand: true,
 								flatten: false,
-								src: ['build/includes/class-media-credit-factory.php'],
+								src: ['build/includes/media-credit/class-factory.php'],
 								dest: '',
 						} ]
 				},
