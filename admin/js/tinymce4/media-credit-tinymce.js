@@ -181,7 +181,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 			c = trim( c );
 			img =
 				// Look for nested media-credit first.
-				c.match( /((?:\[media-credit[^\]]+\].*)(?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?(?:.*\[\/media-credit\])?)([\s\S]*)/i ) ||
+				c.match( /((?:\[media-credit[^\]]+\].*?)(?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?(?:.*?\[\/media-credit\])?)([\s\S]*)/i ) ||
 				// Alternative match if there is no media-credit shortcode
 				c.match( /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?)([\s\S]*)/i );
 
@@ -399,8 +399,8 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	 */
 	function getMediaCreditShortcode( content, standalone ) {
 		var pattern = ! standalone
-			? /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?).*<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span>/g
-			: /<div class="mceMediaCreditOuterTemp[^"]*"[^>]*>.*((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?).*<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span>[^<>]*<\/div>/g;
+			? /((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?).*?<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span>/g
+			: /<div class="mceMediaCreditOuterTemp[^"]*"[^>]*>.*?((?:<a [^>]+>)?<img [^>]+>(?:<\/a>)?).*?<span class="mceMediaCreditTemp[^"]*" ([^>]*)>([\s\S]+?)<\/span>[^<>]*<\/div>/g;
 
 		return content.replace( pattern, function( a, b, c, d ) {
 			var attrs, shortcode, result;
