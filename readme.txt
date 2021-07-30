@@ -84,6 +84,9 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
+= 4.2.1 (July 30, 2021) =
+* _Bugfix_: Don't eat content between multiple shortcodes on save and switch between visual and HTML mode in the classic editor.
+
 = 4.2.0 (July 22, 2021) =
 * _Feature_: A shorter label for credits displayed at the end of a post can be enabled via the new filter hook `media_credit_at_end_use_short_label` (`Images:` instead of `Images courtesy of`).
 * _Feature_: The automatic linking of user credits to the WordPress author page can be disabled with the new filter hook `media_credit_disable_author_urls`.
