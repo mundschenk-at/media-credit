@@ -142,13 +142,6 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 *   _Change_: PHP minimum version increased to 5.6.0.
 *   _Bugfix_: When default credits are disabled, the display name of a user can be used as a freeform credit again.
 
-= 3.2.0 (Feb. 21, 2018) =
-*   Use minified stylesheets and JavaScript files if running in a production environment.
-*   "Display credit after posts" now works with pages as well as regular posts (and custom post types).
-*   "Include schema.org structured data" can switched off again after first being enabled.
-*   General code clean-up.
-*   TinyMCE components updated.
-
 == Other Notes ==
 **Options**
 
