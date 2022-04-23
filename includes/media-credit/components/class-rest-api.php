@@ -49,7 +49,7 @@ class REST_API implements \Media_Credit\Component {
 	/**
 	 * The JSON schema describing the fields added to the `media` endpoint.
 	 *
-	 * @var string[]
+	 * @var array<string,mixed>
 	 */
 	const SCHEMA_MEDIA_CREDIT_FIELDS = [
 		'description' => 'Copyright information for the media item',

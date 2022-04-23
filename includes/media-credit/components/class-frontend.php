@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2021 Peter Putzer.
+ * Copyright 2013-2022 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -160,7 +160,10 @@ class Frontend implements \Media_Credit\Component {
 		 * Filters whether to use a shorter label (e.g. 'Images:' instead of
 		 * 'Images courtesy of').
 		 *
-		 * @param string $short_form Default false.
+		 * @since 4.3.0 The boolean parameter $short_form was previously incorrectly
+		 *              documented as a string.
+		 *
+		 * @param bool $short_form Default false.
 		 */
 		$use_short_label = \apply_filters( 'media_credit_at_end_use_short_label', false );
 
