@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2021 Peter Putzer.
+ * Copyright 2021-2022 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -83,7 +83,7 @@ class Requirements_Test extends TestCase {
 		$this->assert_attribute_same( 'media-credit', 'textdomain', $req );
 		$this->assert_attribute_same(
 			[
-				'php'              => '7.0.0',
+				'php'              => '7.2.0',
 				'multibyte'        => false,
 				'utf-8'            => false,
 			],
