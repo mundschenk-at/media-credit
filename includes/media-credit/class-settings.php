@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019-2021 Peter Putzer.
+ * Copyright 2019-2022 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -266,7 +266,7 @@ class Settings {
 	 */
 	public function get_fields() {
 		if ( empty( $this->fields ) ) {
-			$this->fields = [ // @codeCoverageIgnore
+			$this->fields = [ // @codeCoverageIgnoreStart
 				self::MEDIA_CREDIT_PREVIEW      => [
 					'ui'             => Controls\Display_Text::class,
 					'tab_id'         => '', // Will be added to the 'discussions' page.
@@ -348,7 +348,7 @@ class Settings {
 					'help_text'        => \__( 'Microdata is added to the credit itself and the surrounding <code>figure</code> and <code>img</code> (if they don\'t already have other microdata set). The setting has no effect if credits are displayed after posts.', 'media-credit' ),
 					'default'          => 0,
 				],
-			];
+			]; // @codeCoverageIgnoreEnd
 		}
 
 		return $this->fields;
