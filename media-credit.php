@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2021 Peter Putzer.
+ * Copyright 2013-2022 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@
  * Description:       This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
  * Version:           4.2.1
  * Requires at least: 5.2
- * Requires PHP:      7.0
+ * Requires PHP:      7.2
  * Author:            Peter Putzer
  * Author URI:        https://code.mundschenk.at/
  * License:           GNU General Public License v2 or later

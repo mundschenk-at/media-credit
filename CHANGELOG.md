@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.2.2 (unreleased)
+
+-   _Change_: Media Credit now requires at least PHP 7.2.
+
 ## 4.2.1 (July 30, 2021)
 
 -   _Bugfix_: Don't eat content between multiple shortcodes on save and switch
