@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.2.2 (unreleased)
+## 4.3.0 (unreleased)
 
 -   _Change_: Media Credit now requires at least PHP 7.2.
 
