@@ -69,7 +69,11 @@
 		"autoloader-suffix": "MediaCredit",
 		"process-timeout": 0,
 		"vendor-dir": "vendor",
-		"platform-check": false
+		"platform-check": false,
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true,
+			"dangoodman/composer-for-wordpress": true
+		}
 	},
 	"minimum-stability": "dev",
 	"prefer-stable": true,
