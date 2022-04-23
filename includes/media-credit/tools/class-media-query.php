@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2021 Peter Putzer.
+ * Copyright 2013-2022 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -107,9 +107,15 @@ class Media_Query {
 		}
 
 		$cache_key = "author_media_{$query['author_id']}_i" . ( $query['include_posts'] ? '1' : '0' ) . '_e' . ( $query['exclude_unattached'] ? '1' : '0' ) . "_{$limit_key}_s{$query['since']}";
-		$results   = $this->cache->get( $cache_key );
 
-		if ( false === $results ) {
+		/**
+		 * Look for cached query result first.
+		 *
+		 * @var object[]|false
+		 */
+		$results = $this->cache->get( $cache_key );
+
+		if ( ! \is_array( $results ) ) {
 			$results = $this->query( $query );
 
 			// Cache results for a short time.

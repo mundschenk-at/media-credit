@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2021 Peter Putzer.
+ * Copyright 2013-2022 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -267,13 +267,19 @@ class Core {
 		if ( 'post' === $object_type ) {
 			switch ( $meta_key ) {
 				case self::POSTMETA_KEY:
-					if ( self::EMPTY_META_STRING !== $meta_value ) {
+					if ( ! \is_string( $meta_value ) ) {
+						$meta_value = '';
+					} elseif ( self::EMPTY_META_STRING !== $meta_value ) {
 						$meta_value = \sanitize_text_field( $meta_value );
 					}
 					break;
 
 				case self::URL_POSTMETA_KEY:
-					$meta_value = \esc_url_raw( $meta_value );
+					if ( ! \is_string( $meta_value ) ) {
+						$meta_value = '';
+					} else {
+						$meta_value = \esc_url_raw( $meta_value );
+					}
 					break;
 
 				case self::DATA_POSTMETA_KEY:
@@ -296,7 +302,9 @@ class Core {
 	 * @return string            The freeform credit (or the empty string).
 	 */
 	protected function get_media_credit_freeform_text( $attachment_id ) {
-		return (string) \get_post_meta( $attachment_id, self::POSTMETA_KEY, true );
+		$meta_value = \get_post_meta( $attachment_id, self::POSTMETA_KEY, true );
+
+		return \is_string( $meta_value ) ? $meta_value : '';
 	}
 
 	/**
@@ -307,7 +315,9 @@ class Core {
 	 * @return string            The credit URL (or the empty string if none is set).
 	 */
 	protected function get_media_credit_url( $attachment_id ) {
-		return (string) \get_post_meta( $attachment_id, self::URL_POSTMETA_KEY, true );
+		$meta_value = \get_post_meta( $attachment_id, self::URL_POSTMETA_KEY, true );
+
+		return \is_string( $meta_value ) ? $meta_value : '';
 	}
 
 	/**
@@ -318,11 +328,10 @@ class Core {
 	 * @return array             The data array.
 	 */
 	protected function get_media_credit_data( $attachment_id ) {
-
-		$result = \get_post_meta( $attachment_id, self::DATA_POSTMETA_KEY, true );
+		$meta_value = \get_post_meta( $attachment_id, self::DATA_POSTMETA_KEY, true );
 
 		// Always return an array (it shouldn't be a scalar, but we want to be certain).
-		return ( $result ? (array) $result : [] );
+		return ( $meta_value ? (array) $meta_value : [] );
 	}
 
 	/**
