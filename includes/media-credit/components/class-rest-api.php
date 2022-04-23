@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2021 Peter Putzer.
+ * Copyright 2013-2022 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -230,7 +230,7 @@ class REST_API implements \Media_Credit\Component {
 	public function sanitize_text_field( $param ) {
 		\_deprecated_function( __FUNCTION__, '4.2.0', 'sanitize_text_field' );
 
-		return \sanitize_text_field( $param );
+		return \sanitize_text_field( \strval( $param ) );
 	}
 
 

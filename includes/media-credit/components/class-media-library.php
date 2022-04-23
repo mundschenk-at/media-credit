@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2021 Peter Putzer.
+ * Copyright 2013-2022 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -429,7 +429,7 @@ class Media_Library implements \Media_Credit\Component {
 	 * @return string
 	 */
 	protected function get_default_credit( \WP_Post $attachment ) {
-		$default = \trim( $this->settings->get( Settings::CUSTOM_DEFAULT_CREDIT ) );
+		$default = \trim( \strval( $this->settings->get( Settings::CUSTOM_DEFAULT_CREDIT ) ) );
 
 		/**
 		 * Filters the default credit for new attachments. An empty string means

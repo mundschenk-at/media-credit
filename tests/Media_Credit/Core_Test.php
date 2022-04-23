@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2021 Peter Putzer.
+ * Copyright 2021-2022 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -321,6 +321,8 @@ class Core_Test extends TestCase {
 			[ 'some value', Core::URL_POSTMETA_KEY, 'user', 'some value' ],
 			[ 'some value', Core::DATA_POSTMETA_KEY, 'user', 'some value' ],
 			[ Core::EMPTY_META_STRING, Core::POSTMETA_KEY, 'post', Core::EMPTY_META_STRING ],
+			[ [ 'invalid' ], Core::POSTMETA_KEY, 'post', '' ], // invalid value (array).
+			[ null, Core::URL_POSTMETA_KEY, 'post', '' ], // invalid value (null).
 		];
 	}
 

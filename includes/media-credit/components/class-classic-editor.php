@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2021 Peter Putzer.
+ * Copyright 2013-2022 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -236,7 +236,7 @@ class Classic_Editor implements \Media_Credit\Component {
 
 		// Add alignment to shortcode arguments and strip it from the image markup.
 		$shortcode_arguments .= " align=\"{$align}\"";
-		$html                 = \preg_replace(
+		$html                 = (string) \preg_replace(
 			[
 				"/(class=[\"'][^\"']*)\s*align{$align}\s*([^\"']*[\"'])/S",
 				'/(class=["\'])\s+([^"\'\s])/S',
