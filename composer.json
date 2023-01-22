@@ -89,10 +89,10 @@
 			"XDEBUG_MODE=coverage phpunit --testsuite MediaCredit --coverage-html tests/coverage"
 		],
 		"phpstan": [
-			"phpstan analyze"
+			"phpstan analyze --xdebug"
 		],
 		"phpstan-clean": [
-			"phpstan clear-result-cache && phpstan analyze"
+			"phpstan clear-result-cache --xdebug && phpstan analyze --xdebug"
 		],
 		"scope-dependencies": [
 			"@php vendor/bin/php-scoper add-prefix --config=.scoper.inc.php --force --quiet"
