@@ -2,7 +2,7 @@
 
 ## 4.3.0 (unreleased)
 
--   _Change_: Media Credit now requires at least PHP 7.2.
+-   _Change_: PHP minimum version increased to 7.4.0.
 
 ## 4.2.1 (July 30, 2021)
 
