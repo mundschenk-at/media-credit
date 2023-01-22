@@ -12,8 +12,6 @@ jobs:
         name: Unit tests (PHP ${{ matrix.php-versions }})
         runs-on: ubuntu-22.04
         continue-on-error: ${{ matrix.experimental }}
-        env:
-            COVERAGE_PHP: '7.4'
         strategy:
             fail-fast: false
             matrix:
