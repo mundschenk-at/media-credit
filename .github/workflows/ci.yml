@@ -38,15 +38,15 @@ jobs:
               run: composer remove humbug/php-scoper sirbrillig/phpcs-import-detection phpstan/phpstan szepeviktor/phpstan-wordpress --dev --no-interaction --no-update
             - name: Get composer cache directory
               id: composer-cache
-              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-            - name: Cache composer dependencies
+              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+            - name: Cache dependencies
               uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
                   restore-keys: ${{ runner.os }}-composer-
-            - name: Install Composer dependencies
-              run: composer update --no-progress --prefer-dist --optimize-autoloader
+            - name: Install dependencies
+              run: composer install --prefer-dist
             - name: Run PHPUnit tests
               run: composer test
 
@@ -73,15 +73,15 @@ jobs:
               run: composer remove humbug/php-scoper sirbrillig/phpcs-import-detection szepeviktor/phpstan-wordpress --dev --no-interaction --no-update
             - name: Get composer cache directory
               id: composer-cache
-              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-            - name: Cache composer dependencies
+              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+            - name: Cache dependencies
               uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
                   restore-keys: ${{ runner.os }}-composer-
-            - name: Install Composer dependencies
-              run: composer update --no-progress --prefer-dist --optimize-autoloader
+            - name: Install dependencies
+              run: composer install --prefer-dist
             - name: Run PHPUnit tests with coverage generation
               run: |
                   mkdir -p build/logs
@@ -119,15 +119,15 @@ jobs:
               run: composer remove humbug/php-scoper --dev --no-interaction --no-update
             - name: Get composer cache directory
               id: composer-cache
-              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-            - name: Cache composer dependencies
+              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+            - name: Cache dependencies
               uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
                   restore-keys: ${{ runner.os }}-composer-
-            - name: Install Composer dependencies
-              run: composer update --no-progress --prefer-dist --optimize-autoloader
+            - name: Install dependencies
+              run: composer install --prefer-dist
             - name: Run PHPCS checks
               run: vendor/bin/phpcs -q *.php includes/ admin/ public/ --extensions=php --report=checkstyle | cs2pr
 
@@ -151,14 +151,14 @@ jobs:
               run: composer remove humbug/php-scoper sirbrillig/phpcs-import-detection --dev --no-interaction --no-update
             - name: Get composer cache directory
               id: composer-cache
-              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-            - name: Cache composer dependencies
+              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+            - name: Cache dependencies
               uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
                   restore-keys: ${{ runner.os }}-composer-
-            - name: Install Composer dependencies
-              run: composer update --no-progress --prefer-dist --optimize-autoloader
+            - name: Install dependencies
+              run: composer install --prefer-dist
             - name: Run PHPStan
               run: composer run-script phpstan
