@@ -30,7 +30,7 @@ parameters:
         - tests/
     ignoreErrors:
         # Uses func_get_args()
-        - '#^Function apply_filters(_ref_array)? invoked with [34567] parameters, 2 required\.$#'
+        #- '#^Function apply_filters(_ref_array)? invoked with [34567] parameters, 2 required\.$#'
         # - '#^Parameter \#[1-9] \$[a-z_]+ of function [a-z_]+ expects GdImage, GdImage\|resource given\.$#'
         # - '#^Parameter \#[1-9] \$[a-z_]+ of function [a-z_]+ expects resource, GdImage\|resource given\.$#'
         # - '#^Parameter \#[1-9] \$[a-z_]+ of function [a-z_]+ expects resource, resource\|false given\.$#'
