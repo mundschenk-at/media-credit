@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2021 Peter Putzer.
+ * Copyright 2021-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -72,6 +72,13 @@ class Media_Library_Test extends TestCase {
 	 * @var Settings
 	 */
 	private $settings;
+
+	/**
+	 * Required helper object.
+	 *
+	 * @var Author_Query
+	 */
+	private $author_query;
 
 	/**
 	 * Sets up the fixture, for example, opens a network connection.
