@@ -1,8 +1,8 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2020 Peter Putzer.
- * Copyright 2003-2020 The WordPress contributors.
+ * Copyright 2013-2023 Peter Putzer.
+ * Copyright 2003-2021 The WordPress contributors.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License,
@@ -24,7 +24,7 @@
  */
 
 /**
- * Based on revision @48650 of https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/wp/editor/base.js (removep)
+ * Based on revision @51768 of https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/wp/editor/base.js (removep)
  *
  * The version number in the "@since" tags below mean WordPress versions.
  */
