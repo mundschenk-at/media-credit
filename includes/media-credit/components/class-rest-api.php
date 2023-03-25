@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2022 Peter Putzer.
+ * Copyright 2013-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,6 +36,8 @@ use Media_Credit\Tools\Shortcodes_Filter;
  *
  * @since 4.0.0
  * @since 4.2.0 The public method sanitize_text_field has been deprecated.
+ *
+ * @phpstan-import-type MediaCreditJSONRaw from Core
  */
 class REST_API implements \Media_Credit\Component {
 
@@ -239,9 +241,11 @@ class REST_API implements \Media_Credit\Component {
 	 *
 	 * @since  4.2.0 Unused Parameters $field_name and $request removed.
 	 *
-	 * @param  array $post The post JSON object.
+	 * @param  mixed[] $post The post JSON object.
 	 *
-	 * @return array|void
+	 * @return mixed[]|void
+	 *
+	 * @phpstan-param array{id?:int} $post
 	 */
 	public function prepare_media_credit_fields( $post ) {
 		$attachment = ! empty( $post['id'] ) ? \get_post( $post['id'] ) : null;
@@ -255,10 +259,12 @@ class REST_API implements \Media_Credit\Component {
 	 *
 	 * @since  4.2.0 Unused Parameters $field_name and $request removed.
 	 *
-	 * @param  array    $value The new values for the media credit.
+	 * @param  mixed[]  $value The new values for the media credit.
 	 * @param  \WP_Post $post  The post object.
 	 *
 	 * @return bool
+	 *
+	 * @phpstan-param array{raw?: MediaCreditJSONRaw} $value
 	 */
 	public function update_media_credit_fields( $value, \WP_Post $post ) {
 		if ( empty( $value['raw'] ) ) {

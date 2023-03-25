@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2021 Peter Putzer.
+ * Copyright 2013-2023 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -258,7 +258,7 @@ if ( ! function_exists( 'author_media_and_posts' ) ) {
 	 * @param  int  $limit              Optional. The maximum number of objects to retrieve. Default 0 (unlimited).
 	 * @param  bool $exclude_unattached Optional. A flag indicating whether media items not currently attached to a parent post should be excluded from the results. Default true.
 	 *
-	 * @return array
+	 * @return object[]                 An integer-keyed array of row objects.
 	 */
 	function author_media_and_posts( $author_id, $include_posts = true, $limit = 0, $exclude_unattached = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::author_media_and_posts' );
@@ -284,7 +284,7 @@ if ( ! function_exists( 'author_media' ) ) {
 	 * @param  int  $limit              Optional. The upper limit to the number of returned posts. Default 0 (no limit).
 	 * @param  bool $exclude_unattached Optional. Flag indicating if media not attached to a post should be included. Default true.
 	 *
-	 * @return array
+	 * @return object[]                 An integer-keyed array of row objects.
 	 */
 	function author_media( $author_id, $limit = 0, $exclude_unattached = true ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- legacy API.
 		_deprecated_function( __FUNCTION__, '4.0.0', 'Media_Credit::author_media_and_posts' );

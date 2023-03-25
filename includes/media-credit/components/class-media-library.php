@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2022 Peter Putzer.
+ * Copyright 2013-2023 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -37,6 +37,10 @@ use Media_Credit\Tools\Author_Query;
  * @since 4.0.0 Renamed to Media_Credit\Components\Media_Library
  * @since 4.1.0 Constant AUTHORS_QUERY removed, property $author_query added.
  * @since 4.2.0 Property $version removed.
+ *
+ * @phpstan-type WP_Post_Array array{id:int, ID: int, post_author?: int}
+ * @phpstan-type ImageMetaData array{}
+ * @phpstan-import-type MediaCreditJSONRaw from Core
  */
 class Media_Library implements \Media_Credit\Component {
 
@@ -250,10 +254,10 @@ class Media_Library implements \Media_Credit\Component {
 	 * @since  3.1.0
 	 * @since  4.0.0 Removed unused parameter $meta.
 	 *
-	 * @param  array    $response   Array of prepared attachment data.
+	 * @param  mixed[]  $response   Array of prepared attachment data.
 	 * @param  \WP_Post $attachment Attachment object.
 	 *
-	 * @return array Array of prepared attachment data.
+	 * @return mixed[] Array of prepared attachment data.
 	 */
 	public function prepare_attachment_media_credit_for_js( array $response, \WP_Post $attachment ) {
 
@@ -280,15 +284,15 @@ class Media_Library implements \Media_Credit\Component {
 	/**
 	 * Adds custom media credit fields to Edit Media screens.
 	 *
-	 * @param  array    $fields     An array of attachment form fields.
+	 * @param  mixed[]  $fields     An array of attachment form fields.
 	 * @param  \WP_Post $attachment The \WP_Post attachment object.
 	 *
-	 * @return array                The filtered fields.
+	 * @return mixed                The filtered fields.
 	 */
 	public function add_media_credit_fields( $fields, \WP_Post $attachment ) {
 
 		$data       = $this->core->get_media_credit_json( $attachment );
-		$author_id  = \esc_attr( '' === $data['raw']['freeform'] ? $data['raw']['user_id'] : '' );
+		$author_id  = \esc_attr( '' === $data['raw']['freeform'] ? (string) $data['raw']['user_id'] : '' );
 		$credit     = \esc_attr( $data['plaintext'] );
 		$credit_url = \esc_url( $data['raw']['url'] );
 		$nofollow   = \checked( ! empty( $data['raw']['flags']['nofollow'] ), true, false );
@@ -348,6 +352,10 @@ class Media_Library implements \Media_Credit\Component {
 	 * @param  array $attachment An array of attachment metadata (including the custom fields).
 	 *
 	 * @return array
+	 *
+	 * @phpstan-param WP_Post_Array $post
+	 * @phpstan-param array{'media-credit-hidden': int, 'media-credit': string, 'media-credit-url': string, 'media-credit-nofollow': bool} $attachment
+	 * @phpstan-return WP_Post_Array
 	 */
 	public function save_media_credit_fields( array $post, array $attachment ) {
 		$fields = [
@@ -461,9 +469,11 @@ class Media_Library implements \Media_Credit\Component {
 	 *
 	 * @since  4.1.0
 	 *
-	 * @param  array $data Attachment meta data.
+	 * @param  mixed[] $data Attachment meta data.
 	 *
-	 * @return array       The filtered meta data.
+	 * @return mixed[]       The filtered meta data.
+	 *
+	 * @phpstan-param array{'attachment_parent'?: int} $data
 	 */
 	public function add_credit_to_cropped_header_metadata( array $data ) {
 		if ( ! empty( $data['attachment_parent'] ) ) {
@@ -480,9 +490,9 @@ class Media_Library implements \Media_Credit\Component {
 	 *
 	 * @since  4.1.0
 	 *
-	 * @param  array $data Attachment meta data.
+	 * @param  mixed[] $data Attachment meta data.
 	 *
-	 * @return array       The filtered meta data.
+	 * @return mixed[]       The filtered meta data.
 	 */
 	public function add_credit_to_cropped_attachment_metadata( array $data ) {
 		if ( ! empty( $this->cropped_parent_id ) ) {
@@ -499,10 +509,10 @@ class Media_Library implements \Media_Credit\Component {
 	 *
 	 * @since  4.1.0
 	 *
-	 * @param  array $data      Attachment meta data.
-	 * @param  int   $parent_id Attachment parent post ID.
+	 * @param  mixed[] $data      Attachment meta data.
+	 * @param  int     $parent_id Attachment parent post ID.
 	 *
-	 * @return array            The enriched meta data.
+	 * @return mixed[]            The enriched meta data.
 	 */
 	protected function add_credit_to_metadata( array $data, $parent_id ) {
 		$parent = \get_post( $parent_id );
@@ -526,12 +536,14 @@ class Media_Library implements \Media_Credit\Component {
 	 *
 	 * @since  4.1.0
 	 *
-	 * @param  array  $data          An array of attachment meta data.
-	 * @param  int    $attachment_id Current attachment ID.
-	 * @param  string $context       Optional (only available on WordPress 5.3+). Additional context. Can be 'create' when metadata was initially created for new attachment
-	 *                               or 'update' when the metadata was updated. Default 'create'.
+	 * @param  mixed[] $data          An array of attachment meta data.
+	 * @param  int     $attachment_id Current attachment ID.
+	 * @param  string  $context       Optional (only available on WordPress 5.3+). Additional context. Can be 'create' when metadata was initially created for new attachment
+	 *                                or 'update' when the metadata was updated. Default 'create'.
 	 *
-	 * @return array
+	 * @return mixed[]
+	 *
+	 * @phpstan-param array{image_meta?: array{ credit?:string, copyright?:string } } $data
 	 */
 	public function maybe_add_credit_from_exif_metadata( array $data, $attachment_id, $context = 'create' ) {
 		if ( 'create' !== $context ) {
@@ -565,10 +577,12 @@ class Media_Library implements \Media_Credit\Component {
 	 *
 	 * @since  4.1.0
 	 *
-	 * @param  array $data          Attachment meta data.
-	 * @param  int   $attachment_id Attachment post ID.
+	 * @param  mixed[] $data          Attachment meta data.
+	 * @param  int     $attachment_id Attachment post ID.
 	 *
-	 * @return array                The filtered meta data.
+	 * @return mixed[]                The filtered meta data.
+	 *
+	 * @phpstan-param array{'media_credit'?: MediaCreditJSONRaw} $data
 	 */
 	public function maybe_update_image_credit( array $data, $attachment_id ) {
 		if ( isset( $data['media_credit'] ) ) {

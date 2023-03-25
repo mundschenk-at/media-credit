@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2022 Peter Putzer.
+ * Copyright 2013-2023 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -45,6 +45,15 @@ use Media_Credit\Data_Storage\Cache;
  * @since 4.0.0
  *
  * @author Peter Putzer <github@mundschenk.at>
+ *
+ * @phpstan-type MediaCreditFlags array{nofollow?: bool}
+ * @phpstan-type MediaCreditJSONRaw array{user_id: int, freeform: string, url: string, flags: MediaCreditFlags}
+ * @phpstan-type MediaCreditJSONRawOptional array{user_id?: ?int, freeform?: ?string, url?: ?string, flags?: ?MediaCreditFlags}
+ * @phpstan-type MediaCreditJSON array{rendered: string, plaintext: string, fancy: string, raw: MediaCreditJSONRaw}
+ *
+ * @phpstan-type MediaQuery array{ author_id?: int, offset?: int, number?: int, include_posts?: bool, exclude_unattached?: bool, since?: string }
+
+ * @phpstan-import-type SettingsFields from Settings
  */
 class Core {
 
@@ -80,6 +89,8 @@ class Core {
 	 * An array of empty media credit fields.
 	 *
 	 * @var array
+	 *
+	 * @phpstan-var MediaCreditJSON
 	 */
 	const INVALID_MEDIA_CREDIT = [
 		'rendered'  => '',
@@ -205,6 +216,8 @@ class Core {
 	 * Retrieves the plugin settings.
 	 *
 	 * @return array
+	 *
+	 * @phpstan-return SettingsFields
 	 */
 	public function get_settings() {
 		return $this->settings->get_all_settings();
@@ -224,6 +237,8 @@ class Core {
 	 * }
 	 *
 	 * @return void
+	 *
+	 * @phpstan-param array{ nofollow?: bool } $flags
 	 */
 	protected function update_shortcodes_in_parent_post( \WP_Post $attachment, $user_id = 0, $freeform = '', $url = '', array $flags = [] ) {
 
@@ -325,9 +340,20 @@ class Core {
 	 *
 	 * @param int $attachment_id An attachment ID.
 	 *
-	 * @return array             The data array.
+	 * @return array {
+	 *     The data array (currently only used for flags).
+	 *
+	 *     @type bool $nofollow Optional. A flag indicating that `rel=nofollow` should be added to the link. Default false.
+	 * }
+	 *
+	 * @phpstan-return MediaCreditFlags
 	 */
 	protected function get_media_credit_data( $attachment_id ) {
+		/**
+		 * PHPStan type.
+		 *
+		 * @phpstan-var MediaCreditFlags|false $meta_value
+		 */
 		$meta_value = \get_post_meta( $attachment_id, self::DATA_POSTMETA_KEY, true );
 
 		// Always return an array (it shouldn't be a scalar, but we want to be certain).
@@ -361,7 +387,9 @@ class Core {
 	 *     @type bool $nofollow Optional. A flag indicating that `rel=nofollow` should be added to the link. Default false.
 	 * }
 	 *
-	 * @return string                             The media credit HTML (or the empty string if no credit is set).
+	 * @return string          The media credit HTML (or the empty string if no credit is set).
+	 *
+	 * @phpstan-param MediaCreditFlags $flags
 	 */
 	public function render_media_credit_html( $user_id = 0, $freeform = '', $url = '', array $flags = [] ) {
 		// Start building the credit markup.
@@ -485,10 +513,18 @@ class Core {
 	 *         }
 	 *     }
 	 * }
+	 *
+	 * @phpstan-return MediaCreditJSON
 	 */
 	public function get_media_credit_json( \WP_Post $attachment ) {
+		// Generate cache key.
+		$key = "json_{$attachment->ID}";
 
-		$key  = "json_{$attachment->ID}";
+		/**
+		 * Try to retrieve JSON from cache.
+		 *
+		 * @phpstan-var MediaCreditJSON|false $json
+		 */
 		$json = $this->cache->get( $key );
 
 		if ( ! \is_array( $json ) ) {
@@ -540,6 +576,8 @@ class Core {
 	 * }
 	 *
 	 * @return void
+	 *
+	 * @phpstan-param array{raw: MediaCreditJSONRawOptional}|MediaCreditJSONRawOptional $fields
 	 */
 	public function update_media_credit_json( \WP_Post $attachment, array $fields ) {
 
@@ -591,6 +629,9 @@ class Core {
 	 *         @type bool $nofollow A flag indicating that `rel=nofollow` should be added to the link.
 	 *     }
 	 * }
+	 *
+	 * @phpstan-param MediaCreditFlags $flags
+	 * @phpstan-return MediaCreditJSONRaw
 	 */
 	protected function set_media_credit_fields( \WP_Post $attachment, $user_id = null, $freeform = null, $url = null, $flags = null ) {
 
@@ -704,11 +745,13 @@ class Core {
 	 * }
 	 *
 	 * @return object[]                    An integer-keyed array of row objects.
+	 *
+	 * @phpstan-param MediaQuery $query
 	 */
 	public function get_author_media_and_posts( array $query = [] ) {
 
 		// Limit query to attachments/posts published since the first plugin activation.
-		$query['since'] = $this->settings->get( Settings::INSTALL_DATE );
+		$query['since'] = (string) $this->settings->get( Settings::INSTALL_DATE );
 
 		return $this->media_query->get_author_media_and_posts( $query );
 	}
@@ -753,6 +796,8 @@ class Core {
 	 *                         allowed and the keys must be valid variable names.
 	 *
 	 * @return void
+	 *
+	 * @phpstan-param array<string,mixed> $args
 	 */
 	public function print_partial( $partial, array $args = [] ) {
 		$this->template->print_partial( $partial, $args );

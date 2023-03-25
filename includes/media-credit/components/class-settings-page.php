@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019-2021 Peter Putzer.
+ * Copyright 2019-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,6 +38,8 @@ use Mundschenk\UI\Controls;
  * Handles additions to the "Media" settings page.
  *
  * @since 4.0.0
+ *
+ * @phpstan-type PreviewData array{pattern:string, name1:string, name2:string, joiner:string}
  */
 class Settings_Page implements \Media_Credit\Component {
 
@@ -67,16 +69,18 @@ class Settings_Page implements \Media_Credit\Component {
 	/**
 	 * Some strings for displaying the preview.
 	 *
-	 * @var    array   $preview_data {
-	 *         Strings used for generating the preview.
+	 * @var array $preview_data {
+	 *      Strings used for generating the preview.
 	 *
-	 *         @type string $pattern The pattern string for credits with two names.
-	 *         @type string $name1   A male example name.
-	 *         @type string $name2   A female example name.
-	 *         @type string $joiner  The string used to join multiple image credits.
+	 *      @type string $pattern The pattern string for credits with two names.
+	 *      @type string $name1   A male example name.
+	 *      @type string $name2   A female example name.
+	 *      @type string $joiner  The string used to join multiple image credits.
 	 * }
+	 *
+	 * @phpstan-var PreviewData $preview_data
 	 */
-	private $preview_data = [];
+	private array $preview_data;
 
 	/**
 	 * Creates a new instance.
@@ -186,9 +190,9 @@ class Settings_Page implements \Media_Credit\Component {
 	/**
 	 * Sanitize plugin settings array.
 	 *
-	 * @param  array $input The plugin settings.
+	 * @param  mixed[] $input The plugin settings.
 	 *
-	 * @return array The sanitized plugin settings.
+	 * @return mixed[] The sanitized plugin settings.
 	 */
 	public function sanitize_settings( $input ) {
 		// Blank out checkboxes because unset checkbox don't get sent by the browser.
@@ -217,7 +221,7 @@ class Settings_Page implements \Media_Credit\Component {
 	/**
 	 * Print HTML for settings section.
 	 *
-	 * @param  array $args The argument array.
+	 * @param  mixed[] $args The argument array.
 	 *
 	 * @return void
 	 */

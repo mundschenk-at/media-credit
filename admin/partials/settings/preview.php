@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2021 Peter Putzer.
+ * Copyright 2013-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,6 +38,9 @@ use Media_Credit\Settings;
  *     @type string $name2   A female example name.
  *     @type string $joiner  The string used to join multiple image credits.
  * }
+ *
+ * @phpstan-var array{ separator: string, organization: string } $options
+ * @phpstan-var array{ pattern: string, name1: string, name2: string, joiner: string } $preview_data
  */
 
 $user        = \wp_get_current_user();

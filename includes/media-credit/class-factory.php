@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019-2021 Peter Putzer.
+ * Copyright 2019-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -97,6 +97,8 @@ class Factory extends Dice {
 	 * @since 2.1.0
 	 *
 	 * @return array
+	 *
+	 * @phpstan-return array<class-string,mixed[]>
 	 */
 	protected function get_rules() {
 		// The plugin version.
@@ -168,6 +170,8 @@ class Factory extends Dice {
 	 *         @type string $instance The classname.
 	 *     }
 	 * }
+	 *
+	 * @phpstan-return array<int, array<string, class-string>>
 	 */
 	protected function get_components() {
 		return [

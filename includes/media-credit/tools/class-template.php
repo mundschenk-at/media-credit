@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2021 Peter Putzer.
+ * Copyright 2021-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -60,6 +60,8 @@ class Template {
 	 *                         allowed and the keys must be valid variable names.
 	 *
 	 * @return void
+	 *
+	 * @phpstan-param array<string,mixed> $args
 	 */
 	public function print_partial( $partial, array $args = [] ) {
 		if ( \extract( $args ) !== \count( $args ) ) { // phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- needed for "natural" partials.
@@ -78,6 +80,8 @@ class Template {
 	 *                         allowed and the keys must be valid variable names.
 	 *
 	 * @return string
+	 *
+	 * @phpstan-param array<string,mixed> $args
 	 */
 	public function get_partial( $partial, array $args = [] ) {
 		\ob_start();

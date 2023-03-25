@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2022 Peter Putzer.
+ * Copyright 2013-2023 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -125,7 +125,7 @@ class Classic_Editor implements \Media_Credit\Component {
 	/**
 	 * Enqueue scripts & styles for displaying media credits in the rich-text editor.
 	 *
-	 * @param  array $to_load An array containing boolean values whether TinyMCE and Quicktags are being loaded.
+	 * @param  array<string,bool> $to_load An array containing boolean values whether TinyMCE and Quicktags are being loaded.
 	 *
 	 * @return void
 	 */
@@ -146,9 +146,9 @@ class Classic_Editor implements \Media_Credit\Component {
 	/**
 	 * Removes the default wpeditimage plugin.
 	 *
-	 * @param  array $plugins An array of plugins to load.
+	 * @param  string[] $plugins An array of plugins to load.
 	 *
-	 * @return array         The array of plugins to load.
+	 * @return string[]          The array of plugins to load.
 	 */
 	public function tinymce_internal_plugins( $plugins ) {
 		$key = \array_search( 'wpeditimage', $plugins, true );
@@ -164,9 +164,9 @@ class Classic_Editor implements \Media_Credit\Component {
 	 * Add our own version of the wpeditimage plugin.
 	 * The plugins depend on the global variable echoed in admin_head().
 	 *
-	 * @param array $plugins An array of plugins to load.
+	 * @param  string[] $plugins An array of plugins to load.
 	 *
-	 * @return array         The array of plugins to load.
+	 * @return string[]          The array of plugins to load.
 	 */
 	public function tinymce_external_plugins( $plugins ) {
 		$plugins['mediacredit'] = "{$this->url}/admin/js/tinymce4/media-credit-tinymce{$this->suffix}.js";
