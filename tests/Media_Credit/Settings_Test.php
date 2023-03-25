@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2021 Peter Putzer.
+ * Copyright 2021-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -428,24 +428,30 @@ class Settings_Test extends \Media_Credit\Tests\TestCase {
 	 * Tests ::set.
 	 *
 	 * @covers ::set
+	 *
+	 * @uses ::get_all_settings
 	 */
 	public function test_set_db_error() {
 		$setting_key   = 'my_key';
 		$setting_value = 'bar';
 		$orig_settings = [
-			'a_setting'  => 666,
-			$setting_key => 'some other value',
-			'something'  => 'else',
+			'a_setting'                 => 666,
+			$setting_key                => 'some other value',
+			'something'                 => 'else',
+			Settings::INSTALLED_VERSION => self::VERSION
 		];
 
 		$new_settings                 = $orig_settings;
 		$new_settings[ $setting_key ] = $setting_value;
 
-		$cached_settings = $this->get_value( $this->sut, 'settings' );
+		// Set up state.
+		$this->sut->shouldReceive( 'load_settings' )->once()->andReturn( $orig_settings );
+		$cached_settings = $this->sut->get_all_settings();
 
-		$this->sut->shouldReceive( 'get_all_settings' )->once()->andReturn( $orig_settings );
+		// Set up expectations.
 		$this->options->shouldReceive( 'set' )->once()->with( Options::OPTION, $new_settings )->andReturn( false );
 
+		// Run test and assert results.
 		$this->assertFalse( $this->sut->set( $setting_key, $setting_value ) );
 		$this->assert_attribute_same( $cached_settings, 'settings', $this->sut );
 	}
@@ -454,24 +460,28 @@ class Settings_Test extends \Media_Credit\Tests\TestCase {
 	 * Tests ::set.
 	 *
 	 * @covers ::set
+	 *
+	 * @uses ::get_all_settings
 	 */
 	public function test_set_invalid_setting() {
 		$setting_key   = 'invalid_key';
 		$setting_value = 'bar';
 		$orig_settings = [
-			'a_setting' => 666,
-			'my_key'    => 'some other value',
-			'something' => 'else',
+			'a_setting'                 => 666,
+			'my_key'                    => 'some other value',
+			'something'                 => 'else',
+			Settings::INSTALLED_VERSION => self::VERSION
 		];
 
-		$cached_settings = $this->get_value( $this->sut, 'settings' );
+		// Set up state.
+		$this->sut->shouldReceive( 'load_settings' )->once()->andReturn( $orig_settings );
+		$cached_settings = $this->sut->get_all_settings();
 
-		$this->sut->shouldReceive( 'get_all_settings' )->once()->andReturn( $orig_settings );
-
+		// Set up expectations.
 		$this->expect_exception( \UnexpectedValueException::class );
-
 		$this->options->shouldReceive( 'set' )->never();
 
+		// Run test and assert results.
 		$this->assertNull( $this->sut->set( $setting_key, $setting_value ) );
 		$this->assert_attribute_same( $cached_settings, 'settings', $this->sut );
 	}
