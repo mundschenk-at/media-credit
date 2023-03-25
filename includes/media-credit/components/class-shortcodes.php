@@ -183,6 +183,8 @@ class Shortcodes implements \Media_Credit\Component {
 					 * Filters the HTML5 caption including the credit byline.
 					 *
 					 * @since 4.0.0
+					 * @since 4.3.0 Fixed documentation for the `$nofollow` attribute
+					 *              (previously incorrectly documented as `$no_follow`).
 					 *
 					 * @param string $caption     The caption including the credit.
 					 *                            Default caption text followed by
@@ -201,7 +203,7 @@ class Shortcodes implements \Media_Credit\Component {
 					 *     @type string $align      The alignment to use for the image/figure (if
 					 *                              used without `[caption]`).
 					 *     @type int    $width      The width of the image/figure in pixels.
-					 *     @type bool   $no_follow  A flag indicating that a `rel=nofollow`
+					 *     @type bool   $nofollow   A flag indicating that a `rel=nofollow`
 					 *                              attribute should be added to the link tag (if
 					 *                              `$url` is not empty).
 					 * }
@@ -230,6 +232,9 @@ class Shortcodes implements \Media_Credit\Component {
 	 * Usage: `[media-credit id=1 align="center" width="300"]` or
 	 *        `[media-credit name="Another User" align="center" width="300"]`
 	 *
+	 * @since  4.3.0 Fixed documentation for the `$nofollow` attribute
+	 *               (previously incorrectly documented as `$no_follow`).
+	 *
 	 * @param  array  $atts {
 	 *     An array of shortcode attributes.
 	 *
@@ -241,7 +246,7 @@ class Shortcodes implements \Media_Credit\Component {
 	 *     @type string $align      Optional. The alignment to use for the image/figure
 	 *                              (if used without `[caption]`). Default 'none'.
 	 *     @type int    $width      Optional. The width of the image/figure. Default 0.
-	 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
+	 *     @type bool   $nofollow   Optional. A flag indicating that a `rel=nofollow`
 	 *                              attribute should be added to the link tag.
 	 * }
 	 * @param  string $content Optional. Shortcode content. Default null.
@@ -269,6 +274,9 @@ class Shortcodes implements \Media_Credit\Component {
 		 * If the returned string is non-empty, it will be used as the markup for
 		 * the media credit.
 		 *
+		 * @since  4.3.0 Fixed documentation for the `$nofollow` attribute
+		 *               (previously incorrectly documented as `$no_follow`).
+		 *
 		 * @param string $markup  The media credit markup. Default ''.
 		 * @param array  $atts {
 		 *     The `[media-credit]` shortcode attributes.
@@ -281,7 +289,7 @@ class Shortcodes implements \Media_Credit\Component {
 		 *     @type string $align      Optional. The alignment to use for the image/figure
 		 *                              (if used without `[caption]`). Default 'none'.
 		 *     @type int    $width      Optional. The width of the image/figure. Default 0.
-		 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
+		 *     @type bool   $nofollow   Optional. A flag indicating that a `rel=nofollow`
 		 *                              attribute should be added to the link tag.
 		 * }
 		 * @param string $content The image element, possibly wrapped in a hyperlink.
@@ -380,6 +388,8 @@ class Shortcodes implements \Media_Credit\Component {
 		 * Filters the inline markup used for the credit line part of the `media-credit` shortcode.
 		 *
 		 * @since 4.0.0
+		 * @since 4.3.0 Fixed documentation for the `$nofollow` attribute
+		 *              (previously incorrectly documented as `$no_follow`).
 		 *
 		 * @param string $markup The inline part of the shortcode markup.
 		 * @param array $attr {
@@ -394,7 +404,7 @@ class Shortcodes implements \Media_Credit\Component {
 		 *     @type string $align      The alignment to use for the image/figure (if
 		 *                              used without `[caption]`).
 		 *     @type int    $width      The width of the image/figure in pixels.
-		 *     @type bool   $no_follow  A flag indicating that a `rel=nofollow`
+		 *     @type bool   $nofollow   A flag indicating that a `rel=nofollow`
 		 *                              attribute should be added to the link tag (if
 		 *                              `$url` is not empty).
 		 * }
@@ -407,6 +417,9 @@ class Shortcodes implements \Media_Credit\Component {
 	 * Ensures all required attributes are present and sanitized. Strings are converted to
 	 * the parameters canonical type if necessary.
 	 *
+	 * @since 4.3.0 Fixed documentation for the `$nofollow` attribute
+	 *              (previously incorrectly documented as `$no_follow`).
+	 *
 	 * @param  array $atts {
 	 *     The `[media-credit]` shortcode attributes.
 	 *
@@ -418,7 +431,7 @@ class Shortcodes implements \Media_Credit\Component {
 	 *     @type string $align      Optional. The alignment to use for the image/figure
 	 *                              (if used without `[caption]`). Default 'none'.
 	 *     @type int    $width      Optional. The width of the image/figure. Default 0.
-	 *     @type bool   $no_follow  Optional. A flag indicating that a `rel=nofollow`
+	 *     @type bool   $nofollow   Optional. A flag indicating that a `rel=nofollow`
 	 *                              attribute should be added to the link tag. Default false.
 	 * }
 	 *
