@@ -101,7 +101,7 @@ class Core {
 			'freeform' => '',
 			'url'      => '',
 			'flags'    => [
-				'nofollow' => 0,
+				'nofollow' => false,
 			],
 		],
 	];
