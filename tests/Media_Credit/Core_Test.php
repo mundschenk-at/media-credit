@@ -1138,8 +1138,8 @@ class Core_Test extends TestCase {
 				'https://new.example.org/',
 				[ 'nofollow' => true ],
 				[
-					'user_id'  => null,
-					'freeform' => null,
+					'user_id'  => 47,
+					'freeform' => '',
 					'url'      => 'https://new.example.org/',
 					'flags'    => [
 						'foo'      => 'bar',
@@ -1211,7 +1211,7 @@ class Core_Test extends TestCase {
 				null,
 				null,
 				[
-					'user_id'  => 666,
+					'user_id'  => 47,
 					'freeform' => 'Larifari',
 					'url'      => 'https://old.example.org/url',
 					'flags'    => [
