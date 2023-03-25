@@ -80,7 +80,7 @@
 	"prefer-stable": true,
 	"scripts": {
 		"phpcs": [
-			"phpcs -p -s includes/ admin/ public/ --extensions=php"
+			"phpcs -p -s includes/ admin/ public/ --extensions=php --ignore=*.asset.php"
 		],
 		"test": [
 			"phpunit --testsuite MediaCredit"
