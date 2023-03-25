@@ -239,9 +239,13 @@ if ( ! function_exists( 'display_author_media' ) ) {
 
 			// Query variables.
 			'author_id'           => $author_id,
-			'number'              => $limit > 0 ? $limit : null,
+			'number'              => $limit,
 			'exclude_unattached'  => $exclude_unattached,
 		];
+
+		if ( $limit < 1 ) {
+			unset( $args['number'] );
+		}
 
 		Media_Credit::display_author_media( $args );
 	}
@@ -265,10 +269,14 @@ if ( ! function_exists( 'author_media_and_posts' ) ) {
 
 		$args = [
 			'author_id'          => $author_id,
-			'number'             => $limit > 0 ? $limit : null,
+			'number'             => $limit,
 			'include_posts'      => $include_posts,
 			'exclude_unattached' => $exclude_unattached,
 		];
+
+		if ( $limit < 1 ) {
+			unset( $args['number'] );
+		}
 
 		return Media_Credit::author_media_and_posts( $args );
 	}
@@ -291,10 +299,14 @@ if ( ! function_exists( 'author_media' ) ) {
 
 		$args = [
 			'author_id'          => $author_id,
-			'number'             => $limit > 0 ? $limit : null,
+			'number'             => $limit,
 			'include_posts'      => false,
 			'exclude_unattached' => $exclude_unattached,
 		];
+
+		if ( $limit < 1 ) {
+			unset( $args['number'] );
+		}
 
 		return Media_Credit::author_media_and_posts( $args );
 	}

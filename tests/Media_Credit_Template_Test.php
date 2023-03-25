@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2021 Peter Putzer.
+ * Copyright 2021-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -348,6 +348,36 @@ class Media_Credit_Template_Test extends TestCase {
 		$this->assertNull( \display_author_media( $author_id, $sidebar, $limit, $link_without_parent, $header, $exclude_unattached ) );
 	}
 
+		/**
+	 * Test display_author_media.
+	 *
+	 * @covers display_author_media
+	 */
+	public function test_display_author_media_no_limit() {
+		// Input data.
+		$author_id           = 4711;
+		$sidebar             = false;
+		$limit               = null;
+		$link_without_parent = true;
+		$header              = '<h2>Foobar</h2>';
+		$exclude_unattached  = false;
+
+		// Internal data.
+		$query = [
+			'sidebar'             => $sidebar,
+			'link_without_parent' => $link_without_parent,
+			'header'              => $header,
+			'author_id'           => $author_id,
+			'exclude_unattached'  => $exclude_unattached,
+		];
+
+		Functions\expect( '_deprecated_function' )->once()->with( m::type( 'string' ), m::type( 'string' ), m::type( 'string' ) );
+
+		$this->media_credit->shouldReceive( 'display_author_media' )->once()->with( $query )->andReturnNull();
+
+		$this->assertNull( \display_author_media( $author_id, $sidebar, $limit, $link_without_parent, $header, $exclude_unattached ) );
+	}
+
 	/**
 	 * Test author_media_and_posts.
 	 *
@@ -382,6 +412,38 @@ class Media_Credit_Template_Test extends TestCase {
 	}
 
 	/**
+	 * Test author_media_and_posts.
+	 *
+	 * @covers author_media_and_posts
+	 */
+	public function test_author_media_and_posts_no_limit() {
+		// Input data.
+		$author_id          = 4711;
+		$include_posts      = false;
+		$limit              = null;
+		$exclude_unattached = false;
+
+		// Internal data.
+		$args = [
+			'author_id'          => $author_id,
+			'include_posts'      => $include_posts,
+			'exclude_unattached' => $exclude_unattached,
+		];
+
+		// Expected result.
+		$result = [
+			1  => (object) [ 'foo' => 'bar' ],
+			55 => (object) [ 'foo' => 'baz' ],
+		];
+
+		Functions\expect( '_deprecated_function' )->once()->with( m::type( 'string' ), m::type( 'string' ), m::type( 'string' ) );
+
+		$this->media_credit->shouldReceive( 'author_media_and_posts' )->once()->with( $args )->andReturn( $result );
+
+		$this->assertSame( $result, \author_media_and_posts( $author_id, $include_posts, $limit, $exclude_unattached ) );
+	}
+
+	/**
 	 * Test author_media.
 	 *
 	 * @covers author_media
@@ -396,6 +458,37 @@ class Media_Credit_Template_Test extends TestCase {
 		$args = [
 			'author_id'          => $author_id,
 			'number'             => $limit,
+			'include_posts'      => false,
+			'exclude_unattached' => $exclude_unattached,
+		];
+
+		// Expected result.
+		$result = [
+			1  => (object) [ 'foo' => 'bar' ],
+			55 => (object) [ 'foo' => 'baz' ],
+		];
+
+		Functions\expect( '_deprecated_function' )->once()->with( m::type( 'string' ), m::type( 'string' ), m::type( 'string' ) );
+
+		$this->media_credit->shouldReceive( 'author_media_and_posts' )->once()->with( $args )->andReturn( $result );
+
+		$this->assertSame( $result, \author_media( $author_id, $limit, $exclude_unattached ) );
+	}
+
+	/**
+	 * Test author_media.
+	 *
+	 * @covers author_media
+	 */
+	public function test_author_media_no_limit() {
+		// Input data.
+		$author_id          = 4711;
+		$limit              = null;
+		$exclude_unattached = false;
+
+		// Internal data.
+		$args = [
+			'author_id'          => $author_id,
 			'include_posts'      => false,
 			'exclude_unattached' => $exclude_unattached,
 		];
