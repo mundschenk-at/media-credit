@@ -66,7 +66,7 @@ class Shortcodes_Filter {
 		foreach ( $matches as $shortcode ) {
 			// Grab the contained <img> tag and check if it is the right one.
 			$img = $shortcode[5];
-			if ( ! \preg_match( "/src=([\"'])(?:(?!\1).)*{$basename}/S", $img ) || ! \preg_match( "/wp-image-{$image_id}/S", $img ) ) {
+			if ( ! \preg_match( "/src=([\"'])(?:(?!\1).)*{$basename}/S", $img ) || false === \strpos( $img, "wp-image-{$image_id}" ) ) {
 				// This shortcode is for another image.
 				continue;
 			}
