@@ -244,8 +244,8 @@ class Core {
 
 		if ( ! empty( $attachment->post_parent ) ) {
 			// Get the parent post of the attachment.
-			$post = \get_post( $attachment->post_parent );
-			if ( ! $post instanceof \WP_Post ) {
+			$post_content = \get_post_field( 'post_content', $attachment->post_parent, 'raw' );
+			if ( '' === $post_content ) {
 				return;
 			}
 
@@ -253,10 +253,14 @@ class Core {
 			$nofollow = ! empty( $flags['nofollow'] );
 
 			// Filter the post's content.
-			$post->post_content = $this->shortcodes_filter->update_changed_media_credits( $post->post_content, $attachment->ID, $user_id, $freeform, $url, $nofollow );
+			$post_content = $this->shortcodes_filter->update_changed_media_credits( $post_content, $attachment->ID, $user_id, $freeform, $url, $nofollow );
 
 			// Save the filtered content in the database.
-			\wp_update_post( $post );
+			$updated_post = [
+				'ID'           => $attachment->post_parent,
+				'post_content' => $post_content,
+			];
+			\wp_update_post( $updated_post );
 		}
 	}
 

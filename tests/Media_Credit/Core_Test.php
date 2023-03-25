@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2021-2022 Peter Putzer.
+ * Copyright 2021-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -214,13 +214,11 @@ class Core_Test extends TestCase {
 	public function test_update_shortcodes_in_parent_post() {
 		$attachment                = m::mock( \WP_Post::class );
 		$attachment_id             = 33;
-		$post_parent               = m::mock( \WP_Post::class );
 		$post_parent_id            = 47;
-		$post_content              = 'fake post content';
-		$post_parent->post_content = $post_content;
-		$post_parent->ID           = $post_parent_id;
 		$attachment->post_parent   = $post_parent_id;
 		$attachment->ID            = $attachment_id;
+		$post_content              = 'fake post content';
+		$modified_post_content     = 'modified post content';
 		$user_id                   = 42;
 		$freeform                  = 'My Freeform Credit';
 		$url                       = 'https://example.org/credit/url';
@@ -229,11 +227,16 @@ class Core_Test extends TestCase {
 			'nofollow' => $nofollow,
 		];
 
-		Functions\expect( 'get_post' )->once()->with( $post_parent_id )->andReturn( $post_parent );
+		Functions\expect( 'get_post_field' )->once()->with( 'post_content', $post_parent_id, 'raw' )->andReturn( $post_content );
 
-		$this->shortcodes_filter->shouldReceive( 'update_changed_media_credits' )->once()->with( $post_content, $attachment_id, $user_id, $freeform, $url, $nofollow )->andReturn( 'modified post content' );
+		$this->shortcodes_filter->shouldReceive( 'update_changed_media_credits' )->once()->with( $post_content, $attachment_id, $user_id, $freeform, $url, $nofollow )->andReturn( $modified_post_content );
 
-		Functions\expect( 'wp_update_post' )->once()->with( $post_parent );
+		Functions\expect( 'wp_update_post' )->once()->with(
+			[
+				'ID'           => $post_parent_id,
+				'post_content' => $modified_post_content,
+			]
+		);
 
 		$this->assertNull( $this->sut->update_shortcodes_in_parent_post( $attachment, $user_id, $freeform, $url, $flags ) );
 	}
@@ -284,7 +287,7 @@ class Core_Test extends TestCase {
 			'nofollow' => $nofollow,
 		];
 
-		Functions\expect( 'get_post' )->once()->with( $post_parent_id )->andReturn( null );
+		Functions\expect( 'get_post_field' )->once()->with( 'post_content', $post_parent_id, 'raw' )->andReturn( '' );
 
 		$this->shortcodes_filter->shouldReceive( 'update_changed_media_credits' )->never();
 
