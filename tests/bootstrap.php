@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2021 Peter Putzer.
+ * Copyright 2021-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,10 +24,17 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+namespace Media_Credit\Tests;
+
+use Media_Credit\Tests\TestCase;
+
 /**
  * Autoload everything using Composer.
  */
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
+
+// Allow setting dynamic properties on missing WordPress classes.
+TestCase::makeDoublesForUnavailableClasses( [ 'WP_Post', 'WP_Screen', 'wpdb' ] );
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals
 
@@ -82,4 +89,13 @@ if ( ! defined( 'MEDIA_CREDIT_PLUGIN_FILE' ) ) {
 }
 if ( ! defined( 'MEDIA_CREDIT_PLUGIN_PATH' ) ) {
 	define( 'MEDIA_CREDIT_PLUGIN_PATH', 'plugin' );
+}
+
+/*
+ * Clear the opcache if it exists.
+ *
+ * Wrapped in a `function exists()` as the extension may not be enabled.
+ */
+if ( \function_exists( 'opcache_reset' ) ) {
+	\opcache_reset();
 }
