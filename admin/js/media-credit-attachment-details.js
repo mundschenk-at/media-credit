@@ -1,7 +1,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2016-2021 Peter Putzer.
+ * Copyright 2016-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License,
@@ -22,8 +22,6 @@
  * @author Peter Putzer <github@mundschenk.at>
  * @since  3.1.0
  */
-
-/* global: wp, _, tinymce, mundschenk */ // Scrutinizer-CI
 
 jQuery( function( $ ) {
 	'use strict';

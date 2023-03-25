@@ -1,7 +1,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2014-2021 Peter Putzer.
+ * Copyright 2014-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License,
@@ -22,8 +22,6 @@
  * @author Peter Putzer <github@mundschenk.at>
  * @since  2.3.0
  */
-
-/* global: wp, mundschenk */ // Scrutinizer-CI
 
 ( function( $, wp, mundschenk ) {
 	'use strict';
@@ -85,7 +83,7 @@
 	} );
 
 	/**
-	 * Update TinyMCE HTML represenation of media credit.
+	 * Update TinyMCE HTML representation of media credit.
 	 */
 	wp.media.events.on( 'editor:image-update', function( options ) {
 		var editor = options.editor,

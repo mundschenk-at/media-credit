@@ -1,7 +1,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2020 Peter Putzer.
+ * Copyright 2013-2023 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -23,8 +23,6 @@
  * @author Scott Bressler
  * @since  0.5.1
  */
-
-/* global: _, mundschenk */ // Scrutinizer-CI
 
 jQuery( function( $ ) {
 	'use strict';
