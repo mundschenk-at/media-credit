@@ -94,6 +94,8 @@ class Shortcodes_Filter {
 	 * Updates the shortcode using new data.
 	 *
 	 * @since  4.2.0
+	 * @since  4.3.0 Fixed documentation of the `$link` attribute
+	 *               (previously incorrectly documented as `$url`).
 	 *
 	 * @param  string $content    The current post content.
 	 * @param  string $shortcode  The shortcode to update.
@@ -104,7 +106,7 @@ class Shortcodes_Filter {
 	 *
 	 *     @type int    $id       The author ID.
 	 *     @type string $name     The freeform credit.
-	 *     @type string $url      The credit URL.
+	 *     @type string $link     The credit URL.
 	 *     @type bool   $nofollow The "rel=nofollow" flag.
 	 * }
 	 * @param  array  $updated {
@@ -112,7 +114,7 @@ class Shortcodes_Filter {
 	 *
 	 *     @type int    $id       The author ID.
 	 *     @type string $name     The freeform credit.
-	 *     @type string $url      The credit URL.
+	 *     @type string $link     The credit URL.
 	 *     @type bool   $nofollow The "rel=nofollow" flag.
 	 * }
 	 *
