@@ -656,12 +656,18 @@ class Core {
 				// The freeform string does not exist anymore.
 				$freeform = '';
 			} else {
-
 				// Free-form text was entered, insert postmeta with credit.
 				// if free-form text is blank, insert a single space in postmeta.
 				$freeform = $freeform ?: self::EMPTY_META_STRING; // phpcs:ignore WordPress.PHP.DisallowShortTernary
 				\update_post_meta( $attachment->ID, self::POSTMETA_KEY, $freeform );
+
+				// User ID stays untouched.
+				$user_id = $current['user_id'];
 			}
+		} else {
+			// User ID and freeform stay untouched.
+			$user_id  = $current['user_id'];
+			$freeform = $current['freeform'];
 		}
 
 		// Check if we need to update the URL.
