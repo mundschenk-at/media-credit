@@ -2,7 +2,7 @@
 	"name": "media-credit",
 	"devDependencies": {
 		"@lodder/grunt-postcss": "^3.1.1",
-		"@wordpress/eslint-plugin": "^12",
+		"@wordpress/eslint-plugin": "^14",
 		"autoprefixer": "^10.4.4",
 		"coffeescript": "^2.6.1",
 		"grunt": "^1.5.2",
@@ -20,7 +20,7 @@
 		"grunt-wp-deploy": "^2.0",
 		"jshint-stylish": "^2.2.1",
 		"load-grunt-tasks": "^5.1.0",
-		"node-sass": "^7.0.1",
+		"node-sass": "^8.0",
 		"pixrem": "^5.0",
 		"sass": "^1.50.1"
 	},
