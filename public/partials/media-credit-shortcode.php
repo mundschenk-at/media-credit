@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2021 Peter Putzer.
+ * Copyright 2013-2023 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -43,6 +43,8 @@
  *     @type bool   $standalone A flag indicating that this is a standalone
  *                              [media-credit] without a surrounding [caption].
  * }
+ *
+ * @phpstan-var array{align:string,standalone:bool} $atts
  */
 
 // Apply credit width via style attribute.

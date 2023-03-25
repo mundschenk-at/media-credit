@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2021 Peter Putzer.
+ * Copyright 2013-2023 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -36,6 +36,11 @@ use Media_Credit\Core;
  *
  * @since 3.0.0
  * @since 4.0.0 Renamed to Media_Credit
+ *
+ * @phpstan-import-type MediaCreditFlags from Core
+ * @phpstan-import-type MediaCreditJSON from Core
+ *
+ * @phpstan-import-type MediaQuery from Core
  */
 class Media_Credit {
 
@@ -152,6 +157,8 @@ class Media_Credit {
 	 *
 	 *     @type bool $nofollow Optional. Whether `rel=nofollow` should be added to the link. Default unset.
 	 * }
+	 *
+	 * @phpstan-return MediaCreditFlags
 	 */
 	public static function get_flags( $attachment ) {
 
@@ -209,7 +216,9 @@ class Media_Credit {
 	 *                                     Default true.
 	 * }
 	 *
-	 * @return array
+	 * @return object[]                    An integer-keyed array of row objects.
+	 *
+	 * @phpstan-param MediaQuery $query
 	 */
 	public static function author_media_and_posts( $query ) {
 		return Core::get_instance()->get_author_media_and_posts( $query );
@@ -241,6 +250,8 @@ class Media_Credit {
 	 * }
 	 *
 	 * @return void
+	 *
+	 * @phpstan-param array{ author_id?: int, sidebar?: bool, offset?: int, paged?: int, exclude_unattached?: bool } $args
 	 */
 	public static function display_author_media( array $args = [] ) {
 
@@ -306,6 +317,8 @@ class Media_Credit {
 	 *         }
 	 *     }
 	 * }
+	 *
+	 * @phpstan-return MediaCreditJSON
 	 */
 	public static function get_fields( $attachment ) {
 

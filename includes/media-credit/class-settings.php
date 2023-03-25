@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019-2022 Peter Putzer.
+ * Copyright 2019-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,6 +38,17 @@ use Mundschenk\UI\Controls;
  * @since 4.0.0
  *
  * @author Peter Putzer <github@mundschenk.at>
+ *
+ * @phpstan-type SettingsFieldMeta array{ ui: class-string<\Mundschenk\UI\Control>, tab_id: string,
+ *     section: string, elements?: mixed[], short?: string, label?: string, help_text: string,
+ *     grouped_with?: string, attributes?: mixed[], default?: mixed }
+ * @phpstan-type SettingsFieldDefinitions array{ media-credit-preview: SettingsFieldMeta, separator: SettingsFieldMeta,
+ *     organization: SettingsFieldMeta, credit_at_end: SettingsFieldMeta, no_default_credit: SettingsFieldMeta,
+ *     custom_default_credit: SettingsFieldMeta, post_thumbnail_credit: SettingsFieldMeta, schema_org_markup: SettingsFieldMeta }
+ * @phpstan-type SettingsFields array{ separator: string,
+ *     organization: string, credit_at_end: bool, no_default_credit: bool,
+ *     custom_default_credit: string, featured_image_credit: bool, schema_org_markup: bool,
+ *     version: string, install_date: string }
  */
 class Settings {
 	// Individual settings.
@@ -68,9 +79,11 @@ class Settings {
 	/**
 	 * The fields definition array.
 	 *
-	 * @var array
+	 * @var array<string, array>
+	 *
+	 * @phpstan-var SettingsFieldDefinitions
 	 */
-	private $fields;
+	private array $fields;
 
 	/**
 	 * The defaults array.
@@ -78,8 +91,10 @@ class Settings {
 	 * @since 4.2.0
 	 *
 	 * @var array
+	 *
+	 * @phpstan-var SettingsFields
 	 */
-	private $defaults;
+	private array $defaults;
 
 	/**
 	 * The user's settings (indexed by site ID to be multisite-safe).
@@ -87,8 +102,10 @@ class Settings {
 	 * @since 4.2.0
 	 *
 	 * @var array
+	 *
+	 * @phpstan-var SettingsFields
 	 */
-	private $settings;
+	private array $settings;
 
 	/**
 	 * The plugin version.
@@ -97,7 +114,7 @@ class Settings {
 	 *
 	 * @var string
 	 */
-	private $version;
+	private string $version;
 
 	/**
 	 * The options handler.
@@ -106,7 +123,7 @@ class Settings {
 	 *
 	 * @var Options
 	 */
-	private $options;
+	private Options $options;
 
 	/**
 	 * Creates a new instance.
@@ -141,6 +158,8 @@ class Settings {
 	 *                     Default false.
 	 *
 	 * @return array
+	 *
+	 * @phpstan-return SettingsFields
 	 */
 	public function get_all_settings( $force = false ) {
 		// Force a re-read if the cached settings do not appear to be from the current version.
@@ -162,14 +181,26 @@ class Settings {
 	 * @since  4.2.0
 	 *
 	 * @return array
+	 *
+	 * @phpstan-return SettingsFields
 	 */
 	protected function load_settings() {
+		/**
+		 * Retrieve options using new name.
+		 *
+		 * @phpstan-var SettingsFields|false
+		 */
 		$_settings = $this->options->get( Options::OPTION );
 		$_defaults = $this->get_defaults();
 		$modified  = false;
 
 		// Maybe we need to use the old option name.
 		if ( false === $_settings ) {
+			/**
+			 * Retrieve options using old name.
+			 *
+			 * @phpstan-var SettingsFields|false
+			 */
 			$_settings = $this->options->get( 'media-credit', false, true );
 
 			if ( \is_array( $_settings ) ) {
@@ -192,6 +223,12 @@ class Settings {
 					$modified           = true;
 				}
 			}
+
+			/**
+			 * PHPStan type.
+			 *
+			 * @phpstan-var SettingsFields $_settings
+			 */
 		} else {
 			$_settings = $_defaults;
 			$modified  = true;
@@ -212,7 +249,7 @@ class Settings {
 	 * @param  string $setting The setting name (index).
 	 * @param  bool   $force   Optional. Forces retrieval of settings from database. Default false.
 	 *
-	 * @return mixed           The requested setting value.
+	 * @return string|int|bool The requested setting value.
 	 *
 	 * @throws \UnexpectedValueException Thrown when the setting name is invalid.
 	 */
@@ -233,12 +270,15 @@ class Settings {
 	 *
 	 * @internal
 	 *
-	 * @param  string $setting The setting name (index).
-	 * @param  mixed  $value   The setting value.
+	 * @param  string          $setting The setting name (index).
+	 * @param  string|int|bool $value   The setting value.
 	 *
 	 * @return bool
 	 *
 	 * @throws \UnexpectedValueException Thrown when the setting name is invalid.
+	 *
+	 * @phpstan-param key-of<SettingsFields> $setting
+	 * @phpstan-param value-of<SettingsFields> $value
 	 */
 	public function set( $setting, $value ) {
 		$all_settings = $this->get_all_settings();
@@ -253,6 +293,11 @@ class Settings {
 
 		// Update cached settings only if DB the DB write was successful.
 		if ( $result ) {
+			/**
+			 * PHPStan type.
+			 *
+			 * @phpstan-var SettingsFields $all_settings
+			 */
 			$this->settings = $all_settings;
 		}
 
@@ -263,6 +308,8 @@ class Settings {
 	 * Retrieves the settings field definitions.
 	 *
 	 * @return array
+	 *
+	 * @phpstan-return SettingsFieldDefinitions
 	 */
 	public function get_fields() {
 		if ( empty( $this->fields ) ) {
@@ -271,7 +318,7 @@ class Settings {
 					'ui'             => Controls\Display_Text::class,
 					'tab_id'         => '', // Will be added to the 'discussions' page.
 					'section'        => self::SETTINGS_SECTION,
-					'elements'       => [], // Will be later.
+					'elements'       => [], // Will be added later.
 					'short'          => \__( 'Preview', 'media-credit' ),
 					'help_text'      => \__( 'This is what media credits will look like with your current settings.', 'media-credit' ),
 				],
@@ -360,6 +407,8 @@ class Settings {
 	 * @since 4.2.0
 	 *
 	 * @return array
+	 *
+	 * @phpstan-return SettingsFields
 	 */
 	public function get_defaults() {
 		if ( empty( $this->defaults ) ) {
@@ -374,6 +423,11 @@ class Settings {
 			$_defaults[ self::INSTALLED_VERSION ] = '';
 			$_defaults[ self::INSTALL_DATE ]      = \gmdate( 'Y-m-d' );
 
+			/**
+			 * PHPStan type.
+			 *
+			 * @phpstan-var SettingsFields $_defaults
+			 */
 			$this->defaults = $_defaults;
 		}
 

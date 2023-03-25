@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2020-2021 Peter Putzer.
+ * Copyright 2020-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -56,7 +56,7 @@ class Author_Query {
 	/**
 	 * Returns the site users valid for being used as media authors.
 	 *
-	 * @return array {
+	 * @return \stdClass[] {
 	 *     An array of eligible WordPress users.
 	 *
 	 *     int    $ID           The user ID.
@@ -64,10 +64,17 @@ class Author_Query {
 	 * }
 	 */
 	public function get_authors() {
+		// Set up query and cache key.
 		$query      = $this->get_author_list_query();
 		$query_hash = \md5( (string) \wp_json_encode( $query ) );
 		$cache_key  = "author_list_{$query_hash}";
-		$results    = $this->cache->get( $cache_key );
+
+		/**
+		 * Try to retrieve cached results.
+		 *
+		 * @var array<array{id:int, display_name:string}>
+		 */
+		$results = $this->cache->get( $cache_key );
 
 		if ( ! \is_array( $results ) ) {
 			$results = \get_users( $query );
@@ -83,6 +90,8 @@ class Author_Query {
 	 * Builds the author list query.
 	 *
 	 * @return array A query specification suitable for WP_User_Query.
+	 *
+	 * @phpstan-return array{orderby:string,number:int,offset:int,count_total:bool,fields:string[]}
 	 */
 	protected function get_author_list_query() {
 		$query = [

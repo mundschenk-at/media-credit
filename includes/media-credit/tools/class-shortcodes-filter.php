@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019-2021 Peter Putzer.
+ * Copyright 2019-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,6 +34,8 @@ namespace Media_Credit\Tools;
  *              by `get_quoted_image_basename`.
  *
  * @author Peter Putzer <github@mundschenk.at>
+ *
+ * @phpstan-import-type ShortcodeAttributesOptional from \Media_Credit\Components\Shortcodes
  */
 class Shortcodes_Filter {
 
@@ -69,7 +71,12 @@ class Shortcodes_Filter {
 				continue;
 			}
 
-			// Replace the old shortcode with then new one.
+			/**
+			 * Replace the old shortcode with then new one. We have to treat
+			 * all attributes in the old shortcode as optional.
+			 *
+			 * @phpstan-var ShortcodeAttributesOptional $attr
+			 */
 			$attr    = $this->parse_shortcode_attributes( $shortcode[3] );
 			$updated = [
 				'id'       => $author_id,
@@ -110,6 +117,9 @@ class Shortcodes_Filter {
 	 * }
 	 *
 	 * @return string             The updated post content.
+	 *
+	 * @phpstan-param ShortcodeAttributesOptional $attr
+	 * @phpstan-param array{ id: int, name: string, link: string, nofollow: bool } $updated
 	 */
 	protected function update_shortcode( string $content, string $shortcode, string $img, array $attr, array $updated ) {
 		// Drop the old id/name attributes (if any).
@@ -155,7 +165,7 @@ class Shortcodes_Filter {
 	 *
 	 * @param  string $attributes The attributes matching the shortcode regex.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function parse_shortcode_attributes( string $attributes ) {
 		$attr = \shortcode_parse_atts( $attributes );

@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2022 Peter Putzer.
+ * Copyright 2013-2023 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -36,6 +36,9 @@ use Media_Credit\Data_Storage\Cache;
  * @since 4.0.0
  *
  * @author Peter Putzer <github@mundschenk.at>
+ *
+ * @phpstan-import-type MediaQuery from Core
+ * @phpstan-type MediaQueryFull array{ author_id: int, offset: int, number: int, paged: int, include_posts: bool, exclude_unattached: bool, since: string }
  */
 class Media_Query {
 
@@ -84,10 +87,12 @@ class Media_Query {
 	 * }
 	 *
 	 * @return object[]                    An integer-keyed array of row objects.
+	 *
+	 * @phpstan-param MediaQuery $query
 	 */
 	public function get_author_media_and_posts( array $query = [] ) {
 
-		// Ensure default values.
+		// Set default values.
 		$defaults = [
 			'author_id'          => \get_current_user_id(),
 			'offset'             => 0,
@@ -97,7 +102,13 @@ class Media_Query {
 			'exclude_unattached' => true,
 			'since'              => null,
 		];
-		$query    = \wp_parse_args( $query, $defaults );
+
+		/**
+		 * Ensure a full set of query parameters.
+		 *
+		 * @phpstan-var MediaQueryFull $query
+		 */
+		$query = \wp_parse_args( $query, $defaults );
 
 		// Pre-calculate offset and limit for caching.
 		$limit_key = 'all';
@@ -128,7 +139,9 @@ class Media_Query {
 	/**
 	 * Builds and executes the query the recently added media attachments and posts for a given author.
 	 *
-	 * @param array $query {
+	 * @since  4.2.0 Invalid default value for parameter `$query` removed.
+	 *
+	 * @param  array $query {
 	 *    The query variables (already filled with defaults if necessary).
 	 *
 	 *    @type int    $author_id          A user ID. Default current user.
@@ -152,8 +165,10 @@ class Media_Query {
 	 * }
 	 *
 	 * @return object[]                    An integer-keyed array of row objects.
+	 *
+	 * @phpstan-param MediaQueryFull $query
 	 */
-	protected function query( array $query = [] ) {
+	protected function query( array $query ) {
 		global $wpdb;
 
 		$posts_query    = '';

@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2019-2021 Peter Putzer.
+ * Copyright 2019-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,6 +33,9 @@ use Media_Credit\Settings;
  * The component handling the integration with the Block Editor (i.e. Gutenberg).
  *
  * @since 4.0.0
+ *
+ * @phpstan-type BlockAttributes array{id?: int}
+ * @phpstan-type BlockMetaData array{blockName: string, attrs: BlockAttributes}
  */
 class Block_Editor implements \Media_Credit\Component {
 
@@ -66,10 +69,12 @@ class Block_Editor implements \Media_Credit\Component {
 	/**
 	 * Adds the images media credit to rendered `core/image` blocks.
 	 *
-	 * @param  string $block_content The block content about to be appended.
-	 * @param  array  $block         The full block, including name and attributes.
+	 * @param  string  $block_content The block content about to be appended.
+	 * @param  mixed[] $block         The full block, including name and attributes.
 	 *
 	 * @return string
+	 *
+	 * @phpstan-param BlockMetaData $block
 	 */
 	public function add_media_credit_to_image_blocks( $block_content, array $block ) {
 

@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2013-2021 Peter Putzer.
+ * Copyright 2013-2023 Peter Putzer.
  * Copyright 2010-2011 Scott Bressler.
  *
  * This program is free software; you can redistribute it and/or
@@ -38,6 +38,9 @@ use Media_Credit\Tools\Template;
  * and `[wp_caption]`.
  *
  * @since 4.0.0
+ *
+ * @phpstan-type ShortcodeAttributes array{id:int, name:string, link:string, standalone:bool, align:string, width:int, nofollow:bool}
+ * @phpstan-type ShortcodeAttributesOptional array{id?:int|string, name?:string, link?:string, standalone?:bool|string, align?:string, width?:int|string, nofollow?:bool|string}
  */
 class Shortcodes implements \Media_Credit\Component {
 
@@ -45,6 +48,8 @@ class Shortcodes implements \Media_Credit\Component {
 	 * The default shortcode attributes for `[media-credit]`.
 	 *
 	 * @var array
+	 *
+	 * @phpstan-var ShortcodeAttributes
 	 */
 	const MEDIA_CREDIT_DEFAULTS = [
 		'id'         => 0,
@@ -138,6 +143,8 @@ class Shortcodes implements \Media_Credit\Component {
 	 * @param  string $content Optional. Shortcode content. Default null.
 	 *
 	 * @return string The enriched caption markup.
+	 *
+	 * @phpstan-param array{ caption: string } $attr
 	 */
 	public function caption_shortcode( $attr, $content = null ) {
 		// Options influencing the markup.
@@ -164,6 +171,7 @@ class Shortcodes implements \Media_Credit\Component {
 				$content = \str_replace( [ $matches[0], '[/media-credit]' ], '', $content );
 
 				if ( empty( $this->settings->get( Settings::CREDIT_AT_END ) ) ) {
+
 					// The byline.
 					$credit_attr = $this->sanitize_attributes( $this->filter->parse_shortcode_attributes( $matches[1] ) );
 					$credit      = $this->inline_media_credit( $credit_attr, $schema_org );
@@ -204,7 +212,7 @@ class Shortcodes implements \Media_Credit\Component {
 		}
 
 		// Get caption markup.
-		$caption = \img_caption_shortcode( $attr, $content );
+		$caption = \img_caption_shortcode( $attr, (string) $content );
 
 		// Optionally add schema.org markup.
 		if ( $schema_org ) {
@@ -239,6 +247,8 @@ class Shortcodes implements \Media_Credit\Component {
 	 * @param  string $content Optional. Shortcode content. Default null.
 	 *
 	 * @return string          The HTML markup for the media credit.
+	 *
+	 * @phpstan-param ShortcodeAttributesOptional|string $atts
 	 */
 	public function media_credit_shortcode( $atts, $content = null ) {
 		// Make sure that content is a string.
@@ -250,7 +260,7 @@ class Shortcodes implements \Media_Credit\Component {
 		}
 
 		// Make sure that $atts really is an array, might be an empty string in some edge cases.
-		$atts = $this->sanitize_attributes( empty( $atts ) ? [] : $atts );
+		$atts = $this->sanitize_attributes( ! \is_array( $atts ) ? [] : $atts );
 
 		/**
 		 * Filters the `[media-credit]` shortcode to allow plugins and themes to
@@ -313,6 +323,11 @@ class Shortcodes implements \Media_Credit\Component {
 			'schema_org'          => ! empty( $this->settings->get( Settings::SCHEMA_ORG_MARKUP ) ),
 			'width'               => $width,
 			'inline_media_credit' => function( array $attr, $include_schema_org = false ) {
+				/**
+				 * Workaround for PHPStan not parsing anoynous function PHPDocs.
+				 *
+				 * @phpstan-var ShortcodeAttributes $attr
+				 */
 				return $this->inline_media_credit( $attr, $include_schema_org ); // @codeCoverageIgnore
 			},
 			'atts'                => $atts,
@@ -343,6 +358,8 @@ class Shortcodes implements \Media_Credit\Component {
 	 * @param  bool  $include_schema_org Optional. Include schema.org markup. Default false.
 	 *
 	 * @return string
+	 *
+	 * @phpstan-param ShortcodeAttributes $attr
 	 */
 	protected function inline_media_credit( array $attr, $include_schema_org = false ) {
 		// Prepare arguments for compatibility with old shortcode behavior (`id` trumps `naem`).
@@ -387,7 +404,8 @@ class Shortcodes implements \Media_Credit\Component {
 	}
 
 	/**
-	 * Ensures all required attributes are present and sanitized.
+	 * Ensures all required attributes are present and sanitized. Strings are converted to
+	 * the parameters canonical type if necessary.
 	 *
 	 * @param  array $atts {
 	 *     The `[media-credit]` shortcode attributes.
@@ -405,6 +423,9 @@ class Shortcodes implements \Media_Credit\Component {
 	 * }
 	 *
 	 * @return array
+	 *
+	 * @phpstan-param  ShortcodeAttributesOptional $atts
+	 * @phpstan-return ShortcodeAttributes
 	 */
 	protected function sanitize_attributes( array $atts ) {
 		// Merge default shortcode attributes.
