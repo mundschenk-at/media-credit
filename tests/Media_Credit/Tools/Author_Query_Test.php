@@ -2,7 +2,7 @@
 /**
  * This file is part of Media Credit.
  *
- * Copyright 2021 Peter Putzer.
+ * Copyright 2021-2023 Peter Putzer.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,10 +26,8 @@
 
 namespace Media_Credit\Tests\Media_Credit\Tools;
 
-use Brain\Monkey\Actions;
 use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
-
 use Mockery as m;
 
 use Media_Credit\Tools\Author_Query;
@@ -72,7 +70,7 @@ class Author_Query_Test extends TestCase {
 		parent::set_up();
 
 		// Initialize helpers.
-		$this->cache = m::mock( Cache::Class );
+		$this->cache = m::mock( Cache::class );
 
 		// Create system-under-test.
 		$this->sut = m::mock( Author_Query::class, [ $this->cache ] )->makePartial()->shouldAllowMockingProtectedMethods();
@@ -84,7 +82,7 @@ class Author_Query_Test extends TestCase {
 	 * @covers ::__construct
 	 */
 	public function test_constructor() {
-		$cache = m::mock( Cache::Class );
+		$cache = m::mock( Cache::class );
 
 		$mock = m::mock( Author_Query::class )->makePartial();
 		$mock->__construct( $cache );
@@ -160,17 +158,49 @@ class Author_Query_Test extends TestCase {
 		$this->assertSame( $result, $this->sut->get_authors() );
 	}
 
+
+	/**
+	 * Provides data for testing ::query.
+	 *
+	 * @return array
+	 */
+	public function provide_get_author_list_query_data() {
+		return [
+			[
+				'5.2',
+				[ 'who' => 'authors' ],
+			],
+			[
+				'5.8',
+				[ 'who' => 'authors' ],
+			],
+			[
+				'5.9-alpha',
+				[ 'capability' => 'edit_posts' ],
+			],
+			[
+				'5.9',
+				[ 'capability' => 'edit_posts' ],
+			],
+			[
+				'6.2',
+				[ 'capability' => 'edit_posts' ],
+			],
+		];
+	}
+
 	/**
 	 * Test ::get_author_list_query.
 	 *
 	 * @covers ::get_author_list_query
+	 *
+	 * @dataProvider provide_get_author_list_query_data
+	 *
+	 * @param string   $wp_version    The simulated WordPress version.
+	 * @param string[] $initial_query The expected initial author query.
 	 */
-	public function test_get_author_list_query() {
-		// Intermediary data.
-		$initial_query = [
-			'who' => 'authors',
-		];
-
+	public function test_get_author_list_query( $wp_version, $initial_query ) {
+		Functions\expect( 'get_bloginfo' )->once()->with( 'version' )->andReturn( $wp_version );
 		Filters\expectApplied( 'media_credit_author_list_query' )->once()->with( $initial_query )->andReturn( $initial_query );
 
 		$result = $this->sut->get_author_list_query();

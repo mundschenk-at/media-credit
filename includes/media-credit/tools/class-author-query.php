@@ -95,14 +95,21 @@ class Author_Query {
 	 */
 	protected function get_author_list_query() {
 		$query = [
-			'who' => 'authors',
+			'capability' => 'edit_posts',
 		];
+
+		// Capability queries were only introduced in WordPress 5.9.
+		if ( \version_compare( \get_bloginfo( 'version' ), '5.9-alpha', '<' ) ) {
+			$query['who'] = 'authors';
+			unset( $query['capability'] );
+		}
 
 		/**
 		 * Filters the query for retrieving the list of users eligible to be used
 		 * in media credits.
 		 *
 		 * @since 4.1.0
+		 * @since 4.3.0 The query uses `'capability' => 'edit_posts'` on WordPress 5.9 and higher.
 		 *
 		 * @param array $query {
 		 *     A partial user query (@see WP_User_Query::prepare_query for possibilities).
@@ -111,7 +118,8 @@ class Author_Query {
 		 *     and display names. Any `orderby`, `number`, `offset`, `count_total`,
 		 *     and `fields` clauses set here will be ignored.
 		 *
-		 *     string $who Default 'authors'.
+		 *     string $capability Optional. Default 'edit_posts' (only on WordPress 5.9+).
+		 *     string $who        Optional. Default 'authors' (only on WordPress < 5.9).
 		 * }
 		 */
 		$query = \apply_filters( 'media_credit_author_list_query', $query );
