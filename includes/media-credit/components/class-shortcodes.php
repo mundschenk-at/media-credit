@@ -261,7 +261,7 @@ class Shortcodes implements \Media_Credit\Component {
 
 		if ( ! empty( $this->settings->get( Settings::CREDIT_AT_END ) ) ) {
 			// Disable shortcode if credits should be shown after the post content.
-			return \do_shortcode( $content );
+			return \apply_shortcodes( $content );
 		}
 
 		// Make sure that $atts really is an array, might be an empty string in some edge cases.
@@ -326,7 +326,7 @@ class Shortcodes implements \Media_Credit\Component {
 
 		// Required template variables.
 		$args = [
-			'content'             => \do_shortcode( $content ), // expand nested shortcodes.
+			'content'             => \apply_shortcodes( $content ), // expand nested shortcodes.
 			'html5'               => $html5,
 			'schema_org'          => ! empty( $this->settings->get( Settings::SCHEMA_ORG_MARKUP ) ),
 			'width'               => $width,

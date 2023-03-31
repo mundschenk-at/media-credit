@@ -479,7 +479,7 @@ class Shortcodes_Test extends TestCase {
 		Functions\expect( 'current_theme_supports' )->once()->with( 'html5', 'caption' )->andReturn( $html5 );
 		Filters\expectApplied( 'img_caption_shortcode_width' )->once()->with( $width, $sanitized_atts, $content )->andReturn( $filtered_width );
 
-		Functions\expect( 'do_shortcode' )->once()->with( $content )->andReturn( '<img> with expanded shortcodes' );
+		Functions\expect( 'apply_shortcodes' )->once()->with( $content )->andReturn( '<img> with expanded shortcodes' );
 		$this->settings->shouldReceive( 'get' )->once()->with( Settings::SCHEMA_ORG_MARKUP )->andReturn( $schema_org );
 
 		$this->template->shouldReceive( 'get_partial' )->once()->with( '/public/partials/media-credit-shortcode.php', m::type( 'array' ) )->andReturn( $result );
@@ -511,7 +511,7 @@ class Shortcodes_Test extends TestCase {
 		Functions\expect( 'current_theme_supports' )->never();
 		Filters\expectApplied( 'img_caption_shortcode_width' )->never();
 
-		Functions\expect( 'do_shortcode' )->once()->with( $content )->andReturn( $filtered_content );
+		Functions\expect( 'apply_shortcodes' )->once()->with( $content )->andReturn( $filtered_content );
 		$this->settings->shouldReceive( 'get' )->never()->with( Settings::SCHEMA_ORG_MARKUP );
 
 		$this->assertSame( $filtered_content, $this->sut->media_credit_shortcode( $atts, $content ) );
@@ -547,7 +547,7 @@ class Shortcodes_Test extends TestCase {
 		Functions\expect( 'current_theme_supports' )->never();
 		Filters\expectApplied( 'img_caption_shortcode_width' )->never();
 
-		Functions\expect( 'do_shortcode' )->never();
+		Functions\expect( 'apply_shortcodes' )->never();
 		$this->settings->shouldReceive( 'get' )->never()->with( Settings::SCHEMA_ORG_MARKUP );
 
 		$this->assertSame( $pre_filter_shortcode, $this->sut->media_credit_shortcode( $atts, $content ) );
