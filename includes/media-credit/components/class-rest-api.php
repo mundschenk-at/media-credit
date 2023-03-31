@@ -38,6 +38,7 @@ use Media_Credit\Tools\Shortcodes_Filter;
  * @since 4.2.0 The public method sanitize_text_field has been deprecated.
  *
  * @phpstan-import-type MediaCreditJSONRaw from Core
+ * @phpstan-type MediaCreditRESTRequest array{content: string, attachment_id: int, author_id: int, freeform: string, url: string, nofollow: bool}
  */
 class REST_API implements \Media_Credit\Component {
 
@@ -283,6 +284,8 @@ class REST_API implements \Media_Credit\Component {
 	 * @param  \WP_REST_Request $request The REST request.
 	 *
 	 * @return \WP_REST_Response
+	 *
+	 * @phpstan-param \WP_REST_Request<MediaCreditRESTRequest> $request
 	 */
 	public function rest_filter_content( \WP_REST_Request $request ) {
 
