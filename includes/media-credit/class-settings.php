@@ -338,7 +338,7 @@ class Settings {
 					'short'          => \__( 'Organization', 'media-credit' ),
 					'help_text'      => \__( 'Organization used when crediting media to users of this blog.', 'media-credit' ),
 					'attributes'     => [ 'class' => 'regular-text' ],
-					'default'        => \get_bloginfo( 'name', 'display' ),
+					'default'        => \get_bloginfo( 'name' ),
 				],
 				self::CREDIT_AT_END             => [
 					'ui'               => Controls\Checkbox_Input::class,

@@ -494,7 +494,7 @@ class Settings_Test extends \Media_Credit\Tests\TestCase {
 	public function test_get_fields() {
 		$site_name = 'My Cool Site';
 
-		Functions\expect( 'get_bloginfo' )->once()->with( 'name', 'display' )->andReturn( $site_name );
+		Functions\expect( 'get_bloginfo' )->once()->with( 'name', )->andReturn( $site_name );
 
 		$result = $this->sut->get_fields();
 
@@ -513,7 +513,7 @@ class Settings_Test extends \Media_Credit\Tests\TestCase {
 	public function test_get_defaults() {
 		$site_name = 'My Cool Site';
 
-		Functions\expect( 'get_bloginfo' )->once()->with( 'name', 'display' )->andReturn( $site_name );
+		Functions\expect( 'get_bloginfo' )->once()->with( 'name' )->andReturn( $site_name );
 
 		$result = $this->sut->get_defaults();
 
