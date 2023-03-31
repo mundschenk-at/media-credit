@@ -1,7 +1,7 @@
 === Media Credit ===
 Contributors: pputzer, sbressler
 Tags: media, image, images, credit, byline, author, user
-Tested up to: 5.8
+Tested up to: 6.2
 Stable tag: 4.2.1
 License: GPLv2 or later
 
