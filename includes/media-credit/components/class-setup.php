@@ -149,6 +149,7 @@ class Setup implements \Media_Credit\Component {
 			[
 				'object_subtype'    => 'attachment',
 				'type'              => 'string',
+				'default'           => '',
 				'description'       => 'The copyright line itself (if not overridden by the `user_id`)',
 				'single'            => true,
 				'sanitize_callback' => [ $this->core, 'sanitize_media_credit_meta_field' ],
@@ -162,6 +163,7 @@ class Setup implements \Media_Credit\Component {
 			[
 				'object_subtype'    => 'attachment',
 				'type'              => 'string',
+				'default'           => '',
 				'description'       => 'A URL to link from the copyright information (overriding the default link to author pages)',
 				'single'            => true,
 				'sanitize_callback' => [ $this->core, 'sanitize_media_credit_meta_field' ],
@@ -175,6 +177,7 @@ class Setup implements \Media_Credit\Component {
 			[
 				'object_subtype'    => 'attachment',
 				'type'              => 'array',
+				'default'           => [],
 				'description'       => 'Optional flags for the copyright information (or the link)',
 				'single'            => true,
 				'sanitize_callback' => [ $this->core, 'sanitize_media_credit_meta_field' ],

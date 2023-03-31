@@ -321,8 +321,14 @@ class Core {
 	 * @return string            The freeform credit (or the empty string).
 	 */
 	protected function get_media_credit_freeform_text( $attachment_id ) {
+		/**
+		 * Retrieve the post meta containing the freeform credit. Default is an empty string.
+		 *
+		 * @phpstan-var string $meta_value
+		 */
 		$meta_value = \get_post_meta( $attachment_id, self::POSTMETA_KEY, true );
 
+		// Always return string (it shouldn't ever be any other type, but we want to be certain).
 		return \is_string( $meta_value ) ? $meta_value : '';
 	}
 
@@ -334,8 +340,14 @@ class Core {
 	 * @return string            The credit URL (or the empty string if none is set).
 	 */
 	protected function get_media_credit_url( $attachment_id ) {
+		/**
+		 * Retrieve the post meta containing the credit URL. Default is an empty string.
+		 *
+		 * @phpstan-var string $meta_value
+		 */
 		$meta_value = \get_post_meta( $attachment_id, self::URL_POSTMETA_KEY, true );
 
+		// Always return string (it shouldn't ever be any other type, but we want to be certain).
 		return \is_string( $meta_value ) ? $meta_value : '';
 	}
 
@@ -354,14 +366,14 @@ class Core {
 	 */
 	protected function get_media_credit_data( $attachment_id ) {
 		/**
-		 * PHPStan type.
+		 * Retrieve the post meta containing the flags array. Default is an empty array.
 		 *
-		 * @phpstan-var MediaCreditFlags|false $meta_value
+		 * @phpstan-var MediaCreditFlags $meta_value
 		 */
 		$meta_value = \get_post_meta( $attachment_id, self::DATA_POSTMETA_KEY, true );
 
 		// Always return an array (it shouldn't be a scalar, but we want to be certain).
-		return ( $meta_value ? (array) $meta_value : [] );
+		return \is_array( $meta_value ) ? $meta_value : [];
 	}
 
 	/**

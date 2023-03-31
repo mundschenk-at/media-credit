@@ -363,7 +363,7 @@ class Core_Test extends TestCase {
 	}
 
 	/**
-	 * Test ::get_media_credit_url.
+	 * Test ::get_media_credit_url (with existing valid data).
 	 *
 	 * @covers ::get_media_credit_url
 	 */
@@ -377,28 +377,28 @@ class Core_Test extends TestCase {
 	}
 
 	/**
-	 * Test ::get_media_credit_data.
-	 *
-	 * @covers ::get_media_credit_data
-	 */
-	public function test_get_media_credit_data_string_result() {
-		$attachment_id = 4711;
-		$result        = 'nofollow';
-
-		Functions\expect( 'get_post_meta' )->once()->with( $attachment_id, Core::DATA_POSTMETA_KEY, true )->andReturn( $result );
-
-		$this->assertSame( [ $result ], $this->sut->get_media_credit_data( $attachment_id ) );
-	}
-
-	/**
-	 * Test ::get_media_credit_data.
+	 * Test ::get_media_credit_data when no post meta for the key exists.
 	 *
 	 * @covers ::get_media_credit_data
 	 */
 	public function test_get_media_credit_data_no_data() {
 		$attachment_id = 4711;
 
-		Functions\expect( 'get_post_meta' )->once()->with( $attachment_id, Core::DATA_POSTMETA_KEY, true )->andReturn( false );
+		Functions\expect( 'get_post_meta' )->once()->with( $attachment_id, Core::DATA_POSTMETA_KEY, true )->andReturn( [] );
+
+		$this->assertSame( [], $this->sut->get_media_credit_data( $attachment_id ) );
+	}
+
+	/**
+	 * Test ::get_media_credit_data when get_post_meta returns a string result
+	 * (which should not happen unless the DB has become corrupted).
+	 *
+	 * @covers ::get_media_credit_data
+	 */
+	public function test_get_media_credit_data_corrupted_database() {
+		$attachment_id = 4711;
+
+		Functions\expect( 'get_post_meta' )->once()->with( $attachment_id, Core::DATA_POSTMETA_KEY, true )->andReturn( 'the database has been corrupted' );
 
 		$this->assertSame( [], $this->sut->get_media_credit_data( $attachment_id ) );
 	}
