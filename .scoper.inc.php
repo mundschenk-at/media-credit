@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Isolated\Symfony\Component\Finder\Finder;
 
-const MEDIA_CREDIT_EXCLUDED_FILES      = '.*\\.dist|Makefile|composer\\.json|composer\\.lock|phpcs\\.xml|phpunit.xml|phpbench\\.json|.*\\.md';
+const MEDIA_CREDIT_EXCLUDED_FILES      = '.*\\.dist|Makefile|composer\\.json|composer\\.lock|phpcs\\.xml|phpunit.xml|phpbench\\.json|.*\\.md|sonar-project\\.properties';
 const MEDIA_CREDIT_EXCLUDED_DIRS       = [
     'bin',
     'doc',
