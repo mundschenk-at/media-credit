@@ -37,7 +37,7 @@ if ( ! \defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 // Make plugin file path available globally (even if we probably don't need it during uninstallaton).
 if ( ! \defined( 'MEDIA_CREDIT_PLUGIN_FILE' ) ) {
-	\define( 'MEDIA_CREDIT_PLUGIN_FILE', \dirname( __FILE__ ) . '/media-credit.php' );
+	\define( 'MEDIA_CREDIT_PLUGIN_FILE', __DIR__ . '/media-credit.php' );
 }
 if ( ! \defined( 'MEDIA_CREDIT_PLUGIN_PATH' ) ) {
 	\define( 'MEDIA_CREDIT_PLUGIN_PATH', __DIR__ );
