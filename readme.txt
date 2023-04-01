@@ -84,6 +84,14 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 
 == Changelog ==
 
+= 4.3.0 (April 1, 2023) =
+
+* _Feature_: Media Credit is now fully compatible with PHP 8.2.
+* _Bugfix_: Author queries now use capabilities instead of the deprecated `'who' => 'authors'`.
+* _Bugfix_: `run_wptexturize` filter now can be used even after the plugin is initialized.
+* _Change_: WordPress minimum version increased to 5.9.0.
+* _Change_: PHP minimum version increased to 7.4.0.
+
 = 4.2.1 (July 30, 2021) =
 * _Bugfix_: Don't eat content between multiple shortcodes on save and switch between visual and HTML mode in the classic editor.
 
