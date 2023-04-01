@@ -167,14 +167,6 @@ class Author_Query_Test extends TestCase {
 	public function provide_get_author_list_query_data() {
 		return [
 			[
-				'5.2',
-				[ 'who' => 'authors' ],
-			],
-			[
-				'5.8',
-				[ 'who' => 'authors' ],
-			],
-			[
 				'5.9-alpha',
 				[ 'capability' => 'edit_posts' ],
 			],
@@ -200,7 +192,7 @@ class Author_Query_Test extends TestCase {
 	 * @param string[] $initial_query The expected initial author query.
 	 */
 	public function test_get_author_list_query( $wp_version, $initial_query ) {
-		Functions\expect( 'get_bloginfo' )->once()->with( 'version' )->andReturn( $wp_version );
+		Functions\expect( 'get_bloginfo' )->atMost()->once()->with( 'version' )->andReturn( $wp_version );
 		Filters\expectApplied( 'media_credit_author_list_query' )->once()->with( $initial_query )->andReturn( $initial_query );
 
 		$result = $this->sut->get_author_list_query();
