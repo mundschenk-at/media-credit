@@ -111,45 +111,6 @@ Feel free to get in touch with us about anything you'd like us to add to this li
 * _Change_: Support for Internet Explorer 11 has been dropped.
 * _Change_: A fabulous new plugin icon designed by [Johanna Amann](https://www.instagram.com/_jo_am/).
 
-= 4.1.1 (December 10, 2020) =
-* _Bugfix_: Credits containing apostrophes can be edited in the legacy Media Library view.
-* _Bugfix_: Changes to `nofollow` flag are now saved in the legacy Media Library view as well.
-* _Bugfix_: The plugin is now compatible with WordPress 5.6.
-
-= 4.1.0 (April 17, 2020) =
-* _Feature_: Images cropped in the Customizer inherit the credit from the original image.
-* _Feature_: Credits are read from EXIF/IPTC fields on image upload.
-* _Bugfix_: No markup is added to `core/image` blocks when no credit is set.
-* _Bugfix_: Attachment details input fields are set to read-only when the user lacks write permissions for the image.
-* _Bugfix_: Malformed shortcodes won't break the editor anymore.
-* _Bugfix_: Some error messages were not getting translated because of a [WP.org infrastructure change](https://make.wordpress.org/core/2018/11/09/new-javascript-i18n-support-in-wordpress/).
-* _Change_: All external PHP dependencies have been moved to the namespace `Media_Credit\Vendor` to reduce the chance of conflicts with other plugins.
-
-= 4.0.4 (May 19, 2019) =
-* _Bugfix_: Prevent PHP warning for incomplete `core/image` blocks.
-
-= 4.0.3 (Mar. 20, 2019) =
-* _Bugfix_: Print credit for featured images, not for the parent post.
-* _Bugfix_: Slightly improved compatibility with responsive themes (by using `max-width` instead of `width`).
-
-= 4.0.2 (Mar. 18, 2019) =
-* _Bugfix_: Don't whitescreen when the shortcode handler is called with an empty string instead of argument array.
-* _Bugfix_: Featured images can be set normally again when `Do not credit images to WordPress users` is enabled.
-
-= 4.0.1 (Mar. 11, 2019) =
-* _Bugfix_: Uploads via the Edit Post or New Post screens should work again.
-
-= 4.0.0 (Mar. 11, 2019) =
-*   _Feature_: Full REST API support (reading and writing).
-*   _Feature_: A custom default credit for new attachments can be set via the GUI or the new filter hook `media_credit_new_attachment_default`.
-*   _Feature_: Placeholder texts can be customized via the new filter hook `media_credit_placeholder_text`.
-*   _Feature_: Images added via the Block Editor (Gutenberg) will be displayed with their credit.
-*   _Feature_: New autoload-friendly template tag API based on the `Media_Credit` class. The old function-based API has been deprecated.
-*   _Change_: The previously deprecated template function `get_freeform_media_credit` has been removed.
-*   _Change_: In HTML5 mode, the credit has been moved inside the `<figcaption>`.
-*   _Change_: PHP minimum version increased to 5.6.0.
-*   _Bugfix_: When default credits are disabled, the display name of a user can be used as a freeform credit again.
-
 == Other Notes ==
 **Options**
 
