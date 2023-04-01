@@ -1,7 +1,10 @@
 # Changelog
 
-## 4.3.0 (unreleased)
+## 4.3.0 (April 1, 2023)
 
+-   _Bugfix_: Author queries now use capabilities instead of the deprecated `'who' => 'authors'`.
+-   _Bugfix_: `run_wptexturize` filter now can be used even after the plugin is initialized.
+-   _Change_: WordPress minimum version increased to 5.9.0.
 -   _Change_: PHP minimum version increased to 7.4.0.
 
 ## 4.2.1 (July 30, 2021)
