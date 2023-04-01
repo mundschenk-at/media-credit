@@ -720,7 +720,7 @@ class Shortcodes_Test extends TestCase {
 				return empty( $value ) ? '' : "{$value} (SANITIZED TEXT)";
 			}
 		);
-		Functions\expect( 'esc_url_raw' )->once()->andReturnUsing(
+		Functions\expect( 'sanitize_url' )->once()->andReturnUsing(
 			function( $value ) {
 				return empty( $value ) ? '' : "{$value} (SANITIZED URL)";
 			}

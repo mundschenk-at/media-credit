@@ -447,7 +447,7 @@ class Shortcodes implements \Media_Credit\Component {
 		// Sanitize attribute values.
 		$atts['id']         = \absint( $atts['id'] );
 		$atts['name']       = \sanitize_text_field( $atts['name'] );
-		$atts['link']       = \esc_url_raw( $atts['link'] );
+		$atts['link']       = \sanitize_url( $atts['link'] );
 		$atts['standalone'] = \filter_var( $atts['standalone'], \FILTER_VALIDATE_BOOLEAN );
 		$atts['align']      = \sanitize_html_class( $atts['align'] );
 		$atts['width']      = \absint( $atts['width'] );

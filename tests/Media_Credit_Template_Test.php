@@ -196,7 +196,7 @@ class Media_Credit_Template_Test extends TestCase {
 		Functions\expect( '_deprecated_function' )->once()->with( m::type( 'string' ), m::type( 'string' ), m::type( 'string' ) );
 		$this->media_credit->shouldReceive( 'get_url' )->once()->with( $attachment_id )->andReturn( $result );
 
-		Functions\expect( 'esc_url_raw' )->once()->with( m::type( 'string' ) )->andReturnArg( 0 );
+		Functions\expect( 'sanitize_url' )->once()->with( m::type( 'string' ) )->andReturnArg( 0 );
 
 		$this->expectOutputString( $result );
 		$this->assertNull( \the_media_credit_url( $attachment_id ) );
@@ -212,7 +212,7 @@ class Media_Credit_Template_Test extends TestCase {
 		Functions\expect( '_doing_it_wrong' )->once()->with( m::type( 'string' ), m::type( 'string' ), '4.2.0' );
 
 		$this->media_credit->shouldReceive( 'get_url' )->never();
-		Functions\expect( 'esc_url_raw' )->never();
+		Functions\expect( 'sanitize_url' )->never();
 
 		$this->assertNull( \the_media_credit_url() );
 	}
