@@ -11,4 +11,4 @@ Adds a "Credit" field when uploading media to posts and displays it under the im
 ## Requirements ##
 
 *   PHP 7.4.0 or above
-*   WordPress 5.2 or above
+*   WordPress 5.9 or above
