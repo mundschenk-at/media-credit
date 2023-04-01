@@ -80,34 +80,20 @@ module.exports = function( grunt ) {
 								dest: '',
 						}]
 				},
-				fix_dice_namespace: {
-						options: {
-								replacements: [ {
-										pattern: /use Dice\\Dice;/g,
-										replacement: 'use Media_Credit\\Vendor\\Dice\\Dice;'
-								} ],
-						},
-						files: [ {
-								expand: true,
-								flatten: false,
-								src: ['build/includes/media-credit/class-factory.php'],
-								dest: '',
-						} ]
+				namespaces: {
+					options: {
+						replacements: [{
+							pattern: '', // Set later.
+							replacement: `\$1Media_Credit\\Vendor\\\$2`
+						}],
+					},
+					files: [{
+						expand: true,
+						flatten: false,
+						src: ['build/includes/**/*.php'],
+						dest: '',
+					}]
 				},
-				fix_mundschenk_namespace: {
-						options: {
-								replacements: [ {
-										pattern: /(\b\\?)(Mundschenk\\[\w_]+)/g,
-										replacement: '$1Media_Credit\\Vendor\\$2'
-								} ],
-						},
-						files: [ {
-								expand: true,
-								flatten: false,
-								src: ['build/includes/**/*.php'],
-								dest: '',
-						} ]
-				}
 
     },
 
@@ -328,6 +314,11 @@ module.exports = function( grunt ) {
 
 	});
 
+	// Set correct pattern for naemspace replacement.
+	grunt.config(
+		'string-replace.namespaces.options.replacements.0.pattern',
+		new RegExp( '([^\\w\\\\]|\\B\\\\?)((?:' + grunt.config('pkg.phpPrefixNamespaces').join('|') + ')\\\\[\\w_]+)', 'g' )
+	);
 	// load all tasks
 	require( 'load-grunt-tasks' )( grunt, { scope: 'devDependencies' } );
 
@@ -355,8 +346,7 @@ module.exports = function( grunt ) {
 		'copy:main',
 		'copy:meta',
 		// Use scoped dependencies
-		'string-replace:fix_dice_namespace',
-		'string-replace:fix_mundschenk_namespace',
+        'string-replace:namespaces',
 		'exec:composer_build:build-wordpress',
 		'clean:autoloader',
 		'string-replace:vendor-dir',
