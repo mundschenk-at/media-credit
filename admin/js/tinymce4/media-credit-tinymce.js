@@ -233,9 +233,9 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	/**
 	 * Replaces a [media-credit] shortcode with its TinyMCE markup
 	 *
-	 * @param  {string}  content    The content.
-	 * @param  {boolean} standalone A flag indicating whether to expect a standalone
-	 *                              shortcode (without [caption]).
+	 * @param {string}  content    The content.
+	 * @param {boolean} standalone A flag indicating whether to expect a standalone
+	 *                             shortcode (without [caption]).
 	 *
 	 * @return {string}             The content with any [media-credit] shortcodes replaced.
 	 */
@@ -391,11 +391,11 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 	/**
 	 * Replaces TinyMCE HTML markup with [media-credit] shortcode.
 	 *
-	 * @param  {string}  content    The content.
-	 * @param  {boolean} standalone A flag indicating whether to expect a standalone
-	 *                              shortcode (without [caption]).
+	 * @param {string}  content    The content.
+	 * @param {boolean} standalone A flag indicating whether to expect a standalone
+	 *                             shortcode (without [caption]).
 	 *
-	 * @return {string}             The content with [media-credit] shortcodes.
+	 * @return {string}            The content with [media-credit] shortcodes.
 	 */
 	function getMediaCreditShortcode( content, standalone ) {
 		var pattern = ! standalone

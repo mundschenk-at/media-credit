@@ -265,10 +265,10 @@ jQuery( function( $ ) {
 			/**
 			 * Updates [media-credit] shortcodes in the current editor.
 			 *
-			 * @param  {string}         previousContent The editor content.
-			 * @param  {number}         attachmentId    The attachment ID to look for.
-			 * @param  {Backbone.Model} model           The attachment model containing
-			 *                                          the updated credit.
+			 * @param {string}         previousContent The editor content.
+			 * @param {number}         attachmentId    The attachment ID to look for.
+			 * @param {Backbone.Model} model           The attachment model containing
+			 *                                         the updated credit.
 			 */
 			updateMediaCreditInEditorContent: function( previousContent, attachmentId, model ) {
 				if ( previousContent ) {
