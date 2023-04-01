@@ -343,7 +343,7 @@ class Core_Test extends TestCase {
 	 */
 	public function test_sanitize_media_credit_meta_field( $meta_value, $meta_key, $object_type, $result ) {
 		Functions\expect( 'sanitize_text_field' )->atMost()->once()->with( $meta_value )->andReturn( self::SANITIZED_FREEFORM_CREDIT );
-		Functions\expect( 'esc_url_raw' )->atMost()->once()->with( $meta_value )->andReturn( self::SANITIZED_CREDIT_URL );
+		Functions\expect( 'sanitize_url' )->atMost()->once()->with( $meta_value )->andReturn( self::SANITIZED_CREDIT_URL );
 
 		$this->assertSame( $result, $this->sut->sanitize_media_credit_meta_field( $meta_value, $meta_key, $object_type ) );
 	}

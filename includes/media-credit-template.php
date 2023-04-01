@@ -126,7 +126,7 @@ if ( ! function_exists( 'the_media_credit_url' ) ) {
 			return;
 		}
 
-		echo \esc_url_raw( \get_media_credit_url( $post ) );
+		echo \sanitize_url( \get_media_credit_url( $post ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitize_url is currently not recognized properly.
 	}
 }
 

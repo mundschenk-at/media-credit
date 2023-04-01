@@ -297,7 +297,7 @@ class Core {
 					if ( ! \is_string( $meta_value ) ) {
 						$meta_value = '';
 					} else {
-						$meta_value = \esc_url_raw( $meta_value );
+						$meta_value = \sanitize_url( $meta_value );
 					}
 					break;
 
