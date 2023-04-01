@@ -27,6 +27,8 @@
  * Based on revision @51768 of https://core.trac.wordpress.org/browser/trunk/src/js/_enqueues/wp/editor/base.js (removep)
  *
  * The version number in the "@since" tags below mean WordPress versions.
+ *
+ * @param {jQuery} $
  */
 ( function( $ ) {
 	'use strict';
