@@ -670,7 +670,7 @@ class Core {
 			} else {
 				// Free-form text was entered, insert postmeta with credit.
 				// if free-form text is blank, insert a single space in postmeta.
-				$freeform = $freeform ?: self::EMPTY_META_STRING; // phpcs:ignore WordPress.PHP.DisallowShortTernary
+				$freeform = $freeform ?: self::EMPTY_META_STRING; // phpcs:ignore Universal.Operators.DisallowShortTernary.Found
 				\update_post_meta( $attachment->ID, self::POSTMETA_KEY, $freeform );
 
 				// User ID stays untouched.
