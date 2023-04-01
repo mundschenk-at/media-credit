@@ -6,13 +6,14 @@
 	<!-- Set a description for this ruleset. -->
 	<description>A custom set of code standard rules to check for WordPress plugins.</description>
 
-	<config name="minimum_supported_wp_version" value="5.2"/>
+	<config name="minimum_supported_wp_version" value="5.9"/>
 	<config name="testVersion" value="7.4-"/>
 
 	<!-- Include the WordPress ruleset, with exclusions. -->
 	<rule ref="WordPress">
 		<exclude name="Generic.Functions.FunctionCallArgumentSpacing" />
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax" />
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax" />
 	</rule>
 	<rule ref="WordPress-Docs" />
 	<rule ref="WordPress-Extra" />
